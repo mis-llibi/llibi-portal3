@@ -1,0 +1,19 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+const withMT = require('@material-tailwind/react/utils/withMT')
+
+module.exports = withMT({
+    content: ['./src/**/*.js'],
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Roboto', ...defaultTheme.fontFamily.sans],
+            },
+        },
+    },
+    variants: {
+        extend: {
+            opacity: ['disabled'],
+        },
+    },
+    plugins: [require('@tailwindcss/forms')],
+})
