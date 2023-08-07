@@ -103,11 +103,11 @@ const Client = () => {
     const CURRENT_HOUR = TODAY.getHours()
     useEffect(() => {
         if (CURRENT_HOUR < 12) {
-            setGreetingTime('Good Morning')
+            setGreetingTime('Good morning')
         } else if (CURRENT_HOUR < 18) {
-            setGreetingTime('Good Afternoon')
+            setGreetingTime('Good afternoon')
         } else {
-            setGreetingTime('Good Evening')
+            setGreetingTime('Good evening')
         }
     }, [CURRENT_HOUR])
 
