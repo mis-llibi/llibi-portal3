@@ -97,6 +97,20 @@ const Client = () => {
     const { show, setShow, body, setBody, toggle } = ModalControl()
 
     const [request, setRequest] = useState()
+    const [greeTingTime, setGreetingTime] = useState('')
+
+    const TODAY = new Date()
+    const CURRENT_HOUR = TODAY.getHours()
+    useEffect(() => {
+        if (CURRENT_HOUR < 12) {
+            setGreetingTime('Good Morning')
+        } else if (CURRENT_HOUR < 18) {
+            setGreetingTime('Good Afternoon')
+        } else {
+            setGreetingTime('Good Evening')
+        }
+    }, [CURRENT_HOUR])
+
     const submitForm = obj => {
         if (watch('toDo') != 5) {
             /* setFire(true)
@@ -333,8 +347,8 @@ const Client = () => {
                                     <div className="border-1 rounded-lg shadow-md mb-4">
                                         {/* first question */}
                                         <p className="bg-blue-900 text-white shadow rounded-t-lg p-2 mb-3 text-bold text-center">
-                                            Good day, what can we do for you
-                                            today?
+                                            {greeTingTime}, what can we do for
+                                            you?
                                         </p>
                                         {/* <div className="w-full border-b-2 border-dotted mb-2"></div> */}
 
@@ -365,7 +379,7 @@ const Client = () => {
                                                             className="w-3 h-3"
                                                         />{' '}
                                                         <Label htmlFor="requestLOA">
-                                                            Request for a LOA
+                                                            Request for LOA
                                                         </Label>
                                                     </div>
                                                     {/* Type of loa to file */}

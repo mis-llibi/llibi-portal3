@@ -37,7 +37,7 @@ class NotificationController extends Controller
     {
         Mail::send([], [], function ($mail) use ($name, $email, $message) {
 
-            $subject = (isset($message['subject']) ? $message['subject'] : 'Self-Service Portal - Notification');
+            $subject = (isset($message['subject']) ? $message['subject'] : 'Client Care Portal - Notification');
         
             $mail->to($email, $name)
                 ->subject($subject)
@@ -60,7 +60,7 @@ class NotificationController extends Controller
             //Mail::to($userEmail)->send($welcomeMailable);
             Mail::send([], [], function ($mail) use ($name, $email, $message) {
 
-                $subject = (isset($message['subject']) ? $message['subject'] : 'Self-Service Portal - Notification');
+                $subject = (isset($message['subject']) ? $message['subject'] : 'Client Care Portal - Notification');
             
                 $mail->to($email, $name)
                     ->subject($subject)
