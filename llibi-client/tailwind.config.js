@@ -2,7 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 const withMT = require('@material-tailwind/react/utils/withMT')
 
 module.exports = withMT({
-    content: ['./src/**/*.js'],
+    content: ['./src/**/*.{js,jsx}'],
     theme: {
         extend: {
             fontFamily: {

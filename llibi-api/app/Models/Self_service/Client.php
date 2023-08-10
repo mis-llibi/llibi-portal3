@@ -32,5 +32,7 @@ class Client extends Model
         'dependent_dob',
 
         'status',
+        'user_id',
+        'approved_date',
     ];
 }

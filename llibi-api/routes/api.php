@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,25 +27,24 @@ use App\Http\Controllers\Self_service\AdminController as SelfService;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
-	Route::get('/user', function (Request $request) {
-		if ($request->user()->status == 1) return $request->user();
-		return response()->json([
-			'message' => 'account is inactive'
-		], 404);
-	});
+  Route::get('/user', function (Request $request) {
+    if ($request->user()->status == 1) return $request->user();
+    return response()->json([
+      'message' => 'account is inactive'
+    ], 404);
+  });
 
-	//HR ENROLLMENT
-	Route::get('/get-enrollees/{status}', [ManageEnrolleeController::class, 'getEnrollees']);
-	Route::get('/get-correction/{id}', [ManageEnrolleeController::class, 'getCorrection']);
+  //HR ENROLLMENT
+  Route::get('/get-enrollees/{status}', [ManageEnrolleeController::class, 'getEnrollees']);
+  Route::get('/get-correction/{id}', [ManageEnrolleeController::class, 'getCorrection']);
 
-	//SELF ENROLLMENT ADMIN
-	Route::get('/self-enrollment/get-submitted-and-approved-clients/{memberid}/{company}', [SelfEnrollmentController::class, 'getSubmittedAndApprovedClients']);
-	Route::get('/self-enrollment/get-all-principal-clients/{status}/{company}', [SelfEnrollmentController::class, 'getAllPrincipalClients']);
-	Route::get('/self-enrollment/export-clients/{company}', [SelfEnrollmentController::class, 'exportClients']);
+  //SELF ENROLLMENT ADMIN
+  Route::get('/self-enrollment/get-submitted-and-approved-clients/{memberid}/{company}', [SelfEnrollmentController::class, 'getSubmittedAndApprovedClients']);
+  Route::get('/self-enrollment/get-all-principal-clients/{status}/{company}', [SelfEnrollmentController::class, 'getAllPrincipalClients']);
+  Route::get('/self-enrollment/export-clients/{company}', [SelfEnrollmentController::class, 'exportClients']);
 
-	//SELF ENROLLMENT FOR LIFE INSURANCE
-	Route::get('/self-enrollment/get-clients-for-life-insurance/{status}', [SelfEnrollmentController::class, 'getClientsForLifeInsurance']);
-
+  //SELF ENROLLMENT FOR LIFE INSURANCE
+  Route::get('/self-enrollment/get-clients-for-life-insurance/{status}', [SelfEnrollmentController::class, 'getClientsForLifeInsurance']);
 });
 
 Route::get('/self-enrollment/testing', [SelfEnrollmentController::class, 'testing']);
@@ -72,3 +72,5 @@ Route::get('/da-extract-members', [ManageDaMemberController::class, 'getMembers'
 //CORPORATE API
 Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetEmployees']);
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
+
+Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);
