@@ -179,11 +179,11 @@ class AdminController extends Controller
                 '.$statusRemarks.'<br /><br />
                 For further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.<br /><br />
                 Manila Line: (02) 8236-6492<br/>
-                Cebu Line: (032) 2333840 Loc. 6001<br />
                 Mobile number for Calls Only:<br />
                 0917-8055424<br />
                 0917-8855424<br />
                 0919-0749433<br />
+
                 Email: clientcare@llibi.com<br /><br />
 
                 Your reference number is <b>'.$ref.'</b>.<br /><br />
