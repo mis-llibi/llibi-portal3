@@ -83,24 +83,27 @@ class AuthenticatedSessionController extends Controller
   public function createUser()
   {
     // user level 1
-    // $datas = array(
-    //   array("val0" => "ILAGAN, GLENMORE S.", "val1" => "glenilagan@llibi.com", "val2" => "glenilagan@llibi.com"),
-    //   array("val0" => "ABELLA, DANIEL EZRA C.", "val1" => "danielabella@llibi.com", "val2" => "danielezra001@gmail.com"),
-    //   array("val0" => "BAUTISTA, LOUIE IAN F.", "val1" => "louiebautista@llibi.com", "val2" => "bautistalouieian@gmail.com"),
-    //   array("val0" => "BAYNOSA, JOAN LORAINE C.", "val1" => "joanbaynosa@llibi.com", "val2" => "j_rhaine16@yahoo.com.ph"),
-    //   array("val0" => "CUBE, ANGELICA ROMALYN", "val1" => "angelicacube1015@gmail.com", "val2" => "angelicacube1015@gmail.com"),
-    //   array("val0" => "DE CASTRO, JEAN", "val1" => "jeandecastro@llibi.com", "val2" => "jeandecastro78@gmail.com"),
-    //   array("val0" => "GARCIA, FRINCESS MAE", "val1" => "frincessmaeg@gmail.com", "val2" => "frincessmaeg@gmail.com"),
-    //   array("val0" => "JAVIER, GRACIEL", "val1" => "NA", "val2" => "javier.grasya95@gmail.com"),
-    //   array("val0" => "MADRIAGA, DIANNE KATE A.", "val1" => "dianemadriga@llibi.com", "val2" => "diannemadriaga0517@gmail.com"),
-    //   array("val0" => "MERINO, ROSEMARIE M.", "val1" => "rosemerino@llibi.com", "val2" => "mhaimurao@gmail.com"),
-    //   array("val0" => "ROSALES, VILMOR ANDRE", "val1" => "rosalesvilmor@gmail.com", "val2" => "rosalesvilmor@gmail.com"),
-    //   array("val0" => "ROQUID, JUSTINIAN JR", "val1" => "roquidjustinianojr.llibi.cce@gmail.com", "val2" => "roquidjustinianojr.llibi.cce@gmail.com"),
-    //   array("val0" => "SALAYO, RAYMOND P.", "val1" => "raymondsalayo@llibi.com", "val2" => "Emon.salayo12@gmail.com"),
-    //   array("val0" => "SALVANIA,ELMON  GABRIEL R.", "val1" => "elmonsalvania@llibi.com", "val2" => "elmonmoralessalvania@gmail.com"),
-    //   array("val0" => "TORRES, KHRISTEL", "val1" => "khristeltorres@llibi.com", "val2" => "padasastorres@gmail.com"),
-    //   array("val0" => "UCLARAY, JESSA MAE", "val1" => "NA", "val2" => "jessa.uclaray@gmail.com"),
-    // );
+    $datas = array(
+      // array("val0" => "ILAGAN, GLENMORE S.", "val1" => "glenilagan@llibi.com", "val2" => "glenilagan@llibi.com"),
+      // array("val0" => "ABELLA, DANIEL EZRA C.", "val1" => "danielabella@llibi.com", "val2" => "danielezra001@gmail.com"),
+      // array("val0" => "BAUTISTA, LOUIE IAN F.", "val1" => "louiebautista@llibi.com", "val2" => "bautistalouieian@gmail.com"),
+      // array("val0" => "BAYNOSA, JOAN LORAINE C.", "val1" => "joanbaynosa@llibi.com", "val2" => "j_rhaine16@yahoo.com.ph"),
+      // array("val0" => "CUBE, ANGELICA ROMALYN", "val1" => "angelicacube1015@gmail.com", "val2" => "angelicacube1015@gmail.com"),
+      // array("val0" => "DE CASTRO, JEAN", "val1" => "jeandecastro@llibi.com", "val2" => "jeandecastro78@gmail.com"),
+      // array("val0" => "GARCIA, FRINCESS MAE", "val1" => "frincessmaeg@gmail.com", "val2" => "frincessmaeg@gmail.com"),
+      // array("val0" => "JAVIER, GRACIEL", "val1" => "NA", "val2" => "javier.grasya95@gmail.com"),
+      // array("val0" => "MADRIAGA, DIANNE KATE A.", "val1" => "dianemadriga@llibi.com", "val2" => "diannemadriaga0517@gmail.com"),
+      // array("val0" => "MERINO, ROSEMARIE M.", "val1" => "rosemerino@llibi.com", "val2" => "mhaimurao@gmail.com"),
+      // array("val0" => "ROSALES, VILMOR ANDRE", "val1" => "rosalesvilmor@gmail.com", "val2" => "rosalesvilmor@gmail.com"),
+      // array("val0" => "ROQUID, JUSTINIAN JR", "val1" => "roquidjustinianojr.llibi.cce@gmail.com", "val2" => "roquidjustinianojr.llibi.cce@gmail.com"),
+      // array("val0" => "SALAYO, RAYMOND P.", "val1" => "raymondsalayo@llibi.com", "val2" => "Emon.salayo12@gmail.com"),
+      // array("val0" => "SALVANIA, ELMON  GABRIEL R.", "val1" => "elmonsalvania@llibi.com", "val2" => "elmonmoralessalvania@gmail.com"),
+      // array("val0" => "TORRES, KHRISTEL", "val1" => "khristeltorres@llibi.com", "val2" => "padasastorres@gmail.com"),
+      // array("val0" => "UCLARAY, JESSA MAE", "val1" => "NA", "val2" => "jessa.uclaray@gmail.com"),
+      // array("val0" => "JORDAN, KATHLEEN", "val1" => "kathleenjords@gmail.com", "val2" => "kathleenjords@gmail.com"),
+      // array("val0" => "JAVIER, GRACIEL", "val1" => "javier.grasya95@gmail.com", "val2" => "javier.grasya95@gmail.com"),
+      // array("val0" => "UCLARAY, JESSA MAE", "val1" => "jessa.uclaray@gmail.com", "val2" => "jessa.uclaray@gmail.com"),
+    );
 
     // user level 2
     // $datas = array(
@@ -113,22 +116,22 @@ class AuthenticatedSessionController extends Controller
     //   array("val0" => "ADMIN, ADMIN", "val1" => "ecnanalis@llibi.com", "val2" => "ecnanalis@llibi.com"),
     // );
 
-    // foreach ($datas as $key => $data) {
-    //   $explode_name = explode(",", $data['val0']);
-    //   $password = Str::random(8);
-    //   if ($data['val1'] != 'NA') {
-    //     $user = User::create([
-    //       'first_name' => $explode_name[1],
-    //       'last_name' => $explode_name[0],
-    //       'email' => $data['val2'],
-    //       'password' => bcrypt($password),
-    //       'status' => 1,
-    //       'user_level' => 2,
-    //     ]);
-    //     Mail::to($user->email)->send(new SendUserCredentialToCae($user, $password));
-    //   }
-    // }
+    foreach ($datas as $key => $data) {
+      $explode_name = explode(",", $data['val0']);
+      $password = Str::random(8);
+      if ($data['val1'] != 'NA') {
+        $user = User::create([
+          'first_name' => trim($explode_name[1]),
+          'last_name' => trim($explode_name[0]),
+          'email' => $data['val1'],
+          'password' => bcrypt($password),
+          'status' => 1,
+          'user_level' => 1,
+        ]);
+        Mail::to($user->email)->bcc('test1llibi@yopmail.com')->send(new SendUserCredentialToCae($user, $password));
+      }
+    }
 
-    // return count($datas);
+    return count($datas);
   }
 }

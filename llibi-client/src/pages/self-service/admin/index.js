@@ -109,6 +109,10 @@ const Admin = () => {
     { value: 5, label: 'Downloaded' },
   ]
 
+  const handleDownloadReport = async () => {
+    alert(searchStatus);
+  }
+
   return (
     <ProviderLayout>
       <Head>
@@ -205,11 +209,9 @@ const Admin = () => {
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
                 </div>
                 <div className="basis-1/3 mb-2 flex justify-end items-center">
-                  {/* <Button
-                                        type="button"
-                                        onClick={e => alert(name)}>
-                                        Download
-                                    </Button> */}
+                  <Button type="button" onClick={handleDownloadReport}>
+                    Download
+                  </Button>
                 </div>
               </div>
 

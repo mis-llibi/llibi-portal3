@@ -87,7 +87,7 @@ class AdminController extends Controller
 
   public function UpdateRequest(Request $request)
   {
-    //$user_id = request()->user()->id;
+    $user_id = request()->user()->id;
     $client = $this->SearchRequest(0, ['val' => $request->id]);
 
     $status = (int)$request->status;
@@ -95,7 +95,7 @@ class AdminController extends Controller
       ->update([
         'status' => $status,
         'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
-        //'user_id' => $user_id,
+        'user_id' => $user_id,
         'approved_date' => $status === 3 ? Carbon::now() : null,
       ]);
 
