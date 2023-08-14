@@ -98,7 +98,7 @@ class MembersController extends Controller
                         't1.middle as middle_name',
                         't1.last as last_name',
                         't2.code as company_code',
-                        't2.name as company_name',
+                        't3.name as company_name',
                     ]);
             }
 
