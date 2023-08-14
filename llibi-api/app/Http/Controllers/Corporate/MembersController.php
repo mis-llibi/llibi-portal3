@@ -30,6 +30,8 @@ class MembersController extends Controller
                     ->join('companies as t2', 't1.company_id', '=', 't2.id')
                     ->where('t1.last', 'like', '%'.$lastName.'%')
                     ->where('t1.given', 'like', '%'.$firstname.'%')
+                    ->orderBy('t1.id', 'DESC')
+                    ->limit(1)
                     ->get([
                         't1.given as first_name',
                         't1.middle as middle_name',
@@ -43,6 +45,8 @@ class MembersController extends Controller
                     ->join('companies as t2', 't1.company_id', '=', 't2.id')
                     ->where('t1.last', 'like', '%'.$lastName.'%')
                     ->where('t1.given', 'like', '%'.$firstname.'%')
+                    ->orderBy('t1.id', 'DESC')
+                    ->limit(1)
                     ->get([
                         't1.given as first_name',
                         't1.middle as middle_name',
@@ -60,7 +64,7 @@ class MembersController extends Controller
                     'middle_name' => $row->middle_name,
                     'last_name' => $row->last_name,
                     //'company_code' => $row->company_code,
-                    //'company_name' => $row->company_name,
+                    'company_name' => $row->company_name,
                     'ebd_comp_code' => $this->GetEbdCode($row->company_code)           
                 ];
             }
@@ -78,13 +82,14 @@ class MembersController extends Controller
                 ->join('companies as t3', 't2.company_id', '=', 't3.id')
                 ->where('t1.last', 'like', '%'.$lastName.'%')
                 ->where('t1.given', 'like', '%'.$firstname.'%')
-
+                ->orderBy('t1.id', 'DESC')
+                ->limit(1)
                 ->get([
                     't1.given as first_name',
                     't1.middle as middle_name',
                     't1.last as last_name',
                     't3.code as company_code',
-                    't3.name as company_name',
+                    //'t3.name as company_name',
                 ]);
         } else {
             $list = DB::connection('mysql_corporate')
@@ -93,12 +98,14 @@ class MembersController extends Controller
                     ->join('companies as t3', 't2.company_id', '=', 't3.id')
                     ->where('t1.last', 'like', '%'.$lastName.'%')
                     ->where('t1.given', 'like', '%'.$firstname.'%')
+                    ->orderBy('t1.id', 'DESC')
+                    ->limit(1)
                     ->get([
                         't1.given as first_name',
                         't1.middle as middle_name',
                         't1.last as last_name',
-                        't2.code as company_code',
-                        't2.name as company_name',
+                        't3.code as company_code',
+                        //'t3.name as company_name',
                     ]);
             }
 
