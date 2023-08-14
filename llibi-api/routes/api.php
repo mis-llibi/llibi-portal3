@@ -58,6 +58,8 @@ Route::get('/self-enrollment/check-reminders/{company}/{date}/{finalWarning}/{lo
 Route::get('/self-service/download-pdf', [SelfService::class, 'encryptPdf']);
 Route::get('/self-service/get-uploaded-files/{id}', [SelfService::class, 'getFiles']);
 Route::get('/self-service/admin-search-request/{search}/{id}', [SelfService::class, 'SearchRequest']);
+Route::post('/self-service/admin/export', [SelfService::class, 'export']);
+Route::post('/self-service/admin/export-records', [SelfService::class, 'exportRecords']);
 
 //MOBILE SELF-SERVICE LOGIN
 Route::get('/user-mobile', [MobileAuthenticatedSessionController::class, 'checkSession']);
@@ -73,4 +75,4 @@ Route::get('/da-extract-members', [ManageDaMemberController::class, 'getMembers'
 Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetEmployees']);
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
 
-Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);
+// Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);

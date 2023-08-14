@@ -15,6 +15,7 @@ import { useAdmin } from '@/hooks/self-service/admin'
 import { SyncLoader } from 'react-spinners'
 
 import Form from '@/pages/self-service/admin/form'
+import Export from './export'
 
 import Clock from 'react-live-clock'
 
@@ -44,7 +45,7 @@ const Admin = () => {
   const [name, setName] = useState()
   const [searchStatus, setSearchStatus] = useState()
 
-  const { clients, searchRequest } = useAdmin({
+  const { clients, searchRequest, exporting } = useAdmin({
     name: name,
     status: searchStatus,
   })
@@ -109,8 +110,23 @@ const Admin = () => {
     { value: 5, label: 'Downloaded' },
   ]
 
-  const handleDownloadReport = async () => {
-    alert(searchStatus);
+  const handleShowModalSetDate = () => setBody(modalExporting)
+
+  const modalExporting = () => {
+    setBody({
+      title: (
+        <span className="font-bold text-lg">
+          Select Date
+        </span>
+      ),
+      content: <Export exporting={exporting} setLoading={setLoading} />,
+      //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+      modalOuterContainer: 'w-1/3',
+      //modalContainer: '',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    toggle()
   }
 
   return (
@@ -209,9 +225,11 @@ const Admin = () => {
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
                 </div>
                 <div className="basis-1/3 mb-2 flex justify-end items-center">
-                  <Button type="button" onClick={handleDownloadReport}>
-                    Download
-                  </Button>
+                  {[2, 3].includes(user?.user_level) && (
+                    <Button type="button" onClick={handleShowModalSetDate}>
+                      Export
+                    </Button>
+                  )}
                 </div>
               </div>
 

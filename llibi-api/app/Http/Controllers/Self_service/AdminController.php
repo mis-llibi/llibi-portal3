@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 use mikehaertl\pdftk\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SelfService\AdminExport;
 
 class AdminController extends Controller
 {
@@ -258,5 +260,72 @@ class AdminController extends Controller
       ->get();
 
     return $attachment;
+  }
+
+  public function export(Request $request)
+  {
+    $request_status = $request->status;
+    $request_search = $request->search;
+    $request_from = $request->from;
+    $request_to = $request->to;
+
+    $records = $this->exportRecords($request_search, $request_status, $request_from, $request_to)->toArray();
+
+    return Excel::download(new AdminExport($records), 'records' . now()->format('Y-m-d') . '.xlsx');
+  }
+
+  public function exportRecords($search = 0, $status = 2, $from = null, $to = null)
+  {
+    $request = DB::table('app_portal_clients as t1')
+      ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+      ->join('users as user', 'user.id', '=', 't1.user_id')
+      ->select(
+        't1.id',
+        't1.reference_number as refno',
+        't1.email as email',
+        't1.alt_email as altEmail',
+        't1.contact as contact',
+        't1.member_id as memberID',
+        't1.first_name as firstName',
+        't1.last_name as lastName',
+        't1.remarks as remarks',
+        't1.status as status',
+        't2.loa_type as loaType',
+        't2.loa_number as loaNumber',
+        't2.approval_code as approvalCode',
+        't2.complaint as complaint',
+        't1.created_at as createdAt',
+        't1.approved_date',
+        DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+        DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+        'user.first_name as approved_by_first_name',
+        'user.last_name as approved_by_last_name',
+        'user.user_level'
+      )
+      ->whereIn('t1.status', [2, 3, 4, 5])
+      ->where(function ($query) use ($search, $status) {
+        if ($search != 0) {
+          $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+          $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+          $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+
+          $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+          $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+          $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
+        }
+        if (is_array($status)) {
+          $query->where('t1.id', $status['val']);
+        } else {
+          if ($status != 0) {
+            $query->where('t1.status', $status);
+          }
+        }
+      })
+      ->whereDate('t1.created_at', '>=', $from)
+      ->whereDate('t1.created_at', '<=', $to)
+      ->orderBy('t1.id', 'ASC')
+      ->get();
+
+    return $request;
   }
 }
