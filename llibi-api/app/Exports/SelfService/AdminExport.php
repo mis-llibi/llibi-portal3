@@ -58,7 +58,7 @@ class AdminExport implements FromArray, WithHeadings, ShouldAutoSize
         $record->lastName . ', ' . $record->firstName,
         $record->loaType,
         Carbon::parse($record->createdAt),
-        Carbon::parse($record->approved_date),
+        $record->approved_date ? Carbon::parse($record->approved_date) : null,
         $record->approved_by_first_name . ', ' . $record->approved_by_last_name,
         $record->elapse_minutes,
       ];

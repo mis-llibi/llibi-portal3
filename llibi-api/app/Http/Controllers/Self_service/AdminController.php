@@ -278,7 +278,7 @@ class AdminController extends Controller
   {
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-      ->join('users as user', 'user.id', '=', 't1.user_id')
+      ->leftJoin('users as user', 'user.id', '=', 't1.user_id')
       ->select(
         't1.id',
         't1.reference_number as refno',
