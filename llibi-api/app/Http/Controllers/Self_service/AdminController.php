@@ -26,6 +26,7 @@ class AdminController extends Controller
   {
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
       ->select(
         't1.id',
         't1.reference_number as refno',
@@ -61,6 +62,7 @@ class AdminController extends Controller
         't1.approved_date',
         DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+        'mlist.company_name'
       )
       ->whereIn('t1.status', [2, 3, 4, 5])
       ->where(function ($query) use ($search, $id) {
@@ -81,7 +83,8 @@ class AdminController extends Controller
           }
         }
       })
-      ->orderBy('t1.id', 'ASC')
+      ->orderBy('t1.id', 'DESC')
+      ->limit(40)
       ->get();
 
     return $request;
@@ -279,6 +282,7 @@ class AdminController extends Controller
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
       ->leftJoin('users as user', 'user.id', '=', 't1.user_id')
+      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
       ->select(
         't1.id',
         't1.reference_number as refno',
@@ -300,7 +304,8 @@ class AdminController extends Controller
         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
         'user.first_name as approved_by_first_name',
         'user.last_name as approved_by_last_name',
-        'user.user_level'
+        'user.user_level',
+        'mlist.company_name'
       )
       ->whereIn('t1.status', [2, 3, 4, 5])
       ->where(function ($query) use ($search, $status) {
@@ -323,7 +328,7 @@ class AdminController extends Controller
       })
       ->whereDate('t1.created_at', '>=', $from)
       ->whereDate('t1.created_at', '<=', $to)
-      ->orderBy('t1.id', 'ASC')
+      ->orderBy('t1.id', 'DESC')
       ->get();
 
     return $request;

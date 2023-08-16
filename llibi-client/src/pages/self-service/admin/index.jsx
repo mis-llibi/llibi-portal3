@@ -240,6 +240,9 @@ const Admin = () => {
                       Member ID
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
+                      COMPANY
+                    </th>
+                    <th className="border border-gray-300 p-2 text-left">
                       Patient's Name
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
@@ -267,6 +270,9 @@ const Admin = () => {
                         }`}>
                         <td className="border border-gray-300 p-2">
                           {row.isDependent ? row.depMemberID : row.memberID}
+                        </td>
+                        <td className="border border-gray-300 p-2">
+                          {row.company_name}
                         </td>
                         <td className="border border-gray-300 p-2">
                           {row.isDependent

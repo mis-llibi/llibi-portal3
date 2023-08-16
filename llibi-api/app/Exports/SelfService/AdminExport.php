@@ -30,12 +30,13 @@ class AdminExport implements FromArray, WithHeadings, ShouldAutoSize
   {
     return [
       'MEMBER ID',
+      'COMPANY',
       'PATIENT NAME',
       'LOA TYPE',
       'D/T CREATED',
       'APPROVED DATE',
       'APPROVED BY',
-      'ELAPSE MINUTES',
+      'HANDLING TIME (minutes)',
     ];
   }
 
@@ -55,6 +56,7 @@ class AdminExport implements FromArray, WithHeadings, ShouldAutoSize
     foreach ($this->records as $key => $record) {
       $new_records[] = [
         $record->memberID,
+        $record->company_name,
         $record->lastName . ', ' . $record->firstName,
         $record->loaType,
         Carbon::parse($record->createdAt),
