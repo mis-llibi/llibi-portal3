@@ -64,7 +64,7 @@ class MembersController extends Controller
                     'middle_name' => $row->middle_name,
                     'last_name' => $row->last_name,
                     //'company_code' => $row->company_code,
-                    'company_name' => $row->company_name,
+                    //'company_name' => $row->company_name,
                     'ebd_comp_code' => $this->GetEbdCode($row->company_code)           
                 ];
             }
