@@ -17,6 +17,10 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
+Route::get('/test', function () {
+    return view('send-pending-not-moving');
+});
+
 require __DIR__.'/auth.php';
 
 require __DIR__.'/self-service.php';

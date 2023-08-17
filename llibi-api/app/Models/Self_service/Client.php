@@ -34,5 +34,6 @@ class Client extends Model
         'status',
         'user_id',
         'approved_date',
+        'is_sent',
     ];
 }

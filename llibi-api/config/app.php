@@ -60,6 +60,13 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'infobip_url' => env('INFOBIP_API_URL', null),
+    'infobip_key' => env('INFOBIP_API_KEY', null),
+    'infobip_sender' => env('INFOBIP_SENDER', null),
+
+    'movider_key' => env('MOVIDER_API_KEY', null),
+    'movider_secret' => env('MOVIDER_API_SECRET', null),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
