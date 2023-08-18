@@ -161,6 +161,28 @@ export const useAdmin = ({ name, status }) => {
     }
   }
 
+  const viewBy = async (row, type) => {
+    await csrf()
+
+    try {
+      const response = await axios.post(`api/view-by`, {
+        type: type,
+        ...row,
+      })
+
+      if (!response.data.status) {
+        Swal.fire({
+          // title: 'Updated',
+          text: response.data.message,
+          icon: 'error',
+        })
+      }
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  }
+
   /*
         const searchRequest = async ({ setRequest, setLoading, name, status }) => {
             await csrf()
@@ -238,5 +260,5 @@ export const useAdmin = ({ name, status }) => {
         } 
     */
 
-  return { clients, searchRequest, updateRequest, exporting }
+  return { clients, searchRequest, updateRequest, exporting, viewBy }
 }

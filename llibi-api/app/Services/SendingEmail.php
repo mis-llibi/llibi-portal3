@@ -31,6 +31,10 @@ class SendingEmail
             'contents' => trim($this->email)
           ],
           [
+            'name' => 'bcc',
+            'contents' => 'glenilagan@llibi.com'
+          ],
+          [
             'name' => 'subject',
             'contents' => trim($this->subject)
           ],

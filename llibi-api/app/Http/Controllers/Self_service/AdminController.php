@@ -333,4 +333,23 @@ class AdminController extends Controller
 
     return $request;
   }
+
+  public function viewBy(Request $request)
+  {
+    $user_id = request()->user()->id;
+
+    $view_checker = Client::where('id', $request->id)->select('view_by')->first();
+
+    if (!is_null($view_checker->view_by) && $view_checker->view_by != $user_id && $request->type == 'view') {
+      return response()->json(['status' => false, 'message' => 'Someone already view this claims.']);
+    }
+
+    if ($request->type == 'view') {
+      Client::where('id', $request->id)->update(['view_by' => $user_id]);
+    } else {
+      Client::where('id', $request->id)->update(['view_by' => null]);
+    }
+
+    return response()->json(['status' => true, 'message' => 'Success.']);
+  }
 }

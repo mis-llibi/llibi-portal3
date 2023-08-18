@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/auth'
 import Button from '@/components/Button'
 import Dropdown from '@/components/Dropdown'
 import { DropdownButton } from '@/components/DropdownLink'
+import axios from '@/lib/axios'
 
 const Admin = () => {
   const { user, logout } = useAuth({
@@ -45,7 +46,7 @@ const Admin = () => {
   const [name, setName] = useState()
   const [searchStatus, setSearchStatus] = useState()
 
-  const { clients, searchRequest, exporting } = useAdmin({
+  const { clients, searchRequest, exporting, viewBy } = useAdmin({
     name: name,
     status: searchStatus,
   })
@@ -89,18 +90,27 @@ const Admin = () => {
     })
   }, [name, searchStatus])
 
-  const view = row => {
-    console.log(row)
-    setBody({
-      title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-      content: <Form setRequest={setRequest} row={row} />,
-      //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
-      modalOuterContainer: 'w-full h-full',
-      //modalContainer: '',
-      modalContainer: 'h-full',
-      modalBody: 'h-full overflow-y-scroll',
-    })
-    toggle()
+  const view = async row => {
+    try {
+      const reponse = await viewBy(row, 'view')
+      // console.log(reponse);
+      // return;
+
+      if (!reponse.status) return
+
+      setBody({
+        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        content: <Form setRequest={setRequest} row={row} />,
+        //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+        modalOuterContainer: 'w-full h-full',
+        //modalContainer: '',
+        modalContainer: 'h-full',
+        modalBody: 'h-full overflow-y-scroll',
+      })
+      toggle()
+    } catch (error) {
+      throw error
+    }
   }
 
   const status = [
@@ -114,11 +124,7 @@ const Admin = () => {
 
   const modalExporting = () => {
     setBody({
-      title: (
-        <span className="font-bold text-lg">
-          Select Date
-        </span>
-      ),
+      title: <span className="font-bold text-lg">Select Date</span>,
       content: <Export exporting={exporting} setLoading={setLoading} />,
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-1/3',

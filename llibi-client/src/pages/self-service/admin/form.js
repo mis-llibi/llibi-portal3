@@ -38,7 +38,7 @@ const Form = ({ setRequest, row }) => {
     const [loading, setLoading] = useState(false)
     const [client, setClient] = useState(row)
 
-    const { updateRequest } = useAdmin({ name: '', status: '' })
+    const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
 
     const submitForm = data => {
         Swal.fire({
@@ -213,6 +213,18 @@ const Form = ({ setRequest, row }) => {
         if (watch('optionRemarks') !== 'Others')
             setValue('disapproveRemarks', watch('optionRemarks'))
     }, [watch('optionRemarks')])
+
+    useEffect(() => {
+      return () => {
+        const unView = async () => {
+          const reponse = await viewBy(row, 'unview')
+          if (!reponse.status) return
+        }
+        
+        unView();
+      }
+
+    }, [])
 
     return (
         <form onSubmit={handleSubmit(submitForm)}>
