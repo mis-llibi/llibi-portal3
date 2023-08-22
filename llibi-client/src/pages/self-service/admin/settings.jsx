@@ -6,12 +6,12 @@ import Label from '@/components/Label'
 export default function Settings({ settings, updateSettings }) {
   const [loading, setLoading] = useState(false)
   const [minutes, setMinutes] = useState(settings?.minutes)
-  const [sender, setSender] = useState(settings?.sender)
+  const [receiver, setReceiver] = useState(settings?.receiver)
 
   const handleUpdateSettings = async () => {
     try {
       setLoading(true)
-      await updateSettings({ minutes: minutes, sender: sender })
+      await updateSettings({ minutes: minutes, receiver: receiver })
       setLoading(false)
     } catch (error) {
       setLoading(false)
@@ -34,12 +34,12 @@ export default function Settings({ settings, updateSettings }) {
           </div>
 
           <div className="flex flex-col">
-            <Label className="text-bold">Sender</Label>
+            <Label className="text-bold">Receiver</Label>
             <input
-              value={sender}
+              value={receiver}
               className="rounded-md border p-3 focus:outline-blue-700"
               type="input"
-              onChange={e => setSender(e.target.value)}
+              onChange={e => setReceiver(e.target.value)}
             />
           </div>
         </div>

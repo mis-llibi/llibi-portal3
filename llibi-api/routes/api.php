@@ -82,4 +82,3 @@ Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
 Route::get('/settings', [SettingController::class, 'index']);
 Route::put('/settings', [SettingController::class, 'update']);
-Route::post('/settings', [SettingController::class, 'send']);

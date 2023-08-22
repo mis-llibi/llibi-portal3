@@ -256,11 +256,11 @@ class AdminController extends Controller
 
       // $body = array('body' => $mailMsg, 'attachment' => $attachment, 'hospital_email' => $data['hospital_email']);
       // $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
-      $emailer = new SendingEmail(email: $email, body: $mailMsg, attachments: $attachment, cc: $data['hospital_email']);
+      $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - ADMIN NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
       $emailer->send();
 
       if (!empty($altEmail)) {
-        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, attachments: $attachment, cc: $data['hospital_email']);
+        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - ADMIN NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
         $emailer->send();
         //   $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
       }

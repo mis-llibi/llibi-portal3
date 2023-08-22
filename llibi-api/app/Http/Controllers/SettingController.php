@@ -20,16 +20,9 @@ class SettingController extends Controller
     $settings = ReportSetting::find(1);
 
     $settings->minutes = $request->minutes;
-    $settings->sender = $request->sender;
+    $settings->receiver = $request->receiver;
     $settings->save();
 
     return response()->json(['status' => true, 'message' => 'Update success.']);
-  }
-
-  public function send()
-  {
-    // return Storage::path('public/Self-service/LOA/LLIBI00321/LLIBI NPC Seal of Registration valid until 19 July 2024.pdf');
-    // $emailer = new SendingEmail('glenilagan@llibi.com', 'Hello World', 'TEST SUBJ');
-    // $response = $emailer->send();
   }
 }
