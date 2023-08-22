@@ -9,17 +9,8 @@
 </head>
 
 <body style="font-family:Arial, Helvetica, sans-serif;">
-  <p>Request for {{ $lastName ?? '' }}, {{ $firstName ?? '' }} has not been attended for more than 15 minutes.</p>
-  {{-- <p>Hi Ms. Phoebes</p> --}}
-  {{-- <p>Here's some person not moving his/her status.</p>
-  <ul>
-    <li>Member Id: {{ $memberID ?? '' }}</li>
-    <li>Reference No.: {{ $refno ?? '' }}</li>
-    <li>Name: {{ $lastName ?? '' }}, {{ $firstName ?? '' }}</li>
-    <li>Contact: {{ $contact ?? '' }}</li>
-    <li>Email: {{ $email ?? '' }}</li>
-    <li>Company: {{ $company_name ?? '' }}</li>
-  </ul> --}}
+  <p>Request for {{ $lastName ?? '' }}, {{ $firstName ?? '' }} has not been attended for more than {{ $minutes }}
+    minutes.</p>
 </body>
 
 </html>

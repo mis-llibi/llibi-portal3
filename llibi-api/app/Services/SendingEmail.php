@@ -4,11 +4,12 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SendingEmail
 {
-  public function __construct(public $email, public $body, public $subject, public $key = 'default')
+  public function __construct(public $email, public $body, public $subject = 'CLIENT CARE PORTAL - NOTIFICATION', public $key = 'default', public $attachments = [])
   {
   }
 
@@ -30,10 +31,10 @@ class SendingEmail
             'name' => 'to',
             'contents' => trim($this->email)
           ],
-          [
-            'name' => 'bcc',
-            'contents' => 'glenilagan@llibi.com'
-          ],
+          // [
+          //   'name' => 'bcc',
+          //   'contents' => 'glenilagan@llibi.com'
+          // ],
           [
             'name' => 'subject',
             'contents' => trim($this->subject)
@@ -48,6 +49,15 @@ class SendingEmail
           ]
         ]
       ];
+
+      if (!empty($this->attachments)) {
+        foreach ($this->attachments as $key => $file) {
+          array_push($post_data['multipart'], [
+            'name' => 'attachment',
+            'contents' => fopen($file, 'r')
+          ]);
+        }
+      }
       $client = new Client();
       $response = $client->post(config('app.infobip_url') . '/email/3/send', $post_data);
       $body = $response->getBody();

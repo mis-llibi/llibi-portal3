@@ -7,6 +7,7 @@ use Illuminate\Console\Command;
 use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
 use App\Mail\EmailPendingNotMoving;
 use App\Models\Self_service\Client;
+use App\Models\ReportSetting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Services\SendingEmail;
@@ -37,6 +38,7 @@ class SendPendingNotMoving extends Command
     set_time_limit(0);
     $controller = new AutoSendPendingNotMoving();
     $result = $controller->autoSendEmail();
+    $get_minutes = ReportSetting::query()->first();
 
     foreach ($result as $key => $row) {
       $refno = $row->refno;
@@ -55,9 +57,10 @@ class SendPendingNotMoving extends Command
         'memberID' => $memberID,
         'firstName' => $firstName,
         'lastName' => $lastName,
-        'company_name' => $company_name
+        'company_name' => $company_name,
+        'minutes' => $get_minutes->minutes,
       ]);
-      $subject = 'CLIENT PORTAL ALERT';
+      $subject = 'CLIENT CARE PORTAL - ALERT';
 
       $emailer = new SendingEmail($email_to, $body, $subject);
       $response = $emailer->send();

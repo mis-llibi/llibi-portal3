@@ -25,6 +25,7 @@ use App\Http\Controllers\Da_extract\ManageDaMemberController;
 use App\Http\Controllers\Corporate\MembersController as CorporateMembers;
 use App\Http\Controllers\Self_service\AdminController as SelfService;
 use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
+use App\Http\Controllers\SettingController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -77,5 +78,8 @@ Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMem
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
 
 // Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);
-// Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
+Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
+Route::get('/settings', [SettingController::class, 'index']);
+Route::put('/settings', [SettingController::class, 'update']);
+Route::post('/settings', [SettingController::class, 'send']);

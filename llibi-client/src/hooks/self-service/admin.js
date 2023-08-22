@@ -99,7 +99,9 @@ export const useAdmin = ({ name, status }) => {
     } else {
       formData.append('disapproveRemarks', props?.disapproveRemarks)
     }
-
+    formData.append('hospital_email1', props.hospital_email1)
+    formData.append('hospital_email2', props.hospital_email2)
+    
     let runfinally = true
 
     axios
@@ -183,6 +185,44 @@ export const useAdmin = ({ name, status }) => {
     }
   }
 
+  const { data: settings, mutate: mutateSettings } = useSWR(
+    `${env.apiPath}/settings`,
+    () =>
+      axios
+        .get(`${env.apiPath}/settings`)
+        .then(res => res.data)
+        .catch(error => {
+          if (error.response.status !== 409) throw error
+          alert('error')
+        }),
+    {
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: false,
+      refreshWhenOffline: false,
+      refreshWhenHidden: false,
+      refreshInterval: 60000,
+    },
+  )
+
+  const updateSettings = async (payload) => {
+    await csrf()
+
+    try {
+      const response = await axios.put(`${env.apiPath}/settings`, payload)
+
+      if (response.data.status) {
+        Swal.fire({
+          title: 'Settings',
+          text: response.data.message,
+          icon: 'success',
+        })
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
   /*
         const searchRequest = async ({ setRequest, setLoading, name, status }) => {
             await csrf()
@@ -260,5 +300,5 @@ export const useAdmin = ({ name, status }) => {
         } 
     */
 
-  return { clients, searchRequest, updateRequest, exporting, viewBy }
+  return { clients, searchRequest, updateRequest, exporting, viewBy, settings, updateSettings }
 }

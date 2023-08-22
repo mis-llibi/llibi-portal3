@@ -19,6 +19,8 @@ use Carbon\Carbon;
 use mikehaertl\pdftk\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SelfService\AdminExport;
+use App\Models\Corporate\Hospitals;
+use App\Services\SendingEmail;
 
 class AdminController extends Controller
 {
@@ -62,7 +64,7 @@ class AdminController extends Controller
         't1.approved_date',
         DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
-        'mlist.company_name'
+        'mlist.company_name',
       )
       ->whereIn('t1.status', [2, 3, 4, 5])
       ->where(function ($query) use ($search, $id) {
@@ -86,6 +88,12 @@ class AdminController extends Controller
       ->orderBy('t1.id', 'DESC')
       ->limit(40)
       ->get();
+
+    foreach ($request as $key => $row) {
+      $hospital = Hospitals::where('id', $row->providerID)->first();
+      $request[$key]->email1 = $this->emailIsValid($hospital->email1) ? $hospital->email1 : null;
+      $request[$key]->email2 = $this->emailIsValid($hospital->email2) ? $hospital->email2 : null;
+    }
 
     return $request;
   }
@@ -137,11 +145,22 @@ class AdminController extends Controller
     $client = $this->SearchRequest(0, ['val' => $request->id]);
     $allClient = $this->SearchRequest(0, 2);
 
+    $hospital_emails = [];
+    if ($request->hospital_email1 != 'null') {
+      // array_push($hospital_emails, $request->hospital_email1);
+      array_push($hospital_emails, 'testllibi1@yopmail.com');
+    }
+    if ($request->hospital_email2 != 'null') {
+      // array_push($hospital_emails, $request->hospital_email2);
+      array_push($hospital_emails, 'testllibi2@yopmail.com');
+    }
+
     //SendNotification
     $dataSend = [
       'refno' => $client[0]->refno,
       'remarks' => $request->disapproveRemarks,
       'status' => $status,
+      'hospital_email' => $hospital_emails,
     ];
 
     $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
@@ -235,11 +254,16 @@ class AdminController extends Controller
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
-      $body = array('body' => $mailMsg, 'attachment' => $attachment);
-      $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      // $body = array('body' => $mailMsg, 'attachment' => $attachment, 'hospital_email' => $data['hospital_email']);
+      // $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      $emailer = new SendingEmail(email: $email, body: $mailMsg, attachments: $attachment);
+      $response = $emailer->send();
 
-      if (!empty($altEmail))
-        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+      if (!empty($altEmail)) {
+        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, attachments: $attachment);
+        $response = $emailer->send();
+        //   $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+      }
     }
 
     if (!empty($contact)) {
@@ -351,5 +375,11 @@ class AdminController extends Controller
     }
 
     return response()->json(['status' => true, 'message' => 'Success.']);
+  }
+
+  private function emailIsValid($email)
+  {
+    $isValidEmail = preg_match('/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/', $email) === 1;
+    return $isValidEmail;
   }
 }

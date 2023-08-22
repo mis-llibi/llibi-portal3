@@ -16,6 +16,7 @@ import { SyncLoader } from 'react-spinners'
 
 import Form from '@/pages/self-service/admin/form'
 import Export from './export'
+import Settings from './settings'
 
 import Clock from 'react-live-clock'
 
@@ -46,7 +47,14 @@ const Admin = () => {
   const [name, setName] = useState()
   const [searchStatus, setSearchStatus] = useState()
 
-  const { clients, searchRequest, exporting, viewBy } = useAdmin({
+  const {
+    clients,
+    searchRequest,
+    exporting,
+    viewBy,
+    settings,
+    updateSettings,
+  } = useAdmin({
     name: name,
     status: searchStatus,
   })
@@ -121,6 +129,7 @@ const Admin = () => {
   ]
 
   const handleShowModalSetDate = () => setBody(modalExporting)
+  const handleShowModalSetting = () => setBody(modalSetting)
 
   const modalExporting = () => {
     setBody({
@@ -128,6 +137,19 @@ const Admin = () => {
       content: <Export exporting={exporting} setLoading={setLoading} />,
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-1/3',
+      //modalContainer: '',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
+  const modalSetting = () => {
+    setBody({
+      title: <span className="font-bold text-lg">Settings</span>,
+      content: <Settings settings={settings} updateSettings={updateSettings} />,
+      //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+      modalOuterContainer: 'w-1/2',
       //modalContainer: '',
       modalContainer: 'h-full',
       modalBody: 'h-full',
@@ -232,9 +254,16 @@ const Admin = () => {
                 </div>
                 <div className="basis-1/3 mb-2 flex justify-end items-center">
                   {[2, 3].includes(user?.user_level) && (
-                    <Button type="button" onClick={handleShowModalSetDate}>
-                      Export
-                    </Button>
+                    <>
+                      <div className="flex gap-1">
+                        <Button type="button" onClick={handleShowModalSetDate}>
+                          Export
+                        </Button>
+                        <Button type="button" onClick={handleShowModalSetting}>
+                          Settings
+                        </Button>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

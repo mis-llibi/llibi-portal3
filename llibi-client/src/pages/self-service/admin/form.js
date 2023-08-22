@@ -41,6 +41,7 @@ const Form = ({ setRequest, row }) => {
     const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
 
     const submitForm = data => {
+      const dataMerge = {...data, hospital_email1: row?.email1, hospital_email2: row?.email2}
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this",
@@ -52,7 +53,7 @@ const Form = ({ setRequest, row }) => {
         }).then(result => {
             if (result.isConfirmed) {
                 setLoading(true)
-                updateRequest({ setRequest, setClient, setLoading, ...data })
+                updateRequest({ setRequest, setClient, setLoading, ...dataMerge })
             }
         })
     }
