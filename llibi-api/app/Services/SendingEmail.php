@@ -9,8 +9,14 @@ use Illuminate\Support\Str;
 
 class SendingEmail
 {
-  public function __construct(public $email, public $body, public $subject = 'CLIENT CARE PORTAL - NOTIFICATION', public $key = 'default', public $attachments = [])
-  {
+  public function __construct(
+    public $email,
+    public $body,
+    public $subject = 'CLIENT CARE PORTAL - NOTIFICATION',
+    public $key = 'default',
+    public $attachments = [],
+    public $cc = []
+  ) {
   }
 
   private function defaultSendMail()
@@ -31,10 +37,6 @@ class SendingEmail
             'name' => 'to',
             'contents' => trim($this->email)
           ],
-          // [
-          //   'name' => 'bcc',
-          //   'contents' => 'glenilagan@llibi.com'
-          // ],
           [
             'name' => 'subject',
             'contents' => trim($this->subject)
@@ -55,6 +57,14 @@ class SendingEmail
           array_push($post_data['multipart'], [
             'name' => 'attachment',
             'contents' => fopen($file, 'r')
+          ]);
+        }
+      }
+      if (!empty($this->cc)) {
+        foreach ($this->cc as $key => $cc) {
+          array_push($post_data['multipart'], [
+            'name' => 'cc',
+            'contents' => $cc
           ]);
         }
       }
