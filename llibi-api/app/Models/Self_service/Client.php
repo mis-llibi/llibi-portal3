@@ -35,5 +35,7 @@ class Client extends Model
         'user_id',
         'approved_date',
         'is_sent',
+
+        'created_at',
     ];
 }

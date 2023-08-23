@@ -199,7 +199,8 @@ class ClientController extends Controller
         'email' => $request->email,
         'alt_email' => $request->altEmail,
         'contact' => $contact,
-        'status' => 2
+        'status' => 2,
+        'created_at' => Carbon::now()
       ]);
 
     $client = $this->GetRequest($request->refno);
@@ -277,8 +278,6 @@ class ClientController extends Controller
       $setRequest['doctor_id'] = $doctor[0];
       $setRequest['doctor_name'] = $doctor[1];
     }
-
-    $setRequest['created_at'] = Carbon::now();
  
     $updateRequest = ClientRequest::where('client_id', $client[0]->id)
       ->update($setRequest);
