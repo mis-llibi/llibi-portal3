@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Services\SendingEmail;
 
+use Carbon\Carbon;
+
 class ClientController extends Controller
 {
   public function ValidateClient(Request $request)
@@ -276,6 +278,8 @@ class ClientController extends Controller
       $setRequest['doctor_name'] = $doctor[1];
     }
 
+    $setRequest['created_at'] = Carbon::now();
+ 
     $updateRequest = ClientRequest::where('client_id', $client[0]->id)
       ->update($setRequest);
 
