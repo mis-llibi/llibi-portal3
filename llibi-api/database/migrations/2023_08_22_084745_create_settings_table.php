@@ -17,6 +17,7 @@ return new class extends Migration
       $table->id();
       $table->integer('minutes');
       $table->string('receiver');
+      $table->string('receiver_email');
       $table->timestamps();
     });
   }

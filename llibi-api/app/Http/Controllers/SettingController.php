@@ -21,6 +21,7 @@ class SettingController extends Controller
 
     $settings->minutes = $request->minutes;
     $settings->receiver = $request->receiver;
+    $settings->receiver_email = $request->receiver_email;
     $settings->save();
 
     return response()->json(['status' => true, 'message' => 'Update success.']);

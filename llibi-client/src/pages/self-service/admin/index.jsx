@@ -54,6 +54,7 @@ const Admin = () => {
     viewBy,
     settings,
     updateSettings,
+    previewExport,
   } = useAdmin({
     name: name,
     status: searchStatus,
@@ -134,7 +135,7 @@ const Admin = () => {
   const modalExporting = () => {
     setBody({
       title: <span className="font-bold text-lg">Select Date</span>,
-      content: <Export exporting={exporting} setLoading={setLoading} />,
+      content: <Export exporting={exporting} previewExport={previewExport} setLoading={setLoading} />,
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-1/3',
       //modalContainer: '',

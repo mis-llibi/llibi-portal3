@@ -101,7 +101,7 @@ export const useAdmin = ({ name, status }) => {
     }
     formData.append('hospital_email1', props.hospital_email1)
     formData.append('hospital_email2', props.hospital_email2)
-    
+
     let runfinally = true
 
     axios
@@ -167,7 +167,7 @@ export const useAdmin = ({ name, status }) => {
     await csrf()
 
     try {
-      const response = await axios.post(`api/view-by`, {
+      const response = await axios.post(`${env.apiPath}/view-by`, {
         type: type,
         ...row,
       })
@@ -205,7 +205,7 @@ export const useAdmin = ({ name, status }) => {
     },
   )
 
-  const updateSettings = async (payload) => {
+  const updateSettings = async payload => {
     await csrf()
 
     try {
@@ -218,6 +218,26 @@ export const useAdmin = ({ name, status }) => {
           icon: 'success',
         })
       }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const previewExport = async (from, to) => {
+    await csrf()
+
+    try {
+      const response = await axios.post(
+        `${env.apiPath}/self-service/admin/preview-export-records`,
+        {
+          search: name ?? 0,
+          status: status ?? 2,
+          from: from ?? null,
+          to: to ?? null,
+        },
+      )
+
+      return response.data
     } catch (error) {
       throw error
     }
@@ -300,5 +320,14 @@ export const useAdmin = ({ name, status }) => {
         } 
     */
 
-  return { clients, searchRequest, updateRequest, exporting, viewBy, settings, updateSettings }
+  return {
+    clients,
+    searchRequest,
+    updateRequest,
+    exporting,
+    viewBy,
+    settings,
+    updateSettings,
+    previewExport,
+  }
 }

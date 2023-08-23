@@ -148,11 +148,11 @@ class AdminController extends Controller
     $hospital_emails = [];
     if ($request->hospital_email1 != 'null') {
       // array_push($hospital_emails, $request->hospital_email1);
-      array_push($hospital_emails, 'testllibi1@yopmail.com');
+      // array_push($hospital_emails, 'testllibi1@yopmail.com');
     }
     if ($request->hospital_email2 != 'null') {
       // array_push($hospital_emails, $request->hospital_email2);
-      array_push($hospital_emails, 'testllibi2@yopmail.com');
+      // array_push($hospital_emails, 'testllibi2@yopmail.com');
     }
 
     //SendNotification
@@ -256,11 +256,11 @@ class AdminController extends Controller
 
       // $body = array('body' => $mailMsg, 'attachment' => $attachment, 'hospital_email' => $data['hospital_email']);
       // $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
-      $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - ADMIN NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
+      $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
       $emailer->send();
 
       if (!empty($altEmail)) {
-        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - ADMIN NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
+        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
         $emailer->send();
         //   $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
       }
@@ -299,6 +299,18 @@ class AdminController extends Controller
     $records = $this->exportRecords($request_search, $request_status, $request_from, $request_to)->toArray();
 
     return Excel::download(new AdminExport($records), 'records' . now()->format('Y-m-d') . '.xlsx');
+  }
+
+  public function previewExport(Request $request)
+  {
+    $request_status = $request->status;
+    $request_search = $request->search;
+    $request_from = $request->from;
+    $request_to = $request->to;
+
+    $records = $this->exportRecords($request_search, $request_status, $request_from, $request_to);
+
+    return response()->json(['status' => true, 'message' => 'Fetching success', 'data' => $records]);
   }
 
   public function exportRecords($search = 0, $status = 2, $from = null, $to = null)
@@ -349,11 +361,13 @@ class AdminController extends Controller
             $query->where('t1.status', $status);
           }
         }
-      })
-      ->whereDate('t1.created_at', '>=', $from)
-      ->whereDate('t1.created_at', '<=', $to)
-      ->orderBy('t1.id', 'DESC')
-      ->get();
+      });
+      
+    if ($from && $to) {
+      $request = $request->whereDate('t1.created_at', '>=', $from)->whereDate('t1.created_at', '<=', $to);
+    }
+
+    $request = $request->orderBy('t1.id', 'DESC')->get();
 
     return $request;
   }
@@ -365,7 +379,7 @@ class AdminController extends Controller
     $view_checker = Client::where('id', $request->id)->select('view_by')->first();
 
     if (!is_null($view_checker->view_by) && $view_checker->view_by != $user_id && $request->type == 'view') {
-      return response()->json(['status' => false, 'message' => 'Someone already view this claims.']);
+      return response()->json(['status' => false, 'message' => 'This request is already handled by another CCE.']);
     }
 
     if ($request->type == 'view') {

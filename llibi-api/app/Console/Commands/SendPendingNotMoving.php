@@ -38,7 +38,7 @@ class SendPendingNotMoving extends Command
     set_time_limit(0);
     $controller = new AutoSendPendingNotMoving();
     $result = $controller->autoSendEmail();
-    $get_minutes = ReportSetting::query()->first();
+    $setting = ReportSetting::find(1);
 
     foreach ($result as $key => $row) {
       $refno = $row->refno;
@@ -49,7 +49,7 @@ class SendPendingNotMoving extends Command
       $lastName = $row->lastName;
       $company_name = $row->company_name;
 
-      $email_to = 'glenilagan@llibi.com';
+      $email_to = $setting->receiver_email;
       $body = view('send-pending-not-moving', [
         'refno' => $refno,
         'email' => $email,
@@ -58,7 +58,7 @@ class SendPendingNotMoving extends Command
         'firstName' => $firstName,
         'lastName' => $lastName,
         'company_name' => $company_name,
-        'minutes' => $get_minutes->minutes,
+        'minutes' => $setting->minutes,
       ]);
       $subject = 'CLIENT CARE PORTAL - ALERT';
 

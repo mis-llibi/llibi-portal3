@@ -62,6 +62,7 @@ Route::get('/self-service/get-uploaded-files/{id}', [SelfService::class, 'getFil
 Route::get('/self-service/admin-search-request/{search}/{id}', [SelfService::class, 'SearchRequest']);
 Route::post('/self-service/admin/export', [SelfService::class, 'export']);
 Route::post('/self-service/admin/export-records', [SelfService::class, 'exportRecords']);
+Route::post('/self-service/admin/preview-export-records', [SelfService::class, 'previewExport']);
 
 //MOBILE SELF-SERVICE LOGIN
 Route::get('/user-mobile', [MobileAuthenticatedSessionController::class, 'checkSession']);
@@ -78,7 +79,7 @@ Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMem
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
 
 // Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);
-Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
+// Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
 Route::get('/settings', [SettingController::class, 'index']);
 Route::put('/settings', [SettingController::class, 'update']);

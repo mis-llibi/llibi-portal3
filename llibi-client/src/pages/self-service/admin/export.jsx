@@ -2,10 +2,15 @@ import React, { useState } from 'react'
 
 import Button from '@/components/Button'
 import Label from '@/components/Label'
+import PreviewTable from './previewTable'
 
-export default function Export({ exporting, setLoading }) {
+import ModalControl from '@/components/ModalControl'
+import Modal from '@/components/Modal'
+
+export default function Export({ exporting, previewExport, setLoading }) {
   const [dateFrom, setDateFrom] = useState()
   const [dateTo, setDateTo] = useState()
+  const { show, setShow, body, setBody, toggle } = ModalControl()
 
   const handleDownloadReport = async () => {
     try {
@@ -16,6 +21,20 @@ export default function Export({ exporting, setLoading }) {
       setLoading(false)
       throw error
     }
+  }
+
+  const handlePreview = async () => {
+    const previewData = await previewExport(dateFrom, dateTo);
+    setBody({
+      title: 'Preview Export',
+      content: <PreviewTable previewData={previewData}/>,
+      //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+      modalOuterContainer: 'w-[90%] h-2/3',
+      //modalContainer: '',
+      modalContainer: 'h-full',
+      modalBody: 'h-full overflow-y-scroll',
+    })
+    toggle()
   }
 
   return (
@@ -41,11 +60,18 @@ export default function Export({ exporting, setLoading }) {
           </div>
         </div>
         <div>
-          <Button type="button" onClick={handleDownloadReport}>
-            Download
-          </Button>
+          <div className="flex gap-1">
+            <Button type="button" onClick={handleDownloadReport}>
+              Download
+            </Button>
+            <Button type="button" onClick={handlePreview}>
+              Preview
+            </Button>
+          </div>
         </div>
       </div>
+
+      <Modal show={show} body={body} toggle={toggle} />
     </>
   )
 }

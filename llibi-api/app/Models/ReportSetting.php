@@ -10,5 +10,5 @@ class ReportSetting extends Model
   use HasFactory;
 
   protected $table = 'settings';
-  protected $fillable = ['minutes', 'sender'];
+  protected $fillable = ['minutes', 'sender', 'receiver_email'];
 }
