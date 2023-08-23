@@ -104,13 +104,16 @@ class AdminController extends Controller
     $client = $this->SearchRequest(0, ['val' => $request->id]);
 
     $status = (int)$request->status;
+
+    $arr = [
+      'status' => $status,
+      'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
+      'user_id' => $user_id,
+      'approved_date' => $status === 3 ? Carbon::now() : null,
+    ];
+
     $updateClient = Client::where('id', $request->id)
-      ->update([
-        'status' => $status,
-        'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
-        'user_id' => $user_id,
-        'approved_date' => $status === 3 ? Carbon::now() : null,
-      ]);
+      ->update($arr);
 
     $update = [];
     $loa = [];
