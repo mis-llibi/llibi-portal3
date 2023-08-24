@@ -8,7 +8,7 @@ import InputSelect from '@/components/InputSelect'
 import Modal from '@/components/Modal'
 import ModalControl from '@/components/ModalControl'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useAdmin } from '@/hooks/self-service/admin'
 
@@ -26,7 +26,13 @@ import Dropdown from '@/components/Dropdown'
 import { DropdownButton } from '@/components/DropdownLink'
 import axios from '@/lib/axios'
 
+import useSound from 'use-sound'
+import Swal from 'sweetalert2'
+
 const Admin = () => {
+  // const [play] = useSound('/thepurge.mp3')
+  // const [audio, setAudio] = useState(null)
+  const videoRef = useRef(null)
   const { user, logout } = useAuth({
     middleware: 'auth',
   })
@@ -135,7 +141,13 @@ const Admin = () => {
   const modalExporting = () => {
     setBody({
       title: <span className="font-bold text-lg">Select Date</span>,
-      content: <Export exporting={exporting} previewExport={previewExport} setLoading={setLoading} />,
+      content: (
+        <Export
+          exporting={exporting}
+          previewExport={previewExport}
+          setLoading={setLoading}
+        />
+      ),
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-1/3',
       //modalContainer: '',
@@ -158,12 +170,46 @@ const Admin = () => {
     toggle()
   }
 
+  // https://championcr.com/topic/enable-auto-play/
+  useEffect(() => {
+    const playVideo = async () => {
+      try {
+        if (videoRef.current) {
+          if (clients.length > 0) {
+            Swal.fire({
+              title: 'NEW CLAIMS REQUEST',
+              text: "",
+              icon: 'warning',
+              showCancelButton: false,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'OKAY',
+            }).then(result => {
+              if (result.isConfirmed) {
+                videoRef.current.muted = true;
+                videoRef.current.pause();
+              }
+            })
+            videoRef.current.muted = false // Unmute
+            videoRef.current.autoPlay = true
+          }
+        }
+      } catch (err) {
+        console.error('Autoplay was prevented:', err)
+      }
+    }
+
+    playVideo()
+  }, [clients])
+
   return (
     <ProviderLayout>
       <Head>
         <title>LLIBI PORTAL - ADMIN</title>
       </Head>
-
+      <video ref={videoRef} controls autoPlay muted className='hidden'>
+        <source src="/thepurge.mp3" type="audio/mpeg" />
+      </video>
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           {/* Main form white background */}

@@ -62,7 +62,7 @@ class SendPendingNotMoving extends Command
       ]);
       $subject = 'CLIENT CARE PORTAL - ALERT';
 
-      $emailer = new SendingEmail($email_to, $body, $subject);
+      $emailer = new SendingEmail($email_to, $body, $subject, cc: 'glenilagan@llibi.com');
       $response = $emailer->send();
 
       if ($response) {

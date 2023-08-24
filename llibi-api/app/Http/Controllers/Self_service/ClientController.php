@@ -278,11 +278,11 @@ class ClientController extends Controller
       $setRequest['doctor_id'] = $doctor[0];
       $setRequest['doctor_name'] = $doctor[1];
     }
- 
+
     $updateRequest = ClientRequest::where('client_id', $client[0]->id)
       ->update($setRequest);
 
-    $this->sendNotification($request->refno, $client[0]->firstName . ' ' . $client[0]->lastName, $request->email, $request->altEmail, $contact);
+    $this->sendNotification($request->refno, $client[0]->firstName . ' ' . $client[0]->lastName, $request->email, $request->altEmail, $contact, $request->loaType);
 
     return $client;
   }
@@ -346,16 +346,19 @@ class ClientController extends Controller
     return $request;
   }
 
-  private function sendNotification($ref, $name, $email, $altEmail, $contact)
+  private function sendNotification($ref, $name, $email, $altEmail, $contact, $loaType)
   {
     $name = ucwords(strtolower($name));
+    // $request->loaType == 'consultation'
     if (!empty($email)) {
       $attachment = [];
+
+      $within = $loaType == 'consultation' ? 15 : 40;
       $mailMsg =
         '<p style="font-weight:normal;">
                 Hi <b>' . $name . ',</b><br /><br />
                 You have successfully submitted your request for LOA.<br /><br />
-                Our Client Care will respond to your request within 15-30 minutes.<br /><br />
+                Our Client Care will respond to your request within ' . $within . ' minutes.<br /><br />
                 Your reference number is <b>' . $ref . '</b><br /><br />
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
@@ -369,7 +372,7 @@ class ClientController extends Controller
 
       $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
       $emailer->send();
-      
+
       if (!empty($altEmail)) {
         $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
         $emailer->send();
@@ -378,7 +381,7 @@ class ClientController extends Controller
 
     if (!empty($contact)) {
       $sms =
-        "From Lacson & Lacson:\n\nHi $name,\n\nYou have successfully submitted your request for LOA.\n\nOur Client Care will respond to your request within 15-30 minutes.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+        "From Lacson & Lacson:\n\nHi $name,\n\nYou have successfully submitted your request for LOA.\n\nOur Client Care will respond to your request within $within minutes.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 
       $sms = (new NotificationController)->SmsNotification($contact, $sms);
     }

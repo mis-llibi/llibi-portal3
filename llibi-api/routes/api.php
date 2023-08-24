@@ -26,10 +26,22 @@ use App\Http\Controllers\Corporate\MembersController as CorporateMembers;
 use App\Http\Controllers\Self_service\AdminController as SelfService;
 use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
 use App\Http\Controllers\SettingController;
+use App\Models\User;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
   Route::get('/user', function (Request $request) {
+    if ($request->user()->is_logout == 0) {
+      User::where(['id' => $request->user()->id])->update(['is_logout' => 1]);
+
+      $request->session()->invalidate();
+
+      $request->session()->regenerateToken();
+
+      return response()->json([
+        'message' => 'account is inactive'
+      ], 404);
+    }
     if ($request->user()->status == 1) return $request->user();
     return response()->json([
       'message' => 'account is inactive'

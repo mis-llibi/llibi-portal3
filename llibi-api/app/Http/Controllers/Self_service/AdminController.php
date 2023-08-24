@@ -89,11 +89,11 @@ class AdminController extends Controller
       ->limit(40)
       ->get();
 
-    foreach ($request as $key => $row) {
-      $hospital = Hospitals::where('id', $row->providerID)->first();
-      $request[$key]->email1 = $this->emailIsValid($hospital->email1) ? $hospital->email1 : null;
-      $request[$key]->email2 = $this->emailIsValid($hospital->email2) ? $hospital->email2 : null;
-    }
+    // foreach ($request as $key => $row) {
+    //   $hospital = Hospitals::where('id', $row->providerID)->first();
+    //   $request[$key]->email1 = $this->emailIsValid($hospital->email1) ? $hospital->email1 : null;
+    //   $request[$key]->email2 = $this->emailIsValid($hospital->email2) ? $hospital->email2 : null;
+    // }
 
     return $request;
   }
@@ -149,14 +149,14 @@ class AdminController extends Controller
     $allClient = $this->SearchRequest(0, 2);
 
     $hospital_emails = [];
-    if ($request->hospital_email1 != 'null') {
+    // if ($request->hospital_email1 != 'null') {
       // array_push($hospital_emails, $request->hospital_email1);
       // array_push($hospital_emails, 'testllibi1@yopmail.com');
-    }
-    if ($request->hospital_email2 != 'null') {
+    // }
+    // if ($request->hospital_email2 != 'null') {
       // array_push($hospital_emails, $request->hospital_email2);
       // array_push($hospital_emails, 'testllibi2@yopmail.com');
-    }
+    // }
 
     //SendNotification
     $dataSend = [
