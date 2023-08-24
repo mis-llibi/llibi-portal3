@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default function PreviewTable({ previewData }) {
-  const { data } = previewData
+  const data = previewData?.data
   return (
     <>
       <table className="table-auto w-full">

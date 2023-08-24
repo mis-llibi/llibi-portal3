@@ -1,4 +1,4 @@
-import ProviderLayout from '@/components/Layouts/self-service/ProviderLayout'
+import ProviderLayout from '@/components/Layouts/Self-service/ProviderLayout'
 import Head from 'next/head'
 
 import Label from '@/components/Label'

@@ -365,7 +365,7 @@ class AdminController extends Controller
           }
         }
       });
-      
+
     if ($from && $to) {
       $request = $request->whereDate('t1.created_at', '>=', $from)->whereDate('t1.created_at', '<=', $to);
     }
@@ -381,14 +381,16 @@ class AdminController extends Controller
 
     $view_checker = Client::where('id', $request->id)->select('view_by')->first();
 
-    if (!is_null($view_checker->view_by) && $view_checker->view_by != $user_id && $request->type == 'view') {
+    if ($view_checker->view_by != NULL && ($view_checker->view_by != $user_id && $request->type == 'view')) {
       return response()->json(['status' => false, 'message' => 'This request is already handled by another CCE.']);
     }
 
     if ($request->type == 'view') {
       Client::where('id', $request->id)->update(['view_by' => $user_id]);
     } else {
-      Client::where('id', $request->id)->update(['view_by' => null]);
+      if ($view_checker->view_by == $user_id) {
+        Client::where('id', $request->id)->update(['view_by' => null]);
+      }
     }
 
     return response()->json(['status' => true, 'message' => 'Success.']);
