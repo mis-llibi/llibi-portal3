@@ -17,6 +17,15 @@ export default function PreviewTable({ previewData }) {
             <th className="border border-gray-300 p-2 text-left">
               D/T Created
             </th>
+            <th className="border border-gray-300 p-2 text-left">
+              APPROVED BY
+            </th>
+            <th className="border border-gray-300 p-2 text-left">
+              APPROVED DATE
+            </th>
+            <th className="border border-gray-300 p-2 text-left">
+              HANDLING TIME (minutes)
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -44,13 +53,22 @@ export default function PreviewTable({ previewData }) {
                   {row.status === 5 && 'Downloaded'}
                 </td>
                 <td className="border border-gray-300 p-2">{row.createdAt}</td>
+                <td className="border border-gray-300 p-2">
+                  {row.approved_by_last_name}, {row.approved_by_first_name}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {row.approved_date}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {row.elapse_minutes}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
               <td
                 className="text-center border bg-red-50 p-2 font-semibold"
-                colSpan={6}>
+                colSpan={9}>
                 No patient found
               </td>
             </tr>

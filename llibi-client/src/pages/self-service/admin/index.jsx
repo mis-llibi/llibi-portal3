@@ -175,23 +175,25 @@ const Admin = () => {
     const playVideo = async () => {
       try {
         if (videoRef.current) {
-          if (clients.length > 0) {
-            Swal.fire({
-              title: 'NEW CLAIMS REQUEST',
-              text: "",
-              icon: 'warning',
-              showCancelButton: false,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'OKAY',
-            }).then(result => {
-              if (result.isConfirmed) {
-                videoRef.current.muted = true;
-                videoRef.current.pause();
-              }
-            })
-            videoRef.current.muted = false // Unmute
-            videoRef.current.autoPlay = true
+          if (clients?.length > 0) {
+            if (searchStatus === 2 || searchStatus === undefined) {
+              Swal.fire({
+                title: 'NEW CLAIMS REQUEST',
+                text: '',
+                icon: 'warning',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'OKAY',
+              }).then(result => {
+                if (result.isConfirmed) {
+                  videoRef.current.muted = true
+                  videoRef.current.pause()
+                }
+              })
+              videoRef.current.muted = false // Unmute
+              videoRef.current.autoPlay = true
+            }
           }
         }
       } catch (err) {
@@ -207,7 +209,7 @@ const Admin = () => {
       <Head>
         <title>LLIBI PORTAL - ADMIN</title>
       </Head>
-      <video ref={videoRef} controls autoPlay muted className='hidden'>
+      <video ref={videoRef} controls autoPlay muted className="hidden">
         <source src="/thepurge.mp3" type="audio/mpeg" />
       </video>
       <div className="py-12">
