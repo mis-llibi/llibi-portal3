@@ -200,7 +200,9 @@ class ClientController extends Controller
         'alt_email' => $request->altEmail,
         'contact' => $contact,
         'status' => 2,
-        'created_at' => Carbon::now()
+        'created_at' => Carbon::now(),
+        'provider_email2' => isset($request->providerEmail2) ? $request->providerEmail2 : null,
+        'is_send_to_provider' => isset($request->sendLoaToProvider) ? $request->sendLoaToProvider : 0,
       ]);
 
     $client = $this->GetRequest($request->refno);
@@ -313,7 +315,7 @@ class ClientController extends Controller
       ->where('name', 'like', '%' . $request->search . '%')
       ->orderBy('name', 'ASC')
       ->limit(100)
-      ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1']);
+      ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1', 'email2']);
 
     return $request;
   }

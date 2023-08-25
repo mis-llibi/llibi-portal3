@@ -80,6 +80,8 @@ export const useClient = () => {
             }
             //formData.append('attachLab[]', ...props?.attachLab)
             formData.append('provider', props?.provider)
+            formData.append('providerEmail2', props?.providerEmail2)
+            formData.append('sendLoaToProvider', props?.sendLoaToProvider)
         }
 
         axios

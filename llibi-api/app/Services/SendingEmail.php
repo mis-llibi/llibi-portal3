@@ -15,7 +15,8 @@ class SendingEmail
     public $subject = 'CLIENT CARE PORTAL - NOTIFICATION',
     public $key = 'default',
     public $attachments = [],
-    public $cc = []
+    public $cc = [],
+    public $bcc = []
   ) {
   }
 
@@ -65,6 +66,14 @@ class SendingEmail
           array_push($post_data['multipart'], [
             'name' => 'cc',
             'contents' => $cc
+          ]);
+        }
+      }
+      if (!empty($this->bcc)) {
+        foreach ($this->bcc as $key => $bcc) {
+          array_push($post_data['multipart'], [
+            'name' => 'bcc',
+            'contents' => $bcc
           ]);
         }
       }

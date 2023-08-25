@@ -14,7 +14,8 @@ class AutoSendPendingNotMoving extends Controller
   public function autoSendEmail()
   {
     $get_minutes = ReportSetting::query()->first();
-    $less_minutes = Carbon::now()->subMinutes($get_minutes->minutes)->toDateTimeString();
+    $less_minutes = Carbon::now()->subMinutes($get_minutes->minutes)->toTimeString();
+    $date_today = Carbon::now()->toDateString();
 
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
@@ -39,7 +40,8 @@ class AutoSendPendingNotMoving extends Controller
         't1.is_sent'
       )
       ->where('t1.status', 2)
-      ->where('t1.created_at', '>=', $less_minutes)
+      ->whereDate('t1.created_at', '<=', $date_today)
+      ->whereTime('t1.created_at', '>=', $less_minutes)
       ->where('is_sent', 0)
       ->orderBy('t1.id', 'DESC')
       ->get();

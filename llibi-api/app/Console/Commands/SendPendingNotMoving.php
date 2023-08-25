@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\NotificationController;
 use Illuminate\Console\Command;
 
 use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
@@ -48,6 +49,8 @@ class SendPendingNotMoving extends Command
       $firstName = $row->firstName;
       $lastName = $row->lastName;
       $company_name = $row->company_name;
+      $elapse_minutes = $row->elapse_minutes;
+
 
       $email_to = $setting->receiver_email;
       $body = view('send-pending-not-moving', [
@@ -62,11 +65,16 @@ class SendPendingNotMoving extends Command
       ]);
       $subject = 'CLIENT CARE PORTAL - ALERT';
 
-      $emailer = new SendingEmail($email_to, $body, $subject, cc: 'glenilagan@llibi.com');
-      $response = $emailer->send();
+      if ($elapse_minutes > $setting->minutes) {
+        $emailer = new SendingEmail($email_to, $body, $subject, cc: ['glenilagan@llibi.com']);
+        $response = $emailer->send();
 
-      if ($response) {
-        Client::where('id', $row->id)->update(['is_sent' => 1]);
+        $sms_message = "Lacson & Lacson Alert:\n\nRequest for $lastName, $firstName has not been attended for more than $setting->minutes minutes.";
+        (new NotificationController)->SmsNotification($setting->receiver, $sms_message);
+
+        if ($response) {
+          Client::where('id', $row->id)->update(['is_sent' => 1]);
+        }
       }
     }
   }

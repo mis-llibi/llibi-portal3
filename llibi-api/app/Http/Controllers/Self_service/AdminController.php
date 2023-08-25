@@ -65,6 +65,8 @@ class AdminController extends Controller
         DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
         'mlist.company_name',
+        't1.provider_email2',
+        't1.is_send_to_provider'
       )
       ->whereIn('t1.status', [2, 3, 4, 5])
       ->where(function ($query) use ($search, $id) {
@@ -150,12 +152,12 @@ class AdminController extends Controller
 
     $hospital_emails = [];
     // if ($request->hospital_email1 != 'null') {
-      // array_push($hospital_emails, $request->hospital_email1);
-      // array_push($hospital_emails, 'testllibi1@yopmail.com');
+    // array_push($hospital_emails, $request->hospital_email1);
+    // array_push($hospital_emails, 'testllibi1@yopmail.com');
     // }
     // if ($request->hospital_email2 != 'null') {
-      // array_push($hospital_emails, $request->hospital_email2);
-      // array_push($hospital_emails, 'testllibi2@yopmail.com');
+    // array_push($hospital_emails, $request->hospital_email2);
+    // array_push($hospital_emails, 'testllibi2@yopmail.com');
     // }
 
     //SendNotification
@@ -164,6 +166,8 @@ class AdminController extends Controller
       'remarks' => $request->disapproveRemarks,
       'status' => $status,
       'hospital_email' => $hospital_emails,
+      'provider_email2' => $client[0]->provider_email2,
+      'is_send_to_provider' => $client[0]->is_send_to_provider,
     ];
 
     $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
@@ -220,6 +224,9 @@ class AdminController extends Controller
     $name = ucwords(strtolower($name));
     $remarks = $data['remarks'];
     $ref = $data['refno'];
+    // $provider_email2 = $data['provider_email2'];
+    $provider_email2 = 'testllibi1@yopmail.com';
+    $is_send_to_provider = $data['is_send_to_provider'];
 
     $loanumber = (!empty($data['loa_number']) ? $data['loa_number'] : '');
     $approvalcode = (!empty($data['approval_code']) ? $data['approval_code'] : '');
@@ -229,7 +236,7 @@ class AdminController extends Controller
       $attachment = [];
       if ($data['status'] == 3) {
         $attach = $data['encryptedLOA'];
-        $attachment = [$attach, $attach];
+        $attachment = [$attach];
       }
 
       //$numbers = $data['status'] === 3 ? "LOA #: <b>$loanumber</b> <br /> Approval Code: <b>$approvalcode</b>" : ''; <br /><br /> Password to LOA is requestor birth date: <b style="color:red;">YYYYMMDD i.e., 19500312</b>
@@ -257,15 +264,21 @@ class AdminController extends Controller
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
-      // $body = array('body' => $mailMsg, 'attachment' => $attachment, 'hospital_email' => $data['hospital_email']);
-      // $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
-      $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
-      $emailer->send();
+      $body = array('body' => $mailMsg, 'attachment' => $attachment);
+      $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      // $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
+      // $emailer->send();
 
       if (!empty($altEmail)) {
-        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment, cc: $data['hospital_email']);
-        $emailer->send();
-        //   $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+        // $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
+        // $emailer->send();
+          $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+      }
+
+      if ($is_send_to_provider == 1 && !empty($provider_email2)) {
+        // $emailer = new SendingEmail(email: $provider_email2, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
+        // $emailer->send();
+        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $provider_email2, $body);
       }
     }
 
