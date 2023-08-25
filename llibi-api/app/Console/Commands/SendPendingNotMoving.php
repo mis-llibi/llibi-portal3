@@ -12,6 +12,7 @@ use App\Models\ReportSetting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Services\SendingEmail;
+use Carbon\Carbon;
 
 class SendPendingNotMoving extends Command
 {
@@ -41,6 +42,9 @@ class SendPendingNotMoving extends Command
     $result = $controller->autoSendEmail();
     $setting = ReportSetting::find(1);
 
+    $email_to = $setting->receiver_email;
+    $email_to_array = explode(",", $email_to);
+
     foreach ($result as $key => $row) {
       $refno = $row->refno;
       $email = $row->email;
@@ -49,10 +53,10 @@ class SendPendingNotMoving extends Command
       $firstName = $row->firstName;
       $lastName = $row->lastName;
       $company_name = $row->company_name;
-      $elapse_minutes = $row->elapse_minutes;
+      $createdAt = $row->createdAt;
 
+      $elapse_minutes = Carbon::now()->diffInMinutes($createdAt, false);
 
-      $email_to = $setting->receiver_email;
       $body = view('send-pending-not-moving', [
         'refno' => $refno,
         'email' => $email,
@@ -66,8 +70,10 @@ class SendPendingNotMoving extends Command
       $subject = 'CLIENT CARE PORTAL - ALERT';
 
       if ($elapse_minutes > $setting->minutes) {
-        $emailer = new SendingEmail($email_to, $body, $subject, cc: ['glenilagan@llibi.com']);
-        $response = $emailer->send();
+        foreach ($email_to_array as $key => $new_email_to) {
+          $emailer = new SendingEmail($new_email_to, $body, $subject, cc: ['glenilagan@llibi.com']);
+          $response = $emailer->send();
+        }
 
         $sms_message = "Lacson & Lacson Alert:\n\nRequest for $lastName, $firstName has not been attended for more than $setting->minutes minutes.";
         (new NotificationController)->SmsNotification($setting->receiver, $sms_message);

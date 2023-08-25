@@ -110,14 +110,14 @@ const ProviderLookupForm = ({
           setShow(false)
           setSelectedHospital(hospital[data.hospital])
           setSelectedDoctor(doctor ? doctor[data.doctor] : '')
-          handleSetSendLoaToProvider();
+          // handleSetSendLoaToProvider();
         }
       })
     } else {
       setShow(false)
       setSelectedHospital(hospital[data.hospital])
       setSelectedDoctor(doctor ? doctor[data.doctor] : '')
-      handleSetSendLoaToProvider();
+      // handleSetSendLoaToProvider();
     }
   }
 

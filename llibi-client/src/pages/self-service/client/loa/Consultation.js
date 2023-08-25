@@ -240,7 +240,7 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
                       {selectedHospital?.email2}
                     </span>
                   </p> */}
-                  <p className="font-bold mb-1">
+                  {/* <p className="font-bold mb-1">
                     Send loa to provider:{' '}
                     <input
                       type="checkbox"
@@ -249,7 +249,7 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
                         setSendLoadToProvider(sendLoaToProvider == 0 ? 1 : 0)
                       }
                     />
-                  </p>
+                  </p> */}
                 </div>
                 <div
                   className={`basis-1/2 text-sm border-l-2 pl-2 flex items-center ${

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import Button from '@/components/Button'
 import Label from '@/components/Label'
+import InputMask from 'react-input-mask'
 
 export default function Settings({ settings, updateSettings }) {
   const [loading, setLoading] = useState(false)
@@ -40,9 +41,18 @@ export default function Settings({ settings, updateSettings }) {
 
           <div className="flex flex-col">
             <Label className="text-bold">Receiver SMS</Label>
-            <input
+            {/* <input
               value={receiver}
               className="rounded-md border p-3 focus:outline-blue-700"
+              type="input"
+              onChange={e => setReceiver(e.target.value)}
+            /> */}
+
+            <InputMask
+              mask="+63 (999)-999-9999"
+              value={receiver}
+              className="rounded-md border p-3 focus:outline-blue-700"
+              placeholder="Contact number"
               type="input"
               onChange={e => setReceiver(e.target.value)}
             />
@@ -52,7 +62,7 @@ export default function Settings({ settings, updateSettings }) {
             <input
               value={receiverEmail}
               className="rounded-md border p-3 focus:outline-blue-700"
-              type="input"
+              type="email"
               onChange={e => setReceiverEmail(e.target.value)}
             />
           </div>
