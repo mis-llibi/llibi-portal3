@@ -37,23 +37,72 @@ class NotificationController extends Controller
 
   public function MailNotification($name, $email, $message)
   {
-    Mail::send([], [], function ($mail) use ($name, $email, $message) {
+    // Mail::send([], [], function ($mail) use ($name, $email, $message) {
 
-      $subject = (isset($message['subject']) ? $message['subject'] : 'Client Care Portal - Notification');
+    //   $subject = (isset($message['subject']) ? $message['subject'] : 'Client Care Portal - Notification');
 
-      $mail->to($email, $name)
-        ->subject($subject)
-        ->html('<h4>' . $message['body'] . '</h4>');
-      $mail->from('notify@llibi.app');
+    //   $mail->to($email, $name)
+    //     ->subject($subject)
+    //     ->html('<h4>' . $message['body'] . '</h4>');
+    //   $mail->from('notify@llibi.app');
 
-      if (isset($message['bcc']))
-        $mail->bcc($message['bcc'], $message['name']);
+    //   if (isset($message['bcc'])) {
+    //     $mail->bcc($message['bcc'], $message['name']);
+    //   }
 
-      if (isset($message['attachment']))
-        foreach ($message['attachment'] as $file) {
-          $mail->attach(Storage::path($file));
+    //   if (isset($message['attachment'])) {
+    //     foreach ($message['attachment'] as $file) {
+    //       $mail->attach(Storage::path($file));
+    //     }
+    //   }
+    // });
+
+    $body = $message['body'];
+    $subject = isset($message['subject']) ? $message['subject'] : 'CLIENT CARE PORTAL - NOTIFICATION';
+    $cc = [];
+    $bcc = ['testllibi2@yopmail.com'];
+    $attachment = [];
+
+    if (isset($message['cc'])) {
+      if (is_array($message['cc'])) {
+        foreach ($message['cc'] as $key => $row) {
+          array_push($cc, $row);
         }
-    });
+      } else {
+        array_push($cc, $message['cc']);
+      }
+    }
+
+    if (isset($message['bcc'])) {
+      if (is_array($message['bcc'])) {
+        foreach ($message['bcc'] as $key => $row) {
+          array_push($bcc, $row);
+        }
+      } else {
+        array_push($bcc, $message['bcc']);
+      }
+    }
+
+    if (isset($message['attachment'])) {
+      foreach ($message['attachment'] as $file) {
+        array_push($attachment, Storage::path($file));
+      }
+    }
+
+    try {
+      $emailer = new SendingEmail(
+        email: $email,
+        body: $body,
+        subject: $subject,
+        attachments: $attachment,
+        cc: $cc,
+        bcc: $bcc
+      );
+      $emailer->send();
+    } catch (\Throwable $th) {
+      //throw $th;
+      Log::error($th);
+    }
   }
 
   public function EncryptedPDFMailNotification($name, $email, $message)
@@ -83,7 +132,7 @@ class NotificationController extends Controller
 
     $body = $message['body'];
     $subject = isset($message['subject']) ? $message['subject'] : 'CLIENT CARE PORTAL - NOTIFICATION';
-    $cc = ['testllibi1@yopmail.com'];
+    $cc = [];
     $bcc = ['testllibi2@yopmail.com'];
     $attachment = [];
 
@@ -106,7 +155,7 @@ class NotificationController extends Controller
         array_push($bcc, $message['bcc']);
       }
     }
-    
+
     if (isset($message['attachment'])) {
       foreach ($message['attachment'] as $file) {
         array_push($attachment, $file);

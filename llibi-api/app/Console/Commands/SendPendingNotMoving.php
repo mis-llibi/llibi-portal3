@@ -71,7 +71,7 @@ class SendPendingNotMoving extends Command
 
       if ($elapse_minutes > $setting->minutes) {
         foreach ($email_to_array as $key => $new_email_to) {
-          $emailer = new SendingEmail($new_email_to, $body, $subject, cc: ['glenilagan@llibi.com']);
+          $emailer = new SendingEmail($new_email_to, $body, $subject, bcc: ['glenilagan@llibi.com']);
           $response = $emailer->send();
         }
 

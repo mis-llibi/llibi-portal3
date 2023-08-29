@@ -201,7 +201,9 @@ const Admin = () => {
       }
     }
 
-    playVideo()
+    if (process.env.NODE_ENV === 'production') {
+      playVideo()
+    }
   }, [clients])
 
   return (
