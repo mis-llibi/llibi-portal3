@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-
-import GuestLayout from '@/components/Layouts/GuestLayout'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
+
 import Button from '@/components/Button'
-import TextArea from '@/components/TextArea'
 import Label from '@/components/Label'
+
+import axios from '@/lib/axios'
 
 export default function FeedBackIndex() {
   // https://dev.to/michaelburrows/create-a-custom-react-star-rating-component-5o6
@@ -13,9 +14,24 @@ export default function FeedBackIndex() {
     rating: 3,
     comments: '',
   })
+  const [loading, setLoading] = useState(false)
+
+  const router = useRouter()
+  const { id, company } = router.query
 
   const handleSubmit = async () => {
-    console.log(feedBackForm)
+    setLoading(true)
+    try {
+      const response = await axios.post(
+        `${process.env.apiPath}/feedbacks`,
+        feedBackForm,
+      )
+      console.log(response.data)
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      throw error
+    }
   }
   return (
     <>
@@ -58,7 +74,7 @@ export default function FeedBackIndex() {
             />
           </div>
           <div className="mb-5">
-            <Button loading={false} onClick={handleSubmit}>
+            <Button loading={loading} onClick={handleSubmit}>
               Submit
             </Button>
           </div>
