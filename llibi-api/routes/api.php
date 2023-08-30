@@ -27,6 +27,7 @@ use App\Http\Controllers\Self_service\AdminController as SelfService;
 use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
 use App\Http\Controllers\SettingController;
 use App\Models\User;
+use App\Http\Controllers\Feedback\FeedbackController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -95,3 +96,6 @@ Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
 Route::get('/settings', [SettingController::class, 'index']);
 Route::put('/settings', [SettingController::class, 'update']);
+
+Route::post('/feedbacks', [FeedbackController::class, 'store']);
+Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);

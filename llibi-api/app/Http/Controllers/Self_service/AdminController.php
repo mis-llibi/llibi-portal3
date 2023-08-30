@@ -22,6 +22,8 @@ use App\Exports\SelfService\AdminExport;
 use App\Models\Corporate\Hospitals;
 use App\Services\SendingEmail;
 
+use Illuminate\Support\Str;
+
 class AdminController extends Controller
 {
   public function SearchRequest($search, $id)
@@ -65,6 +67,7 @@ class AdminController extends Controller
         DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
         'mlist.company_name',
+        'mlist.company_code',
         't1.provider_email2',
         't1.is_send_to_provider'
       )
@@ -168,6 +171,9 @@ class AdminController extends Controller
       'hospital_email' => $hospital_emails,
       'provider_email2' => $client[0]->provider_email2,
       'is_send_to_provider' => $client[0]->is_send_to_provider,
+      'company_code' => $client[0]->company_code,
+      'member_id' => $client[0]->memberID,
+      'request_id' => $client[0]->id,
     ];
 
     $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
@@ -227,6 +233,9 @@ class AdminController extends Controller
     // $provider_email2 = $data['provider_email2'];
     $provider_email2 = 'testllibi1@yopmail.com';
     $is_send_to_provider = $data['is_send_to_provider'];
+    $company_code = $data['company_code'];
+    $member_id = $data['member_id'];
+    $request_id = $data['request_id'];
 
     $loanumber = (!empty($data['loa_number']) ? $data['loa_number'] : '');
     $approvalcode = (!empty($data['approval_code']) ? $data['approval_code'] : '');
@@ -247,6 +256,7 @@ class AdminController extends Controller
         $statusRemarks = 'Your LOA request is <b>disapproved</b> with remarks: ' . $remarks;
       }
 
+      $homepage = env('FRONTEND_URL');
       $mailMsg =
         '<p style="font-weight:normal;">
                 Hi <b>' . $name . ',</b><br /><br />
@@ -260,7 +270,8 @@ class AdminController extends Controller
 
                 Email: clientcare@llibi.com<br /><br />
 
-                Your reference number is <b>' . $ref . '</b>.<br /><br />
+                Your reference number is <b>' . $ref . '</b>.<br />
+                Please give us your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">click here</a><br /><br />
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
@@ -272,7 +283,7 @@ class AdminController extends Controller
       if (!empty($altEmail)) {
         // $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
         // $emailer->send();
-          $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
       }
 
       if ($is_send_to_provider == 1 && !empty($provider_email2)) {
