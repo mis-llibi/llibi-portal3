@@ -98,7 +98,7 @@ export default function FeedBackIndex() {
             </div>
           </div>
           <div className="mb-5">
-            <Label className="mb-1">Additional Feedback</Label>
+            <Label className="mb-1">We are happy to hear from you</Label>
             <textarea
               className="w-full border text-sm rounded-lg focus:outline focus:outline-1 block p-2.5"
               rows={5}

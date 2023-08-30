@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Feedback;
+use App\Http\Requests\FeedbackRequest;
 
 class FeedbackController extends Controller
 {
-  public function store(Request $request)
+  public function store(FeedbackRequest $request)
   {
     $request_id = $request->request_id;
     $company_code = $request->company_code;
@@ -17,7 +18,6 @@ class FeedbackController extends Controller
     $request_status = $request->request_status;
     $rating = $request->rating;
     $comments = $request->comments;
-
 
     $feedback = Feedback::create([
       'request_id' => $request_id,
