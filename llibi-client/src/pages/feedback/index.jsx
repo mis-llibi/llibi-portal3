@@ -4,13 +4,20 @@ import Head from 'next/head'
 
 import Button from '@/components/Button'
 import Label from '@/components/Label'
+import QuestionComponent from './questions/QuestionComponent'
 
 import axios from '@/lib/axios'
 
-import { MdOutlineThumbDown, MdOutlineThumbUp } from 'react-icons/md'
+// import { MdOutlineThumbDown, MdOutlineThumbUp } from 'react-icons/md'
+import { FaRegSmile, FaRegSadTear } from 'react-icons/fa'
+
+import Slider from '@mui/material/Slider'
+
 import Swal from 'sweetalert2'
 
 export default function FeedBackIndex() {
+  const router = useRouter()
+  const { rid, compcode, memid, reqstat } = router.query
   // https://dev.to/michaelburrows/create-a-custom-react-star-rating-component-5o6
   // const [rating, setRating] = useState(0)
   const [feedBackForm, setFeedBackForm] = useState({
@@ -18,9 +25,15 @@ export default function FeedBackIndex() {
     comments: '',
   })
   const [loading, setLoading] = useState(false)
+  const [questionOne, setQuestionOne] = useState(50)
+  const [questionTwo, setQuestionTwo] = useState(50)
+  const [questionThree, setQuestionThree] = useState(50)
 
-  const router = useRouter()
-  const { rid, compcode, memid, reqstat } = router.query
+  const qOneHappy = questionOne >= 50 ? questionOne / 100 : 0
+  const qOneSad = questionOne <= 50 ? (100 - questionOne) / 100 : 0
+
+  const qTwoHappy = questionTwo >= 50 ? questionTwo / 100 : 0
+  const qTwoSad = questionTwo <= 50 ? (100 - questionTwo) / 100 : 0
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -34,7 +47,8 @@ export default function FeedBackIndex() {
       })
       Swal.fire('Success', response.data.message, 'success')
       setLoading(false)
-      router.push('/')
+      // router.push('/')
+      window.close()
     } catch (error) {
       setLoading(false)
       throw error
@@ -47,7 +61,8 @@ export default function FeedBackIndex() {
         `${process.env.apiPath}/feedbacks/${rid}`,
       )
       if (response.data) {
-        router.push('/')
+        // router.push('/')
+        window.close()
       }
     } catch (error) {
       throw error
@@ -70,32 +85,53 @@ export default function FeedBackIndex() {
       <div className="py-12">
         <div className="md:w-[40em] mx-auto w-full px-10 md:px-0">
           <div className="mb-5">
-            <h1 className="mb-1 text-center text-3xl font-bold text-gray-700">
-              Are you satisfied on our service?
+            <h1 className="mb-3 text-center text-3xl font-bold text-gray-700">
+              Are you happy with our service?
             </h1>
-
+            <p className="text-center text-sm mb-3">
+              Please select happy or sad face base on your experience with our
+              service.
+            </p>
             <div className="flex justify-center gap-5">
-              <MdOutlineThumbUp
+              <span
                 className={`${
-                  feedBackForm.rating === 'up'
-                    ? 'text-blue-700'
-                    : 'text-gray-700'
-                } text-[7em] cursor-pointer hover:text-blue-700`}
+                  feedBackForm.rating === 'happy' && 'bg-blue-100'
+                } border hover:bg-blue-100 p-5 rounded-md shadow-md cursor-pointer`}
                 onClick={() =>
-                  setFeedBackForm({ ...feedBackForm, rating: 'up' })
-                }
-              />
-              <MdOutlineThumbDown
+                  setFeedBackForm({ ...feedBackForm, rating: 'happy' })
+                }>
+                <FaRegSmile className={`text-blue-700 text-[7em]`} />
+              </span>
+              <span
                 className={`${
-                  feedBackForm.rating === 'down'
-                    ? 'text-red-700'
-                    : 'text-gray-700'
-                } text-[7em] cursor-pointer hover:text-red-700`}
+                  feedBackForm.rating === 'sad' && 'bg-red-100'
+                } border hover:bg-red-100 p-5 rounded-md shadow-md cursor-pointer`}
                 onClick={() =>
-                  setFeedBackForm({ ...feedBackForm, rating: 'down' })
-                }
-              />
+                  setFeedBackForm({ ...feedBackForm, rating: 'sad' })
+                }>
+                <FaRegSadTear className={`text-red-700 text-[7em]`} />
+              </span>
             </div>
+          </div>
+          <div className="mb-5">
+            <QuestionComponent
+              question="1. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Impedit dicta, consequatur, sapiente voluptatibus quod voluptate
+              architecto sequi non ipsum facilis eius expedita ab in molestiae
+              facere eum officiis iure neque?"
+              setQuestion={setQuestionOne}
+              happy={qOneHappy}
+              sad={qOneSad}
+            />
+            <QuestionComponent
+              question="2. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Impedit dicta, consequatur, sapiente voluptatibus quod voluptate
+              architecto sequi non ipsum facilis eius expedita ab in molestiae
+              facere eum officiis iure neque?"
+              setQuestion={setQuestionTwo}
+              happy={qTwoHappy}
+              sad={qTwoSad}
+            />
           </div>
           <div className="mb-5">
             <Label className="mb-1">We are happy to hear from you</Label>
