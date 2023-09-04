@@ -4,11 +4,14 @@ import Slider from '@mui/material/Slider'
 import { FaRegSmile, FaRegSadTear } from 'react-icons/fa'
 
 export default function QuestionComponent({
+  questionValue,
   question,
   setQuestion,
-  happy,
-  sad,
 }) {
+  const handleSliderChange = (event, newValue) => {
+    setQuestion(newValue)
+  }
+
   return (
     <div className="w-full flex gap-5">
       <div className=" flex-1 p-3">
@@ -16,24 +19,31 @@ export default function QuestionComponent({
       </div>
       <div className="flex-1 p-3">
         <Slider
-          // value={questionOne}
+          value={typeof questionValue === 'number' ? questionValue : 0}
           aria-label="Default"
           valueLabelDisplay="auto"
-          onChange={e => setQuestion(e.target.value)}
+          // onChange={e => setQuestion(e.target.value)}
+          onChange={handleSliderChange}
+          step={10}
+          marks
+          min={0}
+          max={100}
         />
       </div>
       <div className="w-24 p-3">
         <div className="relative w-full flex justify-center">
-          <FaRegSmile
-            className="text-blue-700 absolute"
-            size={'2.5em'}
-            opacity={happy}
-          />
-          <FaRegSadTear
-            className="text-red-700 absolute"
-            size={'2.5em'}
-            opacity={sad}
-          />
+          {questionValue >= 0 && questionValue <= 20 && (
+            <img src={'/happy-face/angry.png'} width={36} alt="angry" />
+          )}
+          {questionValue >= 21 && questionValue <= 40 && (
+            <img src={'/happy-face/sad.png'} width={36} alt="sad" />
+          )}
+          {questionValue >= 41 && questionValue <= 60 && (
+            <img src={'/happy-face/smile.png'} width={36} alt="smile" />
+          )}
+          {questionValue >= 61 && questionValue <= 100 && (
+            <img src={'/happy-face/happy.png'} width={36} alt="happy" />
+          )}
         </div>
       </div>
     </div>

@@ -83,35 +83,17 @@ export default function FeedBackIndex() {
         <title>Feedback</title>
       </Head>
       <div className="py-12">
-        <div className="md:w-[40em] mx-auto w-full px-10 md:px-0">
-          <div className="mb-5">
-            <h1 className="mb-3 text-center text-3xl font-bold text-gray-700">
-              Are you happy with our service?
-            </h1>
-            <p className="text-center text-sm mb-3">
-              Please select happy or sad face base on your experience with our
-              service.
+        <div className="md:w-[60em] mx-auto w-full px-10 md:px-0">
+          <div>
+            <h1 className="text-5xl mb-3">We've love to hear from you!</h1>
+            <p className="mb-3">
+              Your feedback is valuable to us. Please help us improve our
+              service ..... Lorem ipsum dolor sit amet, consectetur adipiscing
+              elit. Aliquam aliquam, diam quis varius feugiat, orci ligula
+              bibendum sem, eu suscipit quam est in massa. Sed efficitur ipsum
+              mi, nec bibendum elit tempus a.
             </p>
-            <div className="flex justify-center gap-5">
-              <span
-                className={`${
-                  feedBackForm.rating === 'happy' && 'bg-blue-100'
-                } border hover:bg-blue-100 p-5 rounded-md shadow-md cursor-pointer`}
-                onClick={() =>
-                  setFeedBackForm({ ...feedBackForm, rating: 'happy' })
-                }>
-                <FaRegSmile className={`text-blue-700 text-[7em]`} />
-              </span>
-              <span
-                className={`${
-                  feedBackForm.rating === 'sad' && 'bg-red-100'
-                } border hover:bg-red-100 p-5 rounded-md shadow-md cursor-pointer`}
-                onClick={() =>
-                  setFeedBackForm({ ...feedBackForm, rating: 'sad' })
-                }>
-                <FaRegSadTear className={`text-red-700 text-[7em]`} />
-              </span>
-            </div>
+            <p className="mb-3">Please answer the following questions.....</p>
           </div>
           <div className="mb-5">
             <QuestionComponent
@@ -119,18 +101,16 @@ export default function FeedBackIndex() {
               Impedit dicta, consequatur, sapiente voluptatibus quod voluptate
               architecto sequi non ipsum facilis eius expedita ab in molestiae
               facere eum officiis iure neque?"
+              questionValue={questionOne}
               setQuestion={setQuestionOne}
-              happy={qOneHappy}
-              sad={qOneSad}
             />
             <QuestionComponent
               question="2. Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Impedit dicta, consequatur, sapiente voluptatibus quod voluptate
               architecto sequi non ipsum facilis eius expedita ab in molestiae
               facere eum officiis iure neque?"
+              questionValue={questionTwo}
               setQuestion={setQuestionTwo}
-              happy={qTwoHappy}
-              sad={qTwoSad}
             />
           </div>
           <div className="mb-5">
