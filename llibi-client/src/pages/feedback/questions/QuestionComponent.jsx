@@ -35,13 +35,16 @@ export default function QuestionComponent({
           {questionValue >= 0 && questionValue <= 20 && (
             <img src={'/happy-face/angry.png'} width={36} alt="angry" />
           )}
-          {questionValue >= 21 && questionValue <= 40 && (
+          {questionValue >= 21 && questionValue <= 49 && (
             <img src={'/happy-face/sad.png'} width={36} alt="sad" />
           )}
-          {questionValue >= 41 && questionValue <= 60 && (
+          {questionValue === 50 && (
+            <img src={'/happy-face/mad.png'} width={36} alt="mad" />
+          )}
+          {questionValue >= 51 && questionValue <= 70 && (
             <img src={'/happy-face/smile.png'} width={36} alt="smile" />
           )}
-          {questionValue >= 61 && questionValue <= 100 && (
+          {questionValue >= 71 && questionValue <= 100 && (
             <img src={'/happy-face/happy.png'} width={36} alt="happy" />
           )}
         </div>
