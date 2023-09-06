@@ -12,20 +12,26 @@ class FeedbackController extends Controller
 {
   public function store(FeedbackRequest $request)
   {
+    $comment = $request->comment ?? "";
+    $questionOne = $request->questionOne;
+    $questionTwo = $request->questionTwo;
+    $questionThree = $request->questionThree;
+    $questionFour = $request->questionFour;
     $request_id = $request->request_id;
     $company_code = $request->company_code;
     $member_id = $request->member_id;
     $request_status = $request->request_status;
-    $rating = $request->rating;
-    $comments = $request->comments;
 
     $feedback = Feedback::create([
       'request_id' => $request_id,
       'company_code' => $company_code,
       'member_id' => $member_id,
       'request_status' => $request_status,
-      'rating' => $rating,
-      'comments' => $comments,
+      'question1' => $questionOne,
+      'question2' => $questionTwo,
+      'question3' => $questionThree,
+      'question4' => $questionFour,
+      'comments' => $comment,
     ]);
 
     return response()->json(['status' => true, 'message' => 'Thank you for sharing your feedback.', 'data' => $feedback]);

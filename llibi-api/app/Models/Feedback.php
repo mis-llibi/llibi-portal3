@@ -10,5 +10,7 @@ class Feedback extends Model
   use HasFactory;
 
   protected $table = 'feedbacks';
-  protected $fillable = ['request_id', 'company_code', 'member_id', 'request_status', 'rating', 'comments'];
+  protected $fillable = [
+    'request_id', 'company_code', 'member_id', 'request_status', 'question1', 'question2', 'question3', 'question4', 'comments'
+  ];
 }

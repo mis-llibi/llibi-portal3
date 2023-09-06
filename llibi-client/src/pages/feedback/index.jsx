@@ -9,9 +9,14 @@ import QuestionComponent from './questions/QuestionComponent'
 import axios from '@/lib/axios'
 
 // import { MdOutlineThumbDown, MdOutlineThumbUp } from 'react-icons/md'
-import { FaRegSmile, FaRegSadTear } from 'react-icons/fa'
+// import { FaRegSmile, FaRegSadTear } from 'react-icons/fa'
 
-import Slider from '@mui/material/Slider'
+// import Slider from '@mui/material/Slider'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
 
 import Swal from 'sweetalert2'
 
@@ -20,26 +25,22 @@ export default function FeedBackIndex() {
   const { rid, compcode, memid, reqstat } = router.query
   // https://dev.to/michaelburrows/create-a-custom-react-star-rating-component-5o6
   // const [rating, setRating] = useState(0)
-  const [feedBackForm, setFeedBackForm] = useState({
-    rating: '',
-    comments: '',
-  })
   const [loading, setLoading] = useState(false)
-  const [questionOne, setQuestionOne] = useState(50)
-  const [questionTwo, setQuestionTwo] = useState(50)
-  const [questionThree, setQuestionThree] = useState(50)
-
-  const qOneHappy = questionOne >= 50 ? questionOne / 100 : 0
-  const qOneSad = questionOne <= 50 ? (100 - questionOne) / 100 : 0
-
-  const qTwoHappy = questionTwo >= 50 ? questionTwo / 100 : 0
-  const qTwoSad = questionTwo <= 50 ? (100 - questionTwo) / 100 : 0
+  const [comment, setComment] = useState('')
+  const [questionOne, setQuestionOne] = useState(99)
+  const [questionTwo, setQuestionTwo] = useState(99)
+  const [questionThree, setQuestionThree] = useState(1)
+  const [questionFour, setQuestionFour] = useState(1)
 
   const handleSubmit = async () => {
     setLoading(true)
     try {
       const response = await axios.post(`${process.env.apiPath}/feedbacks`, {
-        ...feedBackForm,
+        comment: comment,
+        questionOne: questionOne,
+        questionTwo: questionTwo,
+        questionThree: questionThree,
+        questionFour: questionFour,
         request_id: rid,
         company_code: compcode,
         member_id: memid,
@@ -60,11 +61,12 @@ export default function FeedBackIndex() {
       const response = await axios.get(
         `${process.env.apiPath}/feedbacks/${rid}`,
       )
-      if (response.data) {
+      if (response.data === 1) {
         // router.push('/')
         window.close()
       }
     } catch (error) {
+      alert('Something wrong.')
       throw error
     }
   }
@@ -77,6 +79,20 @@ export default function FeedBackIndex() {
 
   if (!rid) return <h1>Loading...</h1>
 
+  const questions = [
+    {
+      question: '1.	How easy was it to use our Client Care Portal?',
+      questionValue: questionOne,
+      setQuestion: setQuestionOne,
+    },
+    {
+      question:
+        '2. How easy was it to use our Lacson LOA at the accredited provider?',
+      questionValue: questionTwo,
+      setQuestion: setQuestionTwo,
+    },
+  ]
+
   return (
     <>
       <Head>
@@ -85,44 +101,100 @@ export default function FeedBackIndex() {
       <div className="py-12">
         <div className="md:w-[60em] mx-auto w-full px-10 md:px-0">
           <div>
-            <h1 className="text-5xl mb-3">We've love to hear from you!</h1>
+            <div className="flex justify-end items-center">
+              <img src="/logo.png" alt="llibi logo" width={252} />
+            </div>
+            <div>
+              <h1 className="text-lg md:text-2xl mb-3 font-bold">
+                YOUR FEEDBACK IS IMPORTANT TO US!
+              </h1>
+            </div>
             <p className="mb-3">
-              Your feedback is valuable to us. Please help us improve our
-              service ..... Lorem ipsum dolor sit amet, consectetur adipiscing
-              elit. Aliquam aliquam, diam quis varius feugiat, orci ligula
-              bibendum sem, eu suscipit quam est in massa. Sed efficitur ipsum
-              mi, nec bibendum elit tempus a.
+              <span className="font-semibold">Lacson & Lacson</span> is
+              committed to continually improving the quality of service we offer
+              to our members, and we appreciate your feedback. Please help us by
+              completing this feedback form.
             </p>
-            <p className="mb-3">Please answer the following questions.....</p>
           </div>
           <div className="mb-5">
-            <QuestionComponent
-              question="1. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Impedit dicta, consequatur, sapiente voluptatibus quod voluptate
-              architecto sequi non ipsum facilis eius expedita ab in molestiae
-              facere eum officiis iure neque?"
-              questionValue={questionOne}
-              setQuestion={setQuestionOne}
-            />
-            <QuestionComponent
-              question="2. Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Impedit dicta, consequatur, sapiente voluptatibus quod voluptate
-              architecto sequi non ipsum facilis eius expedita ab in molestiae
-              facere eum officiis iure neque?"
-              questionValue={questionTwo}
-              setQuestion={setQuestionTwo}
-            />
+            {questions.map((question, i) => {
+              return (
+                <QuestionComponent
+                  key={i}
+                  question={question.question}
+                  questionValue={question.questionValue}
+                  setQuestion={question.setQuestion}
+                />
+              )
+            })}
+
+            <div className="w-full flex flex-col md:flex-row gap-5 mb-5">
+              <div className=" flex-1 py-3">
+                <p className="text-sm">
+                  3. Did we respond within the turn-around time?
+                </p>
+              </div>
+              <div className="flex-1 p-3 flex items-center">
+                <FormControl>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-controlled-radio-buttons-group"
+                    name="controlled-radio-buttons-group"
+                    value={questionThree}
+                    onChange={e => setQuestionThree(e.target.value)}>
+                    <FormControlLabel
+                      value={1}
+                      control={<Radio />}
+                      label="Yes"
+                    />
+                    <FormControlLabel
+                      value={0}
+                      control={<Radio />}
+                      label="No"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </div>
+            </div>
+            <div className="w-full flex flex-col md:flex-row gap-5 mb-5">
+              <div className=" flex-1 py-3">
+                <p className="text-sm">
+                  4. Overall, how satisfied are you with Client Care Portal?
+                </p>
+              </div>
+              <div className="flex-1 p-3 flex items-center gap-10">
+                <button onClick={e => setQuestionFour(0)}>
+                  <img
+                    src={'/happy-face/sad.png'}
+                    className={`${
+                      questionFour === 0 && 'grayscale-0'
+                    } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
+                    alt="sad"
+                  />
+                </button>
+                <button onClick={e => setQuestionFour(1)}>
+                  <img
+                    src={'/happy-face/happy.png'}
+                    className={`${
+                      questionFour === 1 && 'grayscale-0'
+                    } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
+                    alt="happy"
+                  />
+                </button>
+              </div>
+            </div>
           </div>
           <div className="mb-5">
-            <Label className="mb-1">We are happy to hear from you</Label>
+            <p className="text-sm">
+              5. What could we do to improve our service to you, let us know
+              your comments:
+            </p>
             <textarea
               className="w-full border text-sm rounded-lg focus:outline focus:outline-1 block p-2.5"
               rows={5}
               placeholder="If you have any additional feedback, please type in here."
-              defaultValue={feedBackForm.comments}
-              onChange={e =>
-                setFeedBackForm({ ...feedBackForm, comments: e.target.value })
-              }
+              defaultValue={comment}
+              onChange={e => setComment(e.target.value)}
             />
           </div>
           <div className="mb-5">

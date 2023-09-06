@@ -12,42 +12,65 @@ export default function QuestionComponent({
     setQuestion(newValue)
   }
 
+  const marks = [
+    {
+      value: 33,
+      label: (
+        <div className="flex flex-col items-center">
+          <span>Difficult</span>
+          <img
+            src={'/happy-face/sad.png'}
+            className="w-[128px] md:w-[36px]"
+            alt="sad"
+          />
+        </div>
+      ),
+    },
+    {
+      value: 66,
+      label: (
+        <div className="flex flex-col items-center">
+          <span>Moderate</span>
+          <img
+            src={'/happy-face/mad.png'}
+            className="w-[128px] md:w-[36px]"
+            alt="mad"
+          />
+        </div>
+      ),
+    },
+    {
+      value: 99,
+      label: (
+        <div className="flex flex-col items-center">
+          <span>Easy</span>
+          <img
+            src={'/happy-face/happy.png'}
+            className="w-[128px] md:w-[36px]"
+            alt="happy"
+          />
+        </div>
+      ),
+    },
+  ]
+
   return (
-    <div className="w-full flex gap-5">
-      <div className=" flex-1 p-3">
-        <p className="text-sm font-semibold">{question}</p>
+    <div className="w-full flex flex-col md:flex-row gap-5 mb-10">
+      <div className=" flex-1 py-3">
+        <p className="text-sm">{question}</p>
       </div>
-      <div className="flex-1 p-3">
+      <div className="flex-1 p-3 flex items-center">
         <Slider
           value={typeof questionValue === 'number' ? questionValue : 0}
           aria-label="Default"
-          valueLabelDisplay="auto"
+          valueLabelDisplay="off"
           // onChange={e => setQuestion(e.target.value)}
           onChange={handleSliderChange}
-          step={10}
-          marks
-          min={0}
-          max={100}
+          step={33}
+          marks={marks}
+          min={33}
+          max={99}
         />
-      </div>
-      <div className="w-24 p-3">
-        <div className="relative w-full flex justify-center">
-          {questionValue >= 0 && questionValue <= 20 && (
-            <img src={'/happy-face/angry.png'} width={36} alt="angry" />
-          )}
-          {questionValue >= 21 && questionValue <= 49 && (
-            <img src={'/happy-face/sad.png'} width={36} alt="sad" />
-          )}
-          {questionValue === 50 && (
-            <img src={'/happy-face/mad.png'} width={36} alt="mad" />
-          )}
-          {questionValue >= 51 && questionValue <= 70 && (
-            <img src={'/happy-face/smile.png'} width={36} alt="smile" />
-          )}
-          {questionValue >= 71 && questionValue <= 100 && (
-            <img src={'/happy-face/happy.png'} width={36} alt="happy" />
-          )}
-        </div>
       </div>
     </div>
   )
