@@ -28,6 +28,7 @@ use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
 use App\Http\Controllers\SettingController;
 use App\Models\User;
 use App\Http\Controllers\Feedback\FeedbackController;
+use App\Http\Controllers\PreApprove\ClaimsController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -94,8 +95,12 @@ Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMe
 // Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);
 Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
+Route::get('/view-logs', [SelfService::class, 'viewLogs']);
 Route::get('/settings', [SettingController::class, 'index']);
 Route::put('/settings', [SettingController::class, 'update']);
 
 Route::post('/feedbacks', [FeedbackController::class, 'store']);
 Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
+
+Route::get('/pre-approve/claims', [ClaimsController::class, 'index']);
+Route::post('/pre-approve/claims', [ClaimsController::class, 'importClaims']);

@@ -17,6 +17,7 @@ import { SyncLoader } from 'react-spinners'
 import Form from '@/pages/self-service/admin/form'
 import Export from './export'
 import Settings from './settings'
+import Logs from './logs'
 
 import Clock from 'react-live-clock'
 
@@ -137,6 +138,7 @@ const Admin = () => {
 
   const handleShowModalSetDate = () => setBody(modalExporting)
   const handleShowModalSetting = () => setBody(modalSetting)
+  const handleShowLogs = () => setBody(modalLogs)
 
   const modalExporting = () => {
     setBody({
@@ -161,6 +163,19 @@ const Admin = () => {
     setBody({
       title: <span className="font-bold text-lg">Settings</span>,
       content: <Settings settings={settings} updateSettings={updateSettings} />,
+      //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+      modalOuterContainer: 'w-1/2',
+      //modalContainer: '',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
+  const modalLogs = () => {
+    setBody({
+      title: <span className="font-bold text-lg">Logs</span>,
+      content: <Logs />,
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-1/2',
       //modalContainer: '',
@@ -312,6 +327,9 @@ const Admin = () => {
                         </Button>
                         <Button type="button" onClick={handleShowModalSetting}>
                           Settings
+                        </Button>
+                        <Button type="button" onClick={handleShowLogs}>
+                          Logs
                         </Button>
                       </div>
                     </>
