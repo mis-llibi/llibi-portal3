@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PreApprove;
 
 use App\Http\Controllers\Controller;
+use App\Imports\Deel\DepsImport;
 use App\Imports\PreApprove\CorporateClaimsImport;
 use Illuminate\Http\Request;
 
@@ -26,6 +27,13 @@ class ClaimsController extends Controller
      * click file, save as, more options, tools, web options, encoding set to utf-8
      */
     Excel::import(new CorporateClaimsImport, $request->file);
+
+    return 'done';
+  }
+
+  function importDeelUpload(Request $request)
+  {
+    Excel::import(new DepsImport, $request->file);
 
     return 'done';
   }

@@ -43,6 +43,7 @@ class CorporateClaimsImport implements ToCollection, WithBatchInserts, WithChunk
             ]);
           }
         } catch (\Throwable $th) {
+          Log::error($th);
           throw $th;
         }
       }

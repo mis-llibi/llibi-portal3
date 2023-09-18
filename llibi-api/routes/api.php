@@ -104,3 +104,5 @@ Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlr
 
 Route::get('/pre-approve/claims', [ClaimsController::class, 'index']);
 Route::post('/pre-approve/claims', [ClaimsController::class, 'importClaims']);
+
+Route::post('/pre-approve/deel/upload', [ClaimsController::class, 'importDeelUpload']);
