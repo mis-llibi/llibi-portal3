@@ -355,7 +355,7 @@ class ClientController extends Controller
     if (!empty($email)) {
       $attachment = [];
 
-      $within = $loaType == 'consultation' ? 15 : 45;
+      $within = $loaType == 'consultation' ? '15 - 30' : '30 - 45';
       $mailMsg =
         '<p style="font-weight:normal;">
                 Hi <b>' . $name . ',</b><br /><br />

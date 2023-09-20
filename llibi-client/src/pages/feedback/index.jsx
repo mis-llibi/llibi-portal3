@@ -27,8 +27,8 @@ export default function FeedBackIndex() {
   // const [rating, setRating] = useState(0)
   const [loading, setLoading] = useState(false)
   const [comment, setComment] = useState('')
-  const [questionOne, setQuestionOne] = useState(99)
-  const [questionTwo, setQuestionTwo] = useState(99)
+  const [questionOne, setQuestionOne] = useState(100)
+  const [questionTwo, setQuestionTwo] = useState(100)
   const [questionThree, setQuestionThree] = useState(1)
   const [questionFour, setQuestionFour] = useState(1)
 

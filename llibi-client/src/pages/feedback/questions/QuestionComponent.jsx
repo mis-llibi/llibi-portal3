@@ -14,7 +14,20 @@ export default function QuestionComponent({
 
   const marks = [
     {
-      value: 33,
+      value: 20,
+      label: (
+        <div className="flex flex-col items-center">
+          <span>Very Difficult</span>
+          <img
+            src={'/happy-face/angry.png'}
+            className="w-[128px] md:w-[36px]"
+            alt="angry"
+          />
+        </div>
+      ),
+    },
+    {
+      value: 40,
       label: (
         <div className="flex flex-col items-center">
           <span>Difficult</span>
@@ -27,7 +40,7 @@ export default function QuestionComponent({
       ),
     },
     {
-      value: 66,
+      value: 60,
       label: (
         <div className="flex flex-col items-center">
           <span>Moderate</span>
@@ -40,10 +53,23 @@ export default function QuestionComponent({
       ),
     },
     {
-      value: 99,
+      value: 80,
       label: (
         <div className="flex flex-col items-center">
           <span>Easy</span>
+          <img
+            src={'/happy-face/smile.png'}
+            className="w-[128px] md:w-[36px]"
+            alt="smile"
+          />
+        </div>
+      ),
+    },
+    {
+      value: 100,
+      label: (
+        <div className="flex flex-col items-center">
+          <span>Very Easy</span>
           <img
             src={'/happy-face/happy.png'}
             className="w-[128px] md:w-[36px]"
@@ -66,10 +92,10 @@ export default function QuestionComponent({
           valueLabelDisplay="off"
           // onChange={e => setQuestion(e.target.value)}
           onChange={handleSliderChange}
-          step={33}
+          step={20}
           marks={marks}
-          min={33}
-          max={99}
+          min={20}
+          max={100}
         />
       </div>
     </div>

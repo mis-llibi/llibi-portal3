@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 use App\Http\Controllers\Self_enrollment\ManageBroadpathEnrollee;
+use Illuminate\Support\Facades\Storage;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,6 +27,9 @@ class Kernel extends ConsoleKernel
     })->dailyAt('12:24');
 
     $schedule->command('send:pending-not-moving')->everyMinute();
+    $schedule->call(function() {
+      Storage::deleteDirectory('public/manual/upload/loa');
+    })->everyMinute();
   }
 
   /**

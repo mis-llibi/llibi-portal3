@@ -101,6 +101,7 @@ Route::put('/settings', [SettingController::class, 'update']);
 
 Route::post('/feedbacks', [FeedbackController::class, 'store']);
 Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
+Route::post('/feedbacks/manual', [FeedbackController::class, 'manualStore']);
 
 Route::get('/pre-approve/claims', [ClaimsController::class, 'index']);
 Route::post('/pre-approve/claims', [ClaimsController::class, 'importClaims']);
