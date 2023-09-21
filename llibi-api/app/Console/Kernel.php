@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
       $reminder = (new ManageBroadpathEnrollee)->checkReminders($dateToday, $dateFinalWarning, $dateFormLocked);
     })->dailyAt('12:24');
 
+    $schedule->command('command:automate-handling-time')->everyMinute();
     $schedule->command('send:pending-not-moving')->everyMinute();
     $schedule->call(function() {
       Storage::deleteDirectory('public/manual/upload/loa');

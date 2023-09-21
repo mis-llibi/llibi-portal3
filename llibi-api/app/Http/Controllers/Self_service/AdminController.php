@@ -363,6 +363,7 @@ class AdminController extends Controller
         't2.complaint as complaint',
         't1.created_at as createdAt',
         't1.approved_date',
+        't1.handling_time as elapse_minutes',
         // DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
         // DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
         'user.first_name as approved_by_first_name',
@@ -396,39 +397,39 @@ class AdminController extends Controller
 
     $request = $request->orderBy('t1.id', 'DESC')->get();
 
-    foreach ($request as $key => $row) {
-      $tat = 0;
-      if ($row->approved_date) {
-        $created_at = Carbon::parse($row->createdAt, 'Asia/Manila');
-        $approved_at = Carbon::parse($row->approved_date, 'Asia/Manila');
+    // foreach ($request as $key => $row) {
+    //   $tat = 0;
+    //   if ($row->approved_date) {
+    //     $created_at = Carbon::parse($row->createdAt, 'Asia/Manila');
+    //     $approved_at = Carbon::parse($row->approved_date, 'Asia/Manila');
 
-        $valid_start = Carbon::parse('06:00'); // 6:00 AM
-        $valid_end = Carbon::parse('18:00');   // 6:00 PM
+    //     $valid_start = Carbon::parse('06:00'); // 6:00 AM
+    //     $valid_end = Carbon::parse('18:00');   // 6:00 PM
 
-        if ($created_at->isYesterday() && $approved_at->isToday()) {
-          if ($created_at->format('H:i') > $valid_start->format('H:i') && $created_at->format('H:i') < $valid_end->format('H:i')) {
-            $diff = Carbon::parse($created_at->format('H:i'))->diffInMinutes($valid_end);
-            // Log::info('created ' . $diff);
-            $tat += $diff;
-          }
+    //     if ($created_at->isYesterday() && $approved_at->isToday()) {
+    //       if ($created_at->format('H:i') > $valid_start->format('H:i') && $created_at->format('H:i') < $valid_end->format('H:i')) {
+    //         $diff = Carbon::parse($created_at->format('H:i'))->diffInMinutes($valid_end);
+    //         // Log::info('created ' . $diff);
+    //         $tat += $diff;
+    //       }
 
-          // if ($approved_at->greaterThan($valid_start) && $approved_at->lessThan($valid_end)) {
-          if ($approved_at->format('H:i') > $valid_start->format('H:i') && $approved_at->format('H:i') < $valid_end->format('H:i')) {
-            $diff = Carbon::parse($valid_start)->diffInMinutes($approved_at->format('H:i'));
-            // Log::info('approved ' . $diff);
-            $tat += $diff;
-          }
-        }
+    //       // if ($approved_at->greaterThan($valid_start) && $approved_at->lessThan($valid_end)) {
+    //       if ($approved_at->format('H:i') > $valid_start->format('H:i') && $approved_at->format('H:i') < $valid_end->format('H:i')) {
+    //         $diff = Carbon::parse($valid_start)->diffInMinutes($approved_at->format('H:i'));
+    //         // Log::info('approved ' . $diff);
+    //         $tat += $diff;
+    //       }
+    //     }
 
-        if ($created_at->isToday() && $approved_at->isToday()) {
-          $diff = Carbon::parse($created_at)->diffInMinutes($approved_at);
-          $tat += $diff;
-        }
-      }
+    //     if ($created_at->isToday() && $approved_at->isToday()) {
+    //       $diff = Carbon::parse($created_at)->diffInMinutes($approved_at);
+    //       $tat += $diff;
+    //     }
+    //   }
 
-      $request[$key]->elapse_minutes = $tat;
-      $request[$key]->elapse_hours = $tat / 60;
-    }
+    //   $request[$key]->elapse_minutes = $tat;
+    //   $request[$key]->elapse_hours = $tat / 60;
+    // }
 
 
     return $request;

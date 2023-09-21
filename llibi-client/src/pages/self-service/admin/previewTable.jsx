@@ -4,7 +4,7 @@ export default function PreviewTable({ previewData }) {
   const data = previewData?.data
   return (
     <>
-      <table className="table-auto w-full">
+      <table className="table-auto w-full text-sm">
         <thead className="bg-gray-100">
           <tr>
             <th className="border border-gray-300 p-2 text-left">Member ID</th>

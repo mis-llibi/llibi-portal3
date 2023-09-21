@@ -39,5 +39,6 @@ class Client extends Model
         'created_at',
         'provider_email2',
         'is_send_to_provider',
+        'handling_time',
     ];
 }
