@@ -30,6 +30,8 @@ use App\Models\User;
 use App\Http\Controllers\Feedback\FeedbackController;
 use App\Http\Controllers\PreApprove\ClaimsController;
 
+use App\Http\Controllers\Api_third_party\MobileApiAccessController;
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
   Route::get('/user', function (Request $request) {
@@ -107,3 +109,6 @@ Route::get('/pre-approve/claims', [ClaimsController::class, 'index']);
 Route::post('/pre-approve/claims', [ClaimsController::class, 'importClaims']);
 
 Route::post('/pre-approve/deel/upload', [ClaimsController::class, 'importDeelUpload']);
+
+//THIRD PARTY APP API
+Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberData']);
