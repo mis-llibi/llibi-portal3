@@ -12,22 +12,24 @@ class MobileApiAccessController extends Controller
 {
     public function GetMemberData(Request $request)
     {
-        $memberId = $request->query('member_id');
-        $birthdate = $request->query('birth_date');
+        if($request->header('apiKey') == 'LLIBIXKMD') {
+            $memberId = $request->query('member_id');
+            $birthdate = $request->query('birth_date');
+            $perPage = $request->query('perPage', 10);
 
-        if ($memberId && $birthdate) {
-            $memberData = Sync::where('member_id', $memberId)
-                                ->where('birth_date', $birthdate)
-                                ->get(['member_id', 'first_name', 'last_name', 'middle_name', 'relation', 'birth_date', 'incepfrom', 'incepto', 'company_code', 'company_name'])
-                                ->first();
+            if ($memberId && $birthdate) {
+                $memberData = Sync::where('member_id', $memberId)
+                                    ->where('birth_date', $birthdate)
+                                    ->get(['member_id', 'first_name', 'last_name', 'middle_name', 'relation', 'birth_date', 'incepfrom', 'incepto', 'company_code', 'company_name'])
+                                    ->first();
+            } else {
+                $memberData = Sync::selectRaw('member_id , first_name, last_name, middle_name, relation, birth_date, incepfrom, incepto, company_code, company_name')
+                    ->paginate($perPage);
+            }
+
+            return response()->json($memberData);
         } else {
-            $memberData = Sync::selectRaw('member_id , first_name, last_name, middle_name, relation, birth_date, incepfrom, incepto, company_code, company_name')
-                ->paginate();   
-
-            /* $sortedResult = $memberData->getCollection()->sortBy('key_name')->values();
-            $memberData->setCollection($sortedResult); */
+            return response()->json(['error' => 'Failed api key']);
         }
-
-        return response()->json($memberData);
     }
 }
