@@ -71,8 +71,10 @@ class AutoMateHandlingTime extends Command
         }
 
         if ($created_at->isToday() && $approved_at->isToday()) {
-          $diff = Carbon::parse($created_at)->diffInMinutes($approved_at);
-          $tat += $diff;
+          if ($created_at->format('H:i') >= $valid_start->format('H:i') && $created_at->format('H:i') <= $valid_end->format('H:i')) {
+            $diff = Carbon::parse($created_at)->diffInMinutes($approved_at);
+            $tat += $diff;
+          }
         }
       }
 

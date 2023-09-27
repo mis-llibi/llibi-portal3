@@ -23,12 +23,12 @@ export const useAdmin = ({ name, status }) => {
           alert('error')
         }),
     {
-      revalidateOnFocus: true,
+      revalidateOnFocus: false,
       revalidateOnMount: true,
       revalidateOnReconnect: false,
       refreshWhenOffline: false,
-      refreshWhenHidden: false,
-      refreshInterval: 60000,
+      refreshWhenHidden: true,
+      refreshInterval: 5000,
     },
   )
 

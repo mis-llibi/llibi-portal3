@@ -507,4 +507,57 @@ class AdminController extends Controller
 
     return $result;
   }
+
+  public function renewImportCsv(Request $request)
+  {
+    $file = $request->file('file');
+
+    $convertedToArray = $this->csvToArray($file->getRealPath());
+    $data = [];
+    for ($i = 0; $i < count($convertedToArray); $i++) {
+      $birth_date = Carbon::createFromFormat('d/m/Y', $convertedToArray[$i]['birth_date']);
+      $data[] = [
+        'empid' => $convertedToArray[$i]['﻿employee_id'],
+        'bday' => $birth_date,
+        'name' => $convertedToArray[$i]['last_name'] . ', ' . $convertedToArray[$i]['first_name'],
+      ];
+    }
+
+    // DB::connection('mysql_claims')->table('table_test')->insert($data);
+    return 'Jobi done or what ever';
+  }
+
+  function csvToArray($filename = '', $delimiter = ',')
+  {
+    if (!file_exists($filename) || !is_readable($filename))
+      return false;
+
+    $header = null;
+    $data = array();
+    if (($handle = fopen($filename, 'r')) !== false) {
+      while (($row = fgetcsv($handle, 1000, $delimiter)) !== false) {
+        if (!$header) {
+          $header = $row;
+        } else {
+          $data[] = array_combine($header, $row);
+        }
+      }
+      fclose($handle);
+    }
+
+    return $data;
+  }
+
+  public function pendingCounter()
+  {
+    $request = DB::table('app_portal_clients as t1')
+      ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+      ->select('t1.id')
+      ->where('t1.status', 3)
+      ->limit(40)
+      ->count();
+
+    return ['pending' => $request];
+  }
 }

@@ -60,7 +60,7 @@ class NotificationController extends Controller
     $body = $message['body'];
     $subject = isset($message['subject']) ? $message['subject'] : 'CLIENT CARE PORTAL - NOTIFICATION';
     $cc = [];
-    $bcc = ['testllibi2@yopmail.com'];
+    $bcc = [];
     $attachment = [];
 
     if (isset($message['cc'])) {
@@ -133,7 +133,7 @@ class NotificationController extends Controller
     $body = $message['body'];
     $subject = isset($message['subject']) ? $message['subject'] : 'CLIENT CARE PORTAL - NOTIFICATION';
     $cc = [];
-    $bcc = ['testllibi2@yopmail.com'];
+    $bcc = [];
     $attachment = [];
 
     if (isset($message['cc'])) {

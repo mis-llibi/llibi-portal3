@@ -10,7 +10,7 @@ class Claims extends Model
   use HasFactory;
 
   protected $connection = 'mysql_claims';
-  protected $table = 'claims';
+  protected $table = 'utilization';
 
   protected $fillable = ['uniqcode', 'empcode', 'claimnumb', 'seriesnumb', 'compcode', 'claimtype', 'claimdate', 'diagcode', 'diagname', 'eligible'];
 

@@ -76,6 +76,7 @@ Route::get('/self-enrollment/check-reminders/{company}/{date}/{finalWarning}/{lo
 Route::get('/self-service/download-pdf', [SelfService::class, 'encryptPdf']);
 Route::get('/self-service/get-uploaded-files/{id}', [SelfService::class, 'getFiles']);
 Route::get('/self-service/admin-search-request/{search}/{id}', [SelfService::class, 'SearchRequest']);
+Route::get('/self-service/admin-search-request/pending-counter', [SelfService::class, 'pendingCounter']);
 Route::post('/self-service/admin/export', [SelfService::class, 'export']);
 Route::post('/self-service/admin/export-records', [SelfService::class, 'exportRecords']);
 Route::post('/self-service/admin/preview-export-records', [SelfService::class, 'previewExport']);
@@ -112,3 +113,4 @@ Route::post('/pre-approve/deel/upload', [ClaimsController::class, 'importDeelUpl
 
 //THIRD PARTY APP API
 Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberData']);
+Route::post('/renew/upload-csv', [SelfService::class, 'renewImportCsv']);
