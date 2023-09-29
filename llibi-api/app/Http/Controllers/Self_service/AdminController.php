@@ -257,6 +257,8 @@ class AdminController extends Controller
       }
 
       $homepage = env('FRONTEND_URL');
+      $feedbackLink = 'Please give us your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">click here</a><br /><br />';
+
       $mailMsg =
         '<p style="font-weight:normal;">
                 Hi <b>' . $name . ',</b><br /><br />
@@ -271,7 +273,6 @@ class AdminController extends Controller
                 Email: clientcare@llibi.com<br /><br />
 
                 Your reference number is <b>' . $ref . '</b>.<br />
-                Please give us your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">click here</a><br /><br />
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 

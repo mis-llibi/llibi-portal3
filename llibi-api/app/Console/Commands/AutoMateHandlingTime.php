@@ -80,6 +80,6 @@ class AutoMateHandlingTime extends Command
 
       DB::table('app_portal_clients')->where('id', $row->id)->update(['handling_time' => $tat]);
     }
-    Log::info($request);
+    // Log::info($request);
   }
 }

@@ -31,7 +31,7 @@ class DepsImport implements ToCollection, WithBatchInserts, WithChunkReading
         $startDate = Carbon::createFromFormat('d/m/Y', $startDateString);
 
         try {
-          Log::info([$birthDate->format('Y-m-d'), $startDate->format('Y-m-d'), $row]);
+          // Log::info([$birthDate->format('Y-m-d'), $startDate->format('Y-m-d'), $row]);
         } catch (\Throwable $th) {
           Log::error($th);
           throw $th;
