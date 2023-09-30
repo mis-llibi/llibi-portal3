@@ -555,7 +555,7 @@ class AdminController extends Controller
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
       ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
       ->select('t1.id')
-      ->where('t1.status', 3)
+      ->where('t1.status', 2)
       ->limit(40)
       ->count();
 
