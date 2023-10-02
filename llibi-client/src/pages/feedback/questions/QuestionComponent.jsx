@@ -14,7 +14,7 @@ export default function QuestionComponent({
 
   const marks = [
     {
-      value: 20,
+      value: 1,
       label: (
         <div className="flex flex-col items-center">
           <span>Very Difficult</span>
@@ -27,7 +27,7 @@ export default function QuestionComponent({
       ),
     },
     {
-      value: 40,
+      value: 2,
       label: (
         <div className="flex flex-col items-center">
           <span>Difficult</span>
@@ -40,7 +40,7 @@ export default function QuestionComponent({
       ),
     },
     {
-      value: 60,
+      value: 3,
       label: (
         <div className="flex flex-col items-center">
           <span>Moderate</span>
@@ -53,7 +53,7 @@ export default function QuestionComponent({
       ),
     },
     {
-      value: 80,
+      value: 4,
       label: (
         <div className="flex flex-col items-center">
           <span>Easy</span>
@@ -66,7 +66,7 @@ export default function QuestionComponent({
       ),
     },
     {
-      value: 100,
+      value: 5,
       label: (
         <div className="flex flex-col items-center">
           <span>Very Easy</span>
@@ -92,10 +92,10 @@ export default function QuestionComponent({
           valueLabelDisplay="off"
           // onChange={e => setQuestion(e.target.value)}
           onChange={handleSliderChange}
-          step={20}
+          step={1}
           marks={marks}
-          min={20}
-          max={100}
+          min={1}
+          max={5}
         />
       </div>
     </div>

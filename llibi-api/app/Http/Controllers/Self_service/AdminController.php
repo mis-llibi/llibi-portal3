@@ -273,25 +273,32 @@ class AdminController extends Controller
                 Email: clientcare@llibi.com<br /><br />
 
                 Your reference number is <b>' . $ref . '</b>.<br />
+                ' . $feedbackLink . '
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
       $body = array('body' => $mailMsg, 'attachment' => $attachment);
-      $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      if (config('app.env' == 'production')) {
+        $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      } else {
+        $mail = (new NotificationController)->EncryptedPDFMailNotification($name, 'glenilagan@llibi.com', $body);
+      }
       // $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
       // $emailer->send();
 
       if (!empty($altEmail)) {
         // $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
         // $emailer->send();
-        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+        if (config('app.env' == 'production')) {
+          $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+        }
       }
 
-      if ($is_send_to_provider == 1 && !empty($provider_email2)) {
-        // $emailer = new SendingEmail(email: $provider_email2, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
-        // $emailer->send();
-        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $provider_email2, $body);
-      }
+      // if ($is_send_to_provider == 1 && !empty($provider_email2)) {
+      // $emailer = new SendingEmail(email: $provider_email2, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
+      // $emailer->send();
+      // $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $provider_email2, $body);
+      // }
     }
 
     if (!empty($contact)) {

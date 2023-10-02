@@ -27,8 +27,8 @@ export default function FeedBackIndex() {
   // const [rating, setRating] = useState(0)
   const [loading, setLoading] = useState(false)
   const [comment, setComment] = useState('')
-  const [questionOne, setQuestionOne] = useState(100)
-  const [questionTwo, setQuestionTwo] = useState(100)
+  const [questionOne, setQuestionOne] = useState(3)
+  const [questionTwo, setQuestionTwo] = useState(3)
   const [questionThree, setQuestionThree] = useState(1)
   const [questionFour, setQuestionFour] = useState(1)
 
@@ -102,7 +102,14 @@ export default function FeedBackIndex() {
         <div className="md:w-[60em] mx-auto w-full px-10 md:px-0">
           <div>
             <div className="flex justify-end items-center">
-              <img src="/logo.png" alt="llibi logo" width={252} />
+              <a
+                href={
+                  process.env.NODE_ENV === 'production'
+                    ? 'https://portal.llibi.app/'
+                    : '/'
+                }>
+                <img src="/logo.png" alt="llibi logo" width={252} />
+              </a>
             </div>
             <div>
               <h1 className="text-lg md:text-2xl mb-3 font-bold">
@@ -131,7 +138,8 @@ export default function FeedBackIndex() {
             <div className="w-full flex flex-col md:flex-row gap-5 mb-5">
               <div className=" flex-1 py-3">
                 <p className="text-sm">
-                  3. Did we respond within the turn-around time?
+                  3. Did we respond within the turn-around time?{' '}
+                  <small className="text-green-700">(please choose one)</small>
                 </p>
               </div>
               <div className="flex-1 p-3 flex items-center">
@@ -159,19 +167,11 @@ export default function FeedBackIndex() {
             <div className="w-full flex flex-col md:flex-row gap-5 mb-5">
               <div className=" flex-1 py-3">
                 <p className="text-sm">
-                  4. Overall, how satisfied are you with Client Care Portal?
+                  4. Overall, how satisfied are you with Client Care Portal?{' '}
+                  <small className="text-green-700">(please choose one)</small>
                 </p>
               </div>
               <div className="flex-1 p-3 flex items-center gap-10">
-                <button onClick={e => setQuestionFour(0)}>
-                  <img
-                    src={'/happy-face/sad.png'}
-                    className={`${
-                      questionFour === 0 && 'grayscale-0'
-                    } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
-                    alt="sad"
-                  />
-                </button>
                 <button onClick={e => setQuestionFour(1)}>
                   <img
                     src={'/happy-face/happy.png'}
@@ -179,6 +179,15 @@ export default function FeedBackIndex() {
                       questionFour === 1 && 'grayscale-0'
                     } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
                     alt="happy"
+                  />
+                </button>
+                <button onClick={e => setQuestionFour(0)}>
+                  <img
+                    src={'/happy-face/sad.png'}
+                    className={`${
+                      questionFour === 0 && 'grayscale-0'
+                    } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
+                    alt="sad"
                   />
                 </button>
               </div>
