@@ -30,7 +30,7 @@ export default function FeedBackIndex() {
   const [questionOne, setQuestionOne] = useState(3)
   const [questionTwo, setQuestionTwo] = useState(3)
   const [questionThree, setQuestionThree] = useState(1)
-  const [questionFour, setQuestionFour] = useState(1)
+  const [questionFour, setQuestionFour] = useState(3)
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -164,39 +164,19 @@ export default function FeedBackIndex() {
                 </FormControl>
               </div>
             </div>
-            <div className="w-full flex flex-col md:flex-row gap-5 mb-5">
-              <div className=" flex-1 py-3">
-                <p className="text-sm">
-                  4. Overall, how satisfied are you with Client Care Portal?{' '}
-                  <small className="text-green-700">(please choose one)</small>
-                </p>
-              </div>
-              <div className="flex-1 p-3 flex items-center gap-10">
-                <button onClick={e => setQuestionFour(1)}>
-                  <img
-                    src={'/happy-face/happy.png'}
-                    className={`${
-                      questionFour === 1 && 'grayscale-0'
-                    } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
-                    alt="happy"
-                  />
-                </button>
-                <button onClick={e => setQuestionFour(0)}>
-                  <img
-                    src={'/happy-face/sad.png'}
-                    className={`${
-                      questionFour === 0 && 'grayscale-0'
-                    } grayscale hover:grayscale-0 w-[128px] md:w-[36px]`}
-                    alt="sad"
-                  />
-                </button>
-              </div>
-            </div>
+
+            <QuestionComponent
+              key={'4'}
+              question={
+                'Overall, how satisfied are you with Client Care Portal?'
+              }
+              questionValue={questionFour}
+              setQuestion={setQuestionFour}
+            />
           </div>
           <div className="mb-5">
             <p className="text-sm">
-              5. What could we do to improve our service to you, let us know
-              your comments:
+              5. WHat else can we do to improve our service?
             </p>
             <textarea
               className="w-full border text-sm rounded-lg focus:outline focus:outline-1 block p-2.5"

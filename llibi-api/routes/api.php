@@ -80,6 +80,7 @@ Route::get('/self-service/admin-search-request/pending-counter', [SelfService::c
 Route::post('/self-service/admin/export', [SelfService::class, 'export']);
 Route::post('/self-service/admin/export-records', [SelfService::class, 'exportRecords']);
 Route::post('/self-service/admin/preview-export-records', [SelfService::class, 'previewExport']);
+Route::get('/self-service/admin/update-tat', [SelfService::class, 'updateTAT']);
 
 //MOBILE SELF-SERVICE LOGIN
 Route::get('/user-mobile', [MobileAuthenticatedSessionController::class, 'checkSession']);
@@ -114,3 +115,4 @@ Route::post('/pre-approve/deel/upload', [ClaimsController::class, 'importDeelUpl
 //THIRD PARTY APP API
 Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberData']);
 Route::post('/renew/upload-csv', [SelfService::class, 'renewImportCsv']);
+Route::get('/environment-checker', fn() => config('app.env'));

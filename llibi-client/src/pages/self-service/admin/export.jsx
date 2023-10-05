@@ -24,10 +24,11 @@ export default function Export({ exporting, previewExport, setLoading }) {
   }
 
   const handlePreview = async () => {
-    const previewData = await previewExport(dateFrom, dateTo);
+    setLoading(true)
+    const previewData = await previewExport(dateFrom, dateTo)
     setBody({
       title: 'Preview Export',
-      content: <PreviewTable previewData={previewData}/>,
+      content: <PreviewTable previewData={previewData} />,
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-[90%] h-2/3',
       //modalContainer: '',
@@ -35,6 +36,7 @@ export default function Export({ exporting, previewExport, setLoading }) {
       modalBody: 'h-full overflow-y-scroll',
     })
     toggle()
+    setLoading(false)
   }
 
   return (

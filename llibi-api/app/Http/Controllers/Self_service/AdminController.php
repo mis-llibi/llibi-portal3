@@ -91,7 +91,7 @@ class AdminController extends Controller
         }
       })
       ->orderBy('t1.id', 'DESC')
-      ->limit(40)
+      ->limit(20)
       ->get();
 
     // foreach ($request as $key => $row) {
@@ -278,11 +278,11 @@ class AdminController extends Controller
             </p>';
 
       $body = array('body' => $mailMsg, 'attachment' => $attachment);
-      if (config('app.env' == 'production')) {
-        $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
-      } else {
-        $mail = (new NotificationController)->EncryptedPDFMailNotification($name, 'glenilagan@llibi.com', $body);
-      }
+      $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      // if (config('app.env' == 'production')) {
+      // } else {
+      //   $mail = (new NotificationController)->EncryptedPDFMailNotification($name, 'glenilagan@llibi.com', $body);
+      // }
       // $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
       // $emailer->send();
 
@@ -567,5 +567,38 @@ class AdminController extends Controller
       ->count();
 
     return ['pending' => $request];
+  }
+
+  public function updateTAT()
+  {
+    abort(418);
+    $request = DB::table('app_portal_clients as t1')
+      ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+      ->leftJoin('users as user', 'user.id', '=', 't1.user_id')
+      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+      ->select(
+        't1.id',
+        't1.created_at as createdAt',
+        't1.approved_date',
+        't1.handling_time as elapse_minutes',
+      )
+      ->whereNotNull('t1.approved_date')
+      ->orderByDesc('t1.id')
+      ->whereDate('t1.created_at', '>=', '2023-09-01')
+      ->whereDate('t1.created_at', '<=', '2023-09-24')
+      ->get();
+
+    foreach ($request as $key => $row) {
+      $elapse_minutes = Carbon::parse($row->createdAt)->diffInMinutes($row->approved_date);
+
+      DB::table('app_portal_clients')->where('status', 3)
+        ->where('id', $row->id)
+        ->whereDate('created_at', '>=', '2023-09-01')
+        ->whereDate('created_at', '<=', '2023-09-24')->update([
+          'handling_time' => $elapse_minutes
+        ]);
+    }
+
+    return [count($request), $request];
   }
 }

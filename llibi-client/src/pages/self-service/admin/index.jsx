@@ -30,6 +30,10 @@ import axios from '@/lib/axios'
 import useSound from 'use-sound'
 import Swal from 'sweetalert2'
 
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
+import MUIButton from '@mui/material/Button'
+
 const Admin = () => {
   // const [play] = useSound('/thepurge.mp3')
   // const [audio, setAudio] = useState(null)
@@ -82,6 +86,7 @@ const Admin = () => {
         setName(data?.name)
       }, 1000),
     )
+    setLoading(false)
   }
 
   /*
@@ -104,6 +109,7 @@ const Admin = () => {
       name: name,
       status: searchStatus,
     })
+    setLoading(false)
   }, [name, searchStatus])
 
   const view = async row => {
@@ -423,6 +429,12 @@ const Admin = () => {
         </div>
 
         <Modal show={show} body={body} toggle={toggle} />
+
+        <Backdrop
+          sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }}
+          open={loading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </div>
     </ProviderLayout>
   )
