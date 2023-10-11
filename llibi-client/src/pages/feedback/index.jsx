@@ -27,10 +27,10 @@ export default function FeedBackIndex() {
   // const [rating, setRating] = useState(0)
   const [loading, setLoading] = useState(false)
   const [comment, setComment] = useState('')
-  const [questionOne, setQuestionOne] = useState(3)
-  const [questionTwo, setQuestionTwo] = useState(3)
+  const [questionOne, setQuestionOne] = useState(4)
+  const [questionTwo, setQuestionTwo] = useState(4)
   const [questionThree, setQuestionThree] = useState(1)
-  const [questionFour, setQuestionFour] = useState(3)
+  const [questionFour, setQuestionFour] = useState(4)
 
   const handleSubmit = async () => {
     setLoading(true)
