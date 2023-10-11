@@ -257,7 +257,16 @@ class AdminController extends Controller
       }
 
       $homepage = env('FRONTEND_URL');
-      $feedbackLink = 'Please give us your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">click here</a><br /><br />';
+      $feedbackLink = '
+      <div style="display: flex; align-items: center;">
+        <div>Please give us your feedback:</div> 
+        <div>
+          <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+          <img src="' . env('APP_URL') . '/storage/feedback-icon.png" alt="Feedback Icon" width="120">
+          </a>
+        </div>
+      </div>
+      <br /><br />';
 
       $mailMsg =
         '<p style="font-weight:normal;">

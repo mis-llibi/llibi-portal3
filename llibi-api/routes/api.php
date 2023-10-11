@@ -31,6 +31,7 @@ use App\Http\Controllers\Feedback\FeedbackController;
 use App\Http\Controllers\PreApprove\ClaimsController;
 
 use App\Http\Controllers\Api_third_party\MobileApiAccessController;
+use App\Http\Controllers\Feedback\FeedbackCorporateController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -105,7 +106,9 @@ Route::put('/settings', [SettingController::class, 'update']);
 
 Route::post('/feedbacks', [FeedbackController::class, 'store']);
 Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
-Route::post('/feedbacks/manual', [FeedbackController::class, 'manualStore']);
+Route::post('/corporate/feedbacks', [FeedbackCorporateController::class, 'sendLoa']);
+Route::post('/corporate/feedbacks/save', [FeedbackCorporateController::class, 'store']);
+Route::get('/corporate/feedbacks/employee', [FeedbackCorporateController::class, 'showEmployee']);
 
 Route::get('/pre-approve/claims', [ClaimsController::class, 'index']);
 Route::post('/pre-approve/claims', [ClaimsController::class, 'importClaims']);
