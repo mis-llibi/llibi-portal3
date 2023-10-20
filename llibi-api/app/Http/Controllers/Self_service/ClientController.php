@@ -140,6 +140,7 @@ class ClientController extends Controller
       'last_name' => $principal['client'][0]['last_name'],
       'dob' => $principal['client'][0]['birth_date'],
       'status' => 1,
+      'platform' => $request->platform
     ];
 
     if (!empty($dependent)) {

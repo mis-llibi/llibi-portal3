@@ -8,7 +8,7 @@ export default function SendingFeedback() {
   const router = useRouter()
   const fileRef = useRef(null)
 
-  const { employee_id } = router.query
+  const { employee_id, patient_id, hospital_id, company_id } = router.query
 
   const [file, setFile] = useState(null)
   const [email, setEmail] = useState('')
@@ -41,15 +41,20 @@ export default function SendingFeedback() {
 
   useEffect(() => {
     const getEmployee = async () => {
+      setOpen(true)
       try {
         const response = await axios.get(
           `${process.env.apiPath}/corporate/feedbacks/employee?employee_id=${employee_id}`,
         )
         setEmail(response.data.email)
       } catch (error) {
-        throw new Error(error)
+        alert('Please advice MIS (Mailyn/Joy) to upload in the DA masterlist.')
+        throw error
+      } finally {
+        setOpen(false)
       }
     }
+
     if (employee_id) {
       getEmployee()
     }
@@ -75,11 +80,11 @@ export default function SendingFeedback() {
               name="email"
               id="email"
               placeholder="Email"
-              value={email}
+              value={email ?? ''}
               onChange={e => setEmail(e.target.value)}
             />
           </div>
-          <div className="w-full px-3 mb-3">
+          {/* <div className="w-full px-3 mb-3">
             <label className="text-sm font-bold" htmlFor="">
               BCC Email{' '}
               <small className="font-light text-red-700">
@@ -96,7 +101,7 @@ export default function SendingFeedback() {
               value={bccEmail}
               onChange={e => setBccEmail(e.target.value)}
             />
-          </div>
+          </div> */}
           <div className="w-full px-3 mb-3">
             <label className="text-sm font-bold" htmlFor="">
               LOA Attachment{' '}
@@ -117,7 +122,7 @@ export default function SendingFeedback() {
             <button
               className="w-full font-bold tracking-widest rounded-md bg-blue-700 hover:bg-blue-900 uppercase text-white p-2"
               onClick={handleSendFeedback}>
-              Submit
+              Send
             </button>
           </div>
         </div>

@@ -97,7 +97,7 @@ Route::get('/da-extract-members', [ManageDaMemberController::class, 'getMembers'
 Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetEmployees']);
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
 
-// Route::get('/dd', [AuthenticatedSessionController::class, 'createUser']);
+Route::get('/create-client-portal-account', [AuthenticatedSessionController::class, 'createUser']);
 Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
 Route::get('/view-logs', [SelfService::class, 'viewLogs']);

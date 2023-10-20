@@ -40,5 +40,6 @@ class Client extends Model
         'provider_email2',
         'is_send_to_provider',
         'handling_time',
+        'platform',
     ];
 }

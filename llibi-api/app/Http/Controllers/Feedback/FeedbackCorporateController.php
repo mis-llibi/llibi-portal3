@@ -30,18 +30,22 @@ class FeedbackCorporateController extends Controller
     );
 
     $employee = Employees::where('id', $employee_id)->first();
-    if (!$employee) {
-      return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
-    }
+    // if (!$employee) {
+    //   return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
+    // }
+
+    abort_if(!$employee, 404, 'Employee Not Found.');
 
     $masterlist = Sync::query()
       ->where('empcode', $employee->code)
       ->whereDate('birth_date', $employee->birthdate)
       ->first();
 
-    if (!$masterlist) {
-      return response()->json(['status' => false, 'message' => 'Member Not Found.'], 404);
-    }
+    // if (!$masterlist) {
+    //   return response()->json(['status' => false, 'message' => 'Member Not Found.'], 404);
+    // }
+
+    abort_if(!$employee, 404, 'Member Not Found.');
 
     $mailMsg = view('send-manual-loa-with-feedback-link', [
       'homepage' => 'https://portal.llibi.app',
@@ -51,7 +55,7 @@ class FeedbackCorporateController extends Controller
       'q' => Str::random(64)
     ]);
 
-    $emailer = new SendingEmail(email: 'ilaganglenmore019@gmail.com', body: $mailMsg, subject: 'CORPORATE REQUEST LOA', attachments: [Storage::path($path)]);
+    $emailer = new SendingEmail(email: 'glenilagan@llibi.com', body: $mailMsg, subject: 'CORPORATE REQUEST LOA', attachments: [Storage::path($path)]);
     $emailer->send();
 
     return response()->noContent();
@@ -91,18 +95,21 @@ class FeedbackCorporateController extends Controller
   {
     $employee_id = request()->query('employee_id');
     $employee = Employees::where('id', $employee_id)->first();
-    if (!$employee) {
-      return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
-    }
+    // if (!$employee) {
+    //   return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
+    // }
+
+    abort_if(!$employee, 404, 'Employee Not Found.');
 
     $masterlist = Sync::query()
       ->where('empcode', $employee->code)
       ->whereDate('birth_date', $employee->birthdate)
       ->first();
 
-    if (!$masterlist) {
-      return response()->json(['status' => false, 'message' => 'Member Not Found.'], 404);
-    }
+    // if (!$masterlist) {
+    //   return response()->json(['status' => false, 'message' => 'Member Not Found.'], 404);
+    // }
+    abort_if(!$masterlist, 404, 'Member Not Found.');
 
     return response()->json($masterlist);
   }

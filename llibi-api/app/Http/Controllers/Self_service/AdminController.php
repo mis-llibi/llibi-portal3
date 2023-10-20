@@ -250,23 +250,27 @@ class AdminController extends Controller
 
       //$numbers = $data['status'] === 3 ? "LOA #: <b>$loanumber</b> <br /> Approval Code: <b>$approvalcode</b>" : ''; <br /><br /> Password to LOA is requestor birth date: <b style="color:red;">YYYYMMDD i.e., 19500312</b>
 
+      $homepage = env('FRONTEND_URL');
+      $feedbackLink = '
+        <div>
+          We value your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+            Please click here
+          </a>
+        </div> 
+        <div>
+          <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+          <img src="' . env('APP_URL', 'https://portal.llibi.app') . '/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
+          </a>
+        </div>
+      <br /><br />';
+
       if ($data['status'] === 3) {
         $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
       } else {
         $statusRemarks = 'Your LOA request is <b>disapproved</b> with remarks: ' . $remarks;
+        $feedbackLink = '';
       }
 
-      $homepage = env('FRONTEND_URL');
-      $feedbackLink = '
-      <div style="display: flex; align-items: center;">
-        <div>Please give us your feedback:</div> 
-        <div>
-          <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
-          <img src="' . env('APP_URL') . '/storage/feedback-icon.png" alt="Feedback Icon" width="120">
-          </a>
-        </div>
-      </div>
-      <br /><br />';
 
       $mailMsg =
         '<p style="font-weight:normal;">
@@ -288,19 +292,8 @@ class AdminController extends Controller
 
       $body = array('body' => $mailMsg, 'attachment' => $attachment);
       $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
-      // if (config('app.env' == 'production')) {
-      // } else {
-      //   $mail = (new NotificationController)->EncryptedPDFMailNotification($name, 'glenilagan@llibi.com', $body);
-      // }
-      // $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
-      // $emailer->send();
-
       if (!empty($altEmail)) {
-        // $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
-        // $emailer->send();
-        if (config('app.env' == 'production')) {
-          $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
-        }
+        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
       }
 
       // if ($is_send_to_provider == 1 && !empty($provider_email2)) {

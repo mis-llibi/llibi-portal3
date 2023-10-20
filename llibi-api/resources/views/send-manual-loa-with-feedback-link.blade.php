@@ -21,12 +21,17 @@
     0919-0749433<br />
 
     Email: clientcare@llibi.com<br /><br />
-  <div style="display: flex; align-items: center;">
-    <div>Please give us your feedback:</div>
+  <div>
+    <div>
+      We value your feedback: <a
+        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}">
+        Please click here
+      </a>
+    </div>
     <div>
       <a
         href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}">
-        <img src="{{ $homepage }}/storage/feedback-icon.png" alt="Feedback Icon" width="200">
+        <img src="{{ $homepage }}/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
       </a>
     </div>
   </div>

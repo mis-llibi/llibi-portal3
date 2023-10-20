@@ -103,6 +103,8 @@ class AuthenticatedSessionController extends Controller
       // array("val0" => "JORDAN, KATHLEEN", "val1" => "kathleenjords@gmail.com", "val2" => "kathleenjords@gmail.com"),
       // array("val0" => "JAVIER, GRACIEL", "val1" => "javier.grasya95@gmail.com", "val2" => "javier.grasya95@gmail.com"),
       // array("val0" => "UCLARAY, JESSA MAE", "val1" => "jessa.uclaray@gmail.com", "val2" => "jessa.uclaray@gmail.com"),
+      // array("val0" => "COSME, JANE", "val1" => "cosmejaneeisen@gmail.com", "val2" => "cosmejaneeisen@gmail.com"),
+      // array("val0" => "PALUMAR, JOHN PAUL", "val1" => "jmarkpalumar29@gmail.com", "val2" => "jmarkpalumar29@gmail.com"),
     );
 
     // user level 2
@@ -115,7 +117,7 @@ class AuthenticatedSessionController extends Controller
     // $datas = array(
     //   array("val0" => "ADMIN, ADMIN", "val1" => "ecnanalis@llibi.com", "val2" => "ecnanalis@llibi.com"),
     // );
-
+    
     foreach ($datas as $key => $data) {
       $explode_name = explode(",", $data['val0']);
       $password = Str::random(8);
@@ -128,7 +130,7 @@ class AuthenticatedSessionController extends Controller
           'status' => 1,
           'user_level' => 1,
         ]);
-        Mail::to($user->email)->bcc('test1llibi@yopmail.com')->send(new SendUserCredentialToCae($user, $password));
+        Mail::to($user->email)->bcc('glenilagan@llibi.com')->send(new SendUserCredentialToCae($user, $password));
       }
     }
 
