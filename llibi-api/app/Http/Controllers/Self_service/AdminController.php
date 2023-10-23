@@ -290,7 +290,15 @@ class AdminController extends Controller
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
-      $body = array('body' => $mailMsg, 'attachment' => $attachment);
+      $body = array(
+        'body' => view('send-request-loa', [
+          'name' => $name,
+          'statusRemarks' => $statusRemarks,
+          'ref' => $ref,
+          'feedbackLink' => $feedbackLink,
+        ]),
+        'attachment' => $attachment
+      );
       $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
       if (!empty($altEmail)) {
         $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);

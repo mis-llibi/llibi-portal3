@@ -49,7 +49,23 @@ class SendingEmail
           [
             'name' => 'intermediateReport',
             'contents' => 'true'
-          ]
+          ],
+          [
+            'name' => 'track',
+            'contents' => false
+          ],
+          [
+            'name' => 'trackClicks',
+            'contents' => false
+          ],
+          [
+            'name' => 'trackOpens',
+            'contents' => false
+          ],
+          [
+            'name' => 'trackingUrl',
+            'contents' => false
+          ],
         ]
       ];
 
