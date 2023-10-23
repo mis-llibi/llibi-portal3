@@ -69,7 +69,8 @@ class AdminController extends Controller
         'mlist.company_name',
         'mlist.company_code',
         't1.provider_email2',
-        't1.is_send_to_provider'
+        't1.is_send_to_provider',
+        't1.platform'
       )
       ->whereIn('t1.status', [2, 3, 4, 5])
       ->where(function ($query) use ($search, $id) {
@@ -387,7 +388,8 @@ class AdminController extends Controller
         'user.first_name as approved_by_first_name',
         'user.last_name as approved_by_last_name',
         'user.user_level',
-        'mlist.company_name'
+        'mlist.company_name',
+        't1.platform'
       )
       ->whereIn('t1.status', [2, 3, 4, 5])
       ->where(function ($query) use ($search, $status) {

@@ -364,6 +364,9 @@ const Admin = () => {
                     <th className="border border-gray-300 p-2 text-left">
                       D/T Created
                     </th>
+                    <th className="border border-gray-300 p-2 text-center">
+                      VIBER
+                    </th>
                     <th className="border border-gray-300 p-2 text-left w-10"></th>
                   </tr>
                 </thead>
@@ -400,6 +403,9 @@ const Admin = () => {
                         </td>
                         <td className="border border-gray-300 p-2">
                           {row.createdAt}
+                        </td>
+                        <td className="border border-gray-300 p-2 text-center">
+                          {row.platform === 'viber' ? 'YES' : '-'}
                         </td>
                         <td className="border border-gray-300 p-2 text-center">
                           <a

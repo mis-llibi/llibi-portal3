@@ -37,6 +37,7 @@ class AdminExport implements FromArray, WithHeadings, ShouldAutoSize
       'APPROVED DATE',
       'APPROVED BY',
       'HANDLING TIME (minutes)',
+      'VIBER',
     ];
   }
 
@@ -63,6 +64,7 @@ class AdminExport implements FromArray, WithHeadings, ShouldAutoSize
         $record->approved_date ? Carbon::parse($record->approved_date) : null,
         $record->approved_by_first_name . ', ' . $record->approved_by_last_name,
         $record->elapse_minutes,
+        $record->platform == 'viber' ? 'YES' : '-',
       ];
     }
 

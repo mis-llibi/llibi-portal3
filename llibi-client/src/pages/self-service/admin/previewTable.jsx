@@ -26,6 +26,7 @@ export default function PreviewTable({ previewData }) {
             <th className="border border-gray-300 p-2 text-left">
               HANDLING TIME (minutes)
             </th>
+            <th className="border border-gray-300 p-2 text-center">VIBER</th>
           </tr>
         </thead>
         <tbody>
@@ -61,6 +62,9 @@ export default function PreviewTable({ previewData }) {
                 </td>
                 <td className="border border-gray-300 p-2">
                   {row.elapse_minutes}
+                </td>
+                <td className="border border-gray-300 p-2 text-center">
+                  {row.platform === 'viber' ? 'YES' : '-'}
                 </td>
               </tr>
             ))
