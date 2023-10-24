@@ -16,7 +16,7 @@ import Swal from 'sweetalert2'
 
 export default function ManualPage() {
   const router = useRouter()
-  const { q, employee_id, company_code } = router.query
+  const { q, member_id, company_code } = router.query
   const [loading, setLoading] = useState(false)
   const [questionOne, setQuestionOne] = useState(4)
   const [questionTwo, setQuestionTwo] = useState(1)
@@ -35,7 +35,7 @@ export default function ManualPage() {
       questionFour: Number(questionFour),
       questionFive: Number(questionFive),
       comments: comment,
-      employee_id: Number(employee_id),
+      member_id: member_id,
       company_code: company_code,
     }
 
@@ -46,6 +46,7 @@ export default function ManualPage() {
       )
 
       Swal.fire('Success', response.data.message, 'success')
+      window.close()
     } catch (error) {
       alert('Something went wrong.')
       throw new Error(error)

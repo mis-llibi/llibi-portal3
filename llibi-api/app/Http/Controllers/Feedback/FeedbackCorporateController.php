@@ -13,6 +13,7 @@ use App\Services\SendingEmail;
 
 use Illuminate\Http\File;
 use Illuminate\Mail\Attachment;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -47,7 +48,7 @@ class FeedbackCorporateController extends Controller
 
     abort_if(!$employee, 404, 'Member Not Found.');
 
-    $mailMsg = view('send-manual-loa-with-feedback-link', [
+    $mailMsg = view('send-corporate-loa', [
       'homepage' => 'https://portal.llibi.app',
       'first_name' => $masterlist->first_name,
       'member_id' => $masterlist->member_id,
@@ -63,14 +64,14 @@ class FeedbackCorporateController extends Controller
 
   public function store(Request $request)
   {
-    $employee = Employees::where('id', $request->employee_id)->first();
-    if (!$employee) {
-      return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
-    }
+    // $employee = Employees::where('id', $request->employee_id)->first();
+    // if (!$employee) {
+    //   return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
+    // }
 
     $masterlist = Sync::query()
-      ->where('empcode', $employee->code)
-      ->whereDate('birth_date', $employee->birthdate)
+      ->where('member_id', $request->member_id)
+      // ->whereDate('birth_date', $employee->birthdate)
       ->first();
 
     if (!$masterlist) {

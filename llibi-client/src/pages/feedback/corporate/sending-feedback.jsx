@@ -32,6 +32,7 @@ export default function SendingFeedback() {
       fileRef.current.value = null
       setFile(null)
       setEmail('')
+      window.close();
     } catch (error) {
       setOpen(false)
       alert('Something wrong')
@@ -62,8 +63,8 @@ export default function SendingFeedback() {
 
   return (
     <>
-      <div className="flex justify-center items-center h-screen bg-blue-gray-50">
-        <div className="w-1/2 mx-auto border flex flex-col items-center p-5 shadow-md bg-white rounded-md">
+      <div className="flex justify-center items-center h-screen bg-blue-gray-50 px-5">
+        <div className="w-full md:w-1/2 mx-auto border flex flex-col items-center p-5 shadow-md bg-white rounded-md">
           <div className="w-full px-3 mb-3 text-center">
             <label className="font-bold uppercase text-lg">
               Sending Loa with Feedback link

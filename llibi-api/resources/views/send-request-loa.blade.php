@@ -8,7 +8,7 @@
   {{-- <title>Document</title> --}}
 </head>
 
-<body style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
+<body style="font-family:Arial, Helvetica, sans-serif;">
   Hi <b>{{ $name }},</b>
   <br /><br />
 
@@ -51,7 +51,7 @@
     Address: 15th Floor Burgundy Corporate Tower 252 Sen. Gil Puyat Ave., Makati City
   </p>
 
-  <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
+  <b>This is an auto-generated Email.</b>
 </body>
 
 </html>
