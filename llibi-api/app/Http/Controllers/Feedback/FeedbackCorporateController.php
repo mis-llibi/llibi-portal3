@@ -54,7 +54,7 @@ class FeedbackCorporateController extends Controller
       'first_name' => $masterlist->first_name,
       'member_id' => $masterlist->member_id,
       'company_code' => $masterlist->company_code,
-      'approval_code' => $masterlist->approval_code,
+      'approval_code' => $approval_code,
       'q' => Str::random(64)
     ]);
 

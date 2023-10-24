@@ -16,7 +16,7 @@ import Swal from 'sweetalert2'
 
 export default function ManualPage() {
   const router = useRouter()
-  const { q, member_id, company_code } = router.query
+  const { q, member_id, company_code, approval_code } = router.query
   const [loading, setLoading] = useState(false)
   const [questionOne, setQuestionOne] = useState(4)
   const [questionTwo, setQuestionTwo] = useState(1)
@@ -37,6 +37,7 @@ export default function ManualPage() {
       comments: comment,
       member_id: member_id,
       company_code: company_code,
+      approval_code: approval_code,
     }
 
     try {
