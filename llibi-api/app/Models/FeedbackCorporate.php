@@ -11,6 +11,6 @@ class FeedbackCorporate extends Model
 
   protected $table = 'feedbacks_corporate';
   protected $fillable = [
-    'company_code', 'member_id', 'question1', 'question2', 'question3', 'question4', 'question5', 'comments'
+    'company_code', 'member_id', 'approval_code', 'question1', 'question2', 'question3', 'question4', 'question5', 'comments'
   ];
 }

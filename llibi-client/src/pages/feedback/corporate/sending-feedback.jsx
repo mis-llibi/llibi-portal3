@@ -8,7 +8,7 @@ export default function SendingFeedback() {
   const router = useRouter()
   const fileRef = useRef(null)
 
-  const { employee_id, patient_id, hospital_id, company_id } = router.query
+  const { employee_id, patient_id, hospital_id, company_id, approval_code } = router.query
 
   const [file, setFile] = useState(null)
   const [email, setEmail] = useState('')
@@ -22,6 +22,7 @@ export default function SendingFeedback() {
     FORMDATA.append('loa', file)
     FORMDATA.append('email', email)
     FORMDATA.append('employee_id', employee_id)
+    FORMDATA.append('approval_code', approval_code)
     setOpen(true)
     try {
       const response = await axios.post(
@@ -67,7 +68,7 @@ export default function SendingFeedback() {
         <div className="w-full md:w-1/2 mx-auto border flex flex-col items-center p-5 shadow-md bg-white rounded-md">
           <div className="w-full px-3 mb-3 text-center">
             <label className="font-bold uppercase text-lg">
-              Sending Loa with Feedback link
+              Send Loa with Feedback link
             </label>
           </div>
           <div className="w-full px-3 mb-3">
@@ -107,7 +108,7 @@ export default function SendingFeedback() {
             <label className="text-sm font-bold" htmlFor="">
               LOA Attachment{' '}
               <small className="font-light text-red-700">
-                (Required & Downloaded LOA PDF from corporate only)
+                (Download this from the corporate system)
               </small>
             </label>
             <input

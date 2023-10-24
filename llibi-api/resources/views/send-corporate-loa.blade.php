@@ -44,13 +44,13 @@
   <div>
     <div>
       We value your feedback: <a
-        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}">
+        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}&approval_code-{{ $approval_code }}">
         Please click here
       </a>
     </div>
     <div>
       <a
-        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}">
+        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}&approval_code-{{ $approval_code }}">
         <img src="{{ $homepage }}/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
       </a>
     </div>

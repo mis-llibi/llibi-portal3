@@ -22,6 +22,7 @@ class FeedbackCorporateController extends Controller
   function sendLoa(ManualSendFeedbackRequest $request)
   {
     $employee_id = $request->employee_id;
+    $approval_code = $request->approval_code;
     $email = $request->email;
     $loa = $request->file('loa');
 
@@ -53,6 +54,7 @@ class FeedbackCorporateController extends Controller
       'first_name' => $masterlist->first_name,
       'member_id' => $masterlist->member_id,
       'company_code' => $masterlist->company_code,
+      'approval_code' => $masterlist->approval_code,
       'q' => Str::random(64)
     ]);
 
@@ -81,6 +83,7 @@ class FeedbackCorporateController extends Controller
     $feedback = new FeedbackCorporate();
     $feedback->company_code = $request->company_code;
     $feedback->member_id = $masterlist->member_id;
+    $feedback->approval_code = $request->approval_code;
     $feedback->question1 = $request->questionOne;
     $feedback->question2 = $request->questionTwo;
     $feedback->question3 = $request->questionThree;
