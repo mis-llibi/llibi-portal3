@@ -123,14 +123,14 @@ return [
             ]) : [],
         ],
         
-        'mysql_claims' => [
+        'mysql_pre_approve' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST_CLAIMS', '127.0.0.1'),
-            'port' => env('DB_PORT_CLAIMS', '3306'),
-            'database' => env('DB_DATABASE_CLAIMS', 'forge'),
-            'username' => env('DB_USERNAME_CLAIMS', 'forge'),
-            'password' => env('DB_PASSWORD_CLAIMS', ''),
+            'host' => env('DB_HOST_PRE_APPROVE', '127.0.0.1'),
+            'port' => env('DB_PORT_PRE_APPROVE', '3306'),
+            'database' => env('DB_DATABASE_PRE_APPROVE', 'forge'),
+            'username' => env('DB_USERNAME_PRE_APPROVE', 'forge'),
+            'password' => env('DB_PASSWORD_PRE_APPROVE', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',

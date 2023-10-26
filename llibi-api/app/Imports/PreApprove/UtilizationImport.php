@@ -2,7 +2,7 @@
 
 namespace App\Imports\PreApprove;
 
-use App\Models\PreApprove\Claims;
+use App\Models\PreApprove\Utilization;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use PhpParser\Node\Stmt\TryCatch;
 
-class CorporateClaimsImport implements ToCollection, WithBatchInserts, WithChunkReading
+class UtilizationImport implements ToCollection, WithBatchInserts, WithChunkReading
 {
   public function collection(Collection  $rows)
   {
@@ -22,24 +22,28 @@ class CorporateClaimsImport implements ToCollection, WithBatchInserts, WithChunk
       // skipping heading or row 1
       if ($i > 0) {
         $dateString = $row[6];
-        $date  = Carbon::createFromFormat('d/m/Y', $dateString);
+        $date  = Carbon::createFromFormat('m/d/Y', $dateString);
         try {
-          $isExist = Claims::where([
-            'uniqcode' => $row[0], 'empcode' => $row[1], 'claimnumb' => $row[2], 'seriesnumb' => $row[3]
+          $isExist = Utilization::where([
+            'uniqcode' => trim($row[0]),
+            'empcode' => trim($row[1]),
+            'claimnumb' => trim($row[2]),
+            'seriesnumb' => trim($row[3]),
+            'compcode' => trim($row[4]),
           ])->exists();
 
           if (!$isExist) {
-            Claims::insert([
-              'uniqcode' => $row[0],
-              'empcode' => $row[1],
-              'claimnumb' => $row[2],
-              'seriesnumb' => $row[3],
-              'compcode' => $row[4],
-              'claimtype' => $row[5],
+            Utilization::insert([
+              'uniqcode' => trim($row[0]),
+              'empcode' => trim($row[1]),
+              'claimnumb' => trim($row[2]),
+              'seriesnumb' => trim($row[3]),
+              'compcode' => trim($row[4]),
+              'claimtype' => trim($row[5]),
               'claimdate' => $date->format('Y-m-d'),
-              'diagcode' => $row[7],
-              'diagname' => $row[8],
-              'eligible' => $row[9],
+              'diagcode' => trim($row[7]),
+              'diagname' => trim($row[8]),
+              'eligible' => trim($row[9]),
             ]);
           }
         } catch (\Throwable $th) {

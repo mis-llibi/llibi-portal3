@@ -50,7 +50,7 @@ export default function SendingFeedback() {
         )
         setEmail(response.data.email)
       } catch (error) {
-        alert('Please advice MIS (Mailyn/Joy) to upload in the DA masterlist.')
+        alert('Please advice MIS (Mailyn/Joy) to upload in the DA masterlist. For the mean time please proceed using manual email')
         throw error
       } finally {
         setOpen(false)
