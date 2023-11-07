@@ -20,10 +20,10 @@ class MobileApiAccessController extends Controller
             if ($memberId && $birthdate) {
                 $memberData = Sync::where('member_id', $memberId)
                                     ->where('birth_date', $birthdate)
-                                    ->get(['member_id', 'first_name', 'last_name', 'middle_name', 'relation', 'birth_date', 'incepfrom', 'incepto', 'company_code', 'company_name'])
+                                    ->get(['member_id', 'first_name', 'last_name', 'middle_name', 'relation', 'birth_date', 'incepfrom', 'incepto', 'company_code', 'company_name', 'noofconsult'])
                                     ->first();
             } else {
-                $memberData = Sync::selectRaw('member_id , first_name, last_name, middle_name, relation, birth_date, incepfrom, incepto, company_code, company_name')
+                $memberData = Sync::selectRaw('member_id , first_name, last_name, middle_name, relation, birth_date, incepfrom, incepto, company_code, company_name, noofconsult')
                     ->paginate($perPage);
             }
 
