@@ -69,6 +69,7 @@ const INITIALSTATE = {
   employee: null,
   utilization: 0,
   laboratory: 0,
+  reservation: 4500,
   remainingLimit: 0,
 }
 
@@ -97,9 +98,11 @@ export default function PreApproveLoa() {
   const remainingLimit =
     Number(state.employee?.opr) > 0
       ? Number(state.employee?.opr) -
+        Number(state.reservation) -
         Number(state.utilization) -
         Number(state.laboratory)
-      : Number(state.employee?.opr) -
+      : Number(state.employee?.ipr) -
+        Number(state.reservation) -
         Number(state.utilization) -
         Number(state.laboratory)
 
@@ -200,7 +203,7 @@ export default function PreApproveLoa() {
                   </tr>
                 </thead>
                 <tbody>
-                  {state.employee?.utilization &&
+                  {state.employee?.utilization.length > 0 ? (
                     state.employee?.utilization?.map((util, i) => {
                       return (
                         <tr key={i}>
@@ -222,7 +225,14 @@ export default function PreApproveLoa() {
                           </td>
                         </tr>
                       )
-                    })}
+                    })
+                  ) : (
+                    <tr>
+                      <td className="text-center" colSpan={99}>
+                        No Data Found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </CustomTabPanel>
@@ -298,11 +308,15 @@ export default function PreApproveLoa() {
                     {Number(state.employee?.ipr) > 0 &&
                       Number(state.employee?.opr) === 0 &&
                       formatter.format(state.employee?.opr)}
+
+                    {Number(state.employee?.ipr) === 0 &&
+                      Number(state.employee?.opr) === 0 &&
+                      formatter.format(state.employee?.opr)}
                   </td>
                 </tr>
                 <tr>
                   <td>Reservation</td>
-                  <td className="text-right">{formatter.format(4500.0)}</td>
+                  <td className="text-right">{formatter.format(state.reservation)}</td>
                 </tr>
                 <tr>
                   <td>Utilization</td>

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use App\Models\PreApprove\Utilization;
 use App\Models\Self_service\Sync;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UtilizationController extends Controller
@@ -24,12 +25,10 @@ class UtilizationController extends Controller
 
   function importUtilization(Request $request)
   {
-    /**
-     * NOTE:
-     * The file must be csv and save as utf8 format
-     * click file, save as, more options, tools, web options, encoding set to utf-8
-     */
-    Excel::import(new UtilizationImport, $request->file);
+    set_time_limit(0);
+    foreach ($request->file as $key => $file) {
+      Excel::import(new UtilizationImport, $file);
+    }
 
     return 'done';
   }
@@ -40,8 +39,7 @@ class UtilizationController extends Controller
 
     abort_if(!$employee_id, '400', 'Something Went Wrong.');
 
-    $employees = Employees::limit(100)
-      ->where('id', $employee_id)
+    $employees = Employees::where('id', $employee_id)
       ->select('id', 'company_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
       ->first();
 
@@ -55,7 +53,8 @@ class UtilizationController extends Controller
 
     $employees['companies'] = $companies;
 
-    $masterlist = Sync::where('birth_date', $employees->birthdate)
+    $masterlist = Sync::query()
+      ->whereDate('birth_date', Carbon::parse($employees->birthdate)->format('Y-m-d'))
       ->where('empcode', $employees->code)
       ->first();
 

@@ -20,7 +20,7 @@ export default function QuestionComponent({
           <span>Very Difficult</span>
           <img
             src={'/happy-face/angry.png'}
-            className="w-[128px] md:w-[36px]"
+            className="w-[28px] md:w-[36px]"
             alt="angry"
           />
         </div>
@@ -33,7 +33,7 @@ export default function QuestionComponent({
           <span>Difficult</span>
           <img
             src={'/happy-face/sad.png'}
-            className="w-[128px] md:w-[36px]"
+            className="w-[28px] md:w-[36px]"
             alt="sad"
           />
         </div>
@@ -46,7 +46,7 @@ export default function QuestionComponent({
           <span>Moderate</span>
           <img
             src={'/happy-face/mad.png'}
-            className="w-[128px] md:w-[36px]"
+            className="w-[28px] md:w-[36px]"
             alt="mad"
           />
         </div>
@@ -59,7 +59,7 @@ export default function QuestionComponent({
           <span>Easy</span>
           <img
             src={'/happy-face/smile.png'}
-            className="w-[128px] md:w-[36px]"
+            className="w-[28px] md:w-[36px]"
             alt="smile"
           />
         </div>
@@ -72,7 +72,7 @@ export default function QuestionComponent({
           <span>Very Easy</span>
           <img
             src={'/happy-face/happy.png'}
-            className="w-[128px] md:w-[36px]"
+            className="w-[28px] md:w-[36px]"
             alt="happy"
           />
         </div>

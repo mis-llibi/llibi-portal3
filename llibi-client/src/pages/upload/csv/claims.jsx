@@ -9,7 +9,9 @@ export default function ClaimsPage() {
     setIsLoading(true)
     const FORMDATA = new FormData()
     if (file) {
-      FORMDATA.append('file', file)
+      for (let index = 0; index < file.length; index++) {
+        FORMDATA.append('file[]', file[index])
+      }
     }
 
     await axios.get(`sanctum/csrf-cookie`)
@@ -34,7 +36,8 @@ export default function ClaimsPage() {
           type="file"
           name="file"
           id="file"
-          onChange={e => setFile(e.target.files[0])}
+          multiple
+          onChange={e => setFile(e.target.files)}
         />
         <button
           disabled={isLoading}
