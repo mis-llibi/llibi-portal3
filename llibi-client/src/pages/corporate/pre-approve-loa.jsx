@@ -27,6 +27,8 @@ const REDUCER_ACTIONS = {
   MINUS_UTILIZATION: 'minusUtilization',
   ADD_LABORATORY: 'addLaboratory',
   MINUS_LABORATORY: 'minusLaboratory',
+  SEARCH_UTILIZATION: 'searchUtilization',
+  RESET_UTILIZATION: 'resetUtilization',
 }
 
 function reducer(state, action) {
@@ -46,6 +48,12 @@ function reducer(state, action) {
         utilization: state.utilization - action.payload.utilization,
       }
       break
+    case REDUCER_ACTIONS.RESET_UTILIZATION:
+      return {
+        ...state,
+        utilization: 0,
+      }
+      break
     case REDUCER_ACTIONS.ADD_LABORATORY:
       return {
         ...state,
@@ -56,6 +64,15 @@ function reducer(state, action) {
       return {
         ...state,
         laboratory: state.laboratory - action.payload.laboratory,
+      }
+      break
+    case REDUCER_ACTIONS.SEARCH_UTILIZATION:
+      return {
+        ...state,
+        employee: {
+          ...state.employee,
+          utilization: action.payload.searchUtilization,
+        },
       }
       break
 
@@ -148,6 +165,28 @@ export default function PreApproveLoa() {
     }
   }
 
+  const handleSelectUtilizationAll = async e => {
+    if (e.target.checked) {
+      const totalEligible = state.employee?.utilization?.reduce(
+        (n, { eligible }) => Number(n) + Number(eligible),
+        0,
+      )
+      dispatch({
+        type: REDUCER_ACTIONS.ADD_UTILIZATION,
+        payload: { utilization: Number(totalEligible) },
+      })
+
+      setSelectedUtil([...state.employee?.utilization, { isSelected: true }])
+    } else {
+      dispatch({
+        type: REDUCER_ACTIONS.RESET_UTILIZATION,
+        payload: { utilization: Number(0) },
+      })
+
+      setSelectedUtil([])
+    }
+  }
+
   const handleSelectLaboratory = async (e, params) => {
     if (e.target.checked) {
       dispatch({
@@ -172,6 +211,25 @@ export default function PreApproveLoa() {
     currency: 'PHP',
   })
 
+  const [search, setSearch] = useState()
+  const handleSearch = e => {
+    let search_str = e.target.value.toLowerCase()
+    const searched = state.employee?.utilization?.filter(data => {
+      return (
+        data.diagname.toLowerCase().includes(search_str) ||
+        data.eligible.toLowerCase().includes(search_str) ||
+        data.claimnumb.toLowerCase().includes(search_str)
+      )
+    })
+
+    setSearch(searched)
+  }
+
+  useEffect(() => {
+    setSearch(state.employee?.utilization)
+  }, [state.employee])
+
+  // console.log(search)
   return (
     <div className="px-10 mx-auto">
       <img
@@ -180,7 +238,7 @@ export default function PreApproveLoa() {
         width={250}
       />
       <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3">
-        <div className="flex-grow border p-3 rounded-md">
+        <div className="flex-grow border p-3 rounded-md shadow-md">
           <div className="w-full">
             <Tabs
               className="mb-3"
@@ -191,6 +249,14 @@ export default function PreApproveLoa() {
               <Tab label="Laboratory" />
             </Tabs>
             <CustomTabPanel value={value} index={0}>
+              <div className="mb-3">
+                <input
+                  type="text"
+                  className="rounded-md w-full"
+                  placeholder="Search"
+                  onChange={handleSearch}
+                />
+              </div>
               <table className="w-full text-sm">
                 <thead>
                   <tr className="uppercase">
@@ -199,40 +265,37 @@ export default function PreApproveLoa() {
                     <th>Claim Type</th>
                     <th>Diagnosis</th>
                     <th>Amount</th>
-                    <th>Action</th>
+                    <th>
+                      <input
+                        onChange={e => handleSelectUtilizationAll(e)}
+                        type="checkbox"
+                      />
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {state.employee?.utilization.length > 0 ? (
-                    state.employee?.utilization?.map((util, i) => {
-                      return (
-                        <tr key={i}>
-                          <td>{util.claimnumb}</td>
-                          <td>{util.claimdate}</td>
-                          <td className="text-center">{util.claimtype}</td>
-                          <td>{util.diagname}</td>
-                          <td className="text-right">
-                            {formatter.format(util.eligible)}
-                          </td>
-                          <td className="text-center">
-                            <input
-                              checked={selectedUtil.some(
-                                row => row.id === util.id,
-                              )}
-                              onChange={e => handleSelectUtilization(e, util)}
-                              type="checkbox"
-                            />
-                          </td>
-                        </tr>
-                      )
-                    })
-                  ) : (
-                    <tr>
-                      <td className="text-center" colSpan={99}>
-                        No Data Found.
-                      </td>
-                    </tr>
-                  )}
+                  {search?.map((util, i) => {
+                    return (
+                      <tr key={util.id}>
+                        <td className="text-center">{util.claimnumb}</td>
+                        <td className="text-center">{util.claimdate}</td>
+                        <td className="text-center">{util.claimtype}</td>
+                        <td>{util.diagname}</td>
+                        <td className="text-right">
+                          {formatter.format(util.eligible)}
+                        </td>
+                        <td className="text-center">
+                          <input
+                            checked={selectedUtil.some(
+                              row => row.id === util.id,
+                            )}
+                            onChange={e => handleSelectUtilization(e, util)}
+                            type="checkbox"
+                          />
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </CustomTabPanel>
@@ -248,7 +311,7 @@ export default function PreApproveLoa() {
                 <tbody>
                   {laboratory.map((lab, i) => {
                     return (
-                      <tr>
+                      <tr key={lab.id}>
                         <td>{lab.procedure}</td>
                         <td className="text-right">
                           {formatter.format(lab.cost)}
@@ -268,7 +331,7 @@ export default function PreApproveLoa() {
             </CustomTabPanel>
           </div>
         </div>
-        <div className="w-full lg:w-[400px] border p-3 rounded-md">
+        <div className="w-full lg:w-[400px] border p-3 rounded-md shadow-md">
           {!employee ? (
             <div>Loading...</div>
           ) : (
@@ -316,7 +379,9 @@ export default function PreApproveLoa() {
                 </tr>
                 <tr>
                   <td>Reservation</td>
-                  <td className="text-right">{formatter.format(state.reservation)}</td>
+                  <td className="text-right">
+                    {formatter.format(state.reservation)}
+                  </td>
                 </tr>
                 <tr>
                   <td>Utilization</td>

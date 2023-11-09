@@ -43,28 +43,32 @@
     <br />
   <div>
     <div>
-      We value your feedback: <a
-        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}&approval_code-{{ $approval_code }}">
+      We value your feedback: <a href="{{ $feedback_url }}">
         Please click here
       </a>
     </div>
     <div>
-      <a
-        href="{{ $homepage }}/feedback/corporate?q={{ $q }}&company_code={{ $company_code }}&member_id={{ $member_id }}&approval_code-{{ $approval_code }}">
+      <a href="{{ $feedback_url }}">
         <img src="{{ $homepage }}/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
       </a>
     </div>
   </div>
   <br /><br />
 
-  <p>
-    This email is sent by Lacson and Lacson Insurance Brokers, Inc.
-    <br>
-    Address: 15th Floor Burgundy Corporate Tower 252 Sen. Gil Puyat Ave., Makati City
-  </p>
-
-  <b>This is an auto-generated Email.</b>
-  </p>
+  <hr>
+  <footer>
+    <div>
+      <img src="https://llibi.app/company-images/llibi_logo.png" alt="LLIBI LOGO" width="200">
+    </div>
+    <div>
+      <small style="color: gray;">&#9400; {{ date('Y') }} Lacson & Lacson Insurance Brokers, Inc. | 15th Floor
+        Burgundy Corporate Tower 252 Sen. Gil Puyat Ave., Makati City, 1200</small>
+    </div>
+    <div>
+      <small style="font-weight: bold; text-transform: uppercase;">This is an auto-generated Email. Does not support
+        replies.</small>
+    </div>
+  </footer>
 
 
 </body>

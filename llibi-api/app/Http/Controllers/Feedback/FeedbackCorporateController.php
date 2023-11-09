@@ -49,13 +49,19 @@ class FeedbackCorporateController extends Controller
 
     abort_if(!$employee, 404, 'Member Not Found.');
 
+    $q = Str::random(64);
+    $company_code = $masterlist->company_code;
+    $member_id = $masterlist->member_id;
+    $feedback_url = "https://portal.llibi.app/feedback/corporate?q=$q&company_code=$company_code&member_id=$member_id&approval_code=$approval_code";
+
     $mailMsg = view('send-corporate-loa', [
       'homepage' => 'https://portal.llibi.app',
       'first_name' => $masterlist->first_name,
-      'member_id' => $masterlist->member_id,
-      'company_code' => $masterlist->company_code,
-      'approval_code' => $approval_code,
-      'q' => Str::random(64)
+      // 'member_id' => $masterlist->member_id,
+      // 'company_code' => $masterlist->company_code,
+      // 'approval_code' => $approval_code,
+      // 'q' => Str::random(64)
+      'feedback_url' => $feedback_url
     ]);
 
     $emailer = new SendingEmail(email: 'glenilagan@llibi.com', body: $mailMsg, subject: 'CORPORATE REQUEST LOA', attachments: [Storage::path($path)]);
