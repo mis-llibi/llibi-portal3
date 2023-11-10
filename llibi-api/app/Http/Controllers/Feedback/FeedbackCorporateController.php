@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\App;
+
 class FeedbackCorporateController extends Controller
 {
   function sendLoa(ManualSendFeedbackRequest $request)
@@ -64,8 +66,15 @@ class FeedbackCorporateController extends Controller
       'feedback_url' => $feedback_url
     ]);
 
-    $emailer = new SendingEmail(email: 'glenilagan@llibi.com', body: $mailMsg, subject: 'CORPORATE REQUEST LOA', attachments: [Storage::path($path)]);
-    $emailer->send();
+    if (App::environment('local')) {
+      $emailer = new SendingEmail(email: 'glenilagan@llibi.com', body: $mailMsg, subject: 'CORPORATE REQUEST LOA', attachments: [Storage::path($path)]);
+      $emailer->send();
+    }
+
+    if (App::environment('production')) {
+      $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CORPORATE REQUEST LOA', attachments: [Storage::path($path)]);
+      $emailer->send();
+    }
 
     return response()->noContent();
   }
