@@ -82,8 +82,7 @@ class FeedbackCorporateController extends Controller
         body: $mailMsg,
         subject: 'CORPORATE REQUEST LOA',
         attachments: [Storage::path($path)],
-        cc: ['phoebepaltao@llibi.com'],
-        bcc: ['glenilagan@llibi.com'],
+        cc: ['clientcare@llibi.com'],
       );
       $emailer->send();
     }
