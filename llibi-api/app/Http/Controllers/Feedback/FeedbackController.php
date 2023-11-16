@@ -22,7 +22,7 @@ class FeedbackController extends Controller
 {
   public function index()
   {
-    $feedbacks = Feedback::query()->get();
+    $feedbacks = Feedback::query()->orderBy('id', 'DESC')->paginate(25);
 
     return response()->json($feedbacks);
   }

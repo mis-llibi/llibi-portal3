@@ -1,26 +1,29 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import axios from '@/lib/axios'
 import useSWR from 'swr'
 
 export default function ReportHomePage() {
+  const [page, setPage] = useState(1)
   const { data: feedbacks, isLoading, isValidating, mutate, error } = useSWR(
-    `${process.env.apiPath}/feedbacks`,
+    `${process.env.apiPath}/feedbacks?page=${page}`,
     async () => {
-      const response = await axios.get(`${process.env.apiPath}/feedbacks`)
+      const response = await axios.get(
+        `${process.env.apiPath}/feedbacks?page=${page}`,
+      )
       return response.data
     },
     { revalidateOnFocus: false },
   )
 
-  console.log(feedbacks)
+  // console.log(feedbacks)
 
   if (isLoading) return <h1>Loading...</h1>
 
   return (
     <>
       <nav className="bg-blue-300 h-16">
-        <div className='flex gap-3 px-5'>
+        <div className="flex gap-3 px-5">
           <img src="/logo.png" alt="LLIBI LOGO" width={200} />
         </div>
       </nav>
@@ -36,6 +39,7 @@ export default function ReportHomePage() {
           <p>Q3. Did we respond within the turn-around time?</p>
           <p>Q4. Overall, how satisfied are you with Client Care Portal?</p>
         </div>
+
         <table className="w-full text-sm border">
           <thead>
             <tr className="bg-blue-100">
@@ -49,27 +53,45 @@ export default function ReportHomePage() {
           </thead>
           <tbody>
             {feedbacks &&
-              feedbacks.map(feedback => {
+              feedbacks.data.map(feedback => {
                 return (
-                  <>
-                    <tr key={feedback.id} className="border even:bg-gray-50">
-                      <td className="p-5 font-bold">
-                        <small>{feedback.company_code}</small>
-                        <br />
-                        {feedback.member_id}
-                      </td>
-                      <td className="p-5">{feedback.comments}</td>
-                      <td className="p-5 text-center">{feedback.question1}</td>
-                      <td className="p-5 text-center">{feedback.question2}</td>
-                      <td className="p-5 text-center">{feedback.question3}</td>
-                      <td className="p-5 text-center">{feedback.question4}</td>
-                    </tr>
-                    <></>
-                  </>
+                  <tr key={feedback.id} className="border even:bg-gray-50">
+                    <td className="p-5 font-bold">
+                      <small>{feedback.company_code}</small>
+                      <br />
+                      {feedback.member_id}
+                    </td>
+                    <td className="p-5">{feedback.comments}</td>
+                    <td className="p-5 text-center">{feedback.question1}</td>
+                    <td className="p-5 text-center">{feedback.question2}</td>
+                    <td className="p-5 text-center">{feedback.question3}</td>
+                    <td className="p-5 text-center">{feedback.question4}</td>
+                  </tr>
                 )
               })}
           </tbody>
         </table>
+        <div className="flex justify-end">
+          <div>
+            <button
+              className={`w-28 border bg-blue-900 p-2 uppercase text-sm rounded-md text-white mb-3 ${
+                feedbacks?.current_page === 1 && 'bg-gray-600'
+              }`}
+              onClick={() => setPage(page - 1)}
+              disabled={feedbacks?.current_page === 1}>
+              Previous
+            </button>
+            <button
+              className={`w-28 border bg-blue-900 p-2 uppercase text-sm rounded-md text-white mb-3 ${
+                feedbacks?.current_page === feedbacks?.last_page &&
+                'bg-gray-600'
+              }`}
+              onClick={() => setPage(page + 1)}
+              disabled={feedbacks?.current_page === feedbacks?.last_page}>
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </>
   )
