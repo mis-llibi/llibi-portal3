@@ -104,8 +104,11 @@ Route::get('/view-logs', [SelfService::class, 'viewLogs']);
 Route::get('/settings', [SettingController::class, 'index']);
 Route::put('/settings', [SettingController::class, 'update']);
 
+// feedback client portal
 Route::post('/feedbacks', [FeedbackController::class, 'store']);
 Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
+Route::get('/feedbacks', [FeedbackController::class, 'index']);
+// feedback corporate
 Route::post('/corporate/feedbacks', [FeedbackCorporateController::class, 'sendLoa']);
 Route::post('/corporate/feedbacks/save', [FeedbackCorporateController::class, 'store']);
 Route::get('/corporate/feedbacks/employee', [FeedbackCorporateController::class, 'showEmployee']);

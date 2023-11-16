@@ -3,8 +3,16 @@ import { useRouter } from 'next/router'
 
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
+import Chip from '@mui/material/Chip'
+import Stack from '@mui/material/Stack'
+
 import axios from '@/lib/axios'
 import useSWR from 'swr'
+
+import DisplaySelectedUtilization from '@/components/Layouts/Corporate/DisplaySelectedUtilization'
+import DisplaySelectedLaboratory from '@/components/Layouts/Corporate/DisplaySelectedLaboratory'
+import UtilizationTab from '@/components/Layouts/Corporate/Tabs/UtilizationTab'
+import LaboratoryTab from '@/components/Layouts/Corporate/Tabs/LaboratoryTab'
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props
@@ -22,7 +30,7 @@ function CustomTabPanel(props) {
 }
 
 const REDUCER_ACTIONS = {
-  GET_EMPLOYEE: 'get_Employee',
+  GET_EMPLOYEE: 'getEmployee',
   ADD_UTILIZATION: 'addUtilization',
   MINUS_UTILIZATION: 'minusUtilization',
   ADD_LABORATORY: 'addLaboratory',
@@ -153,7 +161,7 @@ export default function PreApproveLoa() {
         payload: { utilization: Number(params.eligible) },
       })
 
-      setSelectedUtil([...selectedUtil, { id: params.id, isSelected: true }])
+      setSelectedUtil([...selectedUtil, { ...params, isSelected: true }])
     } else {
       dispatch({
         type: REDUCER_ACTIONS.MINUS_UTILIZATION,
@@ -176,7 +184,14 @@ export default function PreApproveLoa() {
         payload: { utilization: Number(totalEligible) },
       })
 
-      setSelectedUtil([...state.employee?.utilization, { isSelected: true }])
+      const dump_arr = []
+      const dump = {
+        ...state.employee?.utilization.map(item => {
+          return dump_arr.push({ ...item, isSelected: true })
+        }),
+      }
+      setSelectedUtil(dump_arr)
+      // console.log(dump_arr)
     } else {
       dispatch({
         type: REDUCER_ACTIONS.RESET_UTILIZATION,
@@ -194,7 +209,7 @@ export default function PreApproveLoa() {
         payload: { laboratory: Number(params.cost) },
       })
 
-      setSelectedLab([...selectedLab, { id: params.id, isSelected: true }])
+      setSelectedLab([...selectedLab, { ...params, isSelected: true }])
     } else {
       dispatch({
         type: REDUCER_ACTIONS.MINUS_LABORATORY,
@@ -225,11 +240,21 @@ export default function PreApproveLoa() {
     setSearch(searched)
   }
 
+  const [searchLab, setSearchLab] = useState()
+  const handleSearchLab = e => {
+    let search_str = e.target.value.toLowerCase()
+    const searched = laboratory?.filter(data => {
+      return data.procedure.toLowerCase().includes(search_str)
+    })
+
+    setSearchLab(searched)
+  }
+
   useEffect(() => {
     setSearch(state.employee?.utilization)
+    setSearchLab(laboratory)
   }, [state.employee])
 
-  // console.log(search)
   return (
     <div className="px-10 mx-auto">
       <img
@@ -249,58 +274,16 @@ export default function PreApproveLoa() {
               <Tab label="Laboratory" />
             </Tabs>
             <CustomTabPanel value={value} index={0}>
-              <div className="mb-3">
-                <input
-                  type="text"
-                  className="rounded-md w-full"
-                  placeholder="Search"
-                  onChange={handleSearch}
-                />
-              </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="uppercase">
-                    <th>Claim #</th>
-                    <th>Claim Date</th>
-                    <th>Claim Type</th>
-                    <th>Diagnosis</th>
-                    <th>Amount</th>
-                    <th>
-                      <input
-                        onChange={e => handleSelectUtilizationAll(e)}
-                        type="checkbox"
-                      />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {search?.map((util, i) => {
-                    return (
-                      <tr key={util.id}>
-                        <td className="text-center">{util.claimnumb}</td>
-                        <td className="text-center">{util.claimdate}</td>
-                        <td className="text-center">{util.claimtype}</td>
-                        <td>{util.diagname}</td>
-                        <td className="text-right">
-                          {formatter.format(util.eligible)}
-                        </td>
-                        <td className="text-center">
-                          <input
-                            checked={selectedUtil.some(
-                              row => row.id === util.id,
-                            )}
-                            onChange={e => handleSelectUtilization(e, util)}
-                            type="checkbox"
-                          />
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+              <UtilizationTab
+                search={search}
+                handleSearch={handleSearch}
+                handleSelectUtilizationAll={handleSelectUtilizationAll}
+                handleSelectUtilization={handleSelectUtilization}
+                selectedUtil={selectedUtil}
+              />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-              <table className="w-full">
+              {/* <table className="w-full">
                 <thead>
                   <tr>
                     <th>Procedure</th>
@@ -327,7 +310,14 @@ export default function PreApproveLoa() {
                     )
                   })}
                 </tbody>
-              </table>
+              </table> */}
+              <LaboratoryTab
+                search={searchLab}
+                handleSearch={handleSearchLab}
+                // handleSelectUtilizationAll={handleSelectUtilizationAll}
+                handleSelectLaboratory={handleSelectLaboratory}
+                selectedLab={selectedLab}
+              />
             </CustomTabPanel>
           </div>
         </div>
@@ -362,60 +352,67 @@ export default function PreApproveLoa() {
               <br />
 
               <table className="w-full">
-                <tr>
-                  <td>MBL</td>
-                  <td className="text-right">
-                    {Number(state.employee?.opr) > 0 &&
-                      formatter.format(state.employee?.opr)}
+                <thead>
+                  <tr>
+                    <td>MBL</td>
+                    <td className="text-right">
+                      {Number(state.employee?.opr) > 0 &&
+                        formatter.format(state.employee?.opr)}
 
-                    {Number(state.employee?.ipr) > 0 &&
-                      Number(state.employee?.opr) === 0 &&
-                      formatter.format(state.employee?.opr)}
+                      {Number(state.employee?.ipr) > 0 &&
+                        Number(state.employee?.opr) === 0 &&
+                        formatter.format(state.employee?.opr)}
 
-                    {Number(state.employee?.ipr) === 0 &&
-                      Number(state.employee?.opr) === 0 &&
-                      formatter.format(state.employee?.opr)}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Reservation</td>
-                  <td className="text-right">
-                    {formatter.format(state.reservation)}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Utilization</td>
-                  <td className="text-right">
-                    {formatter.format(state.utilization)}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Laboratory Cost</td>
-                  <td className="text-right">
-                    {formatter.format(state.laboratory)}
-                  </td>
-                </tr>
+                      {Number(state.employee?.ipr) === 0 &&
+                        Number(state.employee?.opr) === 0 &&
+                        formatter.format(state.employee?.opr)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Reservation</td>
+                    <td className="text-right">
+                      {formatter.format(state.reservation)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Utilization</td>
+                    <td className="text-right">
+                      {formatter.format(state.utilization)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Laboratory Cost</td>
+                    <td className="text-right">
+                      {formatter.format(state.laboratory)}
+                    </td>
+                  </tr>
+                </thead>
               </table>
               <br />
               <hr />
               <table className="w-full">
-                <tr>
-                  <td>Remaining Limit</td>
-                  <td className="text-right">
-                    {/* {formatter.format(
+                <thead>
+                  <tr>
+                    <td>Remaining Limit</td>
+                    <td className="text-right">
+                      {/* {formatter.format(
                       state.employee?.opr -
                         state.utilization -
                         state.laboratory,
                     )} */}
 
-                    {formatter.format(remainingLimit)}
-                  </td>
-                </tr>
+                      {formatter.format(remainingLimit)}
+                    </td>
+                  </tr>
+                </thead>
               </table>
             </div>
           )}
         </div>
       </div>
+
+      <DisplaySelectedUtilization utilization={selectedUtil} />
+      <DisplaySelectedLaboratory laboratory={selectedLab} />
     </div>
   )
 }

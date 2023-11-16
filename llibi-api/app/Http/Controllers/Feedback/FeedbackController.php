@@ -20,6 +20,12 @@ use Illuminate\Support\Str;
 
 class FeedbackController extends Controller
 {
+  public function index()
+  {
+    $feedbacks = Feedback::query()->get();
+
+    return response()->json($feedbacks);
+  }
   public function store(FeedbackRequest $request)
   {
     $comment = $request->comment ?? "";
