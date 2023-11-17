@@ -21,4 +21,14 @@ class Sync extends Model
         'birth_date',
         'email',
     ];
+
+    /* public function allow($partner) {
+        return $this->hasOne(SyncPartnership::class, 'member_id', 'member_id')
+                    ->where('partner', $partner);
+    } */
+
+    public function partnership()
+    {
+        return $this->hasOne(SyncPartnership::class, 'member_id', 'member_id');
+    }
 }
