@@ -160,7 +160,7 @@ export default function ManualPage() {
           </div>
           <div className="mb-5">
             <p className="text-sm">
-              5. What could we do to improve our service to you, let us know
+              6. What could we do to improve our service to you, let us know
               your comments:
             </p>
             <textarea
