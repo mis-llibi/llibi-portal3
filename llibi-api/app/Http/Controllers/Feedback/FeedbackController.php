@@ -236,7 +236,7 @@ class FeedbackController extends Controller
     $request_status = $request->request_status;
 
     if ($this->checkingIfAlreadyFeedback($request_id)) {
-      return response()->json(['status' => false, 'message' => 'You are already send feedback.', 'data' => []]);
+      return response()->json(['status' => false, 'message' => 'You are already send feedback.'], 400);
     }
 
     $feedback = Feedback::create([

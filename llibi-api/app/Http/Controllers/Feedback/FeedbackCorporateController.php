@@ -106,6 +106,10 @@ class FeedbackCorporateController extends Controller
       return response()->json(['status' => false, 'message' => 'Member Not Found.'], 404);
     }
 
+    if (FeedbackCorporate::where('approval_code', $request->approval_code)->where('member_id', $request->member_id)->exists()) {
+      return response()->json(['status' => false, 'message' => 'Already sent feedback.'], 400);
+    }
+
     $feedback = new FeedbackCorporate();
     $feedback->company_code = $request->company_code;
     $feedback->member_id = $masterlist->member_id;

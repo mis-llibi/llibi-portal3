@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
@@ -25,6 +25,8 @@ export default function ManualPage() {
   const [questionFive, setQuestionFive] = useState(4)
   const [comment, setComment] = useState('')
 
+  const csrf = () => axios.get('/sanctum/csrf-cookie') 
+
   const handleSubmit = async () => {
     setLoading(true)
 
@@ -40,6 +42,8 @@ export default function ManualPage() {
       approval_code: approval_code,
     }
 
+    await csrf();
+
     try {
       const response = await axios.post(
         `${process.env.apiPath}/corporate/feedbacks/save`,
@@ -49,12 +53,16 @@ export default function ManualPage() {
       Swal.fire('Success', response.data.message, 'success')
       window.close()
     } catch (error) {
-      alert('Something went wrong.')
+      Swal.fire(error.response.data.message, '', 'info')
       throw new Error(error)
     } finally {
       setLoading(false)
     }
   }
+
+  // useEffect(() => {
+
+  // }, [])
 
   return (
     <>

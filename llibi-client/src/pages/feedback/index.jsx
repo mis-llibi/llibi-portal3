@@ -32,8 +32,13 @@ export default function FeedBackIndex() {
   const [questionThree, setQuestionThree] = useState(1)
   const [questionFour, setQuestionFour] = useState(4)
 
+  const csrf = () => axios.get('/sanctum/csrf-cookie') 
+
   const handleSubmit = async () => {
     setLoading(true)
+
+    await csrf();
+
     try {
       const response = await axios.post(`${process.env.apiPath}/feedbacks`, {
         comment: comment,
@@ -48,10 +53,10 @@ export default function FeedBackIndex() {
       })
       Swal.fire('Success', response.data.message, 'success')
       setLoading(false)
-      // router.push('/')
       window.close()
     } catch (error) {
       setLoading(false)
+      Swal.fire(error.response.data.message, '', 'info')
       throw error
     }
   }
