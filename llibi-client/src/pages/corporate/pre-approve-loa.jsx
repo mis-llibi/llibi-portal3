@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useReducer } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
@@ -256,34 +257,38 @@ export default function PreApproveLoa() {
   }, [state.employee])
 
   return (
-    <div className="px-10 mx-auto">
-      <img
-        src="https://llibi.app/company-images/llibi_logo.png"
-        alt="LLIBI LOGO"
-        width={250}
-      />
-      <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3">
-        <div className="flex-grow border p-3 rounded-md shadow-md">
-          <div className="w-full">
-            <Tabs
-              className="mb-3"
-              value={value}
-              onChange={handleChange}
-              aria-label="basic tabs example">
-              <Tab label="Utilization" />
-              <Tab label="Laboratory" />
-            </Tabs>
-            <CustomTabPanel value={value} index={0}>
-              <UtilizationTab
-                search={search}
-                handleSearch={handleSearch}
-                handleSelectUtilizationAll={handleSelectUtilizationAll}
-                handleSelectUtilization={handleSelectUtilization}
-                selectedUtil={selectedUtil}
-              />
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={1}>
-              {/* <table className="w-full">
+    <>
+      <Head>
+        <title>Pre Approve Loa</title>
+      </Head>
+      <div className="px-10 mx-auto">
+        <img
+          src="https://llibi.app/company-images/llibi_logo.png"
+          alt="LLIBI LOGO"
+          width={250}
+        />
+        <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3">
+          <div className="flex-grow border p-3 rounded-md shadow-md">
+            <div className="w-full">
+              <Tabs
+                className="mb-3"
+                value={value}
+                onChange={handleChange}
+                aria-label="basic tabs example">
+                <Tab label="Utilization" />
+                <Tab label="Laboratory" />
+              </Tabs>
+              <CustomTabPanel value={value} index={0}>
+                <UtilizationTab
+                  search={search}
+                  handleSearch={handleSearch}
+                  handleSelectUtilizationAll={handleSelectUtilizationAll}
+                  handleSelectUtilization={handleSelectUtilization}
+                  selectedUtil={selectedUtil}
+                />
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={1}>
+                {/* <table className="w-full">
                 <thead>
                   <tr>
                     <th>Procedure</th>
@@ -311,108 +316,109 @@ export default function PreApproveLoa() {
                   })}
                 </tbody>
               </table> */}
-              <LaboratoryTab
-                search={searchLab}
-                handleSearch={handleSearchLab}
-                // handleSelectUtilizationAll={handleSelectUtilizationAll}
-                handleSelectLaboratory={handleSelectLaboratory}
-                selectedLab={selectedLab}
-              />
-            </CustomTabPanel>
+                <LaboratoryTab
+                  search={searchLab}
+                  handleSearch={handleSearchLab}
+                  // handleSelectUtilizationAll={handleSelectUtilizationAll}
+                  handleSelectLaboratory={handleSelectLaboratory}
+                  selectedLab={selectedLab}
+                />
+              </CustomTabPanel>
+            </div>
           </div>
-        </div>
-        <div className="w-full lg:w-[400px] border p-3 rounded-md shadow-md">
-          {!employee ? (
-            <div>Loading...</div>
-          ) : (
-            <div>
-              <h4 className="font-medium">
-                <span className="font-bold">Company:</span>{' '}
-                <span className="">{state.employee?.companies?.name}</span>
-              </h4>
-              <h4 className="font-medium">
-                <span className="font-bold">Employee:</span>{' '}
-                <span className="">
-                  {state.employee?.last}, {state.employee?.given}{' '}
-                  {state.employee?.middle}.
-                </span>
-              </h4>
-              <h4 className="font-medium">
-                <span className="font-bold">Plan Type:</span>{' '}
-                <span className="">
-                  {state.employee?.companies?.plantype}{' '}
-                  {state.employee?.companies?.sharetype}
-                </span>
-              </h4>
-              {/* <h4 className="font-medium">Combined IPOP -Per Illness</h4> */}
-              {/* <h4 className="font-medium">Shared limit - Dep</h4> */}
+          <div className="w-full lg:w-[400px] border p-3 rounded-md shadow-md">
+            {!employee ? (
+              <div>Loading...</div>
+            ) : (
+              <div>
+                <h4 className="font-medium">
+                  <span className="font-bold">Company:</span>{' '}
+                  <span className="">{state.employee?.companies?.name}</span>
+                </h4>
+                <h4 className="font-medium">
+                  <span className="font-bold">Employee:</span>{' '}
+                  <span className="">
+                    {state.employee?.last}, {state.employee?.given}{' '}
+                    {state.employee?.middle}.
+                  </span>
+                </h4>
+                <h4 className="font-medium">
+                  <span className="font-bold">Plan Type:</span>{' '}
+                  <span className="">
+                    {state.employee?.companies?.plantype}{' '}
+                    {state.employee?.companies?.sharetype}
+                  </span>
+                </h4>
+                {/* <h4 className="font-medium">Combined IPOP -Per Illness</h4> */}
+                {/* <h4 className="font-medium">Shared limit - Dep</h4> */}
 
-              <br />
-              <hr />
-              <br />
+                <br />
+                <hr />
+                <br />
 
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <td>MBL</td>
-                    <td className="text-right">
-                      {Number(state.employee?.opr) > 0 &&
-                        formatter.format(state.employee?.opr)}
+                <table className="w-full">
+                  <thead>
+                    <tr>
+                      <td>MBL</td>
+                      <td className="text-right">
+                        {Number(state.employee?.opr) > 0 &&
+                          formatter.format(state.employee?.opr)}
 
-                      {Number(state.employee?.ipr) > 0 &&
-                        Number(state.employee?.opr) === 0 &&
-                        formatter.format(state.employee?.opr)}
+                        {Number(state.employee?.ipr) > 0 &&
+                          Number(state.employee?.opr) === 0 &&
+                          formatter.format(state.employee?.opr)}
 
-                      {Number(state.employee?.ipr) === 0 &&
-                        Number(state.employee?.opr) === 0 &&
-                        formatter.format(state.employee?.opr)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Reservation</td>
-                    <td className="text-right">
-                      {formatter.format(state.reservation)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Utilization</td>
-                    <td className="text-right">
-                      {formatter.format(state.utilization)}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Laboratory Cost</td>
-                    <td className="text-right">
-                      {formatter.format(state.laboratory)}
-                    </td>
-                  </tr>
-                </thead>
-              </table>
-              <br />
-              <hr />
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <td>Remaining Limit</td>
-                    <td className="text-right">
-                      {/* {formatter.format(
+                        {Number(state.employee?.ipr) === 0 &&
+                          Number(state.employee?.opr) === 0 &&
+                          formatter.format(state.employee?.opr)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Reservation</td>
+                      <td className="text-right">
+                        {formatter.format(state.reservation)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Utilization</td>
+                      <td className="text-right">
+                        {formatter.format(state.utilization)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Laboratory Cost</td>
+                      <td className="text-right">
+                        {formatter.format(state.laboratory)}
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+                <br />
+                <hr />
+                <table className="w-full">
+                  <thead>
+                    <tr>
+                      <td>Remaining Limit</td>
+                      <td className="text-right">
+                        {/* {formatter.format(
                       state.employee?.opr -
                         state.utilization -
                         state.laboratory,
                     )} */}
 
-                      {formatter.format(remainingLimit)}
-                    </td>
-                  </tr>
-                </thead>
-              </table>
-            </div>
-          )}
+                        {formatter.format(remainingLimit)}
+                      </td>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <DisplaySelectedUtilization utilization={selectedUtil} />
-      <DisplaySelectedLaboratory laboratory={selectedLab} />
-    </div>
+        <DisplaySelectedUtilization utilization={selectedUtil} />
+        <DisplaySelectedLaboratory laboratory={selectedLab} />
+      </div>
+    </>
   )
 }

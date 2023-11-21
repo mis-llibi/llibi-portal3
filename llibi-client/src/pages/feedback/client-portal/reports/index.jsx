@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 import axios from '@/lib/axios'
 import useSWR from 'swr'
@@ -146,6 +147,9 @@ export default function ReportHomePage() {
 
   return (
     <>
+      <Head>
+        <title>Client Portal Reports</title>
+      </Head>
       <div className="bg-[#f1faee]">
         <nav className="bg-blue-300 h-16">
           <div className="flex gap-3 px-5">

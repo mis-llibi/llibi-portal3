@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import axios from '@/lib/axios'
 
 import BackdropComponent from '@/components/BackdropComponent'
@@ -84,6 +85,9 @@ export default function SendingFeedback() {
 
   return (
     <>
+    <Head>
+      <title>Sending Feedback</title>
+    </Head>
       <div className="flex justify-center items-center h-screen bg-blue-gray-50 px-5">
         <div className="w-full md:w-1/2 mx-auto border flex flex-col items-center p-5 shadow-md bg-white rounded-md">
           <div className="w-full px-3 mb-3 text-center">
