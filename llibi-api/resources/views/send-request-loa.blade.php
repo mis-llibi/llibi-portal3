@@ -45,13 +45,23 @@
   <br />
   {!! $feedbackLink !!}
 
-  <p>
-    This email is sent by Lacson and Lacson Insurance Brokers, Inc.
-    <br>
-    Address: 15th Floor Burgundy Corporate Tower 252 Sen. Gil Puyat Ave., Makati City
-  </p>
+  <br />
+  <br />
 
-  <b>This is an auto-generated Email.</b>
+  <hr>
+  <footer>
+    <div>
+      <img src="https://llibi.app/images/lacson-logo.png" alt="LLIBI LOGO" width="200">
+    </div>
+    <div>
+      <small style="color: gray;">&#9400; {{ date('Y') }} Lacson & Lacson Insurance Brokers, Inc. | 15th Floor
+        Burgundy Corporate Tower 252 Sen. Gil Puyat Ave., Makati City, 1200</small>
+    </div>
+    <div>
+      <small style="font-weight: bold; text-transform: uppercase;">This is an auto-generated Email. Does not support
+        replies.</small>
+    </div>
+  </footer>
 </body>
 
 </html>

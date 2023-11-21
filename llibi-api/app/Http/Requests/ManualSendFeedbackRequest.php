@@ -24,8 +24,9 @@ class ManualSendFeedbackRequest extends FormRequest
   public function rules()
   {
     return [
-      'loa' => 'required',
-      'email' => 'required|email'
+      'loa' => 'required|mimes:pdf',
+      'email' => 'required|email:rfc,dns',
+      'provider_email' => 'nullable|email:rfc,dns',
     ];
   }
 }

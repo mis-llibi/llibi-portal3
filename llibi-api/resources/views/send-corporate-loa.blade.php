@@ -58,7 +58,7 @@
   <hr>
   <footer>
     <div>
-      <img src="https://llibi.app/company-images/llibi_logo.png" alt="LLIBI LOGO" width="200">
+      <img src="https://llibi.app/images/lacson-logo.png" alt="LLIBI LOGO" width="200">
     </div>
     <div>
       <small style="color: gray;">&#9400; {{ date('Y') }} Lacson & Lacson Insurance Brokers, Inc. | 15th Floor

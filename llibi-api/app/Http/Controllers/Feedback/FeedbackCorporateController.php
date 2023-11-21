@@ -262,6 +262,7 @@ class FeedbackCorporateController extends Controller
     $employee_id = $request->employee_id;
     $approval_code = $request->approval_code;
     $email = $request->email;
+    $provider_email = $request->provider_email;
     $loa = $request->file('loa');
 
     $path = $request->file('loa')->storeAs(
@@ -310,6 +311,16 @@ class FeedbackCorporateController extends Controller
         attachments: [Storage::path($path)],
       );
       $emailer->send();
+
+      if ($provider_email) {
+        $emailer = new SendingEmail(
+          email: $provider_email,
+          body: $mailMsg,
+          subject: 'LLIBI LOA TO PROVIDER',
+          attachments: [Storage::path($path)],
+        );
+        $emailer->send();
+      }
     }
 
     if (App::environment('production')) {
@@ -321,6 +332,16 @@ class FeedbackCorporateController extends Controller
         cc: ['clientcare@llibi.com'],
       );
       $emailer->send();
+
+      if ($provider_email) {
+        $emailer = new SendingEmail(
+          email: $provider_email,
+          body: $mailMsg,
+          subject: 'LLIBI LOA TO PROVIDER',
+          attachments: [Storage::path($path)],
+        );
+        $emailer->send();
+      }
     }
 
     return response()->noContent();

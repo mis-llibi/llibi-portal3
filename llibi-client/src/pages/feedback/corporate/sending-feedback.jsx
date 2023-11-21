@@ -8,10 +8,17 @@ export default function SendingFeedback() {
   const router = useRouter()
   const fileRef = useRef(null)
 
-  const { employee_id, patient_id, hospital_id, company_id, approval_code } = router.query
+  const {
+    employee_id,
+    patient_id,
+    hospital_id,
+    company_id,
+    approval_code,
+  } = router.query
 
   const [file, setFile] = useState(null)
   const [email, setEmail] = useState('')
+  const [providerEmail, setProviderEmail] = useState('')
   const [bccEmail, setBccEmail] = useState('')
 
   const [open, setOpen] = useState(false)
@@ -21,6 +28,7 @@ export default function SendingFeedback() {
 
     FORMDATA.append('loa', file)
     FORMDATA.append('email', email)
+    FORMDATA.append('provider_email', providerEmail)
     FORMDATA.append('employee_id', employee_id)
     FORMDATA.append('approval_code', approval_code)
     setOpen(true)
@@ -33,9 +41,19 @@ export default function SendingFeedback() {
       fileRef.current.value = null
       setFile(null)
       setEmail('')
-      window.close();
+      setProviderEmail('')
+      window.close()
     } catch (error) {
       setOpen(false)
+      if (error.response.status === 422) {
+        let errMsg = ''
+        const keys = Object.keys(error.response.data.errors)
+        for (let i in Object.keys(error.response.data.errors)) {
+          errMsg += `${error.response.data.errors[keys[i]][0]}\n`
+        }
+        alert(errMsg)
+        return
+      }
       alert('Something wrong')
       throw error
     }
@@ -50,7 +68,9 @@ export default function SendingFeedback() {
         )
         setEmail(response.data.email)
       } catch (error) {
-        alert('Please advice MIS (Mailyn/Joy) to upload in the DA masterlist. For the mean time please proceed using manual email')
+        alert(
+          'Please advice MIS (Mailyn/Joy) to upload in the DA masterlist. For the mean time please proceed using manual email',
+        )
         throw error
       } finally {
         setOpen(false)
@@ -81,9 +101,24 @@ export default function SendingFeedback() {
               type="email"
               name="email"
               id="email"
-              placeholder="Email"
+              placeholder="Recipient Email"
               value={email ?? ''}
               onChange={e => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="w-full px-3 mb-3">
+            <label className="text-sm font-bold" htmlFor="">
+              Provider Email {''}
+              <small className="font-light text-red-700">(Required)</small>
+            </label>
+            <input
+              className="w-full rounded-md"
+              type="email"
+              name="provider_email"
+              id="email"
+              placeholder="Provider Email"
+              value={providerEmail ?? ''}
+              onChange={e => setProviderEmail(e.target.value)}
             />
           </div>
           {/* <div className="w-full px-3 mb-3">
