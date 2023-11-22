@@ -113,7 +113,6 @@ export default function SendingFeedback() {
           <div className="w-full px-3 mb-3">
             <label className="text-sm font-bold" htmlFor="">
               Provider Email {''}
-              <small className="font-light text-red-700">(Required)</small>
             </label>
             <input
               className="w-full rounded-md"
