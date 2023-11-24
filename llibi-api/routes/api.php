@@ -107,6 +107,7 @@ Route::put('/settings', [SettingController::class, 'update']);
 // feedback client portal
 Route::post('/feedbacks', [FeedbackController::class, 'store']);
 Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
+Route::get('/feedbacks/is-expired/{request_id}', [FeedbackController::class, 'checkingIfFeedbackLinkIsExpired']);
 Route::get('/feedbacks', [FeedbackController::class, 'index']);
 // feedback corporate
 Route::get('/corporate/feedbacks', [FeedbackCorporateController::class, 'index']);

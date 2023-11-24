@@ -10,9 +10,10 @@ use App\Models\Feedback;
 use App\Http\Requests\FeedbackRequest;
 use App\Http\Requests\ManualSendFeedbackRequest;
 use App\Models\Corporate\Employees;
+use App\Models\Self_service\Client;
 use App\Models\Self_service\Sync;
 use App\Services\SendingEmail;
-
+use Carbon\Carbon;
 use Illuminate\Http\File;
 use Illuminate\Mail\Attachment;
 use Illuminate\Support\Facades\DB;
@@ -239,6 +240,10 @@ class FeedbackController extends Controller
       return response()->json(['status' => false, 'message' => 'You are already send feedback.'], 400);
     }
 
+    if ($this->checkingIfFeedbackLinkIsExpired($request_id)) {
+      return response()->json(['status' => false, 'message' => 'Feedback link already expired.'], 400);
+    }
+
     $feedback = Feedback::create([
       'request_id' => $request_id,
       'company_code' => $company_code,
@@ -259,5 +264,12 @@ class FeedbackController extends Controller
     $feedback = Feedback::where('request_id', $request_id)->exists();
 
     return $feedback;
+  }
+
+  public function checkingIfFeedbackLinkIsExpired($request_id)
+  {
+    $feedback = Client::where('id', $request_id)->first();
+    // return $feedback;
+    return Carbon::parse($feedback->created_at)->diffInDays(now()) >= 3;
   }
 }
