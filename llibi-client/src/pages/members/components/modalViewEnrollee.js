@@ -50,7 +50,7 @@ const modalUpdateMember = ({ data }) => {
                 return {
                     color: 'bg-green-400',
                     status: 'Enrolled',
-                    text: `Certificate #: ${data?.certificate_no}`,
+                    text: `Card #: ${data?.certificate_no}`,
                     date: data?.changed_status_at,
                 }
             case 6:

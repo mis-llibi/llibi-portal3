@@ -89,6 +89,7 @@ const Members = () => {
                                 { label: 'Members for Correction', value: 7 },
                                 { label: 'Members for Cancellation', value: 8 },
                                 { label: 'Cancelled Membership', value: 9 },
+                                { label: 'Late Enrolled', value: 101 },
                             ]}
                             register={register('selection')}
                         />

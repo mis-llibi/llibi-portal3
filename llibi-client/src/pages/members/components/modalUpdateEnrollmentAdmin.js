@@ -110,7 +110,7 @@ const modalUpdateEnrollmentAdmin = ({
                                 watch('changeStatus') == 6 && 'hidden'
                             }`}>
                             <Label htmlFor="certificateNo">
-                                Certificate No
+                                Card Number
                             </Label>
                             <Input
                                 id="certificateNo"
@@ -119,7 +119,7 @@ const modalUpdateEnrollmentAdmin = ({
                                 register={register('certificateNo', {
                                     required:
                                         watch('changeStatus') == 4
-                                            ? 'Certificate number is required'
+                                            ? 'Card number is required'
                                             : false,
                                 })}
                                 errors={errors?.certificateNo}
