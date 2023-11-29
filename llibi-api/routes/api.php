@@ -32,6 +32,7 @@ use App\Http\Controllers\PreApprove\UtilizationController;
 
 use App\Http\Controllers\Api_third_party\MobileApiAccessController;
 use App\Http\Controllers\Feedback\FeedbackCorporateController;
+use App\Http\Controllers\SearchMasterlist\MasterlistController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -124,4 +125,5 @@ Route::post('/pre-approve/deel/upload', [UtilizationController::class, 'importDe
 //THIRD PARTY APP API
 Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberData']);
 Route::post('/renew/upload-csv', [SelfService::class, 'renewImportCsv']);
-Route::get('/environment-checker', fn() => config('app.env'));
+Route::get('/environment-checker', fn () => config('app.env'));
+Route::get('/search-masterlist', [MasterlistController::class, 'index']);
