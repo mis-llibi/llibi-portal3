@@ -13,7 +13,10 @@ export default function ModalLapseCutoffRemarks({
 
   const submit = async => {
     setLoading(true)
-    create({ ...data, setLoading, setShow, reset })
+
+    const payload = { ...data, lapseRemarks: lapseRemarks }
+    console.log(payload)
+    create({ ...payload, setLoading, setShow, reset })
   }
 
   return (
@@ -34,9 +37,11 @@ export default function ModalLapseCutoffRemarks({
         coverage shall be the 16th of the following month.
       </div>
       <div>
-        <Label>Remarks</Label>
+        <Label htmlFor="reasonForLateEnollment">
+          Reason for late enrollment
+        </Label>
         <textarea
-          id="philHealthConditions"
+          id="reasonForLateEnollment"
           onChange={e => setLapseRemarks(e.target.value)}
           className={
             'mt-1 w-full rounded-md bg-gray-50 text-gray-900 border-gray-300 focus:outline-blue-500'

@@ -1,5 +1,6 @@
 import ProviderLayout from '@/components/Layouts/Self-service/ProviderLayout'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 
 import ApplicationLogo from '@/components/ApplicationLogo'
 import Label from '@/components/Label'
@@ -33,8 +34,10 @@ import Swal from 'sweetalert2'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import MUIButton from '@mui/material/Button'
+import Link from 'next/link'
 
 const Admin = () => {
+  const router = useRouter()
   // const [play] = useSound('/thepurge.mp3')
   // const [audio, setAudio] = useState(null)
   const videoRef = useRef(null)
@@ -328,6 +331,9 @@ const Admin = () => {
                   {[2, 3].includes(user?.user_level) && (
                     <>
                       <div className="flex gap-1">
+                        <a className='text-blue-700 font-bold w-40 self-center' href='/search-masterlist' target='_blank'>
+                          Search to masterlist
+                        </a>
                         <Button type="button" onClick={handleShowModalSetDate}>
                           Export
                         </Button>

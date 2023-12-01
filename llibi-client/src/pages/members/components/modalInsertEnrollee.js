@@ -43,7 +43,20 @@ const modalUploadEnrollee = ({ create, loading, setLoading, setShow }) => {
     const lapseDays = start.diff(end, 'days')
 
     if (lapseDays > 30) {
-      lapseCutOffDays(data)
+      Swal.fire({
+        title: 'Lorem Ipsum',
+        text:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.",
+        icon: 'warning',
+        showCancelButton: true,
+        // confirmButtonColor: '#3085d6',
+        // cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Confirmed',
+      }).then(result => {
+        if (result.isConfirmed) {
+          lapseCutOffDays(data)
+        }
+      })
       return
     }
     setLoading(true)

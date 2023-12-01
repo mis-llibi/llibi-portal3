@@ -28,5 +28,6 @@ class hr_members extends Model
         'if_enrollee_is_a_philhealth_member',
         'client_remarks',
         'status',
+        'late_enrolled_remarks',
     ];
 }

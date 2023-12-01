@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Members;
 
+use App\Exports\Members\LateEnrolledExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -81,6 +82,7 @@ class ManageEnrolleeController extends Controller
       'client_remarks' => $request->clientRemarks,
       // status 101 means late enrollee
       'status' => Carbon::parse($request->dateHired)->diffInDays(now()) > 30 ? 101 : 1,
+      'late_enrolled_remarks' => $request->lapseRemarks,
     ];
     $member = hr_members::create($members);
 
@@ -340,5 +342,45 @@ class ManageEnrolleeController extends Controller
       hr_members::where('id', $value)
         ->update($members);
     }
+  }
+
+  public function exportLateEnrolled()
+  {
+    $data = hr_members::query()
+      ->where('status', 101)
+      ->join('hr_contact as hrcon', 'hr_members.id', 'hrcon.link_id',)
+      ->join('hr_philhealth as hrphil', 'hr_members.id', 'hrphil.link_id',)
+      ->select([
+        'hr_members.employee_no',
+        'hr_members.first_name',
+        'hr_members.last_name',
+        'hr_members.middle_name',
+        'hr_members.extension',
+        'hr_members.gender',
+        'hrcon.street',
+        'hrcon.city',
+        'hrcon.province',
+        'hrcon.zip_code',
+        'hrcon.email',
+        'hrcon.mobile_no',
+        'hr_members.member_type',
+        'hr_members.birth_date',
+        'hr_members.relationship_id',
+        'hr_members.civil_status',
+        'hr_members.effective_date',
+        'hr_members.date_hired',
+        'hr_members.reg_date',
+        'hr_members.if_enrollee_is_a_philhealth_member',
+        'hrphil.philhealth_conditions',
+        'hrphil.position',
+        'hrphil.plan_type',
+        'hrphil.branch_name',
+        'hrphil.philhealth_no',
+        'hrphil.senior_citizen_id_no',
+        'hr_members.client_remarks',
+        'hr_members.late_enrolled_remarks',
+      ])
+      ->get();
+    return Excel::download(new LateEnrolledExport($data), 'late-enrolled-' . now()->format('Y-m-d') . '.xlsx');
   }
 }
