@@ -16,6 +16,7 @@ use App\Models\Members\hr_philhealth;
 use App\Models\Members\hr_members_correction;
 use App\Models\Members\hr_contact_correction;
 use App\Models\Members\hr_philhealth_correction;
+use App\Services\SendingEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -57,9 +58,19 @@ class ManageEnrolleeController extends Controller
   public function import(Request $request)
   {
     $comp = '';
-    $excel = Excel::import(new MasterlistImport($comp), $request->file);
+    $import = new MasterlistImport($comp);
+    $excel = Excel::import($import, $request->file);
+    $late_enrolled = $import->getLateEnrolledImport();
 
-    return response()->noContent();
+    // new SendingEmail(
+    //   email: 'glenilagan@llibi.com',
+    //   body: view('send-late-enrollee-hr-portal'),
+    //   subject: 'LATE ENROLLEE - NOTIFICATION',
+    //   attachments: [],
+    // );
+
+
+    return response()->json($late_enrolled);
   }
 
   public function create(Request $request)
