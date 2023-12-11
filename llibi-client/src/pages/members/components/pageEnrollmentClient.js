@@ -266,7 +266,10 @@ const pageEnrollmentClient = ({ props }) => {
   }
 
   const exportLateEnrolled = () => {
-    window.open(`${process.env.backEndUrl}/api/export-late-enrolled`, '_blank');
+    window.open(
+      `${process.env.backEndUrl}/api/export-enrolled?status=${status}`,
+      '_blank',
+    )
   }
 
   //DATA GRID COLUMN HEADER
@@ -402,10 +405,17 @@ const pageEnrollmentClient = ({ props }) => {
             </Button>
             <Button
               onClick={insertEnrollee}
-              className="bg-pink-400 hover:bg-pink-700 focus:bg-pink-700 active:bg-pink-700 ring-pink-200 mb-2 md:mb-0 w-full md:w-auto"
+              className="mr-2 bg-pink-400 hover:bg-pink-700 focus:bg-pink-700 active:bg-pink-700 ring-pink-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
               Insert Enrollee
             </Button>
+            <Button
+              onClick={exportLateEnrolled}
+              className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
+              disabled={props?.loading}>
+              Export
+            </Button>
+
             <Button
               onClick={submitForEnrollment}
               className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 md:float-right mb-2 md:mb-0 w-full  md:w-auto"
@@ -453,7 +463,7 @@ const pageEnrollmentClient = ({ props }) => {
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
-              Export Late Enrolled
+              Export
             </Button>
           </div>
 

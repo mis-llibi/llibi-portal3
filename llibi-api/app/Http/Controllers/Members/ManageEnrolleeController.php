@@ -62,12 +62,13 @@ class ManageEnrolleeController extends Controller
     $excel = Excel::import($import, $request->file);
     $late_enrolled = $import->getLateEnrolledImport();
 
-    // new SendingEmail(
-    //   email: 'glenilagan@llibi.com',
-    //   body: view('send-late-enrollee-hr-portal'),
-    //   subject: 'LATE ENROLLEE - NOTIFICATION',
-    //   attachments: [],
-    // );
+    $sending = new SendingEmail(
+      email: 'testllibi1@yopmail.com',
+      body: view('send-late-enrollee-hr-portal', ['data' => $late_enrolled]),
+      subject: 'LATE ENROLLEE - NOTIFICATION',
+      attachments: [],
+    );
+    $sending->send();
 
 
     return response()->json($late_enrolled);
@@ -355,10 +356,11 @@ class ManageEnrolleeController extends Controller
     }
   }
 
-  public function exportLateEnrolled()
+  public function exportEnrolled()
   {
+    $status = request()->query('status');
     $data = hr_members::query()
-      ->where('status', 101)
+      ->where('status', $status)
       ->join('hr_contact as hrcon', 'hr_members.id', 'hrcon.link_id',)
       ->join('hr_philhealth as hrphil', 'hr_members.id', 'hrphil.link_id',)
       ->select([

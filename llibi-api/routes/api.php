@@ -127,4 +127,4 @@ Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberD
 Route::post('/renew/upload-csv', [SelfService::class, 'renewImportCsv']);
 Route::get('/environment-checker', fn () => config('app.env'));
 Route::get('/search-masterlist', [MasterlistController::class, 'index']);
-Route::get('/export-late-enrolled', [ManageEnrolleeController::class, 'exportLateEnrolled']);
+Route::get('/export-enrolled', [ManageEnrolleeController::class, 'exportEnrolled']);
