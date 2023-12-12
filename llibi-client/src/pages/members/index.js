@@ -15,6 +15,7 @@ import PageEnrollmentClient from './components/pageEnrollmentClient'
 import PageEnrollmentAdmin from './components/pageEnrollmentAdmin'
 
 import Loader from '@/components/Loader'
+import Label from '@/components/Label'
 
 const Members = () => {
   const { user } = useAuth({ middleware: 'auth' })
@@ -44,7 +45,7 @@ const Members = () => {
   const { register, watch } = useForm()
 
   const checkUserRole = () => {
-    if (user && !user?.role) return 1
+    if (user && !user?.role) return 4
     return 2
   }
 
@@ -73,24 +74,27 @@ const Members = () => {
       {/* CLIENT ENROLLMENT PAGE */}
       {user && !user?.role && (
         <>
-          <div className="max-w-xl mx-auto sm:px-6 lg:px-8 mt-2">
-            <Select
-              id="statusCheckerClient"
-              className="block mt-1 w-full"
-              options={[
-                {
-                  label: 'Pending for Enrollment',
-                  value: 1,
-                },
-                { label: 'Denied Enrollment', value: 6 },
-                { label: 'Enrolled Members', value: 4 },
-                { label: 'Members for Correction', value: 7 },
-                { label: 'Members for Cancellation', value: 8 },
-                { label: 'Cancelled Membership', value: 9 },
-                { label: 'Late Enrolled', value: 101 },
-              ]}
-              register={register('selection')}
-            />
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
+            <div className="bg-white p-3 rounded-lg shadow-sm">
+              <Label>Filter: </Label>
+              <Select
+                id="statusCheckerClient"
+                className="block mt-1 w-full"
+                options={[
+                  { label: 'Enrolled Members', value: 4 },
+                  {
+                    label: 'Pending for Enrollment',
+                    value: 1,
+                  },
+                  { label: 'Denied Enrollment', value: 6 },
+                  { label: 'Members for Correction', value: 7 },
+                  { label: 'Members for Cancellation', value: 8 },
+                  { label: 'Cancelled Membership', value: 9 },
+                  { label: 'Late Enrolled', value: 101 },
+                ]}
+                register={register('selection')}
+              />
+            </div>
           </div>
           <PageEnrollmentClient props={props} />
         </>
@@ -99,21 +103,24 @@ const Members = () => {
       {/* ADMIN ENROLLMENT PAGE */}
       {user && user?.role && (
         <>
-          <div className="max-w-xl mx-auto sm:px-6 lg:px-8 mt-2">
-            <Select
-              id="statusCheckerAdmin"
-              className="block mt-1 w-full"
-              options={[
-                {
-                  label: 'Submitted For Enrollment',
-                  value: 2,
-                },
-                { label: 'Members for Correction', value: 7 },
-                { label: 'Members for Cancellation', value: 8 },
-                { label: 'Enrolled Members', value: 4 },
-              ]}
-              register={register('selection')}
-            />
+          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
+            <div className="bg-white p-3 rounded-lg shadow-sm">
+              <Label>Filter: </Label>
+              <Select
+                id="statusCheckerAdmin"
+                className="block mt-1 w-full"
+                options={[
+                  {
+                    label: 'Submitted For Enrollment',
+                    value: 2,
+                  },
+                  { label: 'Members for Correction', value: 7 },
+                  { label: 'Members for Cancellation', value: 8 },
+                  { label: 'Enrolled Members', value: 4 },
+                ]}
+                register={register('selection')}
+              />
+            </div>
           </div>
           <PageEnrollmentAdmin props={props} />
         </>

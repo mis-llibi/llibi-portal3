@@ -401,19 +401,19 @@ const pageEnrollmentClient = ({ props }) => {
               onClick={uploadEnrollee}
               className="mr-2 bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
-              Upload Enrollee
+              Batch Upload Enrollee
             </Button>
             <Button
               onClick={insertEnrollee}
               className="mr-2 bg-pink-400 hover:bg-pink-700 focus:bg-pink-700 active:bg-pink-700 ring-pink-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
-              Insert Enrollee
+              Manually Insert Enrollee
             </Button>
             <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
-              Export
+              Export Pending Enrollment
             </Button>
 
             <Button
@@ -463,7 +463,7 @@ const pageEnrollmentClient = ({ props }) => {
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
-              Export
+              Export Late Enrolled
             </Button>
           </div>
 

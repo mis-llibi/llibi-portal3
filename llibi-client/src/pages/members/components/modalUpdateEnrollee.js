@@ -65,7 +65,7 @@ const modalUpdateMember = ({ data, update, loading, setLoading, setShow }) => {
             ? moment().add(1, 'M').date(1).format('YYYY-MM-DD')
             : moment().add(1, 'M').date(16).format('YYYY-MM-DD')
         setValue('effectiveDate', setCutOffDate)
-        console.log(setCutOffDate)
+        // console.log(setCutOffDate)
       } else {
         setValue('effectiveDate', data?.effective_date)
       }
@@ -418,6 +418,7 @@ const modalUpdateMember = ({ data, update, loading, setLoading, setShow }) => {
               register={register('dateHired', {
                 required: 'Date hired is required',
               })}
+              // onInput={() => setValue('changeEffectiveDate', undefined)}
               errors={errors?.dateHired}
             />
           </div>
