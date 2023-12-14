@@ -16,9 +16,13 @@ use App\Models\Members\hr_philhealth;
 use App\Models\Members\hr_members_correction;
 use App\Models\Members\hr_contact_correction;
 use App\Models\Members\hr_philhealth_correction;
+use App\Models\Self_enrollment\attachment;
 use App\Services\SendingEmail;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ManageEnrolleeController extends Controller
 {
@@ -395,5 +399,30 @@ class ManageEnrolleeController extends Controller
       ])
       ->get();
     return Excel::download(new LateEnrolledExport($data), 'late-enrolled-' . now()->format('Y-m-d') . '.xlsx');
+  }
+
+  public function uploadFile(Request $request)
+  {
+    $file = $request->file('file');
+    $filename_hash = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+    $file_uploaded_path = $file->storeAs('/public/uploaded-enrollee', $filename_hash);
+    $file_path =  Storage::path($file_uploaded_path);
+
+    $mailer = new SendingEmail(
+      email: 'juniorarmando895@gmail.com',
+      body: '<h1>hello</h1>',
+      subject: 'TEST SUBJECT',
+      attachments: [$file_path]
+    );
+    // $mailer->send();
+
+    return $file_path;
+  }
+
+  public function retrieveFile()
+  {
+    // return Storage::url('uploaded-enrollee/1Fw94t8Wg1EvkzOo2rBKiulwf5OEs6VwPvdoH0Fb.txt', now()->addMinutes(5));
+    // return Storage::disk('public')->exists('uploaded-enrollee/1Fw94t8Wg1EvkzOo2rBKiulwf5OEs6VwPvdoH0Fb.txt');
   }
 }

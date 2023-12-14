@@ -9,6 +9,7 @@ class Doctors extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql_corporate';
+    // protected $connection = 'mysql_corporate';
+    protected $connection = 'mysql_sync';
     protected $table = 'doctors';
 }
