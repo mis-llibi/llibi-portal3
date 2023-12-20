@@ -20,38 +20,38 @@ class UtilizationImport implements ToCollection, WithBatchInserts, WithChunkRead
   {
     $i = 0;
     foreach ($rows as $row) {
-      // if ($i > 0) {
-        $dateString = $row['claimdate'];
-        $date  = Carbon::createFromFormat('m/d/Y', $dateString);
-        try {
-          $isExist = Utilization::where([
-            'uniqcode' => trim($row['uniqcode']),
-            'empcode' => trim($row['empcode']),
-            'claimnumb' => trim($row['claimnumb']),
-            'seriesnumb' => trim($row['seriesnumb']),
-            'compcode' => trim($row['compcode']),
-          ])->exists();
+      if ($i == 0) {
+        Utilization::where('compcode', $row['compcode'])->delete();
+        $i++;
+      }
 
-          if (!$isExist) {
-            Utilization::insert([
-              'uniqcode' => trim($row['uniqcode']),
-              'empcode' => trim($row['empcode']),
-              'claimnumb' => trim($row['claimnumb']),
-              'seriesnumb' => trim($row['seriesnumb']),
-              'compcode' => trim($row['compcode']),
-              'claimtype' => trim($row['claimtype']),
-              'claimdate' => $date->format('Y-m-d'),
-              'diagcode' => trim($row['diagcode']),
-              'diagname' => trim($row['diagname']),
-              'eligible' => trim($row['eligible']),
-            ]);
-          }
-        } catch (\Throwable $th) {
-          Log::error($th->getMessage());
-          // throw $th;
-        }
-      // }
-      // $i++;
+      $dateString = $row['claimdate'];
+      $date  = Carbon::createFromFormat('m/d/Y', $dateString);
+      try {
+        // $isExist = Utilization::where([
+        //   'uniqcode' => trim($row['uniqcode']),
+        //   'empcode' => trim($row['empcode']),
+        //   'claimnumb' => trim($row['claimnumb']),
+        //   'seriesnumb' => trim($row['seriesnumb']),
+        //   'compcode' => trim($row['compcode']),
+        // ])->exists();
+
+        Utilization::insert([
+          'uniqcode' => trim($row['uniqcode']),
+          'empcode' => trim($row['empcode']),
+          'claimnumb' => trim($row['claimnumb']),
+          'seriesnumb' => trim($row['seriesnumb']),
+          'compcode' => trim($row['compcode']),
+          'claimtype' => trim($row['claimtype']),
+          'claimdate' => $date->format('Y-m-d'),
+          'diagcode' => trim($row['diagcode']),
+          'diagname' => trim($row['diagname']),
+          'eligible' => trim($row['eligible']),
+        ]);
+      } catch (\Throwable $th) {
+        Log::error($th->getMessage());
+        // throw $th;
+      }
     }
   }
 

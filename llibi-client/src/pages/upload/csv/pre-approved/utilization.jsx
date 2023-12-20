@@ -6,6 +6,10 @@ export default function ClaimsPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleUpload = async () => {
+    if (!file) {
+      alert('Please select csv file first.')
+      return
+    }
     setIsLoading(true)
     const FORMDATA = new FormData()
     if (file) {
@@ -29,16 +33,23 @@ export default function ClaimsPage() {
   }
   return (
     <>
-      <div className="max-w-lg flex flex-col justify-center items-center border mx-auto mt-20 p-5 rounded-md">
-        <h1 className="font-bold uppercase text-3xl mb-5">UPLOAD CSV</h1>
-        <input
-          className="mb-5 w-full"
-          type="file"
-          name="file"
-          id="file"
-          multiple
-          onChange={e => setFile(e.target.files)}
-        />
+      <div className="max-w-lg flex flex-col justify-between items-center border mx-auto mt-20 p-5 rounded-md h-[20rem]">
+        <div>
+          <h1 className="font-bold uppercase text-3xl mb-5 text-gray-900">
+            UPLOAD CSV FOR UTILIZATION
+          </h1>
+          <label htmlFor="file" className="text-gray-700 text-sm font-semibold">
+            Select CSV File
+          </label>
+          <input
+            className="mb-5 w-full border bg-blue-50 p-3 rounded-md cursor-pointer"
+            type="file"
+            name="file"
+            id="file"
+            multiple
+            onChange={e => setFile(e.target.files)}
+          />
+        </div>
         <button
           disabled={isLoading}
           className={`${
