@@ -29,6 +29,7 @@ use App\Http\Controllers\SettingController;
 use App\Models\User;
 use App\Http\Controllers\Feedback\FeedbackController;
 use App\Http\Controllers\PreApprove\UtilizationController;
+use App\Http\Controllers\PreApprove\LaboratoryController;
 
 use App\Http\Controllers\Api_third_party\MobileApiAccessController;
 use App\Http\Controllers\Feedback\FeedbackCorporateController;
@@ -116,11 +117,15 @@ Route::post('/corporate/feedbacks', [FeedbackCorporateController::class, 'sendLo
 Route::post('/corporate/feedbacks/save', [FeedbackCorporateController::class, 'store']);
 Route::get('/corporate/feedbacks/employee', [FeedbackCorporateController::class, 'showEmployee']);
 
-Route::get('/pre-approve/claims', [UtilizationController::class, 'index']);
-Route::post('/pre-approve/claims', [UtilizationController::class, 'importUtilization']);
+Route::get('/pre-approve/utilization', [UtilizationController::class, 'index']);
+Route::post('/pre-approve/utilization', [UtilizationController::class, 'importUtilization']);
 Route::get('/pre-approve/get-employees', [UtilizationController::class, 'getEmployee']);
 
 Route::post('/pre-approve/deel/upload', [UtilizationController::class, 'importDeelUpload']);
+
+Route::get('/pre-approve/laboratory', [LaboratoryController::class, 'index']);
+Route::post('/pre-approve/laboratory', [LaboratoryController::class, 'store']);
+Route::put('/pre-approve/laboratory/{id}', [LaboratoryController::class, 'update']);
 
 //THIRD PARTY APP API
 Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberData']);

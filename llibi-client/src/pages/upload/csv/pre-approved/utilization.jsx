@@ -1,9 +1,14 @@
 import axios from '@/lib/axios'
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 
-export default function ClaimsPage() {
+import Utilization from '@/hooks/pre-approved/utilization'
+
+export default function UtilizationPage() {
+  const router = useRouter()
   const [file, setFile] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { uploadUtilizationCsv } = Utilization()
 
   const handleUpload = async () => {
     if (!file) {
@@ -18,18 +23,20 @@ export default function ClaimsPage() {
       }
     }
 
-    await axios.get(`sanctum/csrf-cookie`)
+    uploadUtilizationCsv({ setIsLoading, FORMDATA })
 
-    try {
-      const response = await axios.post(
-        `${process.env.apiPath}/pre-approve/claims`,
-        FORMDATA,
-      )
-      setIsLoading(false)
-    } catch (error) {
-      setIsLoading(false)
-      throw error
-    }
+    // await axios.get(`sanctum/csrf-cookie`)
+
+    // try {
+    //   const response = await axios.post(
+    //     `${process.env.apiPath}/pre-approve/utilization`,
+    //     FORMDATA,
+    //   )
+    //   setIsLoading(false)
+    // } catch (error) {
+    //   setIsLoading(false)
+    //   throw error
+    // }
   }
   return (
     <>
@@ -47,9 +54,16 @@ export default function ClaimsPage() {
             name="file"
             id="file"
             multiple
+            accept=".csv"
             onChange={e => setFile(e.target.files)}
           />
         </div>
+
+        <button
+          className="p-3 w-full rounded-md font-bold hover:underline"
+          onClick={() => router.push('/upload/csv/pre-approved/laboratory')}>
+          Switch to Laboratory
+        </button>
         <button
           disabled={isLoading}
           className={`${
