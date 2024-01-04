@@ -4,9 +4,22 @@ import { useRouter } from 'next/router'
 import { DataGrid } from '@mui/x-data-grid'
 import axios from '@/lib/axios'
 
-import Laboratory from '@/hooks/pre-approved/laboratory'
+import Laboratory, { deleteLaboratory } from '@/hooks/pre-approved/laboratory'
+
 import AddLaboratory from './component/AddLaboratory'
 import EditLaboratory from './component/EditLaboratory'
+import LaboratoryTable from './component/LaboratoryTable'
+import ImportLaboratory from './component/ImportLaboratory'
+
+import debounce from '@/lib/debounce'
+
+import {
+  CiEdit,
+  CiTrash,
+  CiSquarePlus,
+  CiImport,
+  CiExport,
+} from 'react-icons/ci'
 
 export default function LaboratoryPage() {
   const router = useRouter()
@@ -14,8 +27,12 @@ export default function LaboratoryPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [selectedRow, SetSelectedRow] = useState(null)
+  const [search, setSearch] = useState('')
+  const debounceValue = debounce(search)
 
-  const { LaboratoryRequest, uploadLaboratoryCsv } = Laboratory()
+  const { LaboratoryRequest, uploadLaboratoryCsv } = Laboratory({
+    q: debounceValue,
+  })
 
   const handleUpload = async () => {
     if (!file) {
@@ -55,50 +72,74 @@ export default function LaboratoryPage() {
     setModalIsOpen('edit-laboratory')
   }
 
+  const handleButtonDelete = async row => {
+    await deleteLaboratory(row.id)
+    LaboratoryRequest.mutate()
+  }
+
   const handleButtonEditModalClose = () => {
     setModalIsOpen(false)
   }
 
-  const columns = [
-    // { field: 'id', headerName: 'ID', width: 50 },
-    {
-      field: 'code',
-      headerName: 'Code',
-      // width: 100,
-      flex: 1,
-    },
-    {
-      field: 'laboratory',
-      headerName: 'Laboratory',
-      // width: 160,
-      flex: 1,
-    },
-    {
-      field: 'cost',
-      headerName: 'Cost',
-      // width: 160,
-      flex: 1,
-    },
-    {
-      field: 'action',
-      headerName: 'Action',
-      sortable: false,
-      width: 200,
-      align: 'center',
-      renderCell: ({ row }) => (
-        <>
-          <button
-            onClick={() => handleButtonEdit(row)}
-            className="bg-blue-600 px-3 py-1 rounded-md text-white uppercase font-semibold text-xs">
-            Edit
-          </button>
-        </>
-      ),
-    },
-  ]
+  const handleSearch = text => {
+    setSearch(text)
+  }
 
-  if (LaboratoryRequest.error) return <h1>Error...</h1>
-  if (!LaboratoryRequest.data) return <h1>Loading...</h1>
+  const handleButtonImport = async () => {
+    setModalIsOpen('import-laboratory')
+  }
+
+  const handleButtonExport = async () => {
+    window.open(
+      `${process.env.backEndUrl}/api/pre-approve/laboratory/export?q=${debounceValue}`,
+    )
+  }
+
+  // const columns = [
+  //   // { field: 'id', headerName: 'ID', width: 50 },
+  //   {
+  //     field: 'code',
+  //     headerName: 'Code',
+  //     // width: 100,
+  //     flex: 1,
+  //   },
+  //   {
+  //     field: 'laboratory',
+  //     headerName: 'Laboratory',
+  //     // width: 160,
+  //     flex: 1,
+  //   },
+  //   {
+  //     field: 'cost',
+  //     headerName: 'Cost',
+  //     // width: 160,
+  //     flex: 1,
+  //   },
+  //   {
+  //     field: 'action',
+  //     headerName: 'Action',
+  //     sortable: false,
+  //     width: 200,
+  //     align: 'center',
+  //     renderCell: ({ row }) => (
+  //       <div className="flex gap-1">
+  //         <button
+  //           onClick={() => handleButtonEdit(row)}
+  //           className="border hover:bg-gray-400 p-2 rounded-md text-white uppercase font-semibold text-xs">
+  //           <CiEdit className="text-fav-black md:text-2xl" />
+  //         </button>
+  //         <button
+  //           onClick={() => handleButtonDelete(row)}
+  //           className="border hover:bg-gray-400 p-2 rounded-md text-white uppercase font-semibold text-xs">
+  //           <CiTrash className="text-fav-black md:text-2xl" />
+  //         </button>
+  //       </div>
+  //     ),
+  //   },
+  // ]
+
+  // if (LaboratoryRequest.error) return <h1>Error...</h1>
+  // if (!LaboratoryRequest.data) return <h1>Loading...</h1>
 
   return (
     <>
@@ -136,21 +177,52 @@ export default function LaboratoryPage() {
       </div> */}
 
       <div className="px-20 py-5">
-        <div className="flex justify-end mb-3">
-          <button
-            className="bg-blue-600 px-3 py-1 rounded-md text-white uppercase font-semibold text-xs"
-            onClick={handleButtonAdd}>
-            Add New Laboratory
-          </button>
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <h1 className="uppercase text-3xl font-bold tracking-wider text-fav-black">
+              Laboratory List
+            </h1>
+          </div>
+          <div>
+            <button
+              className="hover:bg-gray-300 p-1 rounded-md text-white uppercase font-semibold text-xs"
+              onClick={handleButtonAdd}
+              title="New">
+              <CiSquarePlus className="text-2xl text-blue-700" />
+            </button>
+            <button
+              className="hover:bg-gray-300 p-1 rounded-md text-white uppercase font-semibold text-xs"
+              onClick={handleButtonImport}
+              title="Import">
+              <CiImport className="text-2xl text-orange-700" />
+            </button>
+            <button
+              className="hover:bg-gray-300 p-1 rounded-md text-white uppercase font-semibold text-xs"
+              onClick={handleButtonExport}
+              title="Export">
+              <CiExport className="text-2xl text-green-700" />
+            </button>
+          </div>
         </div>
+
+        <div className="mb-3">
+          <label htmlFor="" className="font-bold text-gray-800">
+            Search
+          </label>
+          <input
+            type="text"
+            className="w-full rounded-md border-gray-300"
+            placeholder="Search Laboratory"
+            onChange={e => handleSearch(e.target.value)}
+          />
+        </div>
+
         <div className="flex justify-center">
           <div className="h-[calc(100vh-100px)] flex-1">
-            <DataGrid
-              rows={LaboratoryRequest?.data || []}
-              columns={columns}
-              pageSize={100}
-              // selectionModel={selectionModel}
-              // setSelectionModel={setSelectionModel}
+            <LaboratoryTable
+              LaboratoryRequest={LaboratoryRequest}
+              handleButtonEdit={handleButtonEdit}
+              handleButtonDelete={handleButtonDelete}
             />
           </div>
         </div>
@@ -167,6 +239,14 @@ export default function LaboratoryPage() {
 
       {modalIsOpen === 'edit-laboratory' && (
         <EditLaboratory
+          row={selectedRow}
+          isOpen={modalIsOpen}
+          handleClose={handleButtonEditModalClose}
+          mutate={LaboratoryRequest.mutate}
+        />
+      )}
+      {modalIsOpen === 'import-laboratory' && (
+        <ImportLaboratory
           row={selectedRow}
           isOpen={modalIsOpen}
           handleClose={handleButtonEditModalClose}

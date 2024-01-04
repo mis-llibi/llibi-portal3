@@ -3,13 +3,13 @@ import useSWR from 'swr'
 
 import axios from '@/lib/axios'
 
-export default function Laboratory() {
+export default function Laboratory({ q }) {
   const LaboratoryRequest = useSWR(
-    `${process.env.apiPath}/pre-approve/laboratory`,
+    `${process.env.apiPath}/pre-approve/laboratory?q=${q}`,
     async () => {
       try {
         const response = await axios.get(
-          `${process.env.apiPath}/pre-approve/laboratory`,
+          `${process.env.apiPath}/pre-approve/laboratory?q=${q}`,
         )
 
         return response.data
@@ -17,10 +17,15 @@ export default function Laboratory() {
         throw error
       }
     },
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    },
   )
 
   const uploadLaboratoryCsv = async ({ setIsLoading, FORMDATA }) => {
-    await axios.get(`sanctum/csrf-cookie`)
+    // await axios.get(`sanctum/csrf-cookie`)
 
     try {
       const response = await axios.post(
@@ -34,5 +39,75 @@ export default function Laboratory() {
     }
   }
 
-  return { uploadLaboratoryCsv, LaboratoryRequest }
+  // const addLaboratory = async data => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${process.env.apiPath}/pre-approve/laboratory`,
+  //       data,
+  //     )
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
+
+  // const editLaboratory = async (data, id) => {
+  //   try {
+  //     const response = await axios.put(
+  //       `${process.env.apiPath}/pre-approve/laboratory/${id}`,
+  //       data,
+  //     )
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
+
+  // const deleteLaboratory = async id => {
+  //   try {
+  //     const response = await axios.delete(
+  //       `${process.env.apiPath}/pre-approve/laboratory/${id}`,
+  //     )
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // }
+
+  return {
+    uploadLaboratoryCsv,
+    LaboratoryRequest,
+    // addLaboratory,
+    // editLaboratory,
+    // deleteLaboratory,
+  }
+}
+
+export const addLaboratory = async data => {
+  try {
+    const response = await axios.post(
+      `${process.env.apiPath}/pre-approve/laboratory`,
+      data,
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
+export const editLaboratory = async (data, id) => {
+  try {
+    const response = await axios.put(
+      `${process.env.apiPath}/pre-approve/laboratory/${id}`,
+      data,
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
+export const deleteLaboratory = async id => {
+  try {
+    const response = await axios.delete(
+      `${process.env.apiPath}/pre-approve/laboratory/${id}`,
+    )
+  } catch (error) {
+    throw error
+  }
 }

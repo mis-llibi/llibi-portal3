@@ -106,26 +106,8 @@ Route::get('/view-logs', [SelfService::class, 'viewLogs']);
 Route::get('/settings', [SettingController::class, 'index']);
 Route::put('/settings', [SettingController::class, 'update']);
 
-// feedback client portal
-Route::post('/feedbacks', [FeedbackController::class, 'store']);
-Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
-Route::get('/feedbacks/is-expired/{request_id}', [FeedbackController::class, 'checkingIfFeedbackLinkIsExpired']);
-Route::get('/feedbacks', [FeedbackController::class, 'index']);
-// feedback corporate
-Route::get('/corporate/feedbacks', [FeedbackCorporateController::class, 'index']);
-Route::post('/corporate/feedbacks', [FeedbackCorporateController::class, 'sendLoa']);
-Route::post('/corporate/feedbacks/save', [FeedbackCorporateController::class, 'store']);
-Route::get('/corporate/feedbacks/employee', [FeedbackCorporateController::class, 'showEmployee']);
-
-Route::get('/pre-approve/utilization', [UtilizationController::class, 'index']);
-Route::post('/pre-approve/utilization', [UtilizationController::class, 'importUtilization']);
-Route::get('/pre-approve/get-employees', [UtilizationController::class, 'getEmployee']);
-
-Route::post('/pre-approve/deel/upload', [UtilizationController::class, 'importDeelUpload']);
-
-Route::get('/pre-approve/laboratory', [LaboratoryController::class, 'index']);
-Route::post('/pre-approve/laboratory', [LaboratoryController::class, 'store']);
-Route::put('/pre-approve/laboratory/{id}', [LaboratoryController::class, 'update']);
+require __DIR__ . '/feedback.php';
+require __DIR__ . '/pre-approved.php';
 
 //THIRD PARTY APP API
 Route::get('/third-party/member', [MobileApiAccessController::class, 'GetMemberData']);

@@ -270,6 +270,6 @@ class FeedbackController extends Controller
   {
     $feedback = Client::where('id', $request_id)->first();
     // return $feedback;
-    return Carbon::parse($feedback->created_at)->diffInDays(now()) >= 3;
+    return $feedback ? Carbon::parse($feedback->created_at)->diffInDays(now()) >= 3 : null;
   }
 }

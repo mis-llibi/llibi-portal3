@@ -10,6 +10,8 @@ import DialogTitle from '@mui/material/DialogTitle'
 import axios from '@/lib/axios'
 import Label from '@/components/Label'
 
+import { addLaboratory } from '@/hooks/pre-approved/laboratory'
+
 export default function AddLaboratory({ row, ...props }) {
   const labRef = useRef('')
   const costRef = useRef(0)
@@ -18,19 +20,13 @@ export default function AddLaboratory({ row, ...props }) {
     let laboratory = labRef.current.value
     let cost = costRef.current.value
 
-    await axios.get(`sanctum/csrf-cookie`)
+    await addLaboratory({
+      laboratory: laboratory,
+      cost: cost,
+    })
 
-    try {
-      await axios.post(`${process.env.apiPath}/pre-approve/laboratory`, {
-        laboratory: laboratory,
-        cost: cost,
-      })
-
-      props.handleClose()
-      props.mutate()
-    } catch (error) {
-      throw error
-    }
+    props.handleClose()
+    props.mutate()
   }
 
   return (

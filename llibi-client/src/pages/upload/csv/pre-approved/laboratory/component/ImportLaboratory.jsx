@@ -12,15 +12,13 @@ import Label from '@/components/Label'
 
 import { editLaboratory } from '@/hooks/pre-approved/laboratory'
 
-export default function EditLaboratory({ row, ...props }) {
-  const labRef = useRef('')
-  const costRef = useRef(0)
+export default function ImportLaboratory({ row, ...props }) {
+  const fileRef = useRef('')
 
   // const { editLaboratory } = Laboratory()
 
   const handleEditLab = async () => {
-    let laboratory = labRef.current.value
-    let cost = costRef.current.value
+    let laboratory = fileRef.current.value
 
     await editLaboratory({ laboratory: laboratory, cost: cost }, row.id)
     props.handleClose()
@@ -31,27 +29,22 @@ export default function EditLaboratory({ row, ...props }) {
     <>
       <Dialog open={true} onClose={props.handleClose} fullWidth maxWidth={'md'}>
         <DialogTitle>
-          <span className="font-bold text-gray-800">Edit Laboratory</span>
+          <span className="font-bold text-gray-800">Import Laboratory</span>
         </DialogTitle>
         <DialogContent>
           <div className="mb-3">
-            <Label>Laboratory</Label>
+            <Label>
+              File{' '}
+              <small className="font-thin text-green-700">
+                (accept only csv file)
+              </small>
+            </Label>
             <input
-              className="w-full rounded-md"
-              type="text"
+              className="w-full rounded-md border p-3"
+              type="file"
               name="laboratory"
-              defaultValue={row.laboratory}
-              ref={labRef}
-            />
-          </div>
-          <div className="mb-3">
-            <Label>Cost</Label>
-            <input
-              className="w-full rounded-md"
-              type="text"
-              name="cost"
-              defaultValue={row.cost}
-              ref={costRef}
+              ref={fileRef}
+              accept=".csv"
             />
           </div>
         </DialogContent>
