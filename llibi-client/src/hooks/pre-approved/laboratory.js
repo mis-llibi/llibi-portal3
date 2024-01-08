@@ -24,20 +24,20 @@ export default function Laboratory({ q }) {
     },
   )
 
-  const uploadLaboratoryCsv = async ({ setIsLoading, FORMDATA }) => {
-    // await axios.get(`sanctum/csrf-cookie`)
+  // const uploadLaboratoryCsv = async ({ setIsLoading, FORMDATA }) => {
+  //   // await axios.get(`sanctum/csrf-cookie`)
 
-    try {
-      const response = await axios.post(
-        `${process.env.apiPath}/pre-approve/upload/laboratory`,
-        FORMDATA,
-      )
-    } catch (error) {
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  //   try {
+  //     const response = await axios.post(
+  //       `${process.env.apiPath}/pre-approve/upload/laboratory`,
+  //       FORMDATA,
+  //     )
+  //   } catch (error) {
+  //     throw error
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
   // const addLaboratory = async data => {
   //   try {
@@ -72,7 +72,7 @@ export default function Laboratory({ q }) {
   // }
 
   return {
-    uploadLaboratoryCsv,
+    // uploadLaboratoryCsv,
     LaboratoryRequest,
     // addLaboratory,
     // editLaboratory,
@@ -109,5 +109,18 @@ export const deleteLaboratory = async id => {
     )
   } catch (error) {
     throw error
+  }
+}
+
+export const uploadLaboratoryCsv = async ({ setIsLoading, FORMDATA }) => {
+  try {
+    const response = await axios.post(
+      `${process.env.apiPath}/pre-approve/laboratory/import`,
+      FORMDATA,
+    )
+  } catch (error) {
+    throw error
+  } finally {
+    setIsLoading(false)
   }
 }

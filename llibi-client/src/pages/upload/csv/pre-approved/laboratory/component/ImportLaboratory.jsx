@@ -10,24 +10,37 @@ import DialogTitle from '@mui/material/DialogTitle'
 import axios from '@/lib/axios'
 import Label from '@/components/Label'
 
-import { editLaboratory } from '@/hooks/pre-approved/laboratory'
+import { uploadLaboratoryCsv } from '@/hooks/pre-approved/laboratory'
+import BackdropComponent from '@/components/BackdropComponent'
 
 export default function ImportLaboratory({ row, ...props }) {
   const fileRef = useRef('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  // const { editLaboratory } = Laboratory()
+  const handleUpload = async () => {
+    let laboratoryFile = fileRef.current.files
 
-  const handleEditLab = async () => {
-    let laboratory = fileRef.current.value
+    const FORMDATA = new FormData()
 
-    await editLaboratory({ laboratory: laboratory, cost: cost }, row.id)
+    FORMDATA.append('file', laboratoryFile[0])
+
+    setIsLoading('uploading-laboratory')
+    await uploadLaboratoryCsv({
+      setIsLoading,
+      FORMDATA,
+    })
     props.handleClose()
     props.mutate()
   }
 
   return (
     <>
-      <Dialog open={true} onClose={props.handleClose} fullWidth maxWidth={'md'}>
+      <Dialog
+        open={true}
+        onClose={props.handleClose}
+        fullWidth
+        maxWidth={'md'}
+        sx={{ zIndex: '1000' }}>
         <DialogTitle>
           <span className="font-bold text-gray-800">Import Laboratory</span>
         </DialogTitle>
@@ -50,9 +63,11 @@ export default function ImportLaboratory({ row, ...props }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose}>Cancel</Button>
-          <Button onClick={handleEditLab}>Save</Button>
+          <Button onClick={handleUpload}>Save</Button>
         </DialogActions>
       </Dialog>
+
+      <BackdropComponent open={isLoading === 'uploading-laboratory'} />
     </>
   )
 }

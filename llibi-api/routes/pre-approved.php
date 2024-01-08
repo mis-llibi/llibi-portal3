@@ -11,6 +11,7 @@ Route::get('/pre-approve/get-employees', [UtilizationController::class, 'getEmpl
 Route::post('/pre-approve/deel/upload', [UtilizationController::class, 'importDeelUpload']);
 
 Route::get('/pre-approve/laboratory/export', [LaboratoryController::class, 'export']);
+Route::post('/pre-approve/laboratory/import', [LaboratoryController::class, 'import']);
 Route::get('/pre-approve/laboratory', [LaboratoryController::class, 'index']);
 Route::post('/pre-approve/laboratory', [LaboratoryController::class, 'store']);
 Route::put('/pre-approve/laboratory/{id}', [LaboratoryController::class, 'update']);

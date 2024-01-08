@@ -46,7 +46,7 @@ export default function AddLaboratory({ row, ...props }) {
             />
           </div>
           <div className="mb-3">
-            <Label>Cost</Label>
+            <Label>Cost (E.g. 1500, 2500)</Label>
             <input
               className="w-full rounded-md"
               type="text"

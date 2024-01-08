@@ -2,7 +2,6 @@
 
 namespace App\Imports\PreApprove;
 
-use App\Models\PreApprove\Utilization;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -10,9 +9,9 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use PhpParser\Node\Stmt\TryCatch;
+
+use App\Models\PreApprove\Utilization;
 
 class UtilizationImport implements ToCollection, WithBatchInserts, WithChunkReading, WithHeadingRow
 {
@@ -27,15 +26,8 @@ class UtilizationImport implements ToCollection, WithBatchInserts, WithChunkRead
 
       $dateString = $row['claimdate'];
       $date  = Carbon::createFromFormat('m/d/Y', $dateString);
+      
       try {
-        // $isExist = Utilization::where([
-        //   'uniqcode' => trim($row['uniqcode']),
-        //   'empcode' => trim($row['empcode']),
-        //   'claimnumb' => trim($row['claimnumb']),
-        //   'seriesnumb' => trim($row['seriesnumb']),
-        //   'compcode' => trim($row['compcode']),
-        // ])->exists();
-
         Utilization::insert([
           'uniqcode' => trim($row['uniqcode']),
           'empcode' => trim($row['empcode']),

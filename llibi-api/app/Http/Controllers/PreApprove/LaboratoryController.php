@@ -4,11 +4,13 @@ namespace App\Http\Controllers\PreApprove;
 
 use App\Exports\PreApproved\LaboratoryExport;
 use App\Http\Controllers\Controller;
+use App\Imports\PreApprove\LaboratoryImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use App\Models\PreApprove\Laboratory;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaboratoryController extends Controller
 {
@@ -18,7 +20,7 @@ class LaboratoryController extends Controller
     return Laboratory::query()
       ->where('code', 'LIKE', "%{$q}%")
       ->orWhere('laboratory', 'LIKE', "%{$q}%")
-      ->latest()->take(100)->get();
+      ->latest()->take(250)->get();
   }
 
   public function store(Request $request)
@@ -63,5 +65,13 @@ class LaboratoryController extends Controller
 
     $filename = 'laboratory-export ' . Carbon::parse()->toDateTimeString() . '.xlsx';
     return (new LaboratoryExport($labs))->download($filename);
+  }
+
+  public function import(Request $request)
+  {
+    $file = $request->file;
+
+    Excel::import(new LaboratoryImport, $file);
+    return response()->noContent();
   }
 }
