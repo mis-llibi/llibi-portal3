@@ -22,37 +22,41 @@ export default function LaboratoryTab({
           onChange={handleSearch}
         />
       </div>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="uppercase">
-            <th>Procedure</th>
-            <th>Cost</th>
-            <th>
-              <input
+      <div className='h-96 overflow-scroll'>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="uppercase">
+              {/* <th>Code</th> */}
+              <th>Procedure</th>
+              <th>Cost</th>
+              <th>
+                {/* <input
                 // onChange={e => handleSelectUtilizationAll(e)}
                 type="checkbox"
-              />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {search?.map((lab, i) => {
-            return (
-              <tr key={lab.id}>
-                <td>{lab.procedure}</td>
-                <td className="text-right">{formatter.format(lab.cost)}</td>
-                <td className="text-center">
-                  <input
-                    checked={selectedLab.some(row => row.id === lab.id)}
-                    onChange={e => handleSelectLaboratory(e, lab)}
-                    type="checkbox"
-                  />
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+              /> */}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {search?.map((lab, i) => {
+              return (
+                <tr key={lab.id}>
+                  {/* <td>{lab.code}</td> */}
+                  <td>{lab.laboratory}</td>
+                  <td className="text-right">{formatter.format(lab.cost)}</td>
+                  <td className="text-center">
+                    <input
+                      checked={selectedLab.some(row => row.id === lab.id)}
+                      onChange={e => handleSelectLaboratory(e, lab)}
+                      type="checkbox"
+                    />
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </>
   )
 }

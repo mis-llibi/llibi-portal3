@@ -14,8 +14,8 @@ class Laboratory extends Model
 
   protected $fillable = ['code', 'laboratory', 'slug_laboratory', 'cost'];
 
-  public function getCostAttribute($value)
-  {
-    return number_format($value, 2);
-  }
+  // public function getCostAttribute($value)
+  // {
+  //   return number_format($value, 2);
+  // }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from 'react'
+import React, { useEffect, useState, useReducer, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 
@@ -99,18 +99,18 @@ const INITIALSTATE = {
   remainingLimit: 0,
 }
 
-const laboratory = [
-  {
-    id: 1,
-    procedure: 'X-RAY',
-    cost: 700,
-  },
-  {
-    id: 2,
-    procedure: 'FSB',
-    cost: 500,
-  },
-]
+// const laboratory = [
+//   {
+//     id: 1,
+//     procedure: 'X-RAY',
+//     cost: 700,
+//   },
+//   {
+//     id: 2,
+//     procedure: 'FSB',
+//     cost: 500,
+//   },
+// ]
 
 export default function PreApproveLoa() {
   const router = useRouter()
@@ -120,17 +120,54 @@ export default function PreApproveLoa() {
   const [value, setValue] = useState(0)
   const [selectedUtil, setSelectedUtil] = useState([])
   const [selectedLab, setSelectedLab] = useState([])
+  // const [remainingLimit, setRemainingLimit] = useState(0)
 
-  const remainingLimit =
-    Number(state.employee?.opr) > 0
-      ? Number(state.employee?.opr) -
+  // const remainingLimit =
+  //   Number(state.employee?.opr) > 0
+  //     ? Number(state.employee?.opr) -
+  //       Number(state.reservation) -
+  //       Number(state.utilization) -
+  //       Number(state.laboratory)
+  //     : Number(state.employee?.ipr) -
+  //       Number(state.reservation) -
+  //       Number(state.utilization) -
+  //       Number(state.laboratory)
+
+  const remainingLimit = useMemo(() => {
+    let rem = 0
+
+    rem =
+      Number(state.employee?.opr) > 0 &&
+      Number(state.employee?.opr) -
         Number(state.reservation) -
         Number(state.utilization) -
         Number(state.laboratory)
-      : Number(state.employee?.ipr) -
+
+    rem =
+      Number(state.employee?.ipr) > 0 &&
+      Number(state.employee?.ipr) -
         Number(state.reservation) -
         Number(state.utilization) -
         Number(state.laboratory)
+
+    rem =
+      Number(state.employee?.ipr) > 0 &&
+      Number(state.employee?.opr) > 0 &&
+      Number(state.employee?.ipr) -
+        Number(state.reservation) -
+        Number(state.utilization) -
+        Number(state.laboratory)
+
+    rem =
+      Number(state.employee?.ipr) <= 0 &&
+      Number(state.employee?.opr) <= 0 &&
+      Number(state.employee?.ipr) -
+        Number(state.reservation) -
+        Number(state.utilization) -
+        Number(state.laboratory)
+
+    return rem
+  }, [state.utilization, state.laboratory])
 
   const { data: employee, isLoading, isValidating, mutate, error } = useSWR(
     employee_id
@@ -244,8 +281,8 @@ export default function PreApproveLoa() {
   const [searchLab, setSearchLab] = useState()
   const handleSearchLab = e => {
     let search_str = e.target.value.toLowerCase()
-    const searched = laboratory?.filter(data => {
-      return data.procedure.toLowerCase().includes(search_str)
+    const searched = state.employee?.laboratory?.filter(data => {
+      return data.laboratory.toLowerCase().includes(search_str)
     })
 
     setSearchLab(searched)
@@ -253,7 +290,7 @@ export default function PreApproveLoa() {
 
   useEffect(() => {
     setSearch(state.employee?.utilization)
-    setSearchLab(laboratory)
+    setSearchLab(state.employee?.laboratory)
   }, [state.employee])
 
   return (
@@ -263,12 +300,12 @@ export default function PreApproveLoa() {
       </Head>
       <div className="px-10 mx-auto">
         <img
-          src="https://llibi.app/company-images/llibi_logo.png"
+          src="https://llibi.app/images/lacson-logo.png"
           alt="LLIBI LOGO"
           width={250}
         />
         <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3">
-          <div className="flex-grow border p-3 rounded-md shadow-md">
+          <div className="flex-grow border p-3 rounded-md">
             <div className="w-full">
               <Tabs
                 className="mb-3"
@@ -326,7 +363,7 @@ export default function PreApproveLoa() {
               </CustomTabPanel>
             </div>
           </div>
-          <div className="w-full lg:w-[400px] border p-3 rounded-md shadow-md">
+          <div className="w-full lg:w-[400px] border p-3 rounded-md">
             {!employee ? (
               <div>Loading...</div>
             ) : (
@@ -361,15 +398,14 @@ export default function PreApproveLoa() {
                     <tr>
                       <td>MBL</td>
                       <td className="text-right">
+                        {Number(state.employee?.ipr) > 0 &&
+                          formatter.format(state.employee?.ipr)}
+
                         {Number(state.employee?.opr) > 0 &&
                           formatter.format(state.employee?.opr)}
 
-                        {Number(state.employee?.ipr) > 0 &&
-                          Number(state.employee?.opr) === 0 &&
-                          formatter.format(state.employee?.opr)}
-
-                        {Number(state.employee?.ipr) === 0 &&
-                          Number(state.employee?.opr) === 0 &&
+                        {Number(state.employee?.opr) > 0 &&
+                          Number(state.employee?.ipr) > 0 &&
                           formatter.format(state.employee?.opr)}
                       </td>
                     </tr>
@@ -416,8 +452,10 @@ export default function PreApproveLoa() {
           </div>
         </div>
 
-        <DisplaySelectedUtilization utilization={selectedUtil} />
-        <DisplaySelectedLaboratory laboratory={selectedLab} />
+        <div className="flex gap-3">
+          <DisplaySelectedUtilization utilization={selectedUtil} />
+          <DisplaySelectedLaboratory laboratory={selectedLab} />
+        </div>
       </div>
     </>
   )

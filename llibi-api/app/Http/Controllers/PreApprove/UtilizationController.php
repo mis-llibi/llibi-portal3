@@ -7,6 +7,7 @@ use App\Imports\Deel\DepsImport;
 use App\Imports\PreApprove\UtilizationImport;
 use App\Models\Corporate\Companies;
 use App\Models\Corporate\Employees;
+use App\Models\PreApprove\Laboratory;
 use Illuminate\Http\Request;
 
 use App\Models\PreApprove\Utilization;
@@ -61,8 +62,10 @@ class UtilizationController extends Controller
     abort_if(!$masterlist, '404', 'Masterlist Not Found.');
 
     $utilization = Utilization::where('uniqcode', $masterlist->member_id)->get();
+    $laboratory = Laboratory::query()->get();
 
     $employees['utilization'] = $utilization;
+    $employees['laboratory'] = $laboratory;
 
     return response()->json($employees);
   }
