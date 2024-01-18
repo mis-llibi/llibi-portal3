@@ -22,7 +22,7 @@ export default function LaboratoryTab({
           onChange={handleSearch}
         />
       </div>
-      <div className='h-96 overflow-scroll'>
+      <div className="h-96 overflow-scroll">
         <table className="w-full text-sm">
           <thead>
             <tr className="uppercase">
@@ -40,11 +40,11 @@ export default function LaboratoryTab({
           <tbody>
             {search?.map((lab, i) => {
               return (
-                <tr key={lab.id}>
+                <tr key={lab.id} className="even:bg-gray-100">
                   {/* <td>{lab.code}</td> */}
-                  <td>{lab.laboratory}</td>
-                  <td className="text-right">{formatter.format(lab.cost)}</td>
-                  <td className="text-center">
+                  <td className='py-3'>{lab.laboratory}</td>
+                  <td className="py-3 text-right">{formatter.format(lab.cost)}</td>
+                  <td className="py-3 text-center">
                     <input
                       checked={selectedLab.some(row => row.id === lab.id)}
                       onChange={e => handleSelectLaboratory(e, lab)}

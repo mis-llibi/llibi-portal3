@@ -15,6 +15,16 @@ import DisplaySelectedLaboratory from '@/components/Layouts/Corporate/DisplaySel
 import UtilizationTab from '@/components/Layouts/Corporate/Tabs/UtilizationTab'
 import LaboratoryTab from '@/components/Layouts/Corporate/Tabs/LaboratoryTab'
 
+import Loader from '@/components/Loader'
+
+import {
+  CiBank,
+  CiUser,
+  CiCircleList,
+  CiBadgeDollar,
+  CiSaveDown1,
+} from 'react-icons/ci'
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props
 
@@ -95,23 +105,9 @@ const INITIALSTATE = {
   employee: null,
   utilization: 0,
   laboratory: 0,
-  reservation: 4500,
+  reservation: 0,
   remainingLimit: 0,
 }
-
-// const laboratory = [
-//   {
-//     id: 1,
-//     procedure: 'X-RAY',
-//     cost: 700,
-//   },
-//   {
-//     id: 2,
-//     procedure: 'FSB',
-//     cost: 500,
-//   },
-// ]
-
 export default function PreApproveLoa() {
   const router = useRouter()
   const { employee_id } = router.query
@@ -120,60 +116,57 @@ export default function PreApproveLoa() {
   const [value, setValue] = useState(0)
   const [selectedUtil, setSelectedUtil] = useState([])
   const [selectedLab, setSelectedLab] = useState([])
-  // const [remainingLimit, setRemainingLimit] = useState(0)
 
-  // const remainingLimit =
-  //   Number(state.employee?.opr) > 0
-  //     ? Number(state.employee?.opr) -
-  //       Number(state.reservation) -
-  //       Number(state.utilization) -
-  //       Number(state.laboratory)
-  //     : Number(state.employee?.ipr) -
-  //       Number(state.reservation) -
-  //       Number(state.utilization) -
-  //       Number(state.laboratory)
+  const MBL = () => {
+    if (Number(state.employee?.ipr) > 0) {
+      return state.employee?.ipr
+    }
+
+    if (Number(state.employee?.opr) > 0) {
+      return state.employee?.opr
+    }
+
+    if (Number(state.employee?.opr) > 0 && Number(state.employee?.ipr) > 0) {
+      return state.employee?.opr
+    }
+
+    return 0
+  }
 
   const remainingLimit = useMemo(() => {
     let rem = 0
+    let mbl = Number(MBL())
+    let reserving_amount = Number(state.employee?.reserving_amount)
+    rem =
+      (mbl <= 0 ? reserving_amount : mbl - reserving_amount) -
+      Number(state.utilization) -
+      Number(state.laboratory)
 
     rem =
-      Number(state.employee?.opr) > 0 &&
-      Number(state.employee?.opr) -
-        Number(state.reservation) -
-        Number(state.utilization) -
-        Number(state.laboratory)
+      (mbl <= 0 ? reserving_amount : mbl - reserving_amount) -
+      Number(state.utilization) -
+      Number(state.laboratory)
 
     rem =
-      Number(state.employee?.ipr) > 0 &&
-      Number(state.employee?.ipr) -
-        Number(state.reservation) -
-        Number(state.utilization) -
-        Number(state.laboratory)
+      (mbl <= 0 ? reserving_amount : mbl - reserving_amount) -
+      Number(state.utilization) -
+      Number(state.laboratory)
 
     rem =
-      Number(state.employee?.ipr) > 0 &&
-      Number(state.employee?.opr) > 0 &&
-      Number(state.employee?.ipr) -
-        Number(state.reservation) -
-        Number(state.utilization) -
-        Number(state.laboratory)
-
-    rem =
-      Number(state.employee?.ipr) <= 0 &&
-      Number(state.employee?.opr) <= 0 &&
-      Number(state.employee?.ipr) -
-        Number(state.reservation) -
-        Number(state.utilization) -
-        Number(state.laboratory)
+      (mbl <= 0 ? reserving_amount : mbl - reserving_amount) -
+      Number(state.utilization) -
+      Number(state.laboratory)
 
     return rem
-  }, [state.utilization, state.laboratory])
+  }, [
+    state.utilization,
+    state.laboratory,
+    state.employee?.ipr,
+    state.employee?.opr,
+  ])
 
-  const { data: employee, isLoading, isValidating, mutate, error } = useSWR(
-    employee_id
-      ? `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}`
-      : null,
-    async () => {
+  const getEmployee = async () => {
+    try {
       const response = await axios.get(
         `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}`,
       )
@@ -182,11 +175,11 @@ export default function PreApproveLoa() {
         type: REDUCER_ACTIONS.GET_EMPLOYEE,
         payload: { employee: response.data },
       })
-
-      return response.data
-    },
-    { revalidateOnFocus: false },
-  )
+    } catch (error) {
+      alert(error.response.data.message)
+      // throw new Error(error)
+    }
+  }
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
@@ -289,9 +282,35 @@ export default function PreApproveLoa() {
   }
 
   useEffect(() => {
+    if (employee_id) {
+      getEmployee()
+    }
+  }, [employee_id])
+
+  useEffect(() => {
     setSearch(state.employee?.utilization)
     setSearchLab(state.employee?.laboratory)
   }, [state.employee])
+
+  const saveLogs = async () => {
+    let data = {
+      employee: state.employee,
+      utilization: selectedUtil,
+      laboratory: selectedLab,
+      mbl_amount: Number(MBL()),
+      utilization_amount: state.utilization,
+      laboratory_amount: state.laboratory,
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.apiPath}/pre-approve-logs`,
+        data,
+      )
+    } catch (error) {
+      throw error.response.message
+    }
+  }
 
   return (
     <>
@@ -364,58 +383,214 @@ export default function PreApproveLoa() {
             </div>
           </div>
           <div className="w-full lg:w-[400px] border p-3 rounded-md">
-            {!employee ? (
+            {!state.employee ? (
               <div>Loading...</div>
             ) : (
               <div>
-                <h4 className="font-medium">
+                <div className="flex flex-col gap-3 mb-3">
+                  <div className="flex gap-3 rounded-md flex-wrap">
+                    <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm uppercase">
+                            Company
+                          </h4>
+                        </div>
+                        <div>
+                          <CiBank className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {state.employee?.companies?.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 rounded-md flex-wrap">
+                    <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm uppercase">
+                            Employee
+                          </h4>
+                        </div>
+                        <div>
+                          <CiUser className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {state.employee?.last}, {state.employee?.given}{' '}
+                          {state.employee?.middle}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 rounded-md flex-wrap">
+                    <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm uppercase">
+                            Plan Type
+                          </h4>
+                        </div>
+                        <div>
+                          <CiCircleList className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {state.employee?.companies?.plantype} {' | '}
+                          {state.employee?.plan_type === 1 &&
+                            'Individual OP Limit'}
+                          {state.employee?.plan_type === 2 &&
+                            'OP Shared by family'}
+                          {state.employee?.plan_type === 3 &&
+                            'OP Shared by family except employee'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* <h4 className="font-medium">
                   <span className="font-bold">Company:</span>{' '}
                   <span className="">{state.employee?.companies?.name}</span>
-                </h4>
-                <h4 className="font-medium">
+                </h4> */}
+                {/* <h4 className="font-medium">
                   <span className="font-bold">Employee:</span>{' '}
                   <span className="">
                     {state.employee?.last}, {state.employee?.given}{' '}
                     {state.employee?.middle}.
                   </span>
-                </h4>
-                <h4 className="font-medium">
+                </h4> */}
+                {/* <h4 className="font-medium">
                   <span className="font-bold">Plan Type:</span>{' '}
                   <span className="">
                     {state.employee?.companies?.plantype}{' '}
                     {state.employee?.companies?.sharetype}
                   </span>
-                </h4>
+                </h4> */}
                 {/* <h4 className="font-medium">Combined IPOP -Per Illness</h4> */}
                 {/* <h4 className="font-medium">Shared limit - Dep</h4> */}
 
-                <br />
-                <hr />
-                <br />
+                <div className="flex flex-col gap-3 mb-3">
+                  <div className="flex gap-3 rounded-md flex-wrap">
+                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm">MBL</h4>
+                        </div>
+                        <div>
+                          <CiBadgeDollar className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {formatter.format(MBL())}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm">
+                            Reservation
+                          </h4>
+                        </div>
+                        <div>
+                          <CiBadgeDollar className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {formatter.format(state.employee?.reserving_amount)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 rounded-md flex-wrap">
+                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm">
+                            Utilization
+                          </h4>
+                        </div>
+                        <div>
+                          <CiBadgeDollar className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {formatter.format(state.utilization)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
+                      <div className="flex justify-between">
+                        <div>
+                          <h4 className="font-bold text-white text-sm">
+                            Laboratory Cost
+                          </h4>
+                        </div>
+                        <div>
+                          <CiBadgeDollar className="text-white text-3xl" />
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-white font-bold text-sm">
+                          {formatter.format(state.laboratory)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 rounded-md flex-wrap">
+                  <div className="flex-1 bg-gradient-to-tl from-green-600 via-green-800 to-green-900 p-3 rounded-md">
+                    <div className="flex justify-between">
+                      <div>
+                        <h4 className="font-bold text-white text-sm">
+                          Remaining Limit
+                        </h4>
+                      </div>
+                      <div>
+                        <CiBadgeDollar className="text-white text-3xl" />
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-white font-bold">
+                        {formatter.format(remainingLimit)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-1 p-3 flex items-center">
+                    <button
+                      onClick={saveLogs}
+                      className="bg-blue-900 hover:bg-blue-800 text-white w-40 p-3 rounded-md hover:shadow-md uppercase font-bold text-xs">
+                      <div className="flex justify-center gap-3 items-center">
+                        Save Log
+                        <CiSaveDown1 className="text-2xl" />
+                      </div>
+                    </button>
+                  </div>
+                </div>
 
                 <table className="w-full">
                   <thead>
-                    <tr>
+                    {/* <tr>
                       <td>MBL</td>
-                      <td className="text-right">
-                        {Number(state.employee?.ipr) > 0 &&
-                          formatter.format(state.employee?.ipr)}
-
-                        {Number(state.employee?.opr) > 0 &&
-                          formatter.format(state.employee?.opr)}
-
-                        {Number(state.employee?.opr) > 0 &&
-                          Number(state.employee?.ipr) > 0 &&
-                          formatter.format(state.employee?.opr)}
-                      </td>
+                      <td className="text-right">{formatter.format(MBL())}</td>
                     </tr>
                     <tr>
                       <td>Reservation</td>
                       <td className="text-right">
-                        {formatter.format(state.reservation)}
+                        {formatter.format(state.employee?.reserving_amount)}
                       </td>
-                    </tr>
-                    <tr>
+                    </tr> */}
+                    {/* <tr>
                       <td>Utilization</td>
                       <td className="text-right">
                         {formatter.format(state.utilization)}
@@ -426,27 +601,29 @@ export default function PreApproveLoa() {
                       <td className="text-right">
                         {formatter.format(state.laboratory)}
                       </td>
-                    </tr>
+                    </tr> */}
                   </thead>
                 </table>
                 <br />
                 <hr />
                 <table className="w-full">
                   <thead>
-                    <tr>
+                    {/* <tr>
                       <td>Remaining Limit</td>
                       <td className="text-right">
-                        {/* {formatter.format(
-                      state.employee?.opr -
-                        state.utilization -
-                        state.laboratory,
-                    )} */}
-
                         {formatter.format(remainingLimit)}
                       </td>
-                    </tr>
+                    </tr> */}
                   </thead>
                 </table>
+
+                {/* <div className="h-20 flex justify-center items-center">
+                  <button
+                    onClick={saveLogs}
+                    className="bg-blue-700 hover:bg-blue-600 text-white w-40 p-3 rounded-md hover:shadow-md uppercase font-bold text-xs">
+                    Save Log
+                  </button>
+                </div> */}
               </div>
             )}
           </div>
@@ -457,6 +634,8 @@ export default function PreApproveLoa() {
           <DisplaySelectedLaboratory laboratory={selectedLab} />
         </div>
       </div>
+
+      {!state.employee && <Loader loading={true} />}
     </>
   )
 }

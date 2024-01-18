@@ -7,12 +7,15 @@ use App\Imports\Deel\DepsImport;
 use App\Imports\PreApprove\UtilizationImport;
 use App\Models\Corporate\Companies;
 use App\Models\Corporate\Employees;
+use App\Models\Corporate\LoaEmployee;
+use App\Models\Corporate\UtilizationLoa;
 use App\Models\PreApprove\Laboratory;
 use Illuminate\Http\Request;
 
 use App\Models\PreApprove\Utilization;
 use App\Models\Self_service\Sync;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UtilizationController extends Controller
@@ -52,8 +55,6 @@ class UtilizationController extends Controller
 
     abort_if(!$companies, '404', 'Company Not Found.');
 
-    $employees['companies'] = $companies;
-
     $masterlist = Sync::query()
       ->whereDate('birth_date', Carbon::parse($employees->birthdate)->format('Y-m-d'))
       ->where('empcode', $employees->code)
@@ -61,11 +62,59 @@ class UtilizationController extends Controller
 
     abort_if(!$masterlist, '404', 'Masterlist Not Found.');
 
-    $utilization = Utilization::where('uniqcode', $masterlist->member_id)->get();
+    $plan_types = Utilization::where('uniqcode', $masterlist->member_id)->select('plan_type')->first();
+    // return $masterlist->member_id;
+
+    $utilization = Utilization::query()->where('compcode', $masterlist->company_code);
+    // Plan 1: base uniqcode
+    // Plan 2: base empcode per family
+    // Plan 3: base empcode except relation employee
+    if ($plan_types->plan_type == 1) {
+      $utilization = $utilization->where('uniqcode', $masterlist->member_id)->get();
+    } else if ($plan_types->plan_type == 2) {
+      $utilization = $utilization->where('empcode', $masterlist->empcode)->get();
+    } else {
+      // 3
+      $utilization = $utilization->where('empcode', $masterlist->empcode)
+        ->where('relation', '!=', 'EMPLOYEE')
+        ->get();
+    }
+
     $laboratory = Laboratory::query()->get();
 
+    // SELECT loautil.companycode, loautil.dateissued, loautil.empcode, loautil.patcode, loautil.empname, emp.given, emp.last, emp.middle, loautil.amount as total_reservation, emp.code, loautil.status FROM utilizationloa as loautil INNER JOIN employees as emp on emp.code = loautil.empcode WHERE emp.id = 1215008 AND loautil.status IN (1, 2) AND loautil.companycode = '2GO-EXP'
+
+    $loaUtilization = UtilizationLoa::query()
+      ->whereIn('status', [1, 2])
+      ->where('patcode', $employees->code)
+      ->where('companycode', $companies->code)
+      ->get();
+
+    $reserving_amount = 0;
+
+    if ($loaUtilization) {
+      foreach ($loaUtilization as $key => $row) {
+        $loa_employee = LoaEmployee::query()
+          ->where('employee_id', $employees->id)
+          ->where(function ($query) use ($row) {
+            $query->whereDate('incepfrom', '<=', Carbon::parse($row->dateissued)->format('Y-m-d'));
+            $query->whereDate('incepto', '>=', Carbon::parse($row->dateissued)->format('Y-m-d'));
+          })
+          ->first();
+
+        if ($loa_employee) {
+          $reserving_amount += $row->amount;
+        }
+      }
+    }
+
+    $employees['companies'] = $companies;
+    $employees['plan_type'] = $plan_types->plan_type;
     $employees['utilization'] = $utilization;
     $employees['laboratory'] = $laboratory;
+    // $employees['loa_util'] = $loaUtilization;
+    $employees['reserving_amount'] = $plan_types->plan_type === 2 ? '5542.00' : $reserving_amount;
+    $employees['masterlist'] = $masterlist;
 
     return response()->json($employees);
   }

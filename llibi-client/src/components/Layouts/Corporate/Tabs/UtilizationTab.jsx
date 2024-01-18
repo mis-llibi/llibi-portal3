@@ -25,12 +25,13 @@ export default function UtilizationTab({
       <div className="h-96 overflow-scroll">
         <table className="w-full text-sm">
           <thead>
-            <tr className="uppercase">
-              <th>Claim #</th>
-              <th>Claim Date</th>
-              <th>Claim Type</th>
-              <th>Diagnosis</th>
-              <th>Amount</th>
+            <tr className="uppercase bg-blue-50">
+              <th className='py-3'>Claim #</th>
+              <th className='py-3'>Claim Date</th>
+              <th className='py-3'>Claim Type</th>
+              <th className='py-3'>Relation</th>
+              <th className='py-3'>Diagnosis</th>
+              <th className='py-3'>Amount</th>
               <th>
                 {/* <input
                 onChange={e => handleSelectUtilizationAll(e)}
@@ -42,15 +43,18 @@ export default function UtilizationTab({
           <tbody>
             {search?.map((util, i) => {
               return (
-                <tr key={util.id}>
-                  <td className="text-center">{util.claimnumb}</td>
-                  <td className="text-center">{util.claimdate}</td>
-                  <td className="text-center">{util.claimtype}</td>
+                <tr key={util.id} className="even:bg-gray-100">
+                  <td className="py-3 text-center">{util.claimnumb}</td>
+                  <td className="py-3 text-center">{util.claimdate}</td>
+                  <td className="py-3 text-center">{util.claimtype}</td>
+                  <td className="py-3 text-center">
+                    {util.relation === 'EMPLOYEE' ? 'E' : 'D'}
+                  </td>
                   <td>{util.diagname}</td>
-                  <td className="text-right">
+                  <td className="py-3 text-right">
                     {formatter.format(util.eligible)}
                   </td>
-                  <td className="text-center">
+                  <td className="py-3 text-center">
                     <input
                       checked={selectedUtil.some(row => row.id === util.id)}
                       onChange={e => handleSelectUtilization(e, util)}
