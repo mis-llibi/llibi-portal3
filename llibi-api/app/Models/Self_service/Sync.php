@@ -20,6 +20,7 @@ class Sync extends Model
         'relation',
         'birth_date',
         'email',
+        'plantype',
     ];
 
     /* public function allow($partner) {
