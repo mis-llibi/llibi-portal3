@@ -144,7 +144,7 @@ class ManageSelfEnrollmentController extends Controller
   public function removeClient(Request $request)
   {
     $members = [
-      'status' => 3,
+      'status' => $request->client_company == 'PREQIN' ? 4 : 3,
       'form_locked' => 1,
     ];
     members::where('member_id', $request->member_id)
