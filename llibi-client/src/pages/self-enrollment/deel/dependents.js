@@ -215,7 +215,7 @@ const dependents = () => {
 
                     {/* employee information */}
                     <div className="mt-3 p-4 rounded-md bg-gray-100">
-                        <div className="mb-2 text-gray-900 font-bold mb-2 lg:flex gap-2">
+                        <div className="mb-2 text-gray-900 font-bold lg:flex gap-2">
                             {/* header employee name */}
                             <div className="flex gap-2">
                                 <div className="flex place-items-center">

@@ -12,7 +12,7 @@ class Utilization extends Model
   protected $connection = 'mysql_pre_approve';
   protected $table = 'utilization';
 
-  protected $fillable = ['uniqcode', 'empcode', 'claimnumb', 'seriesnumb', 'compcode', 'claimtype', 'claimdate', 'diagcode', 'diagname', 'eligible'];
+  protected $fillable = ['uniqcode', 'empcode', 'claimnumb', 'seriesnumb', 'compcode', 'claimtype', 'claimdate', 'diagcode', 'diagname', 'eligible', 'relation'];
 
   public $timestamps = false;
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Self_enrollment\ManageSelfEnrollmentController as SelfEnrollment;
 
 //ADMIN

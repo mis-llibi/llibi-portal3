@@ -15,10 +15,10 @@ class MasterlistController extends Controller
 
     $clients = Sync::query()
       ->where(function ($q) use ($search) {
-        $q->where('member_id', 'LIKE', "%{$search}%");
-        $q->orWhere('first_name', 'LIKE', "%{$search}%");
-        $q->orWhere('last_name', 'LIKE', "%{$search}%");
-        $q->orWhere('birth_date', 'LIKE', "%{$search}%");
+        $q->where('member_id', 'LIKE', "%" . strtoupper($search) . "%");
+        $q->orWhere('first_name', 'LIKE', "%" . strtoupper($search) . "%");
+        $q->orWhere('last_name', 'LIKE', "%" . strtoupper($search) . "%");
+        $q->orWhere('birth_date', 'LIKE', "%" . strtoupper($search) . "%");
       })
       ->select('*')
       ->take(50)

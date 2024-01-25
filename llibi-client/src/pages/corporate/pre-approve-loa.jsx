@@ -110,7 +110,7 @@ const INITIALSTATE = {
 }
 export default function PreApproveLoa() {
   const router = useRouter()
-  const { employee_id } = router.query
+  const { employee_id, patient_id } = router.query
   const [state, dispatch] = useReducer(reducer, INITIALSTATE)
 
   const [value, setValue] = useState(0)
@@ -168,7 +168,7 @@ export default function PreApproveLoa() {
   const getEmployee = async () => {
     try {
       const response = await axios.get(
-        `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}`,
+        `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}&patient_id=${patient_id}`,
       )
 
       dispatch({
@@ -393,7 +393,7 @@ export default function PreApproveLoa() {
                       <div className="flex justify-between">
                         <div>
                           <h4 className="font-bold text-white text-sm uppercase">
-                            Company
+                            Company Name
                           </h4>
                         </div>
                         <div>
@@ -412,7 +412,7 @@ export default function PreApproveLoa() {
                       <div className="flex justify-between">
                         <div>
                           <h4 className="font-bold text-white text-sm uppercase">
-                            Employee
+                            Patient Name
                           </h4>
                         </div>
                         <div>
@@ -562,7 +562,7 @@ export default function PreApproveLoa() {
                     </div>
                     <div>
                       <span className="text-white font-bold">
-                        {formatter.format(remainingLimit)}
+                        {formatter.format(remainingLimit || 0)}
                       </span>
                     </div>
                   </div>

@@ -14,23 +14,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+  return ['Laravel' => app()->version()];
 });
 
 Route::get('/test', function () {
-    return view('send-pending-not-moving');
+  return view('send-preqin-invite', ['link' => 'http://localhost:3000/self-enrollment/preqin?id=9213aab5d259d26abca0b5eff68025cd']);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
-require __DIR__.'/self-service.php';
+require __DIR__ . '/self-service.php';
 
-require __DIR__.'/self-service-mobile.php';
+require __DIR__ . '/self-service-mobile.php';
 
-require __DIR__.'/dental-insurance.php';
+require __DIR__ . '/dental-insurance.php';
 
-require __DIR__.'/appcode.php';
+require __DIR__ . '/appcode.php';
 
-require __DIR__.'/members.php';
+require __DIR__ . '/members.php';
 
-require __DIR__.'/self-enrollment.php';
+require __DIR__ . '/self-enrollment.php';

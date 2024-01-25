@@ -42,23 +42,28 @@ class UtilizationController extends Controller
 
   public function getEmployee(Request $request)
   {
-    $patient_id = $request->query('employee_id', null);
+    $employee_id = $request->query('employee_id', null);
+    $patient_id = $request->query('patient_id', null);
 
+    abort_if(!$employee_id, '400', 'Something went wrong. Please check employee id');
     abort_if(!$patient_id, '400', 'Something went wrong. Please check patient id');
 
-    $employees = Employees::where('id', $patient_id)
-      ->select('id', 'company_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
-      ->first();
+    if ($employee_id != $patient_id) {
+      //dependents
 
-    // abort_if(!$employees, '404', 'Employee Not Found.');
-
-    if ($employees) {
-      return $this->employeePreApprovedDetails($employees);
-    } else {
       $dependents = Dependents::where('id', $patient_id)
+        ->where('employee_id', $employee_id)
         ->select('id', 'employee_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
         ->first();
       return $this->dependentPreApprovedDetails($dependents);
+    } else {
+      // employee
+
+      $employees = Employees::where('id', $patient_id)
+        ->select('id', 'company_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
+        ->first();
+
+      return $this->employeePreApprovedDetails($employees);
     }
 
     abort(400, 'Something went wrong.');
@@ -70,25 +75,17 @@ class UtilizationController extends Controller
       ->select('id', 'code', 'name', 'plantype', 'sharetype')
       ->first();
 
-    // abort_if(!$companies, '404', 'Company Not Found.');
-
-    $masterlist = Sync::query()
-      ->whereDate('birth_date', Carbon::parse($employees->birthdate)->format('Y-m-d'))
-      ->where('empcode', $employees->code)
-      ->first();
+    $masterlist = $this->getMasterList($employees->code, $employees->birthdate);
 
     abort_if(!$masterlist, '404', 'Masterlist Not Found.');
-
-    $plan_types = Utilization::where('uniqcode', $masterlist->member_id)->select('plan_type')->first();
-    // return $masterlist->member_id;
 
     $utilization = Utilization::query()->where('compcode', $masterlist->company_code);
     // Plan 1: base uniqcode
     // Plan 2: base empcode per family
     // Plan 3: base empcode except relation employee
-    if ($plan_types->plan_type == 1) {
+    if ($masterlist->plantype == 1) {
       $utilization = $utilization->where('uniqcode', $masterlist->member_id)->get();
-    } else if ($plan_types->plan_type == 2) {
+    } else if ($masterlist->plantype == 2) {
       $utilization = $utilization->where('empcode', $masterlist->empcode)->get();
     } else {
       // 3
@@ -98,8 +95,6 @@ class UtilizationController extends Controller
     }
 
     $laboratory = Laboratory::query()->get();
-
-    // SELECT loautil.companycode, loautil.dateissued, loautil.empcode, loautil.patcode, loautil.empname, emp.given, emp.last, emp.middle, loautil.amount as total_reservation, emp.code, loautil.status FROM utilizationloa as loautil INNER JOIN employees as emp on emp.code = loautil.empcode WHERE emp.id = 1215008 AND loautil.status IN (1, 2) AND loautil.companycode = '2GO-EXP'
 
     $loaUtilization = UtilizationLoa::query()
       ->whereIn('status', [1, 2])
@@ -126,11 +121,11 @@ class UtilizationController extends Controller
     }
 
     $employees['companies'] = $companies;
-    $employees['plan_type'] = $plan_types->plan_type;
+    $employees['plan_type'] = $masterlist->plantype;
     $employees['utilization'] = $utilization;
     $employees['laboratory'] = $laboratory;
     // $employees['loa_util'] = $loaUtilization;
-    $employees['reserving_amount'] = $plan_types->plan_type === 2 ? '5542.00' : $reserving_amount;
+    $employees['reserving_amount'] = $masterlist->plantype === 2 ? '5542.00' : $reserving_amount;
     $employees['masterlist'] = $masterlist;
 
     return response()->json($employees);
@@ -146,17 +141,9 @@ class UtilizationController extends Controller
       ->select('id', 'code', 'name', 'plantype', 'sharetype')
       ->first();
 
-    // abort_if(!$companies, '404', 'Company Not Found.');
-
-    $masterlist = Sync::query()
-      ->whereDate('birth_date', Carbon::parse($dependents->birthdate)->format('Y-m-d'))
-      ->where('empcode', $employees->code)
-      ->first();
+    $masterlist = $this->getMasterList($employees->code, $dependents->birthdate);
 
     abort_if(!$masterlist, '404', 'Masterlist Not Found.');
-
-    $plan_types = Utilization::where('uniqcode', $masterlist->member_id)->select('plan_type')->first();
-    // return $masterlist->member_id;
 
     $utilization = Utilization::query()->where('compcode', $masterlist->company_code);
     // Plan 1: base uniqcode
@@ -174,8 +161,6 @@ class UtilizationController extends Controller
     }
 
     $laboratory = Laboratory::query()->get();
-
-    // SELECT loautil.companycode, loautil.dateissued, loautil.empcode, loautil.patcode, loautil.empname, emp.given, emp.last, emp.middle, loautil.amount as total_reservation, emp.code, loautil.status FROM utilizationloa as loautil INNER JOIN employees as emp on emp.code = loautil.empcode WHERE emp.id = 1215008 AND loautil.status IN (1, 2) AND loautil.companycode = '2GO-EXP'
 
     $loaUtilization = UtilizationLoa::query()
       ->whereIn('status', [1, 2])
@@ -210,6 +195,14 @@ class UtilizationController extends Controller
     $employees['masterlist'] = $masterlist;
 
     return response()->json($employees);
+  }
+
+  private function getMasterList($empcode, $birthdate)
+  {
+    return Sync::query()
+      ->whereDate('birth_date', Carbon::parse($birthdate)->format('Y-m-d'))
+      ->where('empcode', $empcode)
+      ->first();
   }
 
   function importDeelUpload(Request $request)

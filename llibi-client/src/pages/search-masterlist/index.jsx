@@ -38,7 +38,7 @@ export default function SearchMasterListHomePage() {
       <div className="max-w-7xl mx-auto p-10 bg-white">
         <div className="flex items-center w-full">
           <div className="flex-grow flex items-center">
-            <Link href="/dashboard">
+            <Link href="/self-service/admin">
               <a>
                 <ApplicationLogo
                   width={200}

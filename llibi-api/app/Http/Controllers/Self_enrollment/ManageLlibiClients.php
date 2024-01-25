@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Self_enrollment\ManageLlibiNotifications;
 
-class ManageLlibiEnrollee extends Controller
+class ManageLlibiClients extends Controller
 {
     //CLIENT
-    public function checkClient($id)
+    public function checkClient($id) : array
     {
         $principal = members::where('hash', $id)
             ->where('client_company', 'LLIBI')

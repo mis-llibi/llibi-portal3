@@ -9,7 +9,7 @@ import Button from '@/components/Button'
 import Loader from '@/components/Loader'
 
 import { ManageClientInfo } from '@/hooks/self-enrollment/ManageClientInfo'
-import options from '@/hooks/self-enrollment/LlibiOptions'
+import options from '@/hooks/self-enrollment/BroadpathOptions'
 
 import { useRouter } from 'next/router'
 
@@ -17,12 +17,12 @@ import { useForm } from 'react-hook-form'
 
 import Swal from 'sweetalert2'
 
-const Home = () => {
+const home = () => {
   const router = useRouter()
 
   const { client, updateClientInfo } = ManageClientInfo({
     id: router.query.id,
-    company: 'DEEL',
+    company: 'PREQIN',
   })
 
   const {
@@ -42,13 +42,14 @@ const Home = () => {
     setValue('birth_date', client?.principal[0]?.birth_date)
     setValue('gender', client?.principal[0]?.gender)
     setValue('civil_status', client?.principal[0]?.civil_status)
+    setValue('mobile_number', client?.principal[0]?.mobile_number)
 
     if (client?.principal[0]?.form_locked == 1) {
-      window.location.pathname = `/self-enrollment/deel/form-locked`
+      window.location.pathname = `/self-enrollment/preqin/form-locked`
     } else {
       if (client?.principal.length > 0)
-        if (client?.principal[0]?.status == 2) {
-          window.location.pathname = `/self-enrollment/deel/dependents/`
+        if ([2, 3].some(item => item === client?.principal[0]?.status)) {
+          window.location.pathname = `/self-enrollment/preqin/dependents`
         } else {
           setPage(true)
         }
@@ -75,7 +76,7 @@ const Home = () => {
 
   return (
     <>
-      <GuestLayout title="DEEL Self-Enrollment Portal">
+      <GuestLayout title="Preqin Self-Enrollment Portal">
         <div className="lg:flex">
           <input type="hidden" {...register('id')} />
 
@@ -86,7 +87,7 @@ const Home = () => {
               <div>
                 {/* client logo */}
                 <img
-                  src={`${basePath}/self-enrollment/llibi/logo.png`}
+                  src={`${basePath}/self-enrollment/preqin/preqin_logo.png`}
                   width={150}
                 />
               </div>
@@ -158,7 +159,19 @@ const Home = () => {
                   })}
                   type="date"
                   placeholder="Enter your birth date"
+                  // readOnly
                   errors={errors?.birth_date}
+                />
+              </div>
+              <div className="mt-2">
+                <Input
+                  label="Contact Number"
+                  register={register('mobile_number', {
+                    required: 'This is required',
+                  })}
+                  maxLength="11"
+                  placeholder="Enter your Phone Number (09xxxxxxx)"
+                  errors={errors?.zipCode}
                 />
               </div>
               <div className="mt-2">
@@ -264,10 +277,16 @@ const Home = () => {
               </div>
 
               <div className="">
-                <Button onClick={handleSubmit(onSubmit)}>
+                <Button onClick={handleSubmit(onSubmit)} className={'mr-2'}>
                   Proceed to Enrollment
                 </Button>
-                <Button>I do not want to Enroll</Button>
+                {/* <Button
+                  // disabled={!client?.principal[0]}
+                  className={
+                    'mt-2 bg-red-800 hover:bg-red-700 focus:bg-red-900 active:bg-red-500  ring-red-200'
+                  }>
+                  I do not want to Enroll
+                </Button> */}
               </div>
             </div>
           </div>
@@ -278,4 +297,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default home
