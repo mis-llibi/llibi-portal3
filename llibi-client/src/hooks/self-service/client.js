@@ -29,7 +29,7 @@ export const useClient = () => {
             title: 'Validation Error',
             text: result?.message,
             icon: 'error',
-            showDenyButton: true,
+            showDenyButton: false,
             showCancelButton: false,
             confirmButtonText: 'OK',
             denyButtonText: `Send Complaint`,

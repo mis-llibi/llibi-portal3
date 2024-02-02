@@ -2,6 +2,8 @@ import React from 'react'
 import { FaRegUser } from 'react-icons/fa'
 
 export default function ComplaintInformation({ complaint }) {
+  if (!complaint) return <h1>Loading...</h1>
+
   return (
     <>
       <div className="w-[30em] rounded-md p-3 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 shadow-md h-44 text-white">

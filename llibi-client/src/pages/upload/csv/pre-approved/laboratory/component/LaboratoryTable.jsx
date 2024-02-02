@@ -53,8 +53,8 @@ export default function LaboratoryTable({
     },
   ]
 
-  if (LaboratoryRequest.error) return <h1>Error...</h1>
-  if (!LaboratoryRequest.data) return <Loader />
+  if (LaboratoryRequest?.error) return <h1>Error...</h1>
+  if (!LaboratoryRequest?.data) return <Loader />
 
   return (
     <DataGrid

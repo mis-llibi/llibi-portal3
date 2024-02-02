@@ -42,7 +42,7 @@ export default function EditLaboratory({ row, ...props }) {
               className="w-full rounded-md"
               type="text"
               name="laboratory"
-              defaultValue={row.laboratory}
+              defaultValue={row?.laboratory}
               ref={labRef}
             />
           </div>
@@ -52,7 +52,7 @@ export default function EditLaboratory({ row, ...props }) {
               className="w-full rounded-md"
               type="text"
               name="cost"
-              defaultValue={row.cost}
+              defaultValue={row?.cost}
               ref={costRef}
             />
           </div>
