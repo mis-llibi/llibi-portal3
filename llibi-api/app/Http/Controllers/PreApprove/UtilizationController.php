@@ -55,6 +55,11 @@ class UtilizationController extends Controller
         ->where('employee_id', $employee_id)
         ->select('id', 'employee_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
         ->first();
+
+        if(!$dependents) {
+          abort(404, 'Dependents not found.');
+        }
+
       return $this->dependentPreApprovedDetails($dependents);
     } else {
       // employee
@@ -62,6 +67,10 @@ class UtilizationController extends Controller
       $employees = Employees::where('id', $patient_id)
         ->select('id', 'company_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
         ->first();
+
+        if(!$employees) {
+          abort(404, 'Employee not found.');
+        }
 
       return $this->employeePreApprovedDetails($employees);
     }

@@ -16,7 +16,7 @@ use App\Models\Corporate\Hospitals;
 use App\Models\Corporate\ProviderLink;
 use App\Models\Corporate\Doctors;
 use App\Models\Self_service\Attachment;
-
+use App\Services\ClientErrorLogService;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Validator;
@@ -59,8 +59,23 @@ class ClientController extends Controller
           $client = $this->InsertClientData($request, $principal, $dependent);
           $clientRequest = $this->RequestForLoa($request, $client);
           $link .= '&loatype=' . $request->typeLOA . '&refno=' . $client['reference_number'];
-        }
+        } else {
+          ClientErrorLogService::saveLog(collect([
+            'firstName' => $request->firstName,
+            'lastName' => $request->lastName,
+            'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
+            'memberID' => isset($request->memberID) ? $request->memberID : null,
 
+            'depDob' => $request->dependentType == 1 ? $request->depDob : $request->depDob2,
+            'depFirstName' => $request->depFirstName,
+            'depLastName' => $request->depLastName,
+            'depMemberID' => isset($request->depMemberID) ? $request->depMemberID : null,
+
+            'minorDependent' => $request->minorDependent,
+            'requestType' => $request->toDo,
+            'typeLOA' => $request->typeLOA,
+          ]));
+        }
         break;
 
       case 2:
@@ -73,6 +88,22 @@ class ClientController extends Controller
 
         if ($result) {
           $link = ('https://llibi.app/service-request?router=1&memberid=' . $principal['client'][0]['member_id'] . '&password=' . $principal['client'][0]['birth_date']);
+        } else {
+          ClientErrorLogService::saveLog(collect([
+            'firstName' => $request->firstName,
+            'lastName' => $request->lastName,
+            'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
+            'memberID' => isset($request->memberID) ? $request->memberID : null,
+
+            'depDob' => $request->dependentType == 1 ? $request->depDob : $request->depDob2,
+            'depFirstName' => $request->depFirstName,
+            'depLastName' => $request->depLastName,
+            'depMemberID' => isset($request->depMemberID) ? $request->depMemberID : null,
+
+            'minorDependent' => $request->minorDependent,
+            'requestType' => $request->toDo,
+            'typeLOA' => $request->typeLOA,
+          ]));
         }
 
         break;

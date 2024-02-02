@@ -27,6 +27,9 @@ import Modal from '@/components/Modal'
 import ModalControl from '@/components/ModalControl'
 
 import TrackReferenceNumber from './TrackReferenceNumber'
+import ComplaintForms from '@/components/Self-Service/ComplaintForms'
+
+import { useClientRequestStore } from '@/store/useClientRequestStore'
 
 const Client = () => {
   const router = useRouter()
@@ -39,6 +42,9 @@ const Client = () => {
     clearErrors,
     formState: { errors },
   } = useForm()
+
+  // const isDependent = useClientRequestStore(state => state.isDependent)
+  const setIsDependent = useClientRequestStore(state => state.setIsDependent)
 
   //RESET FIELDS WHEN TODO IS CHANGED
   useEffect(() => {
@@ -72,6 +78,8 @@ const Client = () => {
     resetField('depDob')
     resetField('depMemberID')
     resetField('depDob2')
+
+    setIsDependent({ isDependent: watch('minorDependent') ?? false })
   }, [watch('minorDependent')])
 
   useEffect(() => {
@@ -262,6 +270,21 @@ const Client = () => {
       toggle()
     }
   }, [request])
+
+  useEffect(() => {
+    if (loading === 'send-complaint') {
+      setBody({
+        title: `SEND COMPLAINT`,
+        content: <ComplaintForms setShow={setShow} setLoading={setLoading} />,
+        modalOuterContainer: 'w-1/2 max-h-screen',
+        modalContainer: 'h-full rounded-md',
+        modalBody: 'h-full',
+      })
+      toggle()
+    }
+  }, [loading])
+
+  // console.log(isDependent)
 
   return (
     <ClientLayout>

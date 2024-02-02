@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-  return view('send-preqin-invite', ['link' => 'http://localhost:3000/self-enrollment/preqin?id=9213aab5d259d26abca0b5eff68025cd']);
+  return view('send-complaint', ['link' => 'http://localhost:3000/self-enrollment/preqin?id=9213aab5d259d26abca0b5eff68025cd']);
 });
 
 require __DIR__ . '/auth.php';

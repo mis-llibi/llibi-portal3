@@ -34,6 +34,7 @@ use App\Http\Controllers\PreApprove\LaboratoryController;
 use App\Http\Controllers\Api_third_party\MobileApiAccessController;
 use App\Http\Controllers\Feedback\FeedbackCorporateController;
 use App\Http\Controllers\SearchMasterlist\MasterlistController;
+use App\Http\Controllers\Self_service\ComplaintController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -86,7 +87,7 @@ Route::post('/self-service/admin/preview-export-records', [SelfService::class, '
 Route::get('/self-service/admin/update-tat', [SelfService::class, 'updateTAT']);
 
 //MOBILE SELF-SERVICE LOGIN
-Route::get('/user-mobile', [MobileAuthenticatedSessionController::class, 'checkSession']);
+// Route::get('/user-mobile', [MobileAuthenticatedSessionController::class, 'checkSession']);
 
 //DENTAL INSURANCE
 Route::get('/dental-insurance/member', [DentalInsuranceAuthController::class, 'checkSession']);
@@ -117,3 +118,10 @@ Route::get('/search-masterlist', [MasterlistController::class, 'index']);
 Route::get('/export-enrolled', [ManageEnrolleeController::class, 'exportEnrolled']);
 Route::post('/upload-file', [ManageEnrolleeController::class, 'uploadFile']);
 Route::get('/retrieve-file', [ManageEnrolleeController::class, 'retrieveFile']);
+
+
+Route::controller(ComplaintController::class)->group(function () {
+  Route::get('/complaint', 'index');
+  Route::get('/complaint/{id}', 'show');
+  Route::post('/complaint', 'store');
+});
