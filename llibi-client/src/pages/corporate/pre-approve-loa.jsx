@@ -233,8 +233,8 @@ export default function PreApproveLoa() {
     }
   }
 
-  const handleSelectLaboratory = async (e, params) => {
-    if (e.target.checked) {
+  const handleSelectLaboratory = async (checked, params) => {
+    if (checked) {
       dispatch({
         type: REDUCER_ACTIONS.ADD_LABORATORY,
         payload: { laboratory: Number(params.cost) },
@@ -317,14 +317,14 @@ export default function PreApproveLoa() {
       <Head>
         <title>Pre Approve Loa</title>
       </Head>
-      <div className="px-10 mx-auto">
+      <div className="max-w-7xl mx-auto">
         <img
           src="https://llibi.app/images/lacson-logo.png"
           alt="LLIBI LOGO"
           width={250}
         />
         <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3">
-          <div className="flex-grow border p-3 rounded-md">
+          <div className="flex-grow bg-gray-100 shadow p-3 rounded-md">
             <div className="w-full">
               <Tabs
                 className="mb-3"
@@ -344,34 +344,6 @@ export default function PreApproveLoa() {
                 />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
-                {/* <table className="w-full">
-                <thead>
-                  <tr>
-                    <th>Procedure</th>
-                    <th>Cost</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {laboratory.map((lab, i) => {
-                    return (
-                      <tr key={lab.id}>
-                        <td>{lab.procedure}</td>
-                        <td className="text-right">
-                          {formatter.format(lab.cost)}
-                        </td>
-                        <td className="text-center">
-                          <input
-                            checked={selectedLab.some(row => row.id === lab.id)}
-                            onChange={e => handleSelectLaboratory(e, lab)}
-                            type="checkbox"
-                          />
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table> */}
                 <LaboratoryTab
                   search={searchLab}
                   handleSearch={handleSearchLab}
@@ -382,12 +354,12 @@ export default function PreApproveLoa() {
               </CustomTabPanel>
             </div>
           </div>
-          <div className="w-full lg:w-[400px] border p-3 rounded-md">
+          <div className="w-full lg:w-[400px] bg-gray-100 shadow p-3 rounded-md">
             {!state.employee ? (
               <div>Loading...</div>
             ) : (
               <div>
-                <div className="flex flex-col gap-3 mb-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3 mb-3">
                   <div className="flex gap-3 rounded-md flex-wrap">
                     <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
                       <div className="flex justify-between">
@@ -453,30 +425,8 @@ export default function PreApproveLoa() {
                     </div>
                   </div>
                 </div>
-
-                {/* <h4 className="font-medium">
-                  <span className="font-bold">Company:</span>{' '}
-                  <span className="">{state.employee?.companies?.name}</span>
-                </h4> */}
-                {/* <h4 className="font-medium">
-                  <span className="font-bold">Employee:</span>{' '}
-                  <span className="">
-                    {state.employee?.last}, {state.employee?.given}{' '}
-                    {state.employee?.middle}.
-                  </span>
-                </h4> */}
-                {/* <h4 className="font-medium">
-                  <span className="font-bold">Plan Type:</span>{' '}
-                  <span className="">
-                    {state.employee?.companies?.plantype}{' '}
-                    {state.employee?.companies?.sharetype}
-                  </span>
-                </h4> */}
-                {/* <h4 className="font-medium">Combined IPOP -Per Illness</h4> */}
-                {/* <h4 className="font-medium">Shared limit - Dep</h4> */}
-
                 <div className="flex flex-col gap-3 mb-3">
-                  <div className="flex gap-3 rounded-md flex-wrap">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 gap-3 rounded-md flex-wrap">
                     <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
                       <div className="flex justify-between">
                         <div>
@@ -509,8 +459,6 @@ export default function PreApproveLoa() {
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-3 rounded-md flex-wrap">
                     <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
                       <div className="flex justify-between">
                         <div>
@@ -546,6 +494,7 @@ export default function PreApproveLoa() {
                       </div>
                     </div>
                   </div>
+                  <div className="flex gap-3 rounded-md flex-wrap"></div>
                 </div>
 
                 <div className="flex gap-3 rounded-md flex-wrap">
@@ -577,53 +526,6 @@ export default function PreApproveLoa() {
                     </button>
                   </div>
                 </div>
-
-                <table className="w-full">
-                  <thead>
-                    {/* <tr>
-                      <td>MBL</td>
-                      <td className="text-right">{formatter.format(MBL())}</td>
-                    </tr>
-                    <tr>
-                      <td>Reservation</td>
-                      <td className="text-right">
-                        {formatter.format(state.employee?.reserving_amount)}
-                      </td>
-                    </tr> */}
-                    {/* <tr>
-                      <td>Utilization</td>
-                      <td className="text-right">
-                        {formatter.format(state.utilization)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Laboratory Cost</td>
-                      <td className="text-right">
-                        {formatter.format(state.laboratory)}
-                      </td>
-                    </tr> */}
-                  </thead>
-                </table>
-                <br />
-                <hr />
-                <table className="w-full">
-                  <thead>
-                    {/* <tr>
-                      <td>Remaining Limit</td>
-                      <td className="text-right">
-                        {formatter.format(remainingLimit)}
-                      </td>
-                    </tr> */}
-                  </thead>
-                </table>
-
-                {/* <div className="h-20 flex justify-center items-center">
-                  <button
-                    onClick={saveLogs}
-                    className="bg-blue-700 hover:bg-blue-600 text-white w-40 p-3 rounded-md hover:shadow-md uppercase font-bold text-xs">
-                    Save Log
-                  </button>
-                </div> */}
               </div>
             )}
           </div>

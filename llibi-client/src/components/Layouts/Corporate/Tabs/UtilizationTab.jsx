@@ -40,7 +40,7 @@ export default function UtilizationTab({
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className='text-xs'>
             {search?.map((util, i) => {
               return (
                 <tr key={util.id} className="even:bg-gray-100">

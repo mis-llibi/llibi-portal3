@@ -1,4 +1,5 @@
 import React from 'react'
+import LaboratoryCard from './mobile/LaboratoryCard'
 
 export default function LaboratoryTab({
   search,
@@ -25,10 +26,10 @@ export default function LaboratoryTab({
       <div className="h-96 overflow-scroll">
         <table className="w-full text-sm">
           <thead>
-            <tr className="uppercase">
+            <tr className="uppercase bg-blue-50">
               {/* <th>Code</th> */}
-              <th>Procedure</th>
-              <th>Cost</th>
+              <th className="py-3">Procedure</th>
+              <th className="py-3">Cost</th>
               <th>
                 {/* <input
                 // onChange={e => handleSelectUtilizationAll(e)}
@@ -37,17 +38,21 @@ export default function LaboratoryTab({
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-xs">
             {search?.map((lab, i) => {
               return (
-                <tr key={lab.id} className="even:bg-gray-100">
+                <tr key={lab.id} className="even:bg-gray-300">
                   {/* <td>{lab.code}</td> */}
-                  <td className='py-3'>{lab.laboratory}</td>
-                  <td className="py-3 text-right">{formatter.format(lab.cost)}</td>
+                  <td className="py-3">{lab.laboratory}</td>
+                  <td className="py-3 text-right">
+                    {formatter.format(lab.cost)}
+                  </td>
                   <td className="py-3 text-center">
                     <input
                       checked={selectedLab.some(row => row.id === lab.id)}
-                      onChange={e => handleSelectLaboratory(e, lab)}
+                      onChange={e =>
+                        handleSelectLaboratory(e.target.checked, lab)
+                      }
                       type="checkbox"
                     />
                   </td>
@@ -57,6 +62,18 @@ export default function LaboratoryTab({
           </tbody>
         </table>
       </div>
+
+      {/* <div className="grid grid-cols-2 gap-3 md:hidden">
+        {search?.map((lab, i) => {
+          return (
+            <LaboratoryCard
+              key={lab.id}
+              lab={lab}
+              handleSelectLaboratory={handleSelectLaboratory}
+            />
+          )
+        })}
+      </div> */}
     </>
   )
 }
