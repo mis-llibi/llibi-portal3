@@ -10,7 +10,7 @@ const nextConfig = {
     trailingSlash: true,
     basePath: '',
     //basePath: isProd ? '/portal' : '',
-    assetPrefix: isProd ? 'https://portal.llibi.app' : 'http://localhost:3000',
+    // assetPrefix: isProd ? 'https://portal.llibi.app' : 'http://localhost:3000',
 }
 
 module.exports = nextConfig
