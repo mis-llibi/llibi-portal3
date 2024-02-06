@@ -1,4 +1,4 @@
-import AppLayout from '@/components/Layouts/da-extract'
+import AppLayout from '@/components/Layouts/Da-extract/AppLayout'
 import Head from 'next/head'
 
 import { useState } from 'react'

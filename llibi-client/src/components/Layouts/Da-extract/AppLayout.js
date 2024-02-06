@@ -1,4 +1,4 @@
-import Navigation from '@/components/Layouts/da-extract'
+import Navigation from '@/components/Layouts/Da-extract/Navigation'
 import { useAuth } from '@/hooks/auth'
 
 const AppLayout = ({ header, children }) => {
