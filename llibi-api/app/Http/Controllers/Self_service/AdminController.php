@@ -572,7 +572,7 @@ class AdminController extends Controller
   {
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+      ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
       ->select('t1.id')
       ->where('t1.status', 2)
       ->limit(40)

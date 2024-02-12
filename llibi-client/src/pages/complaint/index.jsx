@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Link from 'next/link'
 
 import ComplaintHooks from '@/hooks/self-service/complaint'
 import moment from 'moment'
@@ -17,8 +18,8 @@ export default function ComplaintHomePage() {
 
   return (
     <div>
-      <div className="flex justify-center">
-        <table className="w-4/5 rounded-md">
+      <div className="max-w-7xl mx-auto">
+        <table className="w-full rounded-md">
           <thead>
             <tr className="bg-blue-700 text-white">
               <th className="p-3">CASE ID</th>
@@ -28,7 +29,7 @@ export default function ComplaintHomePage() {
               <th className="p-3">COMPANY</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-xs">
             {complaints?.map(item => (
               <>
                 <tr>
@@ -49,7 +50,11 @@ export default function ComplaintHomePage() {
                   </td>
                 </tr>
                 <tr key={item.id} className="even:bg-gray-50">
-                  <td className="p-2 text-center">{item.uuid}</td>
+                  <td className="p-2 text-center">
+                    <span className="text-blue-700 underline">
+                      <Link href={`complaint/${item.uuid}`}>{item.uuid}</Link>
+                    </span>
+                  </td>
                   <td className="p-2 text-center">
                     {item.last_name}, {item.first_name} {item.middle_name}
                   </td>

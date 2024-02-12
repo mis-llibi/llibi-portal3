@@ -44,21 +44,30 @@ class UtilizationController extends Controller
   {
     $employee_id = $request->query('employee_id', null);
     $patient_id = $request->query('patient_id', null);
+    $company_id = $request->query('company_id', null);
+
+    $company = Companies::where('id', $company_id)->select('code')->first();
 
     abort_if(!$employee_id, '400', 'Something went wrong. Please check employee id');
     abort_if(!$patient_id, '400', 'Something went wrong. Please check patient id');
+    abort_if(!$company_id || !$company, '400', 'Something went wrong. Please check company id');
+
+
+    switch ($company->code) {
+      case 'PCOR':
+        abort('400', 'As Charged, No limit for Petron laboratory. Please close the window');
+        break;
+    }
 
     if ($employee_id != $patient_id) {
       //dependents
 
       $dependents = Dependents::where('id', $patient_id)
         ->where('employee_id', $employee_id)
-        ->select('id', 'employee_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
+        ->select('id', 'employee_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate', 'inscode')
         ->first();
 
-        if(!$dependents) {
-          abort(404, 'Dependents not found.');
-        }
+      abort_if(!$dependents, 404, 'Dependents not found.');
 
       return $this->dependentPreApprovedDetails($dependents);
     } else {
@@ -68,9 +77,7 @@ class UtilizationController extends Controller
         ->select('id', 'company_id', 'code', 'given', 'middle', 'last', 'ipr', 'opr', 'birthdate')
         ->first();
 
-        if(!$employees) {
-          abort(404, 'Employee not found.');
-        }
+      abort_if(!$employees, 404, 'Employee not found.');
 
       return $this->employeePreApprovedDetails($employees);
     }
@@ -173,7 +180,7 @@ class UtilizationController extends Controller
 
     $loaUtilization = UtilizationLoa::query()
       ->whereIn('status', [1, 2])
-      ->where('patcode', $employees->code)
+      ->where('patcode', $dependents->inscode)
       ->where('companycode', $companies->code)
       ->get();
 

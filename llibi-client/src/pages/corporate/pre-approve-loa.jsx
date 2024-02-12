@@ -24,6 +24,9 @@ import {
   CiBadgeDollar,
   CiSaveDown1,
 } from 'react-icons/ci'
+import Swal from 'sweetalert2'
+import PatientCardDetails from '@/components/corporate/pre-approved/PatientCardDetails'
+import ReservationCardDetails from '@/components/corporate/pre-approved/ReservationCardDetails'
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props
@@ -110,7 +113,7 @@ const INITIALSTATE = {
 }
 export default function PreApproveLoa() {
   const router = useRouter()
-  const { employee_id, patient_id } = router.query
+  const { employee_id, patient_id, company_id } = router.query
   const [state, dispatch] = useReducer(reducer, INITIALSTATE)
 
   const [value, setValue] = useState(0)
@@ -168,7 +171,7 @@ export default function PreApproveLoa() {
   const getEmployee = async () => {
     try {
       const response = await axios.get(
-        `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}&patient_id=${patient_id}`,
+        `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}&patient_id=${patient_id}&company_id=${company_id}`,
       )
 
       dispatch({
@@ -176,7 +179,13 @@ export default function PreApproveLoa() {
         payload: { employee: response.data },
       })
     } catch (error) {
-      alert(error.response.data.message)
+      // alert(error.response.data.message)
+
+      if (error.response.status === 500) {
+        Swal.fire('Ooop...', 'Something went wrong.', 'error')
+        return
+      }
+      Swal.fire('', error.response.data.message, 'error')
       // throw new Error(error)
     }
   }
@@ -359,173 +368,13 @@ export default function PreApproveLoa() {
               <div>Loading...</div>
             ) : (
               <div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3 mb-3">
-                  <div className="flex gap-3 rounded-md flex-wrap">
-                    <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm uppercase">
-                            Company Name
-                          </h4>
-                        </div>
-                        <div>
-                          <CiBank className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {state.employee?.companies?.name}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 rounded-md flex-wrap">
-                    <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm uppercase">
-                            Patient Name
-                          </h4>
-                        </div>
-                        <div>
-                          <CiUser className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {state.employee?.last}, {state.employee?.given}{' '}
-                          {state.employee?.middle}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 rounded-md flex-wrap">
-                    <div className="flex-1 bg-gradient-to-tl from-red-500 via-red-700 to-red-900 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm uppercase">
-                            Plan Type
-                          </h4>
-                        </div>
-                        <div>
-                          <CiCircleList className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {state.employee?.companies?.plantype} {' | '}
-                          {state.employee?.plan_type === 1 &&
-                            'Individual OP Limit'}
-                          {state.employee?.plan_type === 2 &&
-                            'OP Shared by family'}
-                          {state.employee?.plan_type === 3 &&
-                            'OP Shared by family except employee'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-3 mb-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 gap-3 rounded-md flex-wrap">
-                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm">MBL</h4>
-                        </div>
-                        <div>
-                          <CiBadgeDollar className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {formatter.format(MBL())}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm">
-                            Reservation
-                          </h4>
-                        </div>
-                        <div>
-                          <CiBadgeDollar className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {formatter.format(state.employee?.reserving_amount)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm">
-                            Utilization
-                          </h4>
-                        </div>
-                        <div>
-                          <CiBadgeDollar className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {formatter.format(state.utilization)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
-                      <div className="flex justify-between">
-                        <div>
-                          <h4 className="font-bold text-white text-sm">
-                            Laboratory Cost
-                          </h4>
-                        </div>
-                        <div>
-                          <CiBadgeDollar className="text-white text-3xl" />
-                        </div>
-                      </div>
-                      <div>
-                        <span className="text-white font-bold text-sm">
-                          {formatter.format(state.laboratory)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 rounded-md flex-wrap"></div>
-                </div>
-
-                <div className="flex gap-3 rounded-md flex-wrap">
-                  <div className="flex-1 bg-gradient-to-tl from-green-600 via-green-800 to-green-900 p-3 rounded-md">
-                    <div className="flex justify-between">
-                      <div>
-                        <h4 className="font-bold text-white text-sm">
-                          Remaining Limit
-                        </h4>
-                      </div>
-                      <div>
-                        <CiBadgeDollar className="text-white text-3xl" />
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-white font-bold">
-                        {formatter.format(remainingLimit || 0)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex-1 p-3 flex items-center">
-                    <button
-                      onClick={saveLogs}
-                      className="bg-blue-900 hover:bg-blue-800 text-white w-40 p-3 rounded-md hover:shadow-md uppercase font-bold text-xs">
-                      <div className="flex justify-center gap-3 items-center">
-                        Save Log
-                        <CiSaveDown1 className="text-2xl" />
-                      </div>
-                    </button>
-                  </div>
-                </div>
+                <PatientCardDetails employee={state.employee} />
+                <ReservationCardDetails
+                  state={state}
+                  remainingLimit={remainingLimit}
+                  mbl={MBL()}
+                  saveLogs={saveLogs}
+                />
               </div>
             )}
           </div>
