@@ -13,7 +13,9 @@ import Swal from 'sweetalert2'
 import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
 import Button from '@/components/Button'
 
-import DataGrid from '@/components/DataGrid'
+// import DataGrid from '@/components/DataGrid'
+import { DataGrid } from '@mui/x-data-grid'
+import ManualInsertEnrollee from './broadpath/ManualInsertEnrollee'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -52,9 +54,9 @@ const pageEnrollmentClient = ({ props }) => {
 
   const insertEnrollee = () => {
     props?.setBody({
-      title: 'Insert Enrollee',
+      title: 'New Enrollee',
       content: (
-        <ModalInsertEnrollee
+        <ManualInsertEnrollee
           create={create}
           loading={props?.loading}
           setLoading={props?.setLoading}
@@ -275,22 +277,31 @@ const pageEnrollmentClient = ({ props }) => {
   //DATA GRID COLUMN HEADER
   const [selectionModel, setSelectionModel] = useState([])
   const columns = [
-    { field: 'id', headerName: 'ID', width: 50 },
+    { field: 'id', headerName: 'ID', width: 50, hide: true },
     {
       field: 'employee_no',
       headerName: 'Emp No.',
       width: 100,
     },
     {
-      field: 'last_name',
-      headerName: 'Last Name',
-      width: 160,
+      field: 'fullname',
+      headerName: 'Name',
+      // width: 100,
+      flex: 1,
+      renderCell: ({ row }) => {
+        return `${row.last_name}, ${row.first_name}`
+      },
     },
-    {
-      field: 'first_name',
-      headerName: 'First Name',
-      width: 160,
-    },
+    // {
+    //   field: 'last_name',
+    //   headerName: 'Last Name',
+    //   width: 160,
+    // },
+    // {
+    //   field: 'first_name',
+    //   headerName: 'First Name',
+    //   width: 160,
+    // },
     {
       field: 'birth_date',
       headerName: 'Birth Date',
@@ -387,6 +398,12 @@ const pageEnrollmentClient = ({ props }) => {
     },
   ]
 
+  const [pageSize, setPageSize] = useState(10)
+
+  const handlePageSizeChange = data => {
+    setPageSize(data)
+  }
+
   useEffect(() => {
     setStatus(props?.selection)
   }, [props?.selection])
@@ -397,31 +414,31 @@ const pageEnrollmentClient = ({ props }) => {
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           {/* PENDING ENROLLMENT BOX */}
           <div className={`px-3 pt-3 ${status == 1 || 'hidden'}`}>
-            <Button
+            {/* <Button
               onClick={uploadEnrollee}
               className="mr-2 bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
               Batch Upload Enrollee
-            </Button>
+            </Button> */}
             <Button
               onClick={insertEnrollee}
-              className="mr-2 bg-pink-400 hover:bg-pink-700 focus:bg-pink-700 active:bg-pink-700 ring-pink-200 mb-2 md:mb-0 w-full md:w-auto"
+              className="mr-2 bg-green-400 hover:bg-green-700 focus:bg-green-700 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
               Manually Insert Enrollee
             </Button>
-            <Button
+            {/* <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
               Export Pending Enrollment
-            </Button>
+            </Button> */}
 
-            <Button
+            {/* <Button
               onClick={submitForEnrollment}
               className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 md:float-right mb-2 md:mb-0 w-full  md:w-auto"
               disabled={props?.loading}>
               Submit for Enrollment
-            </Button>
+            </Button> */}
           </div>
 
           {/* FOR MEMBERS ENROLLED BOX */}
@@ -469,11 +486,30 @@ const pageEnrollmentClient = ({ props }) => {
 
           {/* MAIN DATA GRID TABLE */}
           <div className="h-96 min-h-screen p-3 bg-white border-b border-gray-200">
-            <DataGrid
+            {/* <DataGrid
               data={enrollees?.list}
               columns={columns}
               selectionModel={selectionModel}
               setSelectionModel={setSelectionModel}
+            /> */}
+
+            <DataGrid
+              rows={enrollees?.list || []}
+              columns={columns}
+              pageSize={pageSize}
+              onPageSizeChange={handlePageSizeChange}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+              disableSelectionOnClick
+              checkboxSelection
+              selectionModel={selectionModel}
+              onSelectionModelChange={setSelectionModel}
+              components={{
+                NoResultsOverlay: () => (
+                  <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">
+                    <div>No result found in your filter</div>
+                  </div>
+                ),
+              }}
             />
           </div>
         </div>
