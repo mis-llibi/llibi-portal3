@@ -39,6 +39,9 @@ use App\Http\Controllers\Self_enrollment\ManageDeelNotifications;
 use App\Http\Controllers\Self_enrollment\PreqinController;
 use App\Imports\Self_enrollment\PreqinImportPrincipal;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+
 class ManageSelfEnrollmentController extends Controller
 {
   //ADMIN
@@ -522,5 +525,53 @@ class ManageSelfEnrollmentController extends Controller
         ->whereIn('relation', ['PARENT', 'SPOUSE'])
         ->update(['status' => 12]); //cancel because of new civil status
 
+  }
+
+  public function newEnrollment(Request $request)
+  {
+    $oid = $request->oid;
+    $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
+    $attachment = $request->file('attachment');
+
+    $checkIfExistPrincipal = members::query()->where(['member_id' => $request->oid, 'birth_date' => $birth_date])->first();
+
+    if ($checkIfExistPrincipal) {
+      return response()->json(['message' => 'Already Enrolled', 'enrollee' => $checkIfExistPrincipal], 400);
+    }
+
+    $enrollee = members::create(
+      [
+        'client_company' => 'BROADPATH',
+        'member_id' => $request->oid,
+        'hash' => Str::uuid(),
+        'relation' => $request->relation,
+        'first_name' => $request->firstname,
+        'last_name' => $request->lastname,
+        'middle_name' => $request->middlename,
+        'birth_date' => $birth_date,
+        'gender' => $request->gender,
+        'civil_status' => $request->civilstatus,
+        'hire_date' => Carbon::now(),
+        'coverage_date' => Carbon::now()->addYear(),
+        'form_locked' => 0,
+        'status' => 1,
+      ]
+    );
+
+    foreach ($attachment as $key => $attch) {
+      $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+      $file_name = $attch->getClientOriginalName();
+
+      attachment::create([
+        'link_id' => $enrollee->id,
+        'file_name' => $file_name,
+        'file_link' => $path
+      ]);
+
+      members::where('id', $enrollee->id)->update(['attachments' => 1]);
+    }
+
+
+    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => $enrollee]);
   }
 }

@@ -125,3 +125,9 @@ Route::controller(ComplaintController::class)->group(function () {
   Route::get('/complaint/{id}', 'show');
   Route::post('/complaint', 'store');
 });
+
+Route::controller(SelfEnrollmentController::class)
+  ->prefix('self-enrollment')
+  ->group(function () {
+    Route::post('/new-enrollment', 'newEnrollment');
+  });

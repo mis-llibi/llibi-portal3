@@ -342,6 +342,27 @@ export const useManageEnrollee = ({ selection }) => {
       })
   }
 
+  const insertNewEnrollee = async ({
+    setLoading,
+    setShow,
+    data,
+    reset,
+    ...props
+  }) => {
+    try {
+      const response = await axios.post(
+        '/api/self-enrollment/new-enrollment',
+        data,
+      )
+
+      mutate()
+      reset()
+      Swal.fire('Success', response.data.message, 'success')
+    } catch (error) {
+      Swal.fire('Error', error?.response?.data?.message, 'error')
+    }
+  }
+
   return {
     enrollees,
     upload,
@@ -356,5 +377,6 @@ export const useManageEnrollee = ({ selection }) => {
 
     updateEnrollmentStatus,
     approveCancellation,
+    insertNewEnrollee,
   }
 }

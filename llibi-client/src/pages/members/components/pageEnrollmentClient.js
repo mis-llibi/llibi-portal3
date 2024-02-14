@@ -16,6 +16,7 @@ import Button from '@/components/Button'
 // import DataGrid from '@/components/DataGrid'
 import { DataGrid } from '@mui/x-data-grid'
 import ManualInsertEnrollee from './broadpath/ManualInsertEnrollee'
+import NewEnrolleeTable from './broadpath/NewEnrolleeTable'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -276,6 +277,11 @@ const pageEnrollmentClient = ({ props }) => {
 
   //DATA GRID COLUMN HEADER
   const [selectionModel, setSelectionModel] = useState([])
+  const [pageSize, setPageSize] = useState(10)
+  const handlePageSizeChange = data => {
+    setPageSize(data)
+  }
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, hide: true },
     {
@@ -398,12 +404,6 @@ const pageEnrollmentClient = ({ props }) => {
     },
   ]
 
-  const [pageSize, setPageSize] = useState(10)
-
-  const handlePageSizeChange = data => {
-    setPageSize(data)
-  }
-
   useEffect(() => {
     setStatus(props?.selection)
   }, [props?.selection])
@@ -422,9 +422,9 @@ const pageEnrollmentClient = ({ props }) => {
             </Button> */}
             <Button
               onClick={insertEnrollee}
-              className="mr-2 bg-green-400 hover:bg-green-700 focus:bg-green-700 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
+              className="mr-2 bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
-              Manually Insert Enrollee
+              New Enrollee
             </Button>
             {/* <Button
               onClick={exportLateEnrolled}
@@ -493,24 +493,28 @@ const pageEnrollmentClient = ({ props }) => {
               setSelectionModel={setSelectionModel}
             /> */}
 
-            <DataGrid
-              rows={enrollees?.list || []}
-              columns={columns}
-              pageSize={pageSize}
-              onPageSizeChange={handlePageSizeChange}
-              rowsPerPageOptions={[10, 25, 50, 100]}
-              disableSelectionOnClick
-              checkboxSelection
-              selectionModel={selectionModel}
-              onSelectionModelChange={setSelectionModel}
-              components={{
-                NoResultsOverlay: () => (
-                  <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">
-                    <div>No result found in your filter</div>
-                  </div>
-                ),
-              }}
-            />
+            {status == 1 ? (
+              <NewEnrolleeTable data={enrollees?.new_enrollee || []} />
+            ) : (
+              <DataGrid
+                rows={enrollees?.list || []}
+                columns={columns}
+                pageSize={pageSize}
+                onPageSizeChange={handlePageSizeChange}
+                rowsPerPageOptions={[10, 25, 50, 100]}
+                disableSelectionOnClick
+                checkboxSelection
+                selectionModel={selectionModel}
+                onSelectionModelChange={setSelectionModel}
+                components={{
+                  NoResultsOverlay: () => (
+                    <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">
+                      <div>No result found in your filter</div>
+                    </div>
+                  ),
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

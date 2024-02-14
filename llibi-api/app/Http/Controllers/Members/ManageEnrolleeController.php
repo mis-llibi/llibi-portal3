@@ -17,6 +17,7 @@ use App\Models\Members\hr_members_correction;
 use App\Models\Members\hr_contact_correction;
 use App\Models\Members\hr_philhealth_correction;
 use App\Models\Self_enrollment\attachment;
+use App\Models\Self_enrollment\members;
 use App\Services\SendingEmail;
 
 use Carbon\Carbon;
@@ -45,6 +46,8 @@ class ManageEnrolleeController extends Controller
     $for_cancellation = hr_members::where('status', 8)->get();
     $cancelled = hr_members::where('status', 9)->get();
 
+    $new_enrollee = members::query()->where(['status' => 1, 'client_company' => auth()->user()->company_id])->latest()->get();
+
     //$pending = array_count_values(array_column($members, 'status'))[$pending];
     return array(
       'list' => $list,
@@ -56,6 +59,7 @@ class ManageEnrolleeController extends Controller
       'for_correction' => count($for_correction),
       'for_cancellation' => count($for_cancellation),
       'cancelled' => count($cancelled),
+      'new_enrollee' => $new_enrollee,
     );
   }
 
