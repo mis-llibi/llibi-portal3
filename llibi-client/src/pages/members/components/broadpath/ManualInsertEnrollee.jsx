@@ -119,8 +119,8 @@ const ManualInsertEnrollee = ({
             className="block mt-1 w-full"
             options={[
               { label: 'Select Gender', value: '' },
-              { label: 'Male', value: 'Male' },
-              { label: 'Female', value: 'Female' },
+              { label: 'Male', value: 'MALE' },
+              { label: 'Female', value: 'FEMALE' },
             ]}
             register={register('gender', {
               required: 'Gender is required',
