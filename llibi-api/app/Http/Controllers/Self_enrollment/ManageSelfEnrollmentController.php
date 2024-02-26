@@ -40,6 +40,7 @@ use App\Http\Controllers\Self_enrollment\PreqinController;
 use App\Imports\Self_enrollment\PreqinImportPrincipal;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ManageSelfEnrollmentController extends Controller
@@ -573,5 +574,59 @@ class ManageSelfEnrollmentController extends Controller
 
 
     return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => $enrollee]);
+  }
+
+  public function updateEnrollment(Request $request, $id)
+  {
+    $oid = $request->oid;
+    $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
+    $attachment = $request->file('attachment');
+
+    $enrollee = members::where('id', $id)->update(
+      [
+        'member_id' => $oid,
+        'relation' => $request->relation,
+        'first_name' => $request->firstname,
+        'last_name' => $request->lastname,
+        'middle_name' => $request->middlename,
+        'birth_date' => $birth_date,
+        'gender' => $request->gender,
+        'civil_status' => $request->civilstatus,
+      ]
+    );
+
+    attachment::where('link_id', $id)->delete();
+    foreach ($attachment as $key => $attch) {
+      $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+      $file_name = $attch->getClientOriginalName();
+
+      attachment::create([
+        'link_id' => $id,
+        'file_name' => $file_name,
+        'file_link' => $path
+      ]);
+
+      members::where('id', $id)->update(['attachments' => ++$key]);
+    }
+
+
+    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => members::where('id', $id)->get()]);
+  }
+
+  public function fetchPrincipal()
+  {
+    return members::where('relation', 'PRINCIPAL')->select(
+      'id',
+      'member_id',
+      'relation',
+      'first_name',
+      'last_name',
+      'middle_name',
+      'birth_date',
+      'gender',
+      'civil_status',
+    )
+      ->take(100)
+      ->get();
   }
 }

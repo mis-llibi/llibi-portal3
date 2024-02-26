@@ -17,6 +17,7 @@ import Button from '@/components/Button'
 import { DataGrid } from '@mui/x-data-grid'
 import ManualInsertEnrollee from './broadpath/ManualInsertEnrollee'
 import NewEnrolleeTable from './broadpath/NewEnrolleeTable'
+import ManualUpdateEnrollee from './broadpath/ManualUpdateEnrollee'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -55,13 +56,31 @@ const pageEnrollmentClient = ({ props }) => {
 
   const insertEnrollee = () => {
     props?.setBody({
-      title: 'New Enrollee',
+      title: 'New Transaction',
       content: (
         <ManualInsertEnrollee
           create={create}
           loading={props?.loading}
           setLoading={props?.setLoading}
           setShow={props?.setShow}
+        />
+      ),
+      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    props?.toggle()
+  }
+
+  const updateEnrollee = row => {
+    props?.setBody({
+      title: 'Update Enrollee',
+      content: (
+        <ManualUpdateEnrollee
+          loading={props?.loading}
+          setLoading={props?.setLoading}
+          setShow={props?.setShow}
+          data={row}
         />
       ),
       modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
@@ -420,12 +439,20 @@ const pageEnrollmentClient = ({ props }) => {
               disabled={props?.loading}>
               Batch Upload Enrollee
             </Button> */}
-            <Button
-              onClick={insertEnrollee}
-              className="mr-2 bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
-              disabled={props?.loading}>
-              New Enrollee
-            </Button>
+            <div className="flex justify-between">
+              <Button
+                onClick={insertEnrollee}
+                className="mr-2 bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
+                disabled={props?.loading}>
+                New Transaction
+              </Button>
+              <Button
+                onClick={insertEnrollee}
+                className="mr-2 bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto"
+                disabled={props?.loading}>
+                Submit for Enrollment
+              </Button>
+            </div>
             {/* <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
@@ -494,7 +521,10 @@ const pageEnrollmentClient = ({ props }) => {
             /> */}
 
             {status == 1 ? (
-              <NewEnrolleeTable data={enrollees?.new_enrollee || []} />
+              <NewEnrolleeTable
+                data={enrollees?.new_enrollee || []}
+                updateEnrollee={updateEnrollee}
+              />
             ) : (
               <DataGrid
                 rows={enrollees?.list || []}

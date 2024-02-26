@@ -130,4 +130,7 @@ Route::controller(SelfEnrollmentController::class)
   ->prefix('self-enrollment')
   ->group(function () {
     Route::post('/new-enrollment', 'newEnrollment');
+    Route::put('/new-enrollment/{id}', 'updateEnrollment');
+
+    Route::get('/principal', 'fetchPrincipal');
   });

@@ -16,14 +16,8 @@ import ModalControl from '@/components/ModalControl'
 import InputFile from '@/components/Self-enrollment/InputFileBroadpath'
 
 import { useManageEnrollee } from '@/hooks/members/ManageEnrollee'
-import PrincipalList from './PrincipalList'
 
-const INITIAL_ENROLLMENT_RELATION = {
-  principal: 'PRINCIPAL',
-  dependent: 'DEPENDENT',
-}
-
-const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
+const ManualUpdateEnrollee = ({ loading, setLoading, setShow, data }) => {
   const {
     register,
     handleSubmit,
@@ -35,131 +29,35 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
   } = useForm()
 
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
-  const { insertNewEnrollee } = useManageEnrollee(1)
+  const { updateNewEnrollee } = useManageEnrollee(1)
 
-  const [enrollmentRelation, setEnrollmentRelation] = useState(null)
-  const [selectedPrincipal, setSelectedPrincipal] = useState(null)
-
-  const submitForm = async data => {
-    const FORMDATA = new FormData()
-
-    if (!enrollmentRelation) {
-      alert('Please select relation to enroll')
-      return
-    }
-
-    for (let key in data) {
-      if (key === 'attachment') {
-        for (let index = 0; index < data[key].length; index++) {
-          FORMDATA.append('attachment[]', data[key][index])
-        }
-      } else {
-        FORMDATA.append(key, data[key])
-      }
-    }
-
-    // if no relation key in data object
-    if (enrollmentRelation === 'PRINCIPAL') {
-      FORMDATA.delete('relation')
-      FORMDATA.append('relation', 'PRINCIPAL')
-    }
-
-    // console.log([...FORMDATA])
-    const isSuccessSubmit = await insertNewEnrollee({
+  const submitForm = async row => {
+    await updateNewEnrollee({
       setLoading,
       setShow,
-      data: FORMDATA,
+      data: { ...row, id: data.id },
       reset,
     })
-    if (isSuccessSubmit) {
-      setEnrollmentRelation(null)
-    }
-  }
-
-  const showPrincipal = row => {
-    setBody({
-      title: 'Principal List',
-      content: (
-        <PrincipalList
-          show={show}
-          setShow={modalSetShow}
-          setSelectedPrincipal={setSelectedPrincipal}
-        />
-      ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
-      modalContainer: 'h-full',
-      modalBody: 'h-full',
-    })
-    toggle()
-  }
-
-  const handleSetEnrollmentRelation = value => {
-    setEnrollmentRelation(value)
-    setSelectedPrincipal(null)
   }
 
   useEffect(() => {
-    if (enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal) {
-      showPrincipal()
-    }
+    setValue('oid', data.member_id)
+    setValue('firstname', data.first_name)
+    setValue('lastname', data.last_name)
+    setValue('middlename', data.middle_name)
+    setValue('birthdate', data.birth_date)
+    setValue('gender', data.gender)
+    setValue('relation', data.relation)
+    setValue('civilstatus', data.civil_status)
 
-    reset({
-      oid: '',
-    })
-  }, [enrollmentRelation])
-
-  useEffect(() => {
-    reset({
-      oid: selectedPrincipal?.member_id ?? '',
-    })
-  }, [selectedPrincipal])
+    console.log(data)
+  }, [])
 
   return (
     <div className="p-4">
       <Modal show={show} body={body} toggle={toggle} />
       <form onSubmit={handleSubmit(submitForm)}>
         <div className="mb-3">
-          <span className="text-gray-700 text-sm">
-            Please select what relation to enroll
-          </span>
-          <div className="flex justify-center gap-3 border rounded-md p-3 mb-3">
-            <Label
-              htmlFor="enrollment_relation_principal"
-              className={`${
-                enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal &&
-                'bg-blue-700 text-white'
-              } border p-3 w-40 flex justify-center items-center h-20 rounded-md hover:bg-blue-700 hover:text-white transition-all ease-out`}>
-              <input
-                className="sr-only"
-                type="radio"
-                id="enrollment_relation_principal"
-                value="PRINCIPAL"
-                onChange={e => handleSetEnrollmentRelation(e.target.value)}
-                checked={
-                  enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal
-                }
-              />
-              PRINCIPAL
-            </Label>
-            <Label
-              htmlFor="enrollment_relation_dependent"
-              className={`${
-                enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent &&
-                'bg-blue-700 text-white'
-              } border p-3 w-40 flex justify-center items-center h-20 rounded-md hover:bg-blue-700 hover:text-white transition-all ease-out`}>
-              <input
-                className="sr-only"
-                type="radio"
-                id="enrollment_relation_dependent"
-                value="DEPENDENT"
-                onChange={e => setEnrollmentRelation(e.target.value)}
-                checked={
-                  enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent
-                }
-              />
-              DEPENDENT
-            </Label>
-          </div>
           <Label htmlFor="oid">OID/Member ID</Label>
           <Input
             id="oid"
@@ -167,9 +65,6 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
             register={register('oid', {
               required: 'OID/Member ID is required',
             })}
-            disabled={
-              enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal
-            }
             errors={errors?.oid}
           />
         </div>
@@ -235,29 +130,28 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
             errors={errors?.gender}
           />
         </div>
-        {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
-          <div className="mb-3">
-            <Label htmlFor="relation">Relation</Label>
-            <Select
-              id="relation"
-              className={`block mt-1 w-full`}
-              options={[
-                { label: 'Select Relation', value: '' },
-                { label: 'Parent', value: 'PARENT' },
-                { label: 'Spouse', value: 'SPOUSE' },
-                { label: 'Child', value: 'CHILD' },
-                {
-                  label: 'Domestic Partner / Same Gender Partner',
-                  value: 'DOMESTIC PARTNER',
-                },
-              ]}
-              register={register('relation', {
-                required: 'Relation is required',
-              })}
-              errors={errors?.relation}
-            />
-          </div>
-        )}
+        <div className="mb-3">
+          <Label htmlFor="relation">Relation</Label>
+          <Select
+            id="relation"
+            className="block mt-1 w-full"
+            options={[
+              { label: 'Select Relation', value: '' },
+              { label: 'Principal', value: 'PRINCIPAL' },
+              { label: 'Parent', value: 'PARENT' },
+              { label: 'Spouse', value: 'SPOUSE' },
+              { label: 'Child', value: 'CHILD' },
+              {
+                label: 'Domestic Partner / Same Gender Partner',
+                value: 'DOMESTIC PARTNER',
+              },
+            ]}
+            register={register('relation', {
+              required: 'Relation is required',
+            })}
+            errors={errors?.relation}
+          />
+        </div>
         <div className="mb-3">
           <Label htmlFor="civilstatus">Civil Status</Label>
           <Select
@@ -321,4 +215,4 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
   )
 }
 
-export default ManualInsertEnrollee
+export default ManualUpdateEnrollee

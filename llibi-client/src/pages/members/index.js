@@ -45,7 +45,7 @@ const Members = () => {
   const { register, watch } = useForm()
 
   const checkUserRole = () => {
-    if (user && !user?.role) return 4
+    if (user && !user?.role) return 1
     return 2
   }
 
@@ -81,11 +81,11 @@ const Members = () => {
                 id="statusCheckerClient"
                 className="block mt-1 w-full"
                 options={[
-                  { label: 'Enrolled Members', value: 4 },
                   {
-                    label: 'Pending for Enrollment',
+                    label: 'Pending for Submission',
                     value: 1,
                   },
+                  { label: 'Enrolled Members', value: 4 },
                   { label: 'Denied Enrollment', value: 6 },
                   { label: 'Members for Correction', value: 7 },
                   { label: 'Members for Cancellation', value: 8 },

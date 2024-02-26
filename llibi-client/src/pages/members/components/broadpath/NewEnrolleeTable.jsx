@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { DataGrid } from '@mui/x-data-grid'
 
 import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
 
-export default function NewEnrolleeTable({ data }) {
+export default function NewEnrolleeTable({ data, updateEnrollee }) {
   const [selectionModel, setSelectionModel] = useState([])
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
@@ -21,7 +21,9 @@ export default function NewEnrolleeTable({ data }) {
         return (
           <>
             <div>
-              <span className="text-green-600 text-[.75rem]">[{row.member_id}]</span>
+              <span className="text-green-600 text-[.75rem]">
+                [{row.member_id}]
+              </span>
               <br />
               <span>{`${row.last_name}, ${row.first_name}`}</span>
             </div>
@@ -68,7 +70,8 @@ export default function NewEnrolleeTable({ data }) {
           <div className="flex gap-1">
             <button
               className="group border px-3 py-2 shadow rounded-md hover:bg-gray-800"
-              title="Edit Enrollee">
+              title="Edit Enrollee"
+              onClick={() => updateEnrollee(row)}>
               <SlPencil className="group-hover:text-white text-lg" />
             </button>
             <button
@@ -81,6 +84,7 @@ export default function NewEnrolleeTable({ data }) {
       },
     },
   ]
+  
   return (
     <DataGrid
       rows={data}
