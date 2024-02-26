@@ -18,6 +18,7 @@ import { DataGrid } from '@mui/x-data-grid'
 import ManualInsertEnrollee from './broadpath/ManualInsertEnrollee'
 import NewEnrolleeTable from './broadpath/NewEnrolleeTable'
 import ManualUpdateEnrollee from './broadpath/ManualUpdateEnrollee'
+import axios from '@/lib/axios'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -33,6 +34,7 @@ const pageEnrollmentClient = ({ props }) => {
     revokeCancellation,
     forMemberCorrection,
     revokeCorrection,
+    submitForEnrollmentHooks
   } = useManageEnrollee({ selection: props?.selection })
 
   //ENROLLEES
@@ -301,6 +303,10 @@ const pageEnrollmentClient = ({ props }) => {
     setPageSize(data)
   }
 
+  const handleSubmitForEnrollment = async () => {
+    await submitForEnrollmentHooks(selectionModel)
+  }
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, hide: true },
     {
@@ -447,7 +453,7 @@ const pageEnrollmentClient = ({ props }) => {
                 New Transaction
               </Button>
               <Button
-                onClick={insertEnrollee}
+                onClick={handleSubmitForEnrollment}
                 className="mr-2 bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto"
                 disabled={props?.loading}>
                 Submit for Enrollment
@@ -521,9 +527,12 @@ const pageEnrollmentClient = ({ props }) => {
             /> */}
 
             {status == 1 ? (
+              // pending for submittion
               <NewEnrolleeTable
                 data={enrollees?.new_enrollee || []}
                 updateEnrollee={updateEnrollee}
+                selectionModel={selectionModel}
+                setSelectionModel={setSelectionModel}
               />
             ) : (
               <DataGrid

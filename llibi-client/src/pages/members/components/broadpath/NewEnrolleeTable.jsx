@@ -4,8 +4,8 @@ import { DataGrid } from '@mui/x-data-grid'
 
 import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
 
-export default function NewEnrolleeTable({ data, updateEnrollee }) {
-  const [selectionModel, setSelectionModel] = useState([])
+export default function NewEnrolleeTable({ data, updateEnrollee, ...props }) {
+  // const [selectionModel, setSelectionModel] = useState([])
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
     setPageSize(data)
@@ -31,14 +31,6 @@ export default function NewEnrolleeTable({ data, updateEnrollee }) {
         )
       },
     },
-    // {
-    //   field: 'fullname',
-    //   headerName: 'Name',
-    //   flex: 1,
-    //   renderCell: ({ row }) => {
-    //     return `${row.last_name}, ${row.first_name}`
-    //   },
-    // },
     {
       field: 'birth_date',
       headerName: 'Birth Date',
@@ -84,7 +76,7 @@ export default function NewEnrolleeTable({ data, updateEnrollee }) {
       },
     },
   ]
-  
+
   return (
     <DataGrid
       rows={data}
@@ -94,8 +86,8 @@ export default function NewEnrolleeTable({ data, updateEnrollee }) {
       rowsPerPageOptions={[10, 25, 50, 100]}
       disableSelectionOnClick
       checkboxSelection
-      selectionModel={selectionModel}
-      onSelectionModelChange={setSelectionModel}
+      selectionModel={props.selectionModel}
+      onSelectionModelChange={props.setSelectionModel}
       components={{
         NoResultsOverlay: () => (
           <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">

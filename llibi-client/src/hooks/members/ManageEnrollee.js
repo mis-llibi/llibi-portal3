@@ -400,6 +400,20 @@ export const useManageEnrollee = ({ selection }) => {
     }
   }
 
+  const submitForEnrollmentHooks = async data => {
+    try {
+      const respponse = await axios.post('/api/submit-for-enrollment', {
+        data: data,
+      })
+      mutate()
+
+      swasuccess('Success', respponse.data.message)
+    } catch (error) {
+      swaerror('Error', 'Something went wrong.')
+      throw error
+    }
+  }
+
   return {
     enrollees,
     upload,
@@ -416,5 +430,6 @@ export const useManageEnrollee = ({ selection }) => {
     approveCancellation,
     insertNewEnrollee,
     updateNewEnrollee,
+    submitForEnrollmentHooks,
   }
 }

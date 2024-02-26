@@ -429,4 +429,19 @@ class ManageEnrolleeController extends Controller
     // return Storage::url('uploaded-enrollee/1Fw94t8Wg1EvkzOo2rBKiulwf5OEs6VwPvdoH0Fb.txt', now()->addMinutes(5));
     // return Storage::disk('public')->exists('uploaded-enrollee/1Fw94t8Wg1EvkzOo2rBKiulwf5OEs6VwPvdoH0Fb.txt');
   }
+
+  public function submitForEnrollment(Request $request)
+  {
+    $ids = $request->data;
+
+    foreach ($ids as $key => $row) {
+      $members = [
+        'status' => 2,
+      ];
+
+      members::where('id', $row)->update($members);
+    }
+
+    return response()->json(['message' => 'Submit for enrollment success.']);
+  }
 }

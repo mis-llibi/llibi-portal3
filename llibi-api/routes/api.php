@@ -59,6 +59,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
   //HR ENROLLMENT
   Route::get('/get-enrollees/{status}', [ManageEnrolleeController::class, 'getEnrollees']);
   Route::get('/get-correction/{id}', [ManageEnrolleeController::class, 'getCorrection']);
+  Route::post('/submit-for-enrollment', [ManageEnrolleeController::class, 'submitForEnrollment']);
 
   //SELF ENROLLMENT ADMIN
   Route::get('/self-enrollment/get-submitted-and-approved-clients/{memberid}/{company}', [SelfEnrollmentController::class, 'getSubmittedAndApprovedClients']);
