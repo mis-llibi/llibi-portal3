@@ -528,105 +528,105 @@ class ManageSelfEnrollmentController extends Controller
 
   }
 
-  public function newEnrollment(Request $request)
-  {
-    $oid = $request->oid;
-    $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
-    $attachment = $request->file('attachment');
+  // public function newEnrollment(Request $request)
+  // {
+  //   $oid = $request->oid;
+  //   $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
+  //   $attachment = $request->file('attachment');
 
-    $checkIfExistPrincipal = members::query()->where(['member_id' => $request->oid, 'birth_date' => $birth_date])->first();
+  //   $checkIfExistPrincipal = members::query()->where(['member_id' => $request->oid, 'birth_date' => $birth_date])->first();
 
-    if ($checkIfExistPrincipal) {
-      return response()->json(['message' => 'Already Enrolled', 'enrollee' => $checkIfExistPrincipal], 400);
-    }
+  //   if ($checkIfExistPrincipal) {
+  //     return response()->json(['message' => 'Already Enrolled', 'enrollee' => $checkIfExistPrincipal], 400);
+  //   }
 
-    $enrollee = members::create(
-      [
-        'client_company' => 'BROADPATH',
-        'member_id' => $request->oid,
-        'hash' => Str::uuid(),
-        'relation' => $request->relation,
-        'first_name' => $request->firstname,
-        'last_name' => $request->lastname,
-        'middle_name' => $request->middlename,
-        'birth_date' => $birth_date,
-        'gender' => $request->gender,
-        'civil_status' => $request->civilstatus,
-        'hire_date' => Carbon::now(),
-        'coverage_date' => Carbon::now()->addYear(),
-        'form_locked' => 0,
-        'status' => 1,
-      ]
-    );
+  //   $enrollee = members::create(
+  //     [
+  //       'client_company' => 'BROADPATH',
+  //       'member_id' => $request->oid,
+  //       'hash' => Str::uuid(),
+  //       'relation' => $request->relation,
+  //       'first_name' => $request->firstname,
+  //       'last_name' => $request->lastname,
+  //       'middle_name' => $request->middlename,
+  //       'birth_date' => $birth_date,
+  //       'gender' => $request->gender,
+  //       'civil_status' => $request->civilstatus,
+  //       'hire_date' => Carbon::now(),
+  //       'coverage_date' => Carbon::now()->addYear(),
+  //       'form_locked' => 0,
+  //       'status' => 1,
+  //     ]
+  //   );
 
-    foreach ($attachment as $key => $attch) {
-      $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
-      $file_name = $attch->getClientOriginalName();
+  //   foreach ($attachment as $key => $attch) {
+  //     $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+  //     $file_name = $attch->getClientOriginalName();
 
-      attachment::create([
-        'link_id' => $enrollee->id,
-        'file_name' => $file_name,
-        'file_link' => $path
-      ]);
+  //     attachment::create([
+  //       'link_id' => $enrollee->id,
+  //       'file_name' => $file_name,
+  //       'file_link' => $path
+  //     ]);
 
-      members::where('id', $enrollee->id)->update(['attachments' => 1]);
-    }
-
-
-    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => $enrollee]);
-  }
-
-  public function updateEnrollment(Request $request, $id)
-  {
-    $oid = $request->oid;
-    $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
-    $attachment = $request->file('attachment');
-
-    $enrollee = members::where('id', $id)->update(
-      [
-        'member_id' => $oid,
-        'relation' => $request->relation,
-        'first_name' => $request->firstname,
-        'last_name' => $request->lastname,
-        'middle_name' => $request->middlename,
-        'birth_date' => $birth_date,
-        'gender' => $request->gender,
-        'civil_status' => $request->civilstatus,
-      ]
-    );
-
-    attachment::where('link_id', $id)->delete();
-    foreach ($attachment as $key => $attch) {
-      $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
-      $file_name = $attch->getClientOriginalName();
-
-      attachment::create([
-        'link_id' => $id,
-        'file_name' => $file_name,
-        'file_link' => $path
-      ]);
-
-      members::where('id', $id)->update(['attachments' => ++$key]);
-    }
+  //     members::where('id', $enrollee->id)->update(['attachments' => 1]);
+  //   }
 
 
-    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => members::where('id', $id)->get()]);
-  }
+  //   return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => $enrollee]);
+  // }
 
-  public function fetchPrincipal()
-  {
-    return members::where('relation', 'PRINCIPAL')->select(
-      'id',
-      'member_id',
-      'relation',
-      'first_name',
-      'last_name',
-      'middle_name',
-      'birth_date',
-      'gender',
-      'civil_status',
-    )
-      ->take(100)
-      ->get();
-  }
+  // public function updateEnrollment(Request $request, $id)
+  // {
+  //   $oid = $request->oid;
+  //   $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
+  //   $attachment = $request->file('attachment');
+
+  //   $enrollee = members::where('id', $id)->update(
+  //     [
+  //       'member_id' => $oid,
+  //       'relation' => $request->relation,
+  //       'first_name' => $request->firstname,
+  //       'last_name' => $request->lastname,
+  //       'middle_name' => $request->middlename,
+  //       'birth_date' => $birth_date,
+  //       'gender' => $request->gender,
+  //       'civil_status' => $request->civilstatus,
+  //     ]
+  //   );
+
+  //   attachment::where('link_id', $id)->delete();
+  //   foreach ($attachment as $key => $attch) {
+  //     $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+  //     $file_name = $attch->getClientOriginalName();
+
+  //     attachment::create([
+  //       'link_id' => $id,
+  //       'file_name' => $file_name,
+  //       'file_link' => $path
+  //     ]);
+
+  //     members::where('id', $id)->update(['attachments' => ++$key]);
+  //   }
+
+
+  //   return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => members::where('id', $id)->get()]);
+  // }
+
+  // public function fetchPrincipal()
+  // {
+  //   return members::where('relation', 'PRINCIPAL')->select(
+  //     'id',
+  //     'member_id',
+  //     'relation',
+  //     'first_name',
+  //     'last_name',
+  //     'middle_name',
+  //     'birth_date',
+  //     'gender',
+  //     'civil_status',
+  //   )
+  //     ->take(100)
+  //     ->get();
+  // }
 }

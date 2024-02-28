@@ -45,8 +45,8 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
         <table className="w-full">
           <thead className="text-xs bg-blue-700 text-white">
             <tr>
-              <th className="p-3 w-32">OID/Member ID</th>
-              <th className="p-3 flex-grow">Name</th>
+              <th className="p-3 w-32">Principal</th>
+              {/* <th className="p-3 flex-grow">Name</th> */}
               <th className="p-3 ">Relation</th>
               <th className="p-3 w-32">Birth Date</th>
               <th className="p-3 ">Gender</th>

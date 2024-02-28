@@ -15,10 +15,7 @@ import Button from '@/components/Button'
 
 // import DataGrid from '@/components/DataGrid'
 import { DataGrid } from '@mui/x-data-grid'
-import ManualInsertEnrollee from './broadpath/ManualInsertEnrollee'
 import NewEnrolleeTable from './broadpath/NewEnrolleeTable'
-import ManualUpdateEnrollee from './broadpath/ManualUpdateEnrollee'
-import axios from '@/lib/axios'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -34,7 +31,6 @@ const pageEnrollmentClient = ({ props }) => {
     revokeCancellation,
     forMemberCorrection,
     revokeCorrection,
-    submitForEnrollmentHooks
   } = useManageEnrollee({ selection: props?.selection })
 
   //ENROLLEES
@@ -50,42 +46,6 @@ const pageEnrollmentClient = ({ props }) => {
         />
       ),
       modalOuterContainer: 'w-full lg:w-3/6 max-h-screen',
-      modalContainer: 'h-full',
-      modalBody: 'h-full',
-    })
-    props?.toggle()
-  }
-
-  const insertEnrollee = () => {
-    props?.setBody({
-      title: 'New Transaction',
-      content: (
-        <ManualInsertEnrollee
-          create={create}
-          loading={props?.loading}
-          setLoading={props?.setLoading}
-          setShow={props?.setShow}
-        />
-      ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
-      modalContainer: 'h-full',
-      modalBody: 'h-full',
-    })
-    props?.toggle()
-  }
-
-  const updateEnrollee = row => {
-    props?.setBody({
-      title: 'Update Enrollee',
-      content: (
-        <ManualUpdateEnrollee
-          loading={props?.loading}
-          setLoading={props?.setLoading}
-          setShow={props?.setShow}
-          data={row}
-        />
-      ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
       modalContainer: 'h-full',
       modalBody: 'h-full',
     })
@@ -303,10 +263,6 @@ const pageEnrollmentClient = ({ props }) => {
     setPageSize(data)
   }
 
-  const handleSubmitForEnrollment = async () => {
-    await submitForEnrollmentHooks(selectionModel)
-  }
-
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, hide: true },
     {
@@ -437,43 +393,6 @@ const pageEnrollmentClient = ({ props }) => {
     <div className="py-2">
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          {/* PENDING ENROLLMENT BOX */}
-          <div className={`px-3 pt-3 ${status == 1 || 'hidden'}`}>
-            {/* <Button
-              onClick={uploadEnrollee}
-              className="mr-2 bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
-              disabled={props?.loading}>
-              Batch Upload Enrollee
-            </Button> */}
-            <div className="flex justify-between">
-              <Button
-                onClick={insertEnrollee}
-                className="mr-2 bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
-                disabled={props?.loading}>
-                New Transaction
-              </Button>
-              <Button
-                onClick={handleSubmitForEnrollment}
-                className="mr-2 bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto"
-                disabled={props?.loading}>
-                Submit for Enrollment
-              </Button>
-            </div>
-            {/* <Button
-              onClick={exportLateEnrolled}
-              className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
-              disabled={props?.loading}>
-              Export Pending Enrollment
-            </Button> */}
-
-            {/* <Button
-              onClick={submitForEnrollment}
-              className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 md:float-right mb-2 md:mb-0 w-full  md:w-auto"
-              disabled={props?.loading}>
-              Submit for Enrollment
-            </Button> */}
-          </div>
-
           {/* FOR MEMBERS ENROLLED BOX */}
           <div className={`px-3 pt-3 ${status == 4 || 'hidden'}`}>
             <Button
@@ -528,12 +447,7 @@ const pageEnrollmentClient = ({ props }) => {
 
             {status == 1 ? (
               // pending for submittion
-              <NewEnrolleeTable
-                data={enrollees?.new_enrollee || []}
-                updateEnrollee={updateEnrollee}
-                selectionModel={selectionModel}
-                setSelectionModel={setSelectionModel}
-              />
+              <NewEnrolleeTable create={create} {...props} />
             ) : (
               <DataGrid
                 rows={enrollees?.list || []}

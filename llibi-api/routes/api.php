@@ -59,7 +59,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
   //HR ENROLLMENT
   Route::get('/get-enrollees/{status}', [ManageEnrolleeController::class, 'getEnrollees']);
   Route::get('/get-correction/{id}', [ManageEnrolleeController::class, 'getCorrection']);
-  Route::post('/submit-for-enrollment', [ManageEnrolleeController::class, 'submitForEnrollment']);
 
   //SELF ENROLLMENT ADMIN
   Route::get('/self-enrollment/get-submitted-and-approved-clients/{memberid}/{company}', [SelfEnrollmentController::class, 'getSubmittedAndApprovedClients']);
@@ -127,11 +126,12 @@ Route::controller(ComplaintController::class)->group(function () {
   Route::post('/complaint', 'store');
 });
 
-Route::controller(SelfEnrollmentController::class)
-  ->prefix('self-enrollment')
+Route::controller(ManageEnrolleeController::class)
+  ->prefix('members-enrollment')
   ->group(function () {
     Route::post('/new-enrollment', 'newEnrollment');
     Route::put('/new-enrollment/{id}', 'updateEnrollment');
-
-    Route::get('/principal', 'fetchPrincipal');
+    Route::post('/submit-for-enrollment', 'submitForEnrollment');
+    Route::get('/principals', 'fetchPrincipal');
+    Route::get('/members', 'index');
   });

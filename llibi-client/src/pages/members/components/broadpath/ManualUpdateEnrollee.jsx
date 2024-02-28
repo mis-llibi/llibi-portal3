@@ -7,17 +7,19 @@ import Button from '@/components/Button'
 
 import { useForm } from 'react-hook-form'
 
-import Swal from 'sweetalert2'
-import axios from '@/lib/axios'
-import moment from 'moment'
-
 import Modal from '@/components/Modal'
 import ModalControl from '@/components/ModalControl'
 import InputFile from '@/components/Self-enrollment/InputFileBroadpath'
 
-import { useManageEnrollee } from '@/hooks/members/ManageEnrollee'
+import { updateNewEnrollee } from '@/hooks/members/ManageHrMember'
 
-const ManualUpdateEnrollee = ({ loading, setLoading, setShow, data }) => {
+const ManualUpdateEnrollee = ({
+  loading,
+  setLoading,
+  setShow,
+  data,
+  mutate,
+}) => {
   const {
     register,
     handleSubmit,
@@ -29,28 +31,36 @@ const ManualUpdateEnrollee = ({ loading, setLoading, setShow, data }) => {
   } = useForm()
 
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
-  const { updateNewEnrollee } = useManageEnrollee(1)
 
   const submitForm = async row => {
-    await updateNewEnrollee({
+    const isSuccessSubmit = await updateNewEnrollee({
       setLoading,
       setShow,
-      data: { ...row, id: data.id },
+      data: {
+        ...row,
+        id: data.id,
+        relation:
+          data.relationship_id === 'PRINCIPAL' ? 'PRINCIPAL' : row.relation,
+      },
       reset,
     })
+
+    if (isSuccessSubmit) {
+      mutate()
+    }
   }
 
   useEffect(() => {
-    setValue('oid', data.member_id)
-    setValue('firstname', data.first_name)
-    setValue('lastname', data.last_name)
-    setValue('middlename', data.middle_name)
-    setValue('birthdate', data.birth_date)
-    setValue('gender', data.gender)
-    setValue('relation', data.relation)
-    setValue('civilstatus', data.civil_status)
-
-    console.log(data)
+    reset({
+      oid: data.member_id,
+      firstname: data.first_name,
+      lastname: data.last_name,
+      middlename: data.middle_name ?? '',
+      birthdate: data.birth_date,
+      gender: data.gender,
+      relation: data.relationship_id,
+      civilstatus: data.civil_status,
+    })
   }, [])
 
   return (
@@ -60,6 +70,7 @@ const ManualUpdateEnrollee = ({ loading, setLoading, setShow, data }) => {
         <div className="mb-3">
           <Label htmlFor="oid">OID/Member ID</Label>
           <Input
+            disabled
             id="oid"
             className="block mt-1 w-full"
             register={register('oid', {
@@ -130,14 +141,17 @@ const ManualUpdateEnrollee = ({ loading, setLoading, setShow, data }) => {
             errors={errors?.gender}
           />
         </div>
-        <div className="mb-3">
+        <div
+          className={`mb-3 ${
+            data.relationship_id === 'PRINCIPAL' && 'hidden'
+          }`}>
           <Label htmlFor="relation">Relation</Label>
           <Select
             id="relation"
             className="block mt-1 w-full"
             options={[
               { label: 'Select Relation', value: '' },
-              { label: 'Principal', value: 'PRINCIPAL' },
+              // { label: 'Principal', value: 'PRINCIPAL' },
               { label: 'Parent', value: 'PARENT' },
               { label: 'Spouse', value: 'SPOUSE' },
               { label: 'Child', value: 'CHILD' },
@@ -147,7 +161,8 @@ const ManualUpdateEnrollee = ({ loading, setLoading, setShow, data }) => {
               },
             ]}
             register={register('relation', {
-              required: 'Relation is required',
+              required:
+                data.relationship_id !== 'PRINCIPAL' && 'Relation is required',
             })}
             errors={errors?.relation}
           />

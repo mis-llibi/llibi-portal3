@@ -342,78 +342,6 @@ export const useManageEnrollee = ({ selection }) => {
       })
   }
 
-  const insertNewEnrollee = async ({
-    setLoading,
-    setShow,
-    data,
-    reset,
-    ...props
-  }) => {
-    try {
-      const response = await axios.post(
-        '/api/self-enrollment/new-enrollment',
-        data,
-      )
-
-      mutate()
-      reset()
-      Swal.fire('Success', response.data.message, 'success')
-      return true
-    } catch (error) {
-      Swal.fire('Error', error?.response?.data?.message, 'error')
-      return false
-    }
-  }
-
-  const updateNewEnrollee = async ({
-    setLoading,
-    setShow,
-    data,
-    reset,
-    ...props
-  }) => {
-    try {
-      const FORMDATA = new FormData()
-
-      for (let key in data) {
-        if (key === 'attachment') {
-          for (let index = 0; index < data[key].length; index++) {
-            FORMDATA.append('attachment[]', data[key][index])
-          }
-        } else {
-          FORMDATA.append(key, data[key])
-        }
-      }
-
-      FORMDATA.append('_method', 'PUT')
-      const response = await axios.post(
-        `/api/self-enrollment/new-enrollment/${data.id}`,
-        FORMDATA,
-      )
-
-      // mutate()
-      // reset()
-      setShow(false)
-      Swal.fire('Success', response.data.message, 'success')
-    } catch (error) {
-      Swal.fire('Error', error?.response?.data?.message, 'error')
-    }
-  }
-
-  const submitForEnrollmentHooks = async data => {
-    try {
-      const respponse = await axios.post('/api/submit-for-enrollment', {
-        data: data,
-      })
-      mutate()
-
-      swasuccess('Success', respponse.data.message)
-    } catch (error) {
-      swaerror('Error', 'Something went wrong.')
-      throw error
-    }
-  }
-
   return {
     enrollees,
     upload,
@@ -428,8 +356,5 @@ export const useManageEnrollee = ({ selection }) => {
 
     updateEnrollmentStatus,
     approveCancellation,
-    insertNewEnrollee,
-    updateNewEnrollee,
-    submitForEnrollmentHooks,
   }
 }

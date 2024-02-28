@@ -12,11 +12,11 @@ const swrSetting = {
 
 export function getPrincipal({ searchStr = '' }) {
   return useSWR(
-    `/api/self-enrollment/principal?q=${searchStr}`,
+    `/api/members-enrollment/principals?q=${searchStr}`,
     async () => {
       try {
         const response = await axios.get(
-          `/api/self-enrollment/principal?q=${searchStr}`,
+          `/api/members-enrollment/principals?q=${searchStr}`,
         )
         return response.data
       } catch (error) {

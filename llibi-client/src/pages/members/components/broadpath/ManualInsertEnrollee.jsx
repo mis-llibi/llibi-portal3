@@ -7,23 +7,25 @@ import Button from '@/components/Button'
 
 import { useForm } from 'react-hook-form'
 
-import Swal from 'sweetalert2'
-import axios from '@/lib/axios'
-import moment from 'moment'
-
 import Modal from '@/components/Modal'
 import ModalControl from '@/components/ModalControl'
 import InputFile from '@/components/Self-enrollment/InputFileBroadpath'
 
-import { useManageEnrollee } from '@/hooks/members/ManageEnrollee'
 import PrincipalList from './PrincipalList'
+import { insertNewEnrollee } from '@/hooks/members/ManageHrMember'
 
 const INITIAL_ENROLLMENT_RELATION = {
   principal: 'PRINCIPAL',
   dependent: 'DEPENDENT',
 }
 
-const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
+const ManualInsertEnrollee = ({
+  create,
+  loading,
+  setLoading,
+  setShow,
+  mutate,
+}) => {
   const {
     register,
     handleSubmit,
@@ -35,7 +37,7 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
   } = useForm()
 
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
-  const { insertNewEnrollee } = useManageEnrollee(1)
+  // const { insertNewEnrollee } = useManageEnrollee(1)
 
   const [enrollmentRelation, setEnrollmentRelation] = useState(null)
   const [selectedPrincipal, setSelectedPrincipal] = useState(null)
@@ -73,6 +75,7 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
     })
     if (isSuccessSubmit) {
       setEnrollmentRelation(null)
+      mutate()
     }
   }
 
@@ -99,7 +102,7 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
   }
 
   useEffect(() => {
-    if (enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal) {
+    if (enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent) {
       showPrincipal()
     }
 
@@ -168,7 +171,7 @@ const ManualInsertEnrollee = ({ create, loading, setLoading, setShow }) => {
               required: 'OID/Member ID is required',
             })}
             disabled={
-              enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal
+              enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent
             }
             errors={errors?.oid}
           />

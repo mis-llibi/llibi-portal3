@@ -4,8 +4,18 @@ import { DataGrid } from '@mui/x-data-grid'
 
 import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
 
-export default function NewEnrolleeTable({ data, updateEnrollee, ...props }) {
-  // const [selectionModel, setSelectionModel] = useState([])
+import {
+  useManageHrMember,
+  submitForEnrollmentHooks,
+} from '@/hooks/members/ManageHrMember'
+import Button from '@/components/Button'
+import ManualInsertEnrollee from './ManualInsertEnrollee'
+import Swal from 'sweetalert2'
+import ManualUpdateEnrollee from './ManualUpdateEnrollee'
+
+export default function NewEnrolleeTable({ create, ...props }) {
+  const [selectionModel, setSelectionModel] = useState([])
+  const { data, isLoading, error, mutate } = useManageHrMember({ status: 1 })
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
     setPageSize(data)
@@ -22,7 +32,7 @@ export default function NewEnrolleeTable({ data, updateEnrollee, ...props }) {
           <>
             <div>
               <span className="text-green-600 text-[.75rem]">
-                [{row.member_id}]
+                {row.member_id}
               </span>
               <br />
               <span>{`${row.last_name}, ${row.first_name}`}</span>
@@ -42,7 +52,7 @@ export default function NewEnrolleeTable({ data, updateEnrollee, ...props }) {
       width: 100,
     },
     {
-      field: 'relation',
+      field: 'relationship_id',
       headerName: 'Relation',
       width: 150,
     },
@@ -77,24 +87,95 @@ export default function NewEnrolleeTable({ data, updateEnrollee, ...props }) {
     },
   ]
 
+  const insertEnrollee = () => {
+    props?.setBody({
+      title: 'New Transaction',
+      content: (
+        <ManualInsertEnrollee
+          create={create}
+          loading={props?.loading}
+          setLoading={props?.setLoading}
+          setShow={props?.setShow}
+          mutate={mutate}
+        />
+      ),
+      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    props?.toggle()
+  }
+
+  const handleSubmitForEnrollment = async () => {
+    if (selectionModel.length <= 0) {
+      Swal.fire('Error', 'Please select enrollee first.', 'error')
+      return
+    }
+
+    await submitForEnrollmentHooks(selectionModel)
+    mutate()
+  }
+
+  const updateEnrollee = row => {
+    props?.setBody({
+      title: 'Update Enrollee',
+      content: (
+        <ManualUpdateEnrollee
+          loading={props?.loading}
+          setLoading={props?.setLoading}
+          setShow={props?.setShow}
+          data={row}
+          mutate={mutate}
+        />
+      ),
+      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    props?.toggle()
+  }
+
+  // if (error) return <h1>Something went wrong.</h1>
+  // if (isLoading) return <h1>Loading...</h1>
+
   return (
-    <DataGrid
-      rows={data}
-      columns={columns}
-      pageSize={pageSize}
-      onPageSizeChange={handlePageSizeChange}
-      rowsPerPageOptions={[10, 25, 50, 100]}
-      disableSelectionOnClick
-      checkboxSelection
-      selectionModel={props.selectionModel}
-      onSelectionModelChange={props.setSelectionModel}
-      components={{
-        NoResultsOverlay: () => (
-          <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">
-            <div>No result found in your filter</div>
-          </div>
-        ),
-      }}
-    />
+    <>
+      {/* PENDING ENROLLMENT BOX */}
+      <div className="mb-3">
+        <div className="flex justify-between">
+          <Button
+            onClick={insertEnrollee}
+            className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
+            disabled={props?.loading}>
+            New Transaction
+          </Button>
+          <Button
+            onClick={handleSubmitForEnrollment}
+            className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto"
+            disabled={props?.loading}>
+            Submit for Enrollment
+          </Button>
+        </div>
+      </div>
+
+      <DataGrid
+        rows={data || []}
+        columns={columns}
+        pageSize={pageSize}
+        onPageSizeChange={handlePageSizeChange}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        disableSelectionOnClick
+        checkboxSelection
+        selectionModel={selectionModel}
+        onSelectionModelChange={setSelectionModel}
+        components={{
+          NoResultsOverlay: () => (
+            <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">
+              <div>No result found in your filter</div>
+            </div>
+          ),
+        }}
+      />
+    </>
   )
 }

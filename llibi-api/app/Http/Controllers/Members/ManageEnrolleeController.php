@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Members;
 
 use App\Exports\Members\LateEnrolledExport;
+use App\Exports\Members\PendingForSubmissionExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -16,6 +17,7 @@ use App\Models\Members\hr_philhealth;
 use App\Models\Members\hr_members_correction;
 use App\Models\Members\hr_contact_correction;
 use App\Models\Members\hr_philhealth_correction;
+use App\Models\Members\HrMemberAttachment;
 use App\Models\Self_enrollment\attachment;
 use App\Models\Self_enrollment\members;
 use App\Services\SendingEmail;
@@ -27,6 +29,20 @@ use Illuminate\Support\Str;
 
 class ManageEnrolleeController extends Controller
 {
+  public function index()
+  {
+    $stataus = request()->query('status');
+
+    $members =  hr_members::query();
+
+    if ($stataus) {
+      $members = $members->where('status', $stataus);
+    }
+
+    $members = $members->get();
+
+    return $members;
+  }
   public function getEnrollees($status)
   {
     $list = DB::table('hr_members as t1')
@@ -430,17 +446,134 @@ class ManageEnrolleeController extends Controller
     // return Storage::disk('public')->exists('uploaded-enrollee/1Fw94t8Wg1EvkzOo2rBKiulwf5OEs6VwPvdoH0Fb.txt');
   }
 
+  public function newEnrollment(Request $request)
+  {
+    $oid = $request->oid;
+    $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
+    $attachment = $request->file('attachment');
+
+    $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $request->oid, 'birth_date' => $birth_date])->first();
+
+    if ($checkIfExistPrincipal) {
+      return response()->json(['message' => 'Already Enrolled', 'enrollee' => $checkIfExistPrincipal], 400);
+    }
+
+    $enrollee = hr_members::create(
+      [
+        'client_company' => 'BROADPATH',
+        'member_id' => $request->oid,
+        'hash' => Str::uuid(),
+        'relationship_id' => $request->relation,
+        'first_name' => $request->firstname,
+        'last_name' => $request->lastname,
+        'middle_name' => $request->middlename ?? '',
+        'birth_date' => $birth_date,
+        'gender' => $request->gender,
+        'civil_status' => $request->civilstatus,
+        'date_hired' => Carbon::now(),
+        'coverage_date' => Carbon::now()->addYear(),
+        'status' => 1,
+        'changed_status_at' => Carbon::now(),
+        'created_by' => auth()->id(),
+      ]
+    );
+
+    foreach ($attachment as $key => $attch) {
+      $path = $attch->storeAs('Members/Attachment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+      $file_name = $attch->getClientOriginalName();
+
+      HrMemberAttachment::create([
+        'link_id' => $enrollee->id,
+        'file_name' => $file_name,
+        'file_link' => $path
+      ]);
+
+      hr_members::where('id', $enrollee->id)->update(['attachments' => ++$key]);
+    }
+
+
+    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => $enrollee]);
+  }
+
+  public function updateEnrollment(Request $request, $id)
+  {
+    $oid = $request->oid;
+    $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
+    $attachment = $request->file('attachment');
+
+    $enrollee = hr_members::where('id', $id)->update(
+      [
+        'member_id' => $oid,
+        'relationship_id' => $request->relation,
+        'first_name' => $request->firstname,
+        'last_name' => $request->lastname,
+        'middle_name' => $request->middlename,
+        'birth_date' => $birth_date,
+        'gender' => $request->gender,
+        'civil_status' => $request->civilstatus,
+      ]
+    );
+
+    HrMemberAttachment::where('link_id', $id)->delete();
+    foreach ($attachment as $key => $attch) {
+      $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+      $file_name = $attch->getClientOriginalName();
+
+      HrMemberAttachment::create([
+        'link_id' => $id,
+        'file_name' => $file_name,
+        'file_link' => $path
+      ]);
+
+      hr_members::where('id', $id)->update(['attachments' => ++$key]);
+    }
+
+    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => hr_members::where('id', $id)->get()]);
+  }
+
+  public function fetchPrincipal()
+  {
+    return hr_members::where('relationship_id', 'PRINCIPAL')->select(
+      'id',
+      'member_id',
+      'relationship_id',
+      'first_name',
+      'last_name',
+      'middle_name',
+      'birth_date',
+      'gender',
+      'civil_status',
+    )
+      ->take(100)
+      ->latest()
+      ->get();
+  }
+
   public function submitForEnrollment(Request $request)
   {
     $ids = $request->data;
 
+    $timestamp = Carbon::now()->timestamp;
+
     foreach ($ids as $key => $row) {
       $members = [
-        'status' => 2,
+        // 'status' => 2,
+        'excel_batch' => $timestamp,
       ];
 
-      members::where('id', $row)->update($members);
+      hr_members::where('id', $row)->update($members);
     }
+
+    $filename = "members/pending-for-submission/$timestamp.csv";
+    return Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'llibiapp');
+
+    $sending = new SendingEmail(
+      email: 'glenilagan@llibi.com',
+      body: view('send-pending-for-submission'),
+      subject: 'PENDING FOR SUBMISSION',
+      attachments: [Storage::path("$filename")],
+    );
+    // $sending->send();
 
     return response()->json(['message' => 'Submit for enrollment success.']);
   }
