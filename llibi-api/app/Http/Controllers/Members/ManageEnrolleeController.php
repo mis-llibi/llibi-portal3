@@ -557,7 +557,7 @@ class ManageEnrolleeController extends Controller
 
     foreach ($ids as $key => $row) {
       $members = [
-        // 'status' => 2,
+        'status' => 2,
         'excel_batch' => $timestamp,
       ];
 
@@ -565,16 +565,17 @@ class ManageEnrolleeController extends Controller
     }
 
     $filename = "members/pending-for-submission/$timestamp.csv";
-    return Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'llibiapp');
+    $spacesFilename = env('DO_CDN_ENDPOINT') . '/' . $filename;
+    Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'broadpath');
 
     $sending = new SendingEmail(
       email: 'glenilagan@llibi.com',
       body: view('send-pending-for-submission'),
       subject: 'PENDING FOR SUBMISSION',
-      attachments: [Storage::path("$filename")],
+      attachments: [$spacesFilename],
     );
-    // $sending->send();
+    $sending->send();
 
-    return response()->json(['message' => 'Submit for enrollment success.']);
+    return response()->json(['message' => 'Submit for enrollment success.', $spacesFilename]);
   }
 }
