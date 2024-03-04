@@ -569,7 +569,7 @@ class ManageEnrolleeController extends Controller
     Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'broadpath');
 
     $sending = new SendingEmail(
-      email: 'glenilagan@llibi.com',
+      email: ['glenilagan@llibi.com'],
       body: view('send-pending-for-submission'),
       subject: 'PENDING FOR SUBMISSION',
       attachments: [$spacesFilename],
