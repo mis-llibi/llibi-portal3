@@ -85,12 +85,13 @@ const Members = () => {
                     label: 'Pending for Submission',
                     value: 1,
                   },
-                  { label: 'Enrolled Members', value: 4 },
-                  { label: 'Denied Enrollment', value: 6 },
-                  { label: 'Members for Correction', value: 7 },
-                  { label: 'Members for Cancellation', value: 8 },
-                  { label: 'Cancelled Membership', value: 9 },
-                  { label: 'Late Enrolled', value: 101 },
+                  { label: 'Submitted Members', value: 2 },
+                  // { label: 'Enrolled Members', value: 4 },
+                  // { label: 'Denied Enrollment', value: 6 },
+                  // { label: 'Members for Correction', value: 7 },
+                  // { label: 'Members for Cancellation', value: 8 },
+                  // { label: 'Cancelled Membership', value: 9 },
+                  // { label: 'Late Enrolled', value: 101 },
                 ]}
                 register={register('selection')}
               />

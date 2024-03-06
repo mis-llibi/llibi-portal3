@@ -39,7 +39,7 @@ class ManageEnrolleeController extends Controller
       $members = $members->where('status', $stataus);
     }
 
-    $members = $members->get();
+    $members = $members->orderByDesc('id')->get();
 
     return $members;
   }
@@ -452,21 +452,33 @@ class ManageEnrolleeController extends Controller
     $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
     $attachment = $request->file('attachment');
 
-    $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $request->oid, 'birth_date' => $birth_date])->first();
+    $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $oid, 'birth_date' => $birth_date])->first();
+    $checkIfExistMember = hr_members::query()->where('last_name', 'LIKE', '%' . $request->lastname . '%')->where('birth_date', $birth_date)->first();
+    $checkingRelation = hr_members::query()->where('member_id', $oid)->where('relationship_id', $request->relation)->count();
 
-    if ($checkIfExistPrincipal) {
-      return response()->json(['message' => 'Already Enrolled', 'enrollee' => $checkIfExistPrincipal], 400);
+    abort_if($checkIfExistPrincipal, 400, 'Already Enrolled');
+    abort_if($checkIfExistMember, 400, 'Already Enrolled');
+
+    switch ($request->relation) {
+      case 'SPOUSE':
+      case 'DOMESTIC PARTNER':
+        abort_if($checkingRelation >= 1, 400, 'Only 1 Spouse/Partner can be enrolled.');
+        break;
+      case 'PARENT':
+        abort_if($checkingRelation >= 2, 400, 'Only 1 Parent can be enrolled.');
+        break;
     }
+
 
     $enrollee = hr_members::create(
       [
         'client_company' => 'BROADPATH',
-        'member_id' => $request->oid,
-        'hash' => Str::uuid(),
+        'member_id' => $oid,
+        'hash' => $request->relation === 'PRINCIPAL' ? Str::uuid() : '',
         'relationship_id' => $request->relation,
-        'first_name' => $request->firstname,
-        'last_name' => $request->lastname,
-        'middle_name' => $request->middlename ?? '',
+        'first_name' => Str::upper($request->firstname),
+        'last_name' => Str::upper($request->lastname),
+        'middle_name' => Str::upper($request->middlename) ?? '',
         'birth_date' => $birth_date,
         'gender' => $request->gender,
         'civil_status' => $request->civilstatus,
@@ -479,7 +491,7 @@ class ManageEnrolleeController extends Controller
     );
 
     foreach ($attachment as $key => $attch) {
-      $path = $attch->storeAs('Members/Attachment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+      $path = $attch->store('members/attachments/' . $request->oid, 'broadpath');
       $file_name = $attch->getClientOriginalName();
 
       HrMemberAttachment::create([
@@ -501,18 +513,16 @@ class ManageEnrolleeController extends Controller
     $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
     $attachment = $request->file('attachment');
 
-    $enrollee = hr_members::where('id', $id)->update(
-      [
-        'member_id' => $oid,
-        'relationship_id' => $request->relation,
-        'first_name' => $request->firstname,
-        'last_name' => $request->lastname,
-        'middle_name' => $request->middlename,
-        'birth_date' => $birth_date,
-        'gender' => $request->gender,
-        'civil_status' => $request->civilstatus,
-      ]
-    );
+    $enrollee = hr_members::find($id);
+    $enrollee->member_id = $oid;
+    $enrollee->relationship_id = $request->relation;
+    $enrollee->first_name = Str::upper($request->firstname);
+    $enrollee->last_name = Str::upper($request->lastname);
+    $enrollee->middle_name = Str::upper($request->middlename) ?? '';
+    $enrollee->birth_date = $birth_date;
+    $enrollee->gender = $request->gender;
+    $enrollee->civil_status = $request->civilstatus;
+    $enrollee->save();
 
     HrMemberAttachment::where('link_id', $id)->delete();
     foreach ($attachment as $key => $attch) {
@@ -528,12 +538,14 @@ class ManageEnrolleeController extends Controller
       hr_members::where('id', $id)->update(['attachments' => ++$key]);
     }
 
-    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => hr_members::where('id', $id)->get()]);
+    return response()->json(['message' => 'Successfully update enrollee', 'enrollee' => $enrollee]);
   }
 
   public function fetchPrincipal()
   {
-    return hr_members::where('relationship_id', 'PRINCIPAL')->select(
+    $search = request('q');
+
+    $members = hr_members::where('relationship_id', 'PRINCIPAL')->select(
       'id',
       'member_id',
       'relationship_id',
@@ -543,14 +555,27 @@ class ManageEnrolleeController extends Controller
       'birth_date',
       'gender',
       'civil_status',
-    )
-      ->take(100)
+    );
+    if ($search) {
+      $members = $members->where(function ($query) use ($search) {
+        $query->where('first_name', 'LIKE', "%$search%");
+        $query->orWhere('last_name', 'LIKE', "%$search%");
+      });
+    }
+
+    $members = $members->take(100)
       ->latest()
       ->get();
+
+    return $members;
   }
 
   public function submitForEnrollment(Request $request)
   {
+    $request->validate([
+      'data' => 'required|array|min:1',
+    ]);
+
     $ids = $request->data;
 
     $timestamp = Carbon::now()->timestamp;
@@ -566,10 +591,14 @@ class ManageEnrolleeController extends Controller
 
     $filename = "members/pending-for-submission/$timestamp.csv";
     $spacesFilename = env('DO_CDN_ENDPOINT') . '/' . $filename;
-    Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'broadpath');
+    $storingSuccess = Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'broadpath');
+
+    if (!$storingSuccess) {
+      return response()->json(['message' => 'Uploading file failed.', $spacesFilename]);
+    }
 
     $sending = new SendingEmail(
-      email: ['glenilagan@llibi.com'],
+      email: 'glenilagan@llibi.com',
       body: view('send-pending-for-submission'),
       subject: 'PENDING FOR SUBMISSION',
       attachments: [$spacesFilename],

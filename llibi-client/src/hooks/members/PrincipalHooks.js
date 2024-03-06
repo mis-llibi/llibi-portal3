@@ -10,13 +10,13 @@ const swrSetting = {
   refreshInterval: 0,
 }
 
-export function getPrincipal({ searchStr = '' }) {
+export function getPrincipal({ search }) {
   return useSWR(
-    `/api/members-enrollment/principals?q=${searchStr}`,
+    `/api/members-enrollment/principals?q=${search}`,
     async () => {
       try {
         const response = await axios.get(
-          `/api/members-enrollment/principals?q=${searchStr}`,
+          `/api/members-enrollment/principals?q=${search}`,
         )
         return response.data
       } catch (error) {

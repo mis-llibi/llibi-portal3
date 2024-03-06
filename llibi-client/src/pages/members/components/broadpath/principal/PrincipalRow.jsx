@@ -2,27 +2,37 @@ import moment from 'moment'
 import React from 'react'
 
 import { MdOutlineTouchApp } from 'react-icons/md'
+import { BiPointer } from 'react-icons/bi'
 
 export default function PrincipalRow({ row, handleSetSelected }) {
   return (
-    <tr className="even:bg-blue-50">
+    <tr className="even:bg-blue-50/50">
       <td className="p-3 w-72">
-        <p className='font-bold'>{row.member_id}</p>
+        <p className="font-thin text-[10px]">
+          <span className="bg-green-600 text-white rounded-md px-2 mr-1">
+            {row.member_id}
+          </span>
+          {/* <span className="bg-orange-600 text-white rounded-md px-2">
+            {row.relationship_id}
+          </span> */}
+        </p>
+        {/* <p className="font-bold text-[10px]"></p> */}
+        {/* <p className="font-bold text-[10px]">{row.civil_status}</p> */}
         <p>{`${row.last_name}, ${row.first_name} ${row.middle_name}`}</p>
       </td>
       {/* <td className="p-3"></td> */}
-      <td className="p-3 text-center">{row.relationship_id}</td>
+      {/* <td className="p-3 text-center">{row.relationship_id}</td> */}
       <td className="p-3 text-center">
         {moment(row.birth_date).format('Y-MM-DD')}
       </td>
       <td className="p-3 text-center">{row.gender}</td>
       <td className="p-3 text-center">{row.civil_status}</td>
-      <td className="p-3">
+      <td className="p-3 text-center">
         <button
-          className="group border px-3 py-2 shadow rounded-md hover:bg-gray-800"
+          className="group border px-3 py-2 rounded-md hover:bg-gray-100"
           title="Select Principal"
           onClick={() => handleSetSelected(row)}>
-          <MdOutlineTouchApp className="group-hover:text-white text-lg" />
+          <BiPointer size={16} />
         </button>
       </td>
     </tr>

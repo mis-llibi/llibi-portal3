@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 
 import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
+import { BiPlus, BiSend, BiUpload } from 'react-icons/bi'
 
 import {
   useManageHrMember,
@@ -12,10 +13,12 @@ import Button from '@/components/Button'
 import ManualInsertEnrollee from './ManualInsertEnrollee'
 import Swal from 'sweetalert2'
 import ManualUpdateEnrollee from './ManualUpdateEnrollee'
+import Loader from '@/components/Loader'
 
-export default function NewEnrolleeTable({ create, ...props }) {
+export default function PendingForSubmission({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
   const { data, isLoading, error, mutate } = useManageHrMember({ status: 1 })
+  const [loader, setLoader] = useState(false)
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
     setPageSize(data)
@@ -35,7 +38,7 @@ export default function NewEnrolleeTable({ create, ...props }) {
                 {row.member_id}
               </span>
               <br />
-              <span>{`${row.last_name}, ${row.first_name}`}</span>
+              <span>{`${row.last_name}, ${row.first_name} ${row.middle_name}`}</span>
             </div>
           </>
         )
@@ -70,16 +73,16 @@ export default function NewEnrolleeTable({ create, ...props }) {
       renderCell: ({ row }) => {
         return (
           <div className="flex gap-1">
-            <button
-              className="group border px-3 py-2 shadow rounded-md hover:bg-gray-800"
+            {/* <button
+              className="group border px-3 py-2 rounded-md hover:bg-gray-200"
               title="Edit Enrollee"
               onClick={() => updateEnrollee(row)}>
-              <SlPencil className="group-hover:text-white text-lg" />
-            </button>
+              <SlPencil className="text-lg" />
+            </button> */}
             <button
-              className="group border px-3 py-2 shadow rounded-md hover:bg-gray-800"
+              className="group border px-3 py-2 rounded-md hover:bg-gray-200"
               title="Delete Enrollee">
-              <SlBan className="group-hover:text-white text-lg" />
+              <SlBan className="text-lg" />
             </button>
           </div>
         )
@@ -111,9 +114,10 @@ export default function NewEnrolleeTable({ create, ...props }) {
       Swal.fire('Error', 'Please select enrollee first.', 'error')
       return
     }
-
+    setLoader(true)
     await submitForEnrollmentHooks(selectionModel)
     mutate()
+    setLoader(false)
   }
 
   const updateEnrollee = row => {
@@ -135,8 +139,8 @@ export default function NewEnrolleeTable({ create, ...props }) {
     props?.toggle()
   }
 
-  // if (error) return <h1>Something went wrong.</h1>
-  // if (isLoading) return <h1>Loading...</h1>
+  if (error) return <h1>Something went wrong.</h1>
+  if (isLoading) return <h1>Loading...</h1>
 
   return (
     <>
@@ -145,15 +149,17 @@ export default function NewEnrolleeTable({ create, ...props }) {
         <div className="flex justify-between">
           <Button
             onClick={insertEnrollee}
-            className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto"
+            className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
             disabled={props?.loading}>
-            New Transaction
+            <BiPlus size={16} />
+            <span>New Transaction</span>
           </Button>
           <Button
             onClick={handleSubmitForEnrollment}
-            className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto"
-            disabled={props?.loading}>
-            Submit for Enrollment
+            className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
+            disabled={selectionModel.length <= 0}>
+            <BiUpload size={16} />
+            <span>Submit for Enrollment</span>
           </Button>
         </div>
       </div>
@@ -176,6 +182,8 @@ export default function NewEnrolleeTable({ create, ...props }) {
           ),
         }}
       />
+
+      <Loader loading={loader} />
     </>
   )
 }

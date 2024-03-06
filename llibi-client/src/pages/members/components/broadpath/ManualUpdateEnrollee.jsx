@@ -5,6 +5,8 @@ import Input from '@/components/Self-enrollment/InputDep'
 import Select from '@/components/Self-enrollment/SelectDependent'
 import Button from '@/components/Button'
 
+import { BiSave, BiUpload } from 'react-icons/bi'
+
 import { useForm } from 'react-hook-form'
 
 import Modal from '@/components/Modal'
@@ -221,9 +223,10 @@ const ManualUpdateEnrollee = ({
         </div>
 
         <Button
-          className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2"
+          className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2 flex gap-1"
           loading={loading}>
-          Submit Enrollee
+          <BiSave size={16} />
+          <span>Update</span>
         </Button>
       </form>
     </div>

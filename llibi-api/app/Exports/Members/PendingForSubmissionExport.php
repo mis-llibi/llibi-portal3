@@ -26,7 +26,8 @@ class PendingForSubmissionExport implements FromCollection, WithHeadings, Should
         'first_name',
         'middle_name',
         'last_name',
-        'gender'
+        'gender',
+        'civil_status',
       )
       ->whereIn('id', $this->data['id'])
       ->get();
@@ -42,6 +43,7 @@ class PendingForSubmissionExport implements FromCollection, WithHeadings, Should
       'middle_name',
       'last_name',
       'gender',
+      'civil_status',
     ];
   }
 }

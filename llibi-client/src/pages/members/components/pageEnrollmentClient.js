@@ -15,7 +15,9 @@ import Button from '@/components/Button'
 
 // import DataGrid from '@/components/DataGrid'
 import { DataGrid } from '@mui/x-data-grid'
-import NewEnrolleeTable from './broadpath/NewEnrolleeTable'
+
+import PendingForSubmission from './broadpath/PendingForSubmission'
+import SubmittedMembers from './broadpath/SubmittedMembers'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -445,10 +447,15 @@ const pageEnrollmentClient = ({ props }) => {
               setSelectionModel={setSelectionModel}
             /> */}
 
-            {status == 1 ? (
+            {Number(status) === 1 && (
               // pending for submittion
-              <NewEnrolleeTable create={create} {...props} />
-            ) : (
+              <PendingForSubmission create={create} {...props} />
+            )}
+            {Number(status) === 2 && (
+              // submited members
+              <SubmittedMembers create={create} {...props} />
+            )}
+            {![1, 2].includes(Number(status)) && (
               <DataGrid
                 rows={enrollees?.list || []}
                 columns={columns}

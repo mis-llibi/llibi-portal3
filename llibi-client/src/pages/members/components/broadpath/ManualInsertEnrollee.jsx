@@ -5,14 +5,22 @@ import Input from '@/components/Self-enrollment/InputDep'
 import Select from '@/components/Self-enrollment/SelectDependent'
 import Button from '@/components/Button'
 
+import {
+  MdOutlineFamilyRestroom,
+  MdOutlineEscalatorWarning,
+} from 'react-icons/md'
+import { BiSave, BiUpload } from 'react-icons/bi'
+
 import { useForm } from 'react-hook-form'
 
 import Modal from '@/components/Modal'
 import ModalControl from '@/components/ModalControl'
 import InputFile from '@/components/Self-enrollment/InputFileBroadpath'
 
-import PrincipalList from './PrincipalList'
+import PrincipalList from './principal/PrincipalList'
 import { insertNewEnrollee } from '@/hooks/members/ManageHrMember'
+
+import birthDayChecker from '@/lib/birthdateValidation'
 
 const INITIAL_ENROLLMENT_RELATION = {
   principal: 'PRINCIPAL',
@@ -113,6 +121,10 @@ const ManualInsertEnrollee = ({
 
   useEffect(() => {
     reset({
+      principalName:
+        selectedPrincipal?.last_name && selectedPrincipal?.first_name
+          ? `${selectedPrincipal?.last_name}, ${selectedPrincipal?.first_name}`
+          : '',
       oid: selectedPrincipal?.member_id ?? '',
     })
   }, [selectedPrincipal])
@@ -122,7 +134,7 @@ const ManualInsertEnrollee = ({
       <Modal show={show} body={body} toggle={toggle} />
       <form onSubmit={handleSubmit(submitForm)}>
         <div className="mb-3">
-          <span className="text-gray-700 text-sm">
+          <span className="text-gray-700 text-sm font-semibold">
             Please select what relation to enroll
           </span>
           <div className="flex justify-center gap-3 border rounded-md p-3 mb-3">
@@ -131,7 +143,7 @@ const ManualInsertEnrollee = ({
               className={`${
                 enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal &&
                 'bg-blue-700 text-white'
-              } border p-3 w-40 flex justify-center items-center h-20 rounded-md hover:bg-blue-700 hover:text-white transition-all ease-out`}>
+              } border p-3 w-40 flex flex-col justify-center items-center h-20 rounded-md hover:bg-blue-700 hover:text-white transition-all ease-out`}>
               <input
                 className="sr-only"
                 type="radio"
@@ -142,14 +154,15 @@ const ManualInsertEnrollee = ({
                   enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal
                 }
               />
-              PRINCIPAL
+              <MdOutlineEscalatorWarning size={32} />
+              <span>PRINCIPAL</span>
             </Label>
             <Label
               htmlFor="enrollment_relation_dependent"
               className={`${
                 enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent &&
                 'bg-blue-700 text-white'
-              } border p-3 w-40 flex justify-center items-center h-20 rounded-md hover:bg-blue-700 hover:text-white transition-all ease-out`}>
+              } border p-3 w-40 flex flex-col justify-center items-center h-20 rounded-md hover:bg-blue-700 hover:text-white transition-all ease-out`}>
               <input
                 className="sr-only"
                 type="radio"
@@ -160,9 +173,23 @@ const ManualInsertEnrollee = ({
                   enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent
                 }
               />
-              DEPENDENT
+              <MdOutlineFamilyRestroom size={32} />
+              <span>DEPENDENT</span>
             </Label>
           </div>
+        </div>
+        {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
+          <div className="mb-3">
+            <Label htmlFor="oid">Principal Name</Label>
+            <Input
+              id="oid"
+              className="block mt-1 w-full"
+              register={register('principalName')}
+              disabled
+            />
+          </div>
+        )}
+        <div className="mb-3">
           <Label htmlFor="oid">OID/Member ID</Label>
           <Input
             id="oid"
@@ -218,6 +245,12 @@ const ManualInsertEnrollee = ({
             className="block mt-1 w-full"
             register={register('birthdate', {
               required: 'Birth Date is required',
+              min: watch('relation')
+                ? birthDayChecker('min', watch('relation'))
+                : 0,
+              max: watch('relation')
+                ? birthDayChecker('max', watch('relation'))
+                : 0,
             })}
             errors={errors?.birthdate}
           />
@@ -315,9 +348,10 @@ const ManualInsertEnrollee = ({
         </div>
 
         <Button
-          className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2"
+          className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2 flex gap-1"
           loading={loading}>
-          Submit Enrollee
+          <BiSave size={16} />
+          <span>Save</span>
         </Button>
       </form>
     </div>

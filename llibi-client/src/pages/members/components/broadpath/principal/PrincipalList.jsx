@@ -1,27 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Modal from '@/components/Modal'
 import axios from '@/lib/axios'
 
 import { MdOutlineTouchApp, MdOutlineSearch } from 'react-icons/md'
 
 import { getPrincipal } from '@/hooks/members/PrincipalHooks'
-import PrincipalRow from './principal/PrincipalRow'
+import PrincipalRow from './PrincipalRow'
 
 export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
-  const [search, setSearch] = useState(null)
+  const [search, setSearch] = useState('')
   const { data: principals, isLoading, errors } = getPrincipal({ search })
+
+  const searchRef = useRef('')
 
   const handleSetSelected = row => {
     setSelectedPrincipal(row)
     setShow(false)
   }
 
+  const handleSearch = () => {
+    setSearch(searchRef.current.value)
+  }
+
+  console.log(search)
+
   if (errors) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>
 
   return (
     <>
-      <div className="h-[70vh] overflow-y-scroll">
+      <div className="h-[70vh] overflow-y-auto">
         <label htmlFor="search" className="text-xs">
           Search
         </label>
@@ -31,23 +39,26 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
               id="search"
               type="text"
               name="search"
-              className="border rounded-md w-full mb-3 text-xs border-gray-400"
+              placeholder="Input search (ex: first name, last name)"
+              className="border rounded-md w-full mb-3 text-xs border-gray-200"
+              ref={searchRef}
             />
           </div>
           <div>
             <button
-              className="group border px-3 py-2 shadow rounded-md hover:bg-gray-800 border-gray-400"
-              title="Search">
-              <MdOutlineSearch className="group-hover:text-white text-lg" />
+              className="group border px-3 py-2 rounded-md hover:bg-gray-100"
+              title="Search"
+              onClick={handleSearch}>
+              <MdOutlineSearch className="text-lg" />
             </button>
           </div>
         </div>
         <table className="w-full">
           <thead className="text-xs bg-blue-700 text-white">
-            <tr>
+            <tr className='uppercase'>
               <th className="p-3 w-32">Principal</th>
               {/* <th className="p-3 flex-grow">Name</th> */}
-              <th className="p-3 ">Relation</th>
+              {/* <th className="p-3 ">Relation</th> */}
               <th className="p-3 w-32">Birth Date</th>
               <th className="p-3 ">Gender</th>
               <th className="p-3 ">Civil Status</th>
