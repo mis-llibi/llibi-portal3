@@ -42,7 +42,9 @@ class PendingForSubmissionExport implements FromCollection, WithEvents, WithHead
 
     if (!empty($this->data['members'])) {
       foreach ($this->data['members'] as $key => $row) {
-        $principal = $row['relationship_id'] !== 'PRINCIPAL' ? hr_members::query()->where('member_id', $row['member_id'])->where('relationship_id', 'PRINCIPAL')->first() : '';
+        $principal = $row['relationship_id'] !== 'PRINCIPAL'
+          ? hr_members::query()->where('member_id', $row['member_id'])->principal()->first()
+          : '';
         $data = [
           'sub_office_name' => '',
           'employee_number' => $row['member_id'],

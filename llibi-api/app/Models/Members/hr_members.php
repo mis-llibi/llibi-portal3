@@ -2,6 +2,7 @@
 
 namespace App\Models\Members;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -48,5 +49,15 @@ class hr_members extends Model
       get: fn (string $value) => $value ?? '',
       set: fn (string $value) => $value ?? ''
     );
+  }
+
+  public function scopePendingSubmission(Builder $query): void
+  {
+    $query->where('status', 1);
+  }
+
+  public function scopePrincipal(Builder $query): void
+  {
+    $query->where('relationship_id', 'PRINCIPAL');
   }
 }

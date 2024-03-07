@@ -44,7 +44,7 @@ class PendingSubmissionCommand extends Command
     $members = hr_members::query()
       ->where('pending_submission_created_at', '>=', Carbon::yesterday()->setTime(14, 1, 0))
       ->where('pending_submission_created_at', '<=', Carbon::today()->setTime(13, 59, 0))
-      ->where('status', 1)
+      ->pendingSubmission()
       ->get();
 
     if ($members->count() > 0) {
