@@ -38,6 +38,8 @@ class hr_members extends Model
     'attachments',
     'created_by',
     'excel_batch',
+    'pending_submission_created_at',
+    'pending_cancellation_at',
   ];
 
   protected function middleName(): Attribute

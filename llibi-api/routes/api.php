@@ -126,12 +126,18 @@ Route::controller(ComplaintController::class)->group(function () {
   Route::post('/complaint', 'store');
 });
 
-Route::controller(ManageEnrolleeController::class)
-  ->prefix('members-enrollment')
-  ->group(function () {
-    Route::post('/new-enrollment', 'newEnrollment');
-    Route::put('/new-enrollment/{id}', 'updateEnrollment');
-    Route::post('/submit-for-enrollment', 'submitForEnrollment');
-    Route::get('/principals', 'fetchPrincipal');
-    Route::get('/members', 'index');
-  });
+Route::group(['middleware' => ['auth:sanctum']], function () {
+  Route::controller(ManageEnrolleeController::class)
+    ->prefix('members-enrollment')
+    ->group(function () {
+      Route::post('/submit-for-enrollment', 'submitForEnrollment');
+      Route::delete('/delete-pending/{id}', 'deletePending');
+      Route::post('/new-enrollment', 'newEnrollment');
+      Route::put('/new-enrollment/{id}', 'updateEnrollment');
+      Route::post('/submit-for-deletion', 'submitForDeletion');
+      Route::get('/principals', 'fetchPrincipal');
+      Route::get('/members', 'index');
+    });
+});
+
+Route::get('/excel-template', [ManageEnrolleeController::class, 'excelTemplate']);

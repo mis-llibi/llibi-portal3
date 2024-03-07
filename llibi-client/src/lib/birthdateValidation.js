@@ -4,6 +4,7 @@ export default function birthDayChecker(point, relation) {
   let day = 0,
     message
   if (
+    relation === 'PRINCIPAL' ||
     relation === 'SPOUSE' ||
     relation === 'PARENT' ||
     relation == 'DOMESTIC PARTNER'

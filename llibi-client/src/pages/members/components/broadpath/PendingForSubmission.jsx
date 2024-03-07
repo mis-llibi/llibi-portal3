@@ -14,6 +14,7 @@ import ManualInsertEnrollee from './ManualInsertEnrollee'
 import Swal from 'sweetalert2'
 import ManualUpdateEnrollee from './ManualUpdateEnrollee'
 import Loader from '@/components/Loader'
+import axios from '@/lib/axios'
 
 export default function PendingForSubmission({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
@@ -22,6 +23,21 @@ export default function PendingForSubmission({ create, ...props }) {
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
     setPageSize(data)
+  }
+
+  const handleDelete = async row => {
+    setLoader(true)
+    try {
+      const response = await axios.delete(
+        `/api/members-enrollment/delete-pending/${row.id}`,
+      )
+
+      mutate()
+      setLoader(false)
+    } catch (error) {
+      setLoader(false)
+      Swal.fire('Error', 'Something went wrong.', 'error')
+    }
   }
 
   const columns = [
@@ -80,6 +96,7 @@ export default function PendingForSubmission({ create, ...props }) {
               <SlPencil className="text-lg" />
             </button> */}
             <button
+              onClick={() => handleDelete(row)}
               className="group border px-3 py-2 rounded-md hover:bg-gray-200"
               title="Delete Enrollee">
               <SlBan className="text-lg" />
@@ -96,8 +113,8 @@ export default function PendingForSubmission({ create, ...props }) {
       content: (
         <ManualInsertEnrollee
           create={create}
-          loading={props?.loading}
-          setLoading={props?.setLoading}
+          loading={loader}
+          setLoader={setLoader}
           setShow={props?.setShow}
           mutate={mutate}
         />
@@ -154,13 +171,13 @@ export default function PendingForSubmission({ create, ...props }) {
             <BiPlus size={16} />
             <span>New Transaction</span>
           </Button>
-          <Button
+          {/* <Button
             onClick={handleSubmitForEnrollment}
             className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
             disabled={selectionModel.length <= 0}>
             <BiUpload size={16} />
             <span>Submit for Enrollment</span>
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -171,9 +188,9 @@ export default function PendingForSubmission({ create, ...props }) {
         onPageSizeChange={handlePageSizeChange}
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
-        checkboxSelection
-        selectionModel={selectionModel}
-        onSelectionModelChange={setSelectionModel}
+        // checkboxSelection
+        // selectionModel={selectionModel}
+        // onSelectionModelChange={setSelectionModel}
         components={{
           NoResultsOverlay: () => (
             <div className="w-full h-full bg-gray-50 flex items-center justify-center text-lg font-semibold text-red-400">

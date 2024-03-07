@@ -24,14 +24,9 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 
 
-class PendingForSubmissionExport implements FromCollection, WithEvents, WithHeadings, WithHeadingRow, WithCustomStartCell, ShouldAutoSize, WithColumnWidths
+class PhilcareMemberExport implements FromCollection, WithEvents, WithHeadings, WithHeadingRow, WithCustomStartCell, ShouldAutoSize, WithColumnWidths
 {
-  private $data;
-
-  public function __construct($data)
-  {
-    $this->data = $data;
-  }
+  use Exportable;
 
   /**
    * @return \Illuminate\Support\Collection
@@ -39,26 +34,26 @@ class PendingForSubmissionExport implements FromCollection, WithEvents, WithHead
   public function collection()
   {
     $new_members = [];
+    $members = hr_members::query()->where('status', '2')->get();
 
-    if (!empty($this->data['members'])) {
-      foreach ($this->data['members'] as $key => $row) {
-        $principal = $row['relationship_id'] !== 'PRINCIPAL' ? hr_members::query()->where('member_id', $row['member_id'])->where('relationship_id', 'PRINCIPAL')->first() : '';
-        $data = [
-          'sub_office_name' => '',
-          'employee_number' => $row['member_id'],
-          'last_name' => $row['last_name'],
-          'first_name' => $row['first_name'],
-          'middle_name' => $row['middle_name'],
-          'principal' => $principal ? $principal->last_name . ", " . $principal->first_name : "",
-          'bmonth' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('M') : '',
-          'bday' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('j') : '',
-          'byear' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('Y') : '',
-          'sex' => $row['gender'],
-          'nationality' => '',
-        ];
+    foreach ($members as $key => $row) {
+      $principal = $row['relationship_id'] !== 'PRINCIPAL' ? hr_members::query()->where('member_id', $row['member_id'])->where('relationship_id', 'PRINCIPAL')->first() : '';
 
-        array_push($new_members, $data);
-      }
+      $data = [
+        'sub_office_name' => '',
+        'employee_number' => $row['member_id'],
+        'last_name' => $row['last_name'],
+        'first_name' => $row['first_name'],
+        'middle_name' => $row['middle_name'],
+        'principal' => $principal ? $principal->last_name . ", " . $principal->first_name : "",
+        'bmonth' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('M') : '',
+        'bday' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('j') : '',
+        'byear' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('Y') : '',
+        'sex' => $row['gender'],
+        'nationality' => '',
+      ];
+
+      array_push($new_members, $data);
     }
 
     return collect($new_members);

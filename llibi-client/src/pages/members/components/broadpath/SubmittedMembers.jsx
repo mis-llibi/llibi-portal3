@@ -7,7 +7,7 @@ import { BiPlus, BiSend, BiTrashAlt } from 'react-icons/bi'
 
 import {
   useManageHrMember,
-  submitForEnrollmentHooks,
+  submitForDeletionHooks,
 } from '@/hooks/members/ManageHrMember'
 
 import Button from '@/components/Button'
@@ -97,7 +97,7 @@ export default function SubmittedMembers({ create, ...props }) {
       return
     }
     setLoader(true)
-    await submitForEnrollmentHooks(selectionModel)
+    await submitForDeletionHooks(selectionModel)
     mutate()
     setLoader(false)
   }

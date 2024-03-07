@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Members;
 
 use App\Exports\Members\LateEnrolledExport;
 use App\Exports\Members\PendingForSubmissionExport;
+use App\Exports\Members\PhilcareMemberExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -487,6 +488,7 @@ class ManageEnrolleeController extends Controller
         'status' => 1,
         'changed_status_at' => Carbon::now(),
         'created_by' => auth()->id(),
+        'pending_submission_created_at' => Carbon::now(),
       ]
     );
 
@@ -606,5 +608,24 @@ class ManageEnrolleeController extends Controller
     $sending->send();
 
     return response()->json(['message' => 'Submit for enrollment success.', $spacesFilename]);
+  }
+
+  public function deletePending(Request $request, $id)
+  {
+    return hr_members::where('id', $id)->where('status', 1)->delete();
+  }
+
+  public function submitForDeletion(Request $request)
+  {
+    $request->validate([
+      'data' => 'required|array|min:1',
+    ]);
+
+    return $request->all();
+  }
+
+  public function excelTemplate()
+  {
+    return (new PhilcareMemberExport)->download('philcare-members-update.xlsx');
   }
 }

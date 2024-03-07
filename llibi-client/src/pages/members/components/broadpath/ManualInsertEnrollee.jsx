@@ -30,7 +30,7 @@ const INITIAL_ENROLLMENT_RELATION = {
 const ManualInsertEnrollee = ({
   create,
   loading,
-  setLoading,
+  setLoader,
   setShow,
   mutate,
 }) => {
@@ -75,8 +75,9 @@ const ManualInsertEnrollee = ({
     }
 
     // console.log([...FORMDATA])
+    setLoader(true)
     const isSuccessSubmit = await insertNewEnrollee({
-      setLoading,
+      setLoader,
       setShow,
       data: FORMDATA,
       reset,
@@ -85,6 +86,7 @@ const ManualInsertEnrollee = ({
       setEnrollmentRelation(null)
       mutate()
     }
+    setLoader(false)
   }
 
   const showPrincipal = row => {
@@ -123,7 +125,7 @@ const ManualInsertEnrollee = ({
     reset({
       principalName:
         selectedPrincipal?.last_name && selectedPrincipal?.first_name
-          ? `${selectedPrincipal?.last_name}, ${selectedPrincipal?.first_name}`
+          ? `${selectedPrincipal?.last_name}, ${selectedPrincipal?.first_name} | ${selectedPrincipal?.civil_status}`
           : '',
       oid: selectedPrincipal?.member_id ?? '',
     })
@@ -180,7 +182,7 @@ const ManualInsertEnrollee = ({
         </div>
         {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
           <div className="mb-3">
-            <Label htmlFor="oid">Principal Name</Label>
+            <Label htmlFor="oid">Principal Details</Label>
             <Input
               id="oid"
               className="block mt-1 w-full"
@@ -333,7 +335,7 @@ const ManualInsertEnrollee = ({
             label={``}
             id="attachment"
             loading={loading}
-            setLoading={setLoading}
+            setLoader={setLoader}
             civilStatus={watch('civilstatus')}
             rel={watch('relation')}
             reset={reset}

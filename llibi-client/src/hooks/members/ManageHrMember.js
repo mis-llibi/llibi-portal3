@@ -82,13 +82,7 @@ export const updateNewEnrollee = async ({
   }
 }
 
-export const insertNewEnrollee = async ({
-  setLoading,
-  setShow,
-  data,
-  reset,
-  ...props
-}) => {
+export const insertNewEnrollee = async ({ setShow, data, reset, ...props }) => {
   try {
     const response = await axios.post(
       '/api/members-enrollment/new-enrollment',
@@ -101,5 +95,20 @@ export const insertNewEnrollee = async ({
   } catch (error) {
     Swal.fire('Error', error?.response?.data?.message, 'error')
     return false
+  }
+}
+
+export const submitForDeletionHooks = async data => {
+  try {
+    const respponse = await axios.post(
+      '/api/members-enrollment/submit-for-deletion',
+      {
+        data: data,
+      },
+    )
+    Swal.fire('Success', respponse.data.message, 'success')
+  } catch (error) {
+    Swal.fire('Error', 'Something went wrong.', 'error')
+    throw error
   }
 }

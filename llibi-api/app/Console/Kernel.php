@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 use App\Http\Controllers\Self_enrollment\ManageBroadpathEnrollee;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 
 class Kernel extends ConsoleKernel
@@ -18,19 +19,30 @@ class Kernel extends ConsoleKernel
    */
   protected function schedule(Schedule $schedule)
   {
-    $schedule->call(function () {
-      $dateToday = '2023-04-02'; //date('Y-m-d');
-      $dateFinalWarning = '2023-04-05';
-      $dateFormLocked = '2023-04-06';
+    /**
+     * run only in production when APP_ENV is production
+     */
+    if (App::environment(['production'])) {
+      $schedule->call(function () {
+        $dateToday = '2023-04-02'; //date('Y-m-d');
+        $dateFinalWarning = '2023-04-05';
+        $dateFormLocked = '2023-04-06';
 
-      $reminder = (new ManageBroadpathEnrollee)->checkReminders($dateToday, $dateFinalWarning, $dateFormLocked);
-    })->dailyAt('12:24');
+        $reminder = (new ManageBroadpathEnrollee)->checkReminders($dateToday, $dateFinalWarning, $dateFormLocked);
+      })->dailyAt('12:24');
 
-    $schedule->command('command:automate-handling-time')->everyMinute();
-    $schedule->command('send:pending-not-moving')->everyMinute();
-    $schedule->call(function() {
-      Storage::deleteDirectory('public/manual/upload/loa');
-    })->everyMinute();
+      $schedule->command('command:automate-handling-time')->everyMinute();
+      $schedule->command('send:pending-not-moving')->everyMinute();
+      $schedule->call(function () {
+        Storage::deleteDirectory('public/manual/upload/loa');
+      })->everyMinute();
+    }
+
+    /**
+     * @see \App\Console\Commands\members\PendingSubmissionCommand
+     * Run everyday at 2PM
+     */
+    $schedule->command('pending-for-submission')->daily()->at('14:00');
   }
 
   /**
