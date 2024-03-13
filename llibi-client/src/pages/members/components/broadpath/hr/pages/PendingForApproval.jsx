@@ -10,13 +10,14 @@ import {
   submitForEnrollmentHooks,
 } from '@/hooks/members/ManageHrMember'
 import Button from '@/components/Button'
-import ManualInsertEnrollee from './ManualInsertEnrollee'
+import ManualInsertEnrollee from '../../ManualInsertEnrollee'
 import Swal from 'sweetalert2'
-import ManualUpdateEnrollee from './ManualUpdateEnrollee'
+import ManualUpdateEnrollee from '../../ManualUpdateEnrollee'
 import Loader from '@/components/Loader'
 import axios from '@/lib/axios'
+import Label from '@/components/Label'
 
-export default function PendingForSubmission({ create, ...props }) {
+export default function PendingForApproval({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
   const { data, isLoading, error, mutate } = useManageHrMember({ status: 1 })
   const [loader, setLoader] = useState(false)
@@ -49,7 +50,7 @@ export default function PendingForSubmission({ create, ...props }) {
       renderCell: ({ row }) => {
         return (
           <>
-            <div>
+            <div className='font-[poppins]'>
               <span className="text-green-600 text-[.75rem]">
                 {row.member_id}
               </span>
@@ -64,21 +65,49 @@ export default function PendingForSubmission({ create, ...props }) {
       field: 'birth_date',
       headerName: 'Birth Date',
       width: 150,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.birth_date}</div>
+          </>
+        )
+      },
     },
     {
       field: 'gender',
       headerName: 'Gender',
       width: 100,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.gender}</div>
+          </>
+        )
+      },
     },
     {
       field: 'relationship_id',
       headerName: 'Relation',
       width: 150,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.relationship_id}</div>
+          </>
+        )
+      },
     },
     {
       field: 'civil_status',
       headerName: 'Civil Status',
       width: 300,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.civil_status}</div>
+          </>
+        )
+      },
     },
     {
       field: 'action',
@@ -119,7 +148,7 @@ export default function PendingForSubmission({ create, ...props }) {
           mutate={mutate}
         />
       ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+      modalOuterContainer: 'w-full md:w-4/6 max-h-screen font-[poppins]',
       modalContainer: 'h-full',
       modalBody: 'h-full',
     })
@@ -162,7 +191,7 @@ export default function PendingForSubmission({ create, ...props }) {
   return (
     <>
       {/* PENDING ENROLLMENT BOX */}
-      <div className="mb-3">
+      <div className="mb-3 font-[poppins]">
         <div className="flex justify-end">
           <Button
             onClick={insertEnrollee}
@@ -179,9 +208,23 @@ export default function PendingForSubmission({ create, ...props }) {
             <span>Submit for Enrollment</span>
           </Button> */}
         </div>
+        <div className="w-full">
+          <Label htmlFor="search">Seach</Label>
+          <input
+            type="text"
+            id="search"
+            className="w-full rounded-md"
+            placeholder="Seach (ex. First name, Last name)"
+          />
+        </div>
       </div>
 
       <DataGrid
+        sx={{
+          '.MuiDataGrid-columnHeaderTitle': {
+            fontFamily: 'poppins !important',
+          },
+        }}
         rows={data || []}
         columns={columns}
         pageSize={pageSize}

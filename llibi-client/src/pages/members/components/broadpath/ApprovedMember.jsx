@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 
 import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
-import { BiPlus, BiSend, BiUpload } from 'react-icons/bi'
+import { BiPlus, BiSend, BiTrashAlt } from 'react-icons/bi'
 
 import {
   useManageHrMember,
@@ -16,9 +16,9 @@ import ManualUpdateEnrollee from './ManualUpdateEnrollee'
 import Loader from '@/components/Loader'
 import axios from '@/lib/axios'
 
-export default function PendingForSubmission({ create, ...props }) {
+export default function ApprovedMember({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
-  const { data, isLoading, error, mutate } = useManageHrMember({ status: 1 })
+  const { data, isLoading, error, mutate } = useManageHrMember({ status: 4 })
   const [loader, setLoader] = useState(false)
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
@@ -107,53 +107,9 @@ export default function PendingForSubmission({ create, ...props }) {
     },
   ]
 
-  const insertEnrollee = () => {
-    props?.setBody({
-      title: 'New Transaction',
-      content: (
-        <ManualInsertEnrollee
-          create={create}
-          loading={loader}
-          setLoader={setLoader}
-          setShow={props?.setShow}
-          mutate={mutate}
-        />
-      ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
-      modalContainer: 'h-full',
-      modalBody: 'h-full',
-    })
-    props?.toggle()
-  }
-
-  const handleSubmitForEnrollment = async () => {
-    if (selectionModel.length <= 0) {
-      Swal.fire('Error', 'Please select enrollee first.', 'error')
-      return
-    }
+  const handleSubmitForDeletion = async () => {
     setLoader(true)
-    await submitForEnrollmentHooks(selectionModel)
-    mutate()
     setLoader(false)
-  }
-
-  const updateEnrollee = row => {
-    props?.setBody({
-      title: 'Update Enrollee',
-      content: (
-        <ManualUpdateEnrollee
-          loading={props?.loading}
-          setLoading={props?.setLoading}
-          setShow={props?.setShow}
-          data={row}
-          mutate={mutate}
-        />
-      ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
-      modalContainer: 'h-full',
-      modalBody: 'h-full',
-    })
-    props?.toggle()
   }
 
   if (error) return <h1>Something went wrong.</h1>
@@ -165,19 +121,12 @@ export default function PendingForSubmission({ create, ...props }) {
       <div className="mb-3">
         <div className="flex justify-end">
           <Button
-            onClick={insertEnrollee}
+            onClick={handleSubmitForDeletion}
             className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
-            disabled={props?.loading}>
-            <BiPlus size={16} />
-            <span>New Transaction</span>
-          </Button>
-          {/* <Button
-            onClick={handleSubmitForEnrollment}
-            className="bg-orange-400 hover:bg-orange-700 focus:bg-orange-700 active:bg-orange-700 ring-orange-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
             disabled={selectionModel.length <= 0}>
-            <BiUpload size={16} />
-            <span>Submit for Enrollment</span>
-          </Button> */}
+            <BiTrashAlt size={16} />
+            <span>Approved Members</span>
+          </Button>
         </div>
       </div>
 

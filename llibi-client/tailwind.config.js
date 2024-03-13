@@ -7,6 +7,9 @@ module.exports = withMT({
     extend: {
       fontFamily: {
         sans: ['Roboto', ...defaultTheme.fontFamily.sans],
+        fontFamily: {
+          poppins: ['Poppins'],
+        },
       },
       colors: {
         'fav-black': '#1B1C1E',

@@ -17,6 +17,57 @@ import PageEnrollmentAdmin from './components/pageEnrollmentAdmin'
 import Loader from '@/components/Loader'
 import Label from '@/components/Label'
 
+import { BiUpload, BiTime, BiTrashAlt, BiCheck } from 'react-icons/bi'
+import RadioCardFilter from '@/components/boradpath/hris/RadioCardFilter'
+
+const filterOptions = [
+  // {
+  //   icon: <BiTime size={24} />,
+  //   label: 'Pending for Submission',
+  //   value: 1,
+  // },
+  // {
+  //   icon: <BiUpload size={24} />,
+  //   label: 'Submitted Members',
+  //   value: 2,
+  // },
+  // {
+  //   icon: <BiTime size={24} />,
+  //   label: 'Pending for Deletion',
+  //   value: 3,
+  // },
+  {
+    icon: <BiCheck size={24} />,
+    label: 'Active Members',
+    value: 100,
+  },
+  {
+    icon: <BiTrashAlt size={24} />,
+    label: 'Deleted Members',
+    value: 7,
+  },
+  {
+    icon: <BiTime size={24} />,
+    label: 'Pending for Approval',
+    value: 8,
+  },
+  // {
+  //   icon: <BiTime size={24} />,
+  //   label: 'Pending for Correction',
+  //   value: 5,
+  // },
+  // {
+  //   icon: <BiCheck size={24} />,
+  //   label: 'Approved Correction',
+  //   value: 6,
+  // },
+  // {
+  //   icon: <BiCheck size={24} />,
+  //   label: 'Approved Members',
+  //   value: 4,
+  // },
+]
+
 const Members = () => {
   const { user } = useAuth({ middleware: 'auth' })
 
@@ -45,7 +96,7 @@ const Members = () => {
   const { register, watch } = useForm()
 
   const checkUserRole = () => {
-    if (user && !user?.role) return 1
+    if (user && !user?.role) return 100
     return 2
   }
 
@@ -76,8 +127,8 @@ const Members = () => {
         <>
           <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
             <div className="bg-white p-3 rounded-lg shadow-sm">
-              <Label>Filter: </Label>
-              <Select
+              {/* <Label>Filter: </Label> */}
+              {/* <Select
                 id="statusCheckerClient"
                 className="block mt-1 w-full"
                 options={[
@@ -86,6 +137,11 @@ const Members = () => {
                     value: 1,
                   },
                   { label: 'Submitted Members', value: 2 },
+                  { label: 'Pending for Deletion', value: 3 },
+                  { label: 'Deleted Members', value: 3 },
+                  { label: 'Pending for Correction', value: 5 },
+                  { label: 'Approved Correction', value: 6 },
+                  { label: 'Approved Members', value: 4 },
                   // { label: 'Enrolled Members', value: 4 },
                   // { label: 'Denied Enrollment', value: 6 },
                   // { label: 'Members for Correction', value: 7 },
@@ -94,7 +150,17 @@ const Members = () => {
                   // { label: 'Late Enrolled', value: 101 },
                 ]}
                 register={register('selection')}
-              />
+              /> */}
+
+              <ul className="grid w-full gap-3 md:grid-cols-4 font-[poppins]">
+                {filterOptions.map((item, i) => (
+                  <RadioCardFilter
+                    key={item.value}
+                    register={register}
+                    item={item}
+                  />
+                ))}
+              </ul>
             </div>
           </div>
           <PageEnrollmentClient props={props} />

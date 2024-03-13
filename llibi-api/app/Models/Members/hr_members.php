@@ -41,6 +41,8 @@ class hr_members extends Model
     'excel_batch',
     'pending_submission_created_at',
     'pending_cancellation_at',
+    'plan',
+    'action_code',
   ];
 
   protected function middleName(): Attribute
@@ -54,6 +56,36 @@ class hr_members extends Model
   public function scopePendingSubmission(Builder $query): void
   {
     $query->where('status', 1);
+  }
+
+  public function scopeSumittedMembers(Builder $query): void
+  {
+    $query->where('status', 2);
+  }
+
+  public function scopePendingDeletion(Builder $query): void
+  {
+    $query->where('status', 3);
+  }
+
+  public function scopeApprovedMembers(Builder $query): void
+  {
+    $query->where('status', 4);
+  }
+
+  public function scopePendingCorrection(Builder $query): void
+  {
+    $query->where('status', 5);
+  }
+
+  public function scopeApprovedCorrection(Builder $query): void
+  {
+    $query->where('status', 6);
+  }
+
+  public function scopeDeletedMember(Builder $query): void
+  {
+    $query->where('status', 7);
   }
 
   public function scopePrincipal(Builder $query): void

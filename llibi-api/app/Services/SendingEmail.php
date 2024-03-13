@@ -97,6 +97,7 @@ class SendingEmail
       $response = $client->post(config('app.infobip_url') . '/email/3/send', $post_data);
       $body = $response->getBody();
 
+      Log::info('EMAIL SENT');
       return true;
       // return json_decode($body);
     } catch (\Throwable $th) {

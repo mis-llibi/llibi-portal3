@@ -42,7 +42,7 @@ const Dashboard = () => {
                   <div>
                     <MdPendingActions className="absolute text-4xl text-gray-50" />
                     <h1 className="text-8xl font-bold text-gray-100 drop-shadow-lg">
-                      {enrollees?.pending || 0}
+                      {/* {enrollees?.pending || 0} */}0
                     </h1>
                     <p className="text-white font-semibold">
                       Pending For Submission
@@ -54,7 +54,7 @@ const Dashboard = () => {
                   <div>
                     <MdOutlineDeleteForever className="absolute text-4xl text-gray-50" />
                     <h1 className="text-8xl font-bold text-red-100 drop-shadow-lg">
-                      {enrollees?.for_deletion || 0}
+                      {/* {enrollees?.for_deletion || 0} */}0
                     </h1>
                     <p className="text-white font-semibold">Deleted Enrollee</p>
                   </div>
@@ -64,7 +64,7 @@ const Dashboard = () => {
                   <div>
                     <MdOutlineFlightTakeoff className="absolute text-4xl text-gray-50" />
                     <h1 className="text-8xl font-bold text-green-100 drop-shadow-lg">
-                      {enrollees?.for_enrollment || 0}
+                      {/* {enrollees?.for_enrollment || 0} */}0
                     </h1>
                     <p className="text-white font-semibold">
                       Submitted Members
@@ -76,7 +76,7 @@ const Dashboard = () => {
                   <div>
                     <MdOutlineRemoveDone className="absolute text-4xl text-gray-50" />
                     <h1 className="text-8xl font-bold text-red-100 drop-shadow-lg">
-                      {enrollees?.denied || 0}
+                      {/* {enrollees?.denied || 0} */}0
                     </h1>
                     <p className="text-white font-semibold">
                       Enrollment Denied
@@ -93,7 +93,7 @@ const Dashboard = () => {
                   <div>
                     <MdOutlineDoneAll className="absolute text-4xl" />
                     <h1 className="text-8xl font-bold text-pink-600 drop-shadow-lg">
-                      {enrollees?.enrolled || 0}
+                      {/* {enrollees?.enrolled || 0} */}0
                     </h1>
                     <p>Enrolled Members</p>
                   </div>
@@ -113,7 +113,7 @@ const Dashboard = () => {
                   <div>
                     <MdPersonOff className="absolute text-4xl" />
                     <h1 className="text-8xl font-bold text-orange-800 drop-shadow-lg">
-                      {enrollees?.for_cancellation || 0}
+                      {/* {enrollees?.for_cancellation || 0} */}0
                     </h1>
                     <p>Member For Cancellation</p>
                   </div>
@@ -123,7 +123,7 @@ const Dashboard = () => {
                   <div>
                     <MdPersonRemoveAlt1 className="absolute text-4xl" />
                     <h1 className="text-8xl font-bold text-red-500 drop-shadow-lg">
-                      {enrollees?.cancelled || 0}
+                      {/* {enrollees?.cancelled || 0} */}0
                     </h1>
                     <p>Members Cancelled</p>
                   </div>

@@ -51,22 +51,12 @@ class PendingSubmissionCommand extends Command
       /**
        * Store the file first before make action in database
        */
-      $filename = "members/pending-for-submission/$yearNow/$monthNow/$timestamp.xlsx";
+      $filename = "members/pending-for-submission/$yearNow/$monthNow/PENDING_FOR_SUBMISSION_$timestamp.xlsx";
       $spacesFilename = env('DO_CDN_ENDPOINT') . '/' . $filename;
       $storingSuccess = Excel::store(new PendingForSubmissionExport(['members' => $members]), $filename, 'broadpath');
 
       if (!$storingSuccess) {
         return response()->json(['message' => 'Uploading file failed.', $spacesFilename]);
-      }
-
-      DB::table('hr_excel_sent_to_philcare')->insert(['pending_submission_path' => $filename, 'created_at' => Carbon::now()]);
-
-      foreach ($members as $key => $row) {
-        hr_members::where('id', $row['id'])
-          ->update([
-            'status' => 2,
-            'excel_batch' => $timestamp,
-          ]);
       }
 
       $sending = new SendingEmail(
@@ -75,9 +65,25 @@ class PendingSubmissionCommand extends Command
         subject: 'PENDING FOR SUBMISSION',
         attachments: [$spacesFilename],
       );
-      $sending->send();
+      $success_sending = $sending->send();
 
-      Log::info('PENDING FOR SUBMISSION SENT');
+      if ($success_sending) {
+        foreach ($members as $key => $row) {
+          hr_members::where('id', $row['id'])
+            ->update([
+              'status' => 2,
+              'changed_status_at' => Carbon::now(),
+              'excel_batch' => $timestamp,
+            ]);
+        }
+
+        DB::table('hr_excel_sent_to_philcare')
+          ->insert([
+            'excel_batch' => $timestamp,
+            'pending_submission_path' => $filename,
+            'created_at' => Carbon::now()
+          ]);
+      }
     }
   }
 }

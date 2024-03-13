@@ -18,6 +18,10 @@ import { DataGrid } from '@mui/x-data-grid'
 
 import PendingForSubmission from './broadpath/PendingForSubmission'
 import SubmittedMembers from './broadpath/SubmittedMembers'
+import PendingForDeletion from './broadpath/PendingForDeletion'
+import ApprovedMember from './broadpath/ApprovedMember'
+import ActiveMembers from './broadpath/hr/pages/ActiveMembers'
+import PendingForApproval from './broadpath/hr/pages/PendingForApproval'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -396,7 +400,7 @@ const pageEnrollmentClient = ({ props }) => {
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           {/* FOR MEMBERS ENROLLED BOX */}
-          <div className={`px-3 pt-3 ${status == 4 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 4 || 'hidden'}`}>
             <Button
               onClick={submitForCancellation}
               className="bg-red-400 hover:bg-red-700 focus:bg-red-700 active:bg-red-700 ring-red-200 md:float-right mb-2 md:mb-0 w-full md:w-auto"
@@ -404,10 +408,10 @@ const pageEnrollmentClient = ({ props }) => {
               Submit for Cancellation
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
           {/* FOR CANCELLATION BOX */}
-          <div className={`px-3 pt-3 ${status == 8 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 8 || 'hidden'}`}>
             <Button
               onClick={revokeForCancellation}
               className="bg-red-400 hover:bg-red-700 focus:bg-red-700 active:bg-red-700 ring-red-200 md:float-right mb-2 md:mb-0 w-full md:w-auto"
@@ -415,10 +419,10 @@ const pageEnrollmentClient = ({ props }) => {
               Revoke Cancellation
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
           {/* FOR CORRECTION BOX */}
-          <div className={`px-3 pt-3 ${status == 7 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 7 || 'hidden'}`}>
             <Button
               onClick={revokeForCorrection}
               className="bg-red-400 hover:bg-red-700 focus:bg-red-700 active:bg-red-700 ring-red-200 md:float-right mb-2 md:mb-0 w-full md:w-auto"
@@ -426,17 +430,17 @@ const pageEnrollmentClient = ({ props }) => {
               Revoke Correction
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
           {/* LATE ENROLLED */}
-          <div className={`px-3 pt-3 ${status == 101 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 101 || 'hidden'}`}>
             <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
               disabled={props?.loading}>
               Export Late Enrolled
             </Button>
-          </div>
+          </div> */}
 
           {/* MAIN DATA GRID TABLE */}
           <div className="h-96 min-h-screen p-3 bg-white border-b border-gray-200">
@@ -447,7 +451,7 @@ const pageEnrollmentClient = ({ props }) => {
               setSelectionModel={setSelectionModel}
             /> */}
 
-            {Number(status) === 1 && (
+            {/* {Number(status) === 1 && (
               // pending for submittion
               <PendingForSubmission create={create} {...props} />
             )}
@@ -455,7 +459,28 @@ const pageEnrollmentClient = ({ props }) => {
               // submited members
               <SubmittedMembers create={create} {...props} />
             )}
-            {![1, 2].includes(Number(status)) && (
+
+            {Number(status) === 3 && (
+              // pending for deletion
+              <PendingForDeletion create={create} {...props} />
+            )}
+
+            {Number(status) === 4 && (
+              // approved members
+              <ApprovedMember create={create} {...props} />
+            )} */}
+
+            {Number(status) === 100 && (
+              // active members
+              <ActiveMembers create={create} {...props} />
+            )}
+
+            {Number(status) === 8 && (
+              // pending for approval
+              <PendingForApproval create={create} {...props} />
+            )}
+
+            {![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100].includes(Number(status)) && (
               <DataGrid
                 rows={enrollees?.list || []}
                 columns={columns}

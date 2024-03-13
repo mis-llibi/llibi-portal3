@@ -29,7 +29,7 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
 
   return (
     <>
-      <div className="h-[70vh] overflow-y-auto">
+      <div className="h-[70vh] overflow-y-auto font-[poppins]">
         <label htmlFor="search" className="text-xs">
           Search
         </label>
@@ -55,7 +55,7 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
         </div>
         <table className="w-full">
           <thead className="text-xs bg-blue-700 text-white">
-            <tr className='uppercase'>
+            <tr className="uppercase">
               <th className="p-3 w-32">Principal</th>
               {/* <th className="p-3 flex-grow">Name</th> */}
               {/* <th className="p-3 ">Relation</th> */}

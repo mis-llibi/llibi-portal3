@@ -45,6 +45,16 @@ class PendingForSubmissionExport implements FromCollection, WithEvents, WithHead
         $principal = $row['relationship_id'] !== 'PRINCIPAL'
           ? hr_members::query()->where('member_id', $row['member_id'])->principal()->first()
           : '';
+
+        $relationship_code = match ($row['relationship_id']) {
+          'PRINCIPAL' => '0',
+          'SPOUSE' => '1',
+          'CHILD' => '2',
+          'PARENT' => '3',
+          'SIBLING' => '4',
+          default => '5',
+        };
+
         $data = [
           'sub_office_name' => '',
           'employee_number' => $row['member_id'],
@@ -52,16 +62,38 @@ class PendingForSubmissionExport implements FromCollection, WithEvents, WithHead
           'first_name' => $row['first_name'],
           'middle_name' => $row['middle_name'],
           'principal' => $principal ? $principal->last_name . ", " . $principal->first_name : "",
-          'bmonth' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('M') : '',
-          'bday' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('j') : '',
-          'byear' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('Y') : '',
+
+          'birth_date' => $row['birth_date'] ? Carbon::parse($row['birth_date'])->format('m/d/Y') : '',
+
           'sex' => $row['gender'],
           'nationality' => '',
+          'pccupation_job_position_rank' => '',
+          'desired_plan' => '',
+          'civil_status' => $row['civil_status'],
+          'e_mail_address' => '',
+
+          'hiring_date' => $row['date_hired'] ? Carbon::parse($row['date_hired'])->format('m/d/Y') : '',
+
+          'regularization_date' => $row['reg_date'] ? Carbon::parse($row['reg_date'])->format('m/d/Y') : '',
+
+          'dental_code' => '',
+          'desired_action_code' => '',
+          'relationship_code' => $relationship_code,
+
+          'effective_date' => $row['effective_date'] ? Carbon::parse($row['effective_date'])->format('m/d/Y') : '',
+
+          'remarks' => '',
+          'mobile_number' => '',
+          'address1' => 'address1',
+          'address2' => 'address2',
+          'city' => 'city',
         ];
 
         array_push($new_members, $data);
       }
     }
+
+
 
     return collect($new_members);
   }
@@ -84,41 +116,46 @@ class PendingForSubmissionExport implements FromCollection, WithEvents, WithHead
   {
     return [
       AfterSheet::class => function (AfterSheet $event) {
-
         $sheet = $event->sheet->getDelegate();
-
-        // $sheet->setCellValue('A7', 'Please make the following changes in your record of employees and/or dependent of:');
-        // $sheet->setCellValue('A9', 'NAME OF COMPANY:');
-        // $sheet->setCellValue('A10', 'Agreement No.');
-        // $sheet->setCellValue('A14', 'MEMBERSHIP UPDATE FORM (MUF)');
 
         // HEADER
         $sheet->setCellValue('A1', 'SubOffice Name');
         $sheet->setCellValue('B1', 'Employee Number');
-        $sheet->setCellValue('C1', 'Enrollee\'s Name');
-        $sheet->setCellValue('F1', 'Name of Principal (Lastname,FIRSTNAME)');
-        $sheet->setCellValue('G1', 'BIRTHDATE');
-        $sheet->setCellValue('J1', 'Sex');
-        $sheet->setCellValue('K1', 'Nationality');
 
-        /**
-         * set merging cells
-         */
+        $sheet->setCellValue('C1', 'Enrollee\'s Name');
         $sheet->mergeCells('C1:E1');
-        $sheet->mergeCells('G1:I1');
+
+        $sheet->setCellValue('F1', 'Name of Principal (Lastname,FIRSTNAME)');
+        $sheet->setCellValue('G1', 'Birthdate');
+        $sheet->setCellValue('H1', 'Sex');
+        $sheet->setCellValue('I1', 'Nationality');
+        $sheet->setCellValue('J1', 'Occupation/Job Position/Rank');
+        $sheet->setCellValue('K1', 'Desired Plan');
+        $sheet->setCellValue('L1', 'Civil Status');
+        $sheet->setCellValue('M1', 'E-mail Address');
+        $sheet->setCellValue('N1', 'Hiring Date');
+        $sheet->setCellValue('O1', 'Regularization Date');
+        $sheet->setCellValue('P1', 'Dental Code');
+        $sheet->setCellValue('Q1', 'Desired Action Code');
+        $sheet->setCellValue('R1', 'Relationship Code');
+        $sheet->setCellValue('S1', 'Effective Date');
+        $sheet->setCellValue('T1', 'Remarks');
+        $sheet->setCellValue('U1', 'Mobile Number');
+        $sheet->setCellValue('V1', 'Address');
+        $sheet->mergeCells('V1:X1');
 
         /** 
          * set bg to yellow
          */
-        $cellRange = 'A1:AF1';
+        $cellRange = 'A1:X1';
         $sheet->getStyle($cellRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF00');
 
         /** 
          * back to bg white
          */
-        $sheet->getStyle('L1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF');
-        $sheet->getStyle('V1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF');
-        $sheet->getStyle('AB1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF');
+        $sheet->getStyle('J1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF');
+        $sheet->getStyle('P1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF');
+        $sheet->getStyle('T1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF');
 
         /**
          * set font styles
@@ -146,11 +183,7 @@ class PendingForSubmissionExport implements FromCollection, WithEvents, WithHead
 
   public function columnWidths(): array
   {
-    return [
-      'G' => 10,
-      'H' => 10,
-      'I' => 10,
-    ];
+    return [];
   }
 
   public function startCell(): string

@@ -21,6 +21,10 @@ import PrincipalList from './principal/PrincipalList'
 import { insertNewEnrollee } from '@/hooks/members/ManageHrMember'
 
 import birthDayChecker from '@/lib/birthdateValidation'
+import dependents from '@/pages/self-enrollment/deel/dependents'
+
+import broadpathRelationValidation from '@/lib/broadpathRelationValidation'
+import broadpathCivilStatusValidation from '@/lib/broadpathCivilStatusValidation'
 
 const INITIAL_ENROLLMENT_RELATION = {
   principal: 'PRINCIPAL',
@@ -132,7 +136,7 @@ const ManualInsertEnrollee = ({
   }, [selectedPrincipal])
 
   return (
-    <div className="p-4">
+    <div className="p-3 font-[poppins]">
       <Modal show={show} body={body} toggle={toggle} />
       <form onSubmit={handleSubmit(submitForm)}>
         <div className="mb-3">
@@ -157,7 +161,7 @@ const ManualInsertEnrollee = ({
                 }
               />
               <MdOutlineEscalatorWarning size={32} />
-              <span>PRINCIPAL</span>
+              <span className="tracking-widest">PRINCIPAL</span>
             </Label>
             <Label
               htmlFor="enrollment_relation_dependent"
@@ -176,7 +180,7 @@ const ManualInsertEnrollee = ({
                 }
               />
               <MdOutlineFamilyRestroom size={32} />
-              <span>DEPENDENT</span>
+              <span className="tracking-widest">DEPENDENT</span>
             </Label>
           </div>
         </div>
@@ -192,12 +196,12 @@ const ManualInsertEnrollee = ({
           </div>
         )}
         <div className="mb-3">
-          <Label htmlFor="oid">OID/Member ID</Label>
+          <Label htmlFor="oid">Employee Number</Label>
           <Input
             id="oid"
             className="block mt-1 w-full"
             register={register('oid', {
-              required: 'OID/Member ID is required',
+              required: 'Employee Number is required',
             })}
             disabled={
               enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent
@@ -279,16 +283,9 @@ const ManualInsertEnrollee = ({
             <Select
               id="relation"
               className={`block mt-1 w-full`}
-              options={[
-                { label: 'Select Relation', value: '' },
-                { label: 'Parent', value: 'PARENT' },
-                { label: 'Spouse', value: 'SPOUSE' },
-                { label: 'Child', value: 'CHILD' },
-                {
-                  label: 'Domestic Partner / Same Gender Partner',
-                  value: 'DOMESTIC PARTNER',
-                },
-              ]}
+              options={broadpathRelationValidation(
+                selectedPrincipal?.civil_status,
+              )}
               register={register('relation', {
                 required: 'Relation is required',
               })}
@@ -301,28 +298,10 @@ const ManualInsertEnrollee = ({
           <Select
             id="civilstatus"
             className="block mt-1 w-full"
-            options={[
-              {
-                value: '',
-                label: 'Select Civil Status',
-              },
-              {
-                value: 'SINGLE',
-                label: 'Single',
-              },
-              {
-                value: 'SINGLE WITH DOMESTIC PARTNER',
-                label: 'Single With Domestic Partner / Same Gender Partner',
-              },
-              {
-                value: 'SINGLE PARENT',
-                label: 'Single Parent / Solo Parent',
-              },
-              {
-                value: 'MARRIED',
-                label: 'Married',
-              },
-            ]}
+            options={broadpathCivilStatusValidation(
+              selectedPrincipal?.civil_status,
+              watch('relation'),
+            )}
             register={register('civilstatus', {
               required: 'Civil Status is required',
             })}
@@ -330,7 +309,10 @@ const ManualInsertEnrollee = ({
           />
         </div>
         <div className="mb-3">
-          <Label htmlFor="attachment">Document Requirement(s):</Label>
+          <Label htmlFor="attachment">
+            Document Requirement(s){' '}
+            <sup className="font-thin text-red-600">please select civil status</sup>:
+          </Label>
           <InputFile
             label={``}
             id="attachment"

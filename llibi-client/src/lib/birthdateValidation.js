@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function birthDayChecker(point, relation) {
   let day = 0,
     message
