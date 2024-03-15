@@ -16,6 +16,7 @@ import ManualUpdateEnrollee from '../../ManualUpdateEnrollee'
 import Loader from '@/components/Loader'
 import axios from '@/lib/axios'
 import Label from '@/components/Label'
+import moment from 'moment'
 
 export default function PendingForApproval({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
@@ -50,7 +51,7 @@ export default function PendingForApproval({ create, ...props }) {
       renderCell: ({ row }) => {
         return (
           <>
-            <div className='font-[poppins]'>
+            <div className="font-[poppins]">
               <span className="text-green-600 text-[.75rem]">
                 {row.member_id}
               </span>
@@ -68,7 +69,9 @@ export default function PendingForApproval({ create, ...props }) {
       renderCell: ({ row }) => {
         return (
           <>
-            <div className="font-[poppins]">{row.birth_date}</div>
+            <div className="font-[poppins]">
+              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+            </div>
           </>
         )
       },
@@ -100,7 +103,7 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'civil_status',
       headerName: 'Civil Status',
-      width: 300,
+      width: 150,
       renderCell: ({ row }) => {
         return (
           <>
@@ -110,30 +113,46 @@ export default function PendingForApproval({ create, ...props }) {
       },
     },
     {
-      field: 'action',
-      headerName: 'Action',
-      sortable: false,
-      width: 100,
-      align: 'center',
+      field: 'status_name',
+      headerName: 'Status',
+      width: 150,
       renderCell: ({ row }) => {
         return (
-          <div className="flex gap-1">
-            {/* <button
-              className="group border px-3 py-2 rounded-md hover:bg-gray-200"
-              title="Edit Enrollee"
-              onClick={() => updateEnrollee(row)}>
-              <SlPencil className="text-lg" />
-            </button> */}
-            <button
-              onClick={() => handleDelete(row)}
-              className="group border px-3 py-2 rounded-md hover:bg-gray-200"
-              title="Delete Enrollee">
-              <SlBan className="text-lg" />
-            </button>
-          </div>
+          <>
+            <div className="font-[poppins] text-[9px]">
+              <span className="bg-[#111111] text-white px-2 py-1 rounded-md">
+                {row.status_name}
+              </span>
+            </div>
+          </>
         )
       },
     },
+    // {
+    //   field: 'action',
+    //   headerName: '',
+    //   sortable: false,
+    //   width: 100,
+    //   align: 'center',
+    //   renderCell: ({ row }) => {
+    //     return (
+    //       <div className="flex gap-1">
+    //         {/* <button
+    //           className="group border px-3 py-2 rounded-md hover:bg-gray-200"
+    //           title="Edit Enrollee"
+    //           onClick={() => updateEnrollee(row)}>
+    //           <SlPencil className="text-lg" />
+    //         </button> */}
+    //         <button
+    //           onClick={() => handleDelete(row)}
+    //           className="group border px-3 py-2 rounded-md hover:bg-gray-200"
+    //           title="Delete Enrollee">
+    //           <SlBan className="text-lg" />
+    //         </button>
+    //       </div>
+    //     )
+    //   },
+    // },
   ]
 
   const insertEnrollee = () => {
@@ -149,7 +168,7 @@ export default function PendingForApproval({ create, ...props }) {
         />
       ),
       modalOuterContainer: 'w-full md:w-4/6 max-h-screen font-[poppins]',
-      modalContainer: 'h-full',
+      modalContainer: 'h-full rounded-md',
       modalBody: 'h-full',
     })
     props?.toggle()
@@ -214,7 +233,7 @@ export default function PendingForApproval({ create, ...props }) {
             type="text"
             id="search"
             className="w-full rounded-md"
-            placeholder="Seach (ex. First name, Last name)"
+            placeholder="Seach (ex. first name, last name)"
           />
         </div>
       </div>
@@ -223,6 +242,7 @@ export default function PendingForApproval({ create, ...props }) {
         sx={{
           '.MuiDataGrid-columnHeaderTitle': {
             fontFamily: 'poppins !important',
+            fontWeight: 'bold',
           },
         }}
         rows={data || []}

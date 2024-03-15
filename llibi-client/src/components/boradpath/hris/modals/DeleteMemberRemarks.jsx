@@ -1,43 +1,79 @@
-import React from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
 
 import Label from '@/components/Label'
 
-import { BiTrashAlt } from 'react-icons/bi'
+import { BiLoader, BiTrashAlt } from 'react-icons/bi'
 
-export default function DeleteMemberRemarks({ row }) {
+import { useForm } from 'react-hook-form'
+import axios from '@/lib/axios'
+
+export default function DeleteMemberRemarks({ row, mutate, setShow }) {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm()
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onSubmit = async data => {
+    setIsLoading(true)
+    const formData = { ...data, id: row.id }
+
+    try {
+      const response = await axios.patch(
+        `/api/members-enrollment/delete-members/${row.id}`,
+        data,
+      )
+      setIsLoading(false)
+      setShow(false)
+      mutate()
+    } catch (error) {
+      console.error('Something went wrong.')
+      setIsLoading(false)
+    }
+  }
+
   const dateNow = moment().format('Y-MM-DD')
+
   return (
     <div className="font-[poppins] px-3">
-      <div className="mb-3">
-        <Label htmlFor="effectivity_date" className="text-sm">
-          Effectivity Date
-        </Label>
-        <input
-          type="date"
-          name="effectivity_date"
-          id="effectivity_date"
-          className="w-full rounded-md"
-          defaultValue={dateNow}
-        />
-      </div>
-      <div className="mb-3">
-        <Label htmlFor="remarks" className="text-sm">
-          Remarks
-        </Label>
-        <textarea
-          name="remarks"
-          id="remarks"
-          rows="2"
-          className="w-full rounded-md"
-          defaultValue={row.member_id}></textarea>
-      </div>
-      <div>
-        <button className="bg-red-500 hover:bg-red-600 px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
-          <BiTrashAlt size={14} />
-          <span>Delete</span>
-        </button>
-      </div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mb-3">
+          <Label htmlFor="effectivity_date" className="text-sm">
+            Effectivity Date
+          </Label>
+          <input
+            type="date"
+            name="effectivity_date"
+            id="effectivity_date"
+            className="w-full rounded-md"
+            defaultValue={dateNow}
+            {...register('pending_deleted_at')}
+          />
+        </div>
+        <div className="mb-3">
+          <Label htmlFor="remarks" className="text-sm">
+            Remarks
+          </Label>
+          <textarea
+            name="remarks"
+            id="remarks"
+            rows="2"
+            className="w-full rounded-md"
+            {...register('deleted_remarks')}></textarea>
+        </div>
+        <div>
+          <button
+            type="submit"
+            className="bg-red-500 hover:bg-red-600 px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
+            {isLoading ? <BiLoader size={14} /> : <BiTrashAlt size={14} />}
+            <span>Delete</span>
+          </button>
+        </div>
+      </form>
     </div>
   )
 }

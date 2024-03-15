@@ -25,6 +25,7 @@ use App\Services\SendingEmail;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -32,12 +33,35 @@ class ManageEnrolleeController extends Controller
 {
   public function index()
   {
-    $stataus = request()->query('status');
+    /**
+     * 1 pending submission
+     * 3 Pending deletion
+     * 5 pending correction
+     * 8 pending change plan
+     */
+
+    $status = request()->query('status');
 
     $members =  hr_members::query();
 
-    if ($stataus) {
-      $members = $members->where('status', $stataus);
+    // if ($status != 1 && $status != 4) {
+    //   $members = $members->whereIn('status', $status);
+    // }
+
+    if ($status == 1) {
+      $members = $members->pendingApproval();
+    }
+
+    if ($status == 4) {
+      $members = $members->approvedMembers();
+    }
+
+    if ($status == 7) {
+      $members = $members->deletedMember();
+    }
+
+    if ($status == '3,5,8') {
+      $members = $members->whereIn('status', explode(",", $status));
     }
 
     $members = $members->orderByDesc('id')->get();
@@ -627,5 +651,27 @@ class ManageEnrolleeController extends Controller
   public function excelTemplate()
   {
     return (new PhilcareMemberExport)->download('philcare-members-update.xlsx');
+  }
+
+  public function changePlan(Request $request, $id)
+  {
+    $member = hr_members::query()->where('id', $id)->first();
+    $member->plan = $request->plan;
+    $member->status = 8;
+    $member->change_plan_at = Carbon::now();
+    $member->save();
+
+    return response()->json(['message' => 'Success changing plan.', 'data' => $member]);
+  }
+
+  public function deleteMember(Request $request, $id)
+  {
+    $member = hr_members::query()->where('id', $id)->first();
+    $member->deleted_remarks = $request->remarks;
+    $member->status = 3;
+    $member->pending_deleted_at = Carbon::now();
+    $member->save();
+
+    return response()->json(['message' => 'Success changing plan.', 'data' => $member]);
   }
 }

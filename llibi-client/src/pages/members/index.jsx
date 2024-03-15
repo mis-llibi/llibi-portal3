@@ -21,51 +21,21 @@ import { BiUpload, BiTime, BiTrashAlt, BiCheck } from 'react-icons/bi'
 import RadioCardFilter from '@/components/boradpath/hris/RadioCardFilter'
 
 const filterOptions = [
-  // {
-  //   icon: <BiTime size={24} />,
-  //   label: 'Pending for Submission',
-  //   value: 1,
-  // },
-  // {
-  //   icon: <BiUpload size={24} />,
-  //   label: 'Submitted Members',
-  //   value: 2,
-  // },
-  // {
-  //   icon: <BiTime size={24} />,
-  //   label: 'Pending for Deletion',
-  //   value: 3,
-  // },
   {
     icon: <BiCheck size={24} />,
     label: 'Active Members',
-    value: 100,
-  },
-  {
-    icon: <BiTrashAlt size={24} />,
-    label: 'Deleted Members',
-    value: 7,
+    value: 4,
   },
   {
     icon: <BiTime size={24} />,
     label: 'Pending for Approval',
     value: 8,
   },
-  // {
-  //   icon: <BiTime size={24} />,
-  //   label: 'Pending for Correction',
-  //   value: 5,
-  // },
-  // {
-  //   icon: <BiCheck size={24} />,
-  //   label: 'Approved Correction',
-  //   value: 6,
-  // },
-  // {
-  //   icon: <BiCheck size={24} />,
-  //   label: 'Approved Members',
-  //   value: 4,
-  // },
+  {
+    icon: <BiTrashAlt size={24} />,
+    label: 'Deleted Members',
+    value: 7,
+  },
 ]
 
 const Members = () => {
@@ -96,7 +66,7 @@ const Members = () => {
   const { register, watch } = useForm()
 
   const checkUserRole = () => {
-    if (user && !user?.role) return 100
+    if (user && !user?.role) return 4
     return 2
   }
 

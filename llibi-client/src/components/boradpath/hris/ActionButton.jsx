@@ -12,7 +12,7 @@ import {
   BiDotsVerticalRounded,
 } from 'react-icons/bi'
 
-export default function ActionButton({ row, handleDelete }) {
+export default function ActionButton({ row, handleDelete, handleChangePlan }) {
   const [anchorEl, setAnchorEl] = useState(null)
 
   const handleClick = event => {
@@ -23,10 +23,11 @@ export default function ActionButton({ row, handleDelete }) {
     setAnchorEl(null)
   }
 
-  const handleChangePlan = () => {
-    console.log(row)
-    handleClose()
-  }
+  // const handleChangePlan = () => {
+  //   console.log(row)
+  //   handleClose()
+  // }
+
   const handleEditInfo = () => {
     console.log(row)
     handleClose()
@@ -60,7 +61,7 @@ export default function ActionButton({ row, handleDelete }) {
               <span>Delete</span>
             </div>
           </MenuItem>
-          <MenuItem onClick={handleChangePlan}>
+          <MenuItem onClick={() => handleChangePlan(handleClose, row)}>
             <div className="flex gap-3 items-center font-[poppins] text-sm">
               <BiUpvote size={20} />
               <span>Change Plan</span>

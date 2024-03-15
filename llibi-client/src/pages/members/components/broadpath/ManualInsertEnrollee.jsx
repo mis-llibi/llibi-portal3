@@ -104,7 +104,7 @@ const ManualInsertEnrollee = ({
         />
       ),
       modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
-      modalContainer: 'h-full',
+      modalContainer: 'h-full rounded-md',
       modalBody: 'h-full',
     })
     toggle()

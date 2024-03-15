@@ -137,6 +137,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
       Route::post('/submit-for-deletion', 'submitForDeletion');
       Route::get('/principals', 'fetchPrincipal');
       Route::get('/members', 'index');
+
+      Route::patch('/change-plan/{id}', 'changePlan');
+      Route::patch('/delete-members/{id}', 'deleteMember');
     });
 });
 

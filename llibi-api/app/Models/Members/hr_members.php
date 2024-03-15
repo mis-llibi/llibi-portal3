@@ -40,16 +40,37 @@ class hr_members extends Model
     'created_by',
     'excel_batch',
     'pending_submission_created_at',
-    'pending_cancellation_at',
+    'pending_deleted_at',
     'plan',
     'action_code',
+    'certificate_issued_at',
+    'change_plan_at',
+    'deleted_remarks',
+    'approved_deleted_member_at',
   ];
+
+  protected $appends = ['status_name'];
 
   protected function middleName(): Attribute
   {
     return Attribute::make(
       get: fn (string $value) => $value ?? '',
       set: fn (string $value) => $value ?? ''
+    );
+  }
+
+  protected function statusName(): Attribute
+  {
+    return Attribute::make(
+      get: function () {
+        return match ($this->status) {
+          1 => 'Pending Member',
+          3 => 'Pending Deletion',
+          5 => 'Pending Correction',
+          8 => 'Pending Change Plan',
+          default => '',
+        };
+      },
     );
   }
 
@@ -86,6 +107,27 @@ class hr_members extends Model
   public function scopeDeletedMember(Builder $query): void
   {
     $query->where('status', 7);
+  }
+
+  public function scopePendingChangePlan(Builder $query): void
+  {
+    $query->where('status', 8);
+  }
+
+  public function scopeApprovedChangePlan(Builder $query): void
+  {
+    $query->where('status', 9);
+  }
+
+  public function scopePendingApproval(Builder $query): void
+  {
+    /**
+     * 1 pending submission
+     * 3 Pending deletion
+     * 5 pending correction
+     * 8 pending change plan
+     */
+    $query->whereIn('status', [1, 3, 5, 8]);
   }
 
   public function scopePrincipal(Builder $query): void

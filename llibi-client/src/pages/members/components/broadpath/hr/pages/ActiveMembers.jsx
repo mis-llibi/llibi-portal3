@@ -27,25 +27,45 @@ import ActionButton from '@/components/boradpath/hris/ActionButton'
 import ModalControl from '@/components/ModalControl'
 import Modal from '@/components/Modal'
 import DeleteMemberRemarks from '@/components/boradpath/hris/modals/DeleteMemberRemarks'
+import ChangeMemberPlan from '@/components/boradpath/hris/modals/ChangeMemberPlan'
+import moment from 'moment'
 
 export default function ActiveMembers({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
   const [selectionModel, setSelectionModel] = useState([])
-  const { data, isLoading, error, mutate } = useManageHrMember({ status: 2 })
+  const [filter, setFilter] = useState(4)
+  const { data, isLoading, error, mutate } = useManageHrMember({
+    status: filter,
+  })
   const [loader, setLoader] = useState(false)
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
     setPageSize(data)
   }
 
-  const handleDelete = (callback, row) => {
+  const handleDelete = (cb, row) => {
     // console.log(row)
-    callback()
+    cb()
     setBody({
       title: 'Delete Members',
-      content: <DeleteMemberRemarks row={row} />,
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen font-[poppins]',
-      modalContainer: 'h-full',
+      content: (
+        <DeleteMemberRemarks row={row} mutate={mutate} setShow={setShow} />
+      ),
+      modalOuterContainer: 'w-full md:w-96 max-h-screen font-[poppins]',
+      modalContainer: 'h-full rounded-md',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
+  const handleChangePlan = (cb, row) => {
+    // console.log(row)
+    cb()
+    setBody({
+      title: 'Change Members Plan',
+      content: <ChangeMemberPlan row={row} mutate={mutate} setShow={setShow} />,
+      modalOuterContainer: 'w-full md:w-96 max-h-screen font-[poppins]',
+      modalContainer: 'h-full rounded-md',
       modalBody: 'h-full',
     })
     toggle()
@@ -56,14 +76,13 @@ export default function ActiveMembers({ create, ...props }) {
     {
       field: 'member_id',
       headerName: 'Name',
-      flex: 1,
+      width: 300,
+      // flex: 1,
       renderCell: ({ row }) => {
         return (
           <>
             <div className="font-[poppins]">
-              <span className="text-green-600 text-[.75rem]">
-                {row.member_id}
-              </span>
+              <span className="text-green-600 text-xs">{row.member_id}</span>
               <br />
               <span>{`${row.last_name}, ${row.first_name} ${row.middle_name}`}</span>
             </div>
@@ -78,7 +97,10 @@ export default function ActiveMembers({ create, ...props }) {
       renderCell: ({ row }) => {
         return (
           <>
-            <div className="font-[poppins]">{row.birth_date}</div>
+            <div className="font-[poppins]">
+              {' '}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+            </div>
           </>
         )
       },
@@ -86,7 +108,7 @@ export default function ActiveMembers({ create, ...props }) {
     {
       field: 'gender',
       headerName: 'Gender',
-      width: 100,
+      width: 150,
       renderCell: ({ row }) => {
         return (
           <>
@@ -110,7 +132,7 @@ export default function ActiveMembers({ create, ...props }) {
     {
       field: 'civil_status',
       headerName: 'Civil Status',
-      width: 300,
+      width: 250,
       renderCell: ({ row }) => {
         return (
           <>
@@ -120,14 +142,50 @@ export default function ActiveMembers({ create, ...props }) {
       },
     },
     {
+      field: 'certificate_no',
+      headerName: 'Certificate',
+      width: 150,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">
+              <p className="text-xs text-green-600">
+                {row.certificate_issued_at &&
+                  moment(row.certificate_issued_at).format('MMM DD Y')}
+              </p>
+              <p>{row.certificate_no}</p>
+            </div>
+          </>
+        )
+      },
+    },
+    {
+      field: 'plan',
+      headerName: 'Plan',
+      width: 150,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            {row.plan && (
+              <div className="font-[poppins] text-[9px]">
+                <span className="bg-[#111111] text-white px-2 py-1 rounded-md">
+                  {row.plan}
+                </span>
+              </div>
+            )}
+          </>
+        )
+      },
+    },
+    {
       field: 'action',
-      headerName: 'Action',
+      headerName: '',
       sortable: false,
-      width: 100,
+      width: 150,
       align: 'center',
       renderCell: ({ row }) => {
         return (
-          <div className="flex gap-1">
+          <>
             {/* <button
               className="group border px-3 py-2 rounded-md hover:bg-gray-200"
               title="Edit Enrollee"
@@ -140,14 +198,23 @@ export default function ActiveMembers({ create, ...props }) {
               <SlBan className="text-lg" />
             </button> */}
 
-            <div>
-              <ActionButton
-                key={row.id}
-                row={row}
-                handleDelete={handleDelete}
-              />
-            </div>
-          </div>
+            {row.status === 4 ? (
+              <div>
+                <ActionButton
+                  key={row.id}
+                  row={row}
+                  handleDelete={handleDelete}
+                  handleChangePlan={handleChangePlan}
+                />
+              </div>
+            ) : (
+              <div className="font-[poppins] text-[9px]">
+                <span className="bg-orange-600 text-white px-2 py-1 rounded-md uppercase">
+                  {row.status_name}
+                </span>
+              </div>
+            )}
+          </>
         )
       },
     },
@@ -206,8 +273,20 @@ export default function ActiveMembers({ create, ...props }) {
               type="text"
               id="search"
               className="w-full rounded-md"
-              placeholder="Seach (ex. First name, Last name)"
+              placeholder="Seach (ex. first name, last name)"
             />
+          </div>
+          <div className="w-48">
+            <Label htmlFor="search">Filter</Label>
+            <select
+              name="filter"
+              id="filter"
+              className="rounded-md w-full"
+              defaultValue={filter}
+              onChange={e => setFilter(e.target.value)}>
+              <option value="4">Active</option>
+              <option value="3,5,8">With Pending</option>
+            </select>
           </div>
         </div>
       </div>
@@ -216,6 +295,7 @@ export default function ActiveMembers({ create, ...props }) {
         sx={{
           '.MuiDataGrid-columnHeaderTitle': {
             fontFamily: 'poppins !important',
+            fontWeight: 'bold',
           },
         }}
         rows={data || []}

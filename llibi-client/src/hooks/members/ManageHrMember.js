@@ -9,7 +9,7 @@ const swrSetting = {
   revalidateOnReconnect: false,
   refreshWhenOffline: false,
   refreshWhenHidden: false,
-  refreshInterval: 1800, // revalidate every 30 minutes
+  refreshInterval: 30000, // revalidate every 5 minutes
 }
 
 export const useManageHrMember = ({ status }) => {

@@ -177,4 +177,31 @@ class NotificationController extends Controller
       Log::error($th);
     }
   }
+
+  public function NewMail($name, $email, $message)
+  {
+    Mail::send([], [], function ($mail) use ($name, $email, $message) {
+
+      $subject = (isset($message['subject']) ? $message['subject'] : 'CLIENT CARE PORTAL - NOTIFICATION');
+
+      $mail->to($email, $name)
+        ->subject($subject)
+        ->html($message['body']);
+      // $mail->from('notify@llibi.app', 'Lacson & Lacson Insurance Brokers Inc.');
+
+      if (isset($message['bcc'])) {
+        $mail->bcc($message['bcc'], $message['name']);
+      }
+
+      if (isset($message['cc'])) {
+        $mail->cc($message['cc'], '');
+      }
+
+      if (isset($message['attachment'])) {
+        foreach ($message['attachment'] as $file) {
+          $mail->attach(Storage::path($file));
+        }
+      }
+    });
+  }
 }

@@ -22,6 +22,7 @@ import PendingForDeletion from './broadpath/PendingForDeletion'
 import ApprovedMember from './broadpath/ApprovedMember'
 import ActiveMembers from './broadpath/hr/pages/ActiveMembers'
 import PendingForApproval from './broadpath/hr/pages/PendingForApproval'
+import DeletedMembers from './broadpath/hr/pages/DeletedMembers'
 
 const pageEnrollmentClient = ({ props }) => {
   const [status, setStatus] = useState()
@@ -470,9 +471,14 @@ const pageEnrollmentClient = ({ props }) => {
               <ApprovedMember create={create} {...props} />
             )} */}
 
-            {Number(status) === 100 && (
+            {Number(status) === 4 && (
               // active members
               <ActiveMembers create={create} {...props} />
+            )}
+
+            {Number(status) === 7 && (
+              // deleted members
+              <DeletedMembers create={create} {...props} />
             )}
 
             {Number(status) === 8 && (

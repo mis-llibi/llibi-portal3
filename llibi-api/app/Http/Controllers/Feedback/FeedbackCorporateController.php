@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Feedback;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\ManualSendFeedbackRequest;
@@ -293,15 +294,24 @@ class FeedbackCorporateController extends Controller
     $member_id = $masterlist->member_id;
     $feedback_url = "https://portal.llibi.app/feedback/corporate?q=$q&company_code=$company_code&member_id=$member_id&approval_code=$approval_code";
 
-    $mailMsg = view('send-corporate-loa', [
-      'homepage' => 'https://portal.llibi.app',
-      'first_name' => $masterlist->first_name,
-      // 'member_id' => $masterlist->member_id,
-      // 'company_code' => $masterlist->company_code,
-      // 'approval_code' => $approval_code,
-      // 'q' => Str::random(64)
-      'feedback_url' => $feedback_url,
-    ]);
+    // $mailMsg = view('send-corporate-loa', [
+    //   'homepage' => 'https://portal.llibi.app',
+    //   'first_name' => $masterlist->first_name,
+    //   // 'member_id' => $masterlist->member_id,
+    //   // 'company_code' => $masterlist->company_code,
+    //   // 'approval_code' => $approval_code,
+    //   // 'q' => Str::random(64)
+    //   'feedback_url' => $feedback_url,
+    // ])->render();
+
+    $mailMsg = [
+      'body' => view('send-corporate-loa', [
+        'homepage' => 'https://portal.llibi.app',
+        'first_name' => $masterlist->first_name,
+        'feedback_url' => $feedback_url
+      ])->render(),
+      'attachment' => ["public/" . $path],
+    ];
 
     if (App::environment('local')) {
       $emailer = new SendingEmail(
@@ -324,23 +334,28 @@ class FeedbackCorporateController extends Controller
     }
 
     if (App::environment('production')) {
-      $emailer = new SendingEmail(
-        email: $email,
-        body: $mailMsg,
-        subject: 'CORPORATE REQUEST LOA',
-        attachments: [Storage::path($path)],
-        cc: ['clientcare@llibi.com'],
-      );
-      $emailer->send();
+      $mailMsg['cc'] = 'clientcare@llibi.com';
+      $mailMsg['subject'] = 'CORPORATE REQUEST LOA';
+      $mail = (new NotificationController)->NewMail('', $email, $mailMsg);
+      // $emailer = new SendingEmail(
+      //   email: $email,
+      //   body: $mailMsg,
+      //   subject: 'CORPORATE REQUEST LOA',
+      //   attachments: [Storage::path($path)],
+      //   cc: ['clientcare@llibi.com'],
+      // );
+      // $emailer->send();
 
       if ($provider_email) {
-        $emailer = new SendingEmail(
-          email: $provider_email,
-          body: $mailMsg,
-          subject: 'LLIBI LOA TO PROVIDER',
-          attachments: [Storage::path($path)],
-        );
-        $emailer->send();
+        $mailMsg['subject'] = 'LLIBI LOA TO PROVIDER';
+        $mail = (new NotificationController)->NewMail('', $provider_email, $mailMsg);
+        // $emailer = new SendingEmail(
+        //   email: $provider_email,
+        //   body: $mailMsg,
+        //   subject: 'LLIBI LOA TO PROVIDER',
+        //   attachments: [Storage::path($path)],
+        // );
+        // $emailer->send();
       }
     }
 
