@@ -43,7 +43,7 @@ class Kernel extends ConsoleKernel
      * Run everyday at 2PM
      */
     // $schedule->command('pending-for-submission')->everyMinute();
-    $schedule->command('checking-infobip-status')->everyFiveMinutes();
+    $schedule->command('checking-infobip-status')->everyFourHours();
   }
 
   /**

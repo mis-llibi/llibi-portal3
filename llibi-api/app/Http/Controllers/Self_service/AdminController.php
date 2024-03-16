@@ -146,8 +146,7 @@ class AdminController extends Controller
         $password = date('Ymd', strtotime($client[0]->dob));
       }
 
-      // $encryptedPdfPath = $this->encryptPdf($path, $password);
-      $encryptedPdfPath = "public/" . $path;
+      $encryptedPdfPath = $this->encryptPdf($path, $password);
 
       $loa = ['encryptedLOA' => $encryptedPdfPath];
     }
@@ -298,12 +297,12 @@ class AdminController extends Controller
           'statusRemarks' => $statusRemarks,
           'ref' => $ref,
           'feedbackLink' => $feedbackLink,
-        ])->render(),
+        ]),
         'attachment' => $attachment
       );
-      $mail = (new NotificationController)->NewMail($name, $email, $body);
+      $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
       if (!empty($altEmail)) {
-        $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
+        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
       }
 
       // if ($is_send_to_provider == 1 && !empty($provider_email2)) {

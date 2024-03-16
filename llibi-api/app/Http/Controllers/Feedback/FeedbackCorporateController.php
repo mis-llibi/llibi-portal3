@@ -304,14 +304,11 @@ class FeedbackCorporateController extends Controller
     //   'feedback_url' => $feedback_url,
     // ])->render();
 
-    $mailMsg = [
-      'body' => view('send-corporate-loa', [
-        'homepage' => 'https://portal.llibi.app',
-        'first_name' => $masterlist->first_name,
-        'feedback_url' => $feedback_url
-      ])->render(),
-      'attachment' => ["public/" . $path],
-    ];
+    $mailMsg = view('send-corporate-loa', [
+      'homepage' => 'https://portal.llibi.app',
+      'first_name' => $masterlist->first_name,
+      'feedback_url' => $feedback_url
+    ]);
 
     if (App::environment('local')) {
       $emailer = new SendingEmail(
@@ -334,28 +331,28 @@ class FeedbackCorporateController extends Controller
     }
 
     if (App::environment('production')) {
-      $mailMsg['cc'] = 'clientcare@llibi.com';
-      $mailMsg['subject'] = 'CORPORATE REQUEST LOA';
-      $mail = (new NotificationController)->NewMail('', $email, $mailMsg);
-      // $emailer = new SendingEmail(
-      //   email: $email,
-      //   body: $mailMsg,
-      //   subject: 'CORPORATE REQUEST LOA',
-      //   attachments: [Storage::path($path)],
-      //   cc: ['clientcare@llibi.com'],
-      // );
-      // $emailer->send();
+      // $mailMsg['cc'] = 'clientcare@llibi.com';
+      // $mailMsg['subject'] = 'CORPORATE REQUEST LOA';
+      // $mail = (new NotificationController)->NewMail('', $email, $mailMsg);
+      $emailer = new SendingEmail(
+        email: $email,
+        body: $mailMsg,
+        subject: 'CORPORATE REQUEST LOA',
+        attachments: [Storage::path($path)],
+        cc: ['clientcare@llibi.com'],
+      );
+      $emailer->send();
 
       if ($provider_email) {
-        $mailMsg['subject'] = 'LLIBI LOA TO PROVIDER';
-        $mail = (new NotificationController)->NewMail('', $provider_email, $mailMsg);
-        // $emailer = new SendingEmail(
-        //   email: $provider_email,
-        //   body: $mailMsg,
-        //   subject: 'LLIBI LOA TO PROVIDER',
-        //   attachments: [Storage::path($path)],
-        // );
-        // $emailer->send();
+        // $mailMsg['subject'] = 'LLIBI LOA TO PROVIDER';
+        // $mail = (new NotificationController)->NewMail('', $provider_email, $mailMsg);
+        $emailer = new SendingEmail(
+          email: $provider_email,
+          body: $mailMsg,
+          subject: 'LLIBI LOA TO PROVIDER',
+          attachments: [Storage::path($path)],
+        );
+        $emailer->send();
       }
     }
 
