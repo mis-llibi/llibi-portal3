@@ -12,6 +12,8 @@ import { SlUserFollow, SlEye, SlPeople } from 'react-icons/sl'
 import Button from '@/components/Button'
 
 import DataGrid from '@/components/DataGrid'
+import ActiveMembers from './broadpath/admin/pages/ActiveMembers'
+import PendingForApproval from './broadpath/admin/pages/PendingForApproval'
 
 const pageEnrollmentAdmin = ({ props }) => {
   const [status, setStatus] = useState()
@@ -224,7 +226,7 @@ const pageEnrollmentAdmin = ({ props }) => {
       <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
           {/* FOR ENROLLMENT BOX */}
-          <div className={`px-3 pt-3 ${status == 2 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 2 || 'hidden'}`}>
             <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
@@ -232,10 +234,10 @@ const pageEnrollmentAdmin = ({ props }) => {
               Export Members for Enrollment
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
           {/* FOR CORRECTION BOX */}
-          <div className={`px-3 pt-3 ${status == 7 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 7 || 'hidden'}`}>
             <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
@@ -243,10 +245,10 @@ const pageEnrollmentAdmin = ({ props }) => {
               Export Members for Correction
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
           {/* FOR CANCELLATION BOX */}
-          <div className={`px-3 pt-3 ${status == 8 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 8 || 'hidden'}`}>
             <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
@@ -260,10 +262,10 @@ const pageEnrollmentAdmin = ({ props }) => {
               Approve Cancellation
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
           {/* FOR ENROLLED MEMBER BOX */}
-          <div className={`px-3 pt-3 ${status == 4 || 'hidden'}`}>
+          {/* <div className={`px-3 pt-3 ${status == 4 || 'hidden'}`}>
             <Button
               onClick={exportLateEnrolled}
               className="mr-2 bg-green-400 hover:bg-green-600 focus:bg-green-600 active:bg-green-700 ring-green-200 mb-2 md:mb-0 w-full md:w-auto"
@@ -271,16 +273,31 @@ const pageEnrollmentAdmin = ({ props }) => {
               Export
             </Button>
             <div className="clear-both"></div>
-          </div>
+          </div> */}
 
-          {/* MAIN DATA GRID TABLE */}
-          <div className="h-96 min-h-screen p-3 bg-white border-b border-gray-200">
-            <DataGrid
+          <div className="p-3 bg-white border-b border-gray-200">
+            {Number(status) === 4 && (
+              // active members
+              <ActiveMembers {...props} />
+            )}
+
+            {/* {Number(status) === 7 && (
+            // deleted members
+            <DeletedMembers {...props} />
+          )} */}
+
+          {Number(status) === 8 && (
+            // pending for approval
+            <PendingForApproval {...props} />
+          )}
+
+            {/* MAIN DATA GRID TABLE */}
+            {/* <DataGrid
               data={enrollees?.list}
               columns={columns}
               selectionModel={selectionModel}
               setSelectionModel={setSelectionModel}
-            />
+            /> */}
           </div>
         </div>
       </div>

@@ -24,6 +24,7 @@ use App\Models\Self_enrollment\members;
 use App\Services\SendingEmail;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -48,21 +49,18 @@ class ManageEnrolleeController extends Controller
     //   $members = $members->whereIn('status', $status);
     // }
 
-    if ($status == 1) {
-      $members = $members->pendingApproval();
-    }
-
-    if ($status == 4) {
-      $members = $members->approvedMembers();
-    }
-
-    if ($status == 7) {
-      $members = $members->deletedMember();
-    }
-
-    if ($status == '3,5,8') {
-      $members = $members->whereIn('status', explode(",", $status));
-    }
+    $members = match ($status) {
+      '1' => $members->pendingSubmission(),
+      '3' => $members->pendingDeletion(),
+      '4' => $members->approvedMembers(),
+      '5' => $members->pendingCorrection(),
+      '6' => $members->approvedCorrection(),
+      '7' => $members->deletedMember(),
+      '8' => $members->pendingChangePlan(),
+      '3,5,8' => $members->whereIn('status', [3, 5, 8]),
+      '1,3,5,8' => $members->whereIn('status', explode(",", $status)),
+      default => throw new Exception("Status not supported", 400),
+    };
 
     $members = $members->orderByDesc('id')->get();
 
@@ -656,12 +654,17 @@ class ManageEnrolleeController extends Controller
   public function changePlan(Request $request, $id)
   {
     $member = hr_members::query()->where('id', $id)->first();
-    $member->plan = $request->plan;
+    // $member->plan = $request->plan;
     $member->status = 8;
-    $member->change_plan_at = Carbon::now();
+    // $member->change_plan_at = Carbon::now();
     $member->save();
 
-    return response()->json(['message' => 'Success changing plan.', 'data' => $member]);
+    $correction = hr_members_correction::create([
+      'member_link_id' => $id,
+      'plan' => $request->plan,
+    ]);
+
+    return response()->json(['message' => 'Changing plan request success.', 'data' => $correction]);
   }
 
   public function deleteMember(Request $request, $id)

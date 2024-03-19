@@ -304,6 +304,7 @@ export default function ActiveMembers({ create, ...props }) {
         onPageSizeChange={handlePageSizeChange}
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
+        autoHeight
         // checkboxSelection
         // selectionModel={selectionModel}
         // onSelectionModelChange={setSelectionModel}

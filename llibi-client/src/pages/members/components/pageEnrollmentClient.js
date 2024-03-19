@@ -444,7 +444,7 @@ const pageEnrollmentClient = ({ props }) => {
           </div> */}
 
           {/* MAIN DATA GRID TABLE */}
-          <div className="h-96 min-h-screen p-3 bg-white border-b border-gray-200">
+          <div className="p-3 bg-white border-b border-gray-200">
             {/* <DataGrid
               data={enrollees?.list}
               columns={columns}

@@ -66,8 +66,8 @@ const Members = () => {
   const { register, watch } = useForm()
 
   const checkUserRole = () => {
-    if (user && !user?.role) return 4
-    return 2
+    // if (user && !user?.role) return 4
+    return 4
   }
 
   const props = {
@@ -142,21 +142,15 @@ const Members = () => {
         <>
           <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
             <div className="bg-white p-3 rounded-lg shadow-sm">
-              <Label>Filter: </Label>
-              <Select
-                id="statusCheckerAdmin"
-                className="block mt-1 w-full"
-                options={[
-                  {
-                    label: 'Submitted For Enrollment',
-                    value: 2,
-                  },
-                  { label: 'Members for Correction', value: 7 },
-                  { label: 'Members for Cancellation', value: 8 },
-                  { label: 'Enrolled Members', value: 4 },
-                ]}
-                register={register('selection')}
-              />
+              <ul className="grid w-full gap-3 md:grid-cols-4 font-[poppins]">
+                {filterOptions.map((item, i) => (
+                  <RadioCardFilter
+                    key={item.value}
+                    register={register}
+                    item={item}
+                  />
+                ))}
+              </ul>
             </div>
           </div>
           <PageEnrollmentAdmin props={props} />

@@ -37,20 +37,28 @@ const Navigation = ({ user }) => {
 
             {/* Navigation Links */}
             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-              {!user?.role && (
-                <>
-                  <NavLink
-                    href="/members/dashboard"
-                    active={router.pathname === '/members/dashboard'}>
-                    Dashboard
-                  </NavLink>
+              <>
+                <NavLink
+                  href="/members/dashboard"
+                  active={router.pathname === '/members/dashboard'}>
+                  Dashboard
+                </NavLink>
+                {!user?.role && (
                   <NavLink
                     href="/members"
                     active={router.pathname === '/members'}>
                     HR Enrollment
                   </NavLink>
-                </>
-              )}
+                )}
+
+                {user?.role === 1 && (
+                  <NavLink
+                    href="/members"
+                    active={router.pathname === '/members'}>
+                    Admin Enrollment
+                  </NavLink>
+                )}
+              </>
               {/* {user?.role && (
                 <NavLink
                   href="/self-enrollment"

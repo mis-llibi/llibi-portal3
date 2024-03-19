@@ -47,6 +47,7 @@ class hr_members extends Model
     'change_plan_at',
     'deleted_remarks',
     'approved_deleted_member_at',
+    'approved_by',
   ];
 
   protected $appends = ['status_name'];
@@ -79,10 +80,10 @@ class hr_members extends Model
     $query->where('status', 1);
   }
 
-  public function scopeSumittedMembers(Builder $query): void
-  {
-    $query->where('status', 2);
-  }
+  // public function scopeSumittedMembers(Builder $query): void
+  // {
+  //   $query->where('status', 2);
+  // }
 
   public function scopePendingDeletion(Builder $query): void
   {
