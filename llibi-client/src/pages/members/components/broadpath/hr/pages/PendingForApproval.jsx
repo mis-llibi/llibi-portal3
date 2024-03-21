@@ -20,7 +20,9 @@ import moment from 'moment'
 
 export default function PendingForApproval({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
-  const { data, isLoading, error, mutate } = useManageHrMember({ status: 1 })
+  const { data, isLoading, error, mutate } = useManageHrMember({
+    status: '1,3,5,8',
+  })
   const [loader, setLoader] = useState(false)
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
@@ -70,7 +72,7 @@ export default function PendingForApproval({ create, ...props }) {
         return (
           <>
             <div className="font-[poppins]">
-              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
         )

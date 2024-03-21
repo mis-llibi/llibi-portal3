@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Members;
 
 use App\Http\Controllers\Controller;
-use App\Models\Members\hr_members;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+
+use App\Models\Members\hr_members;
+
+use App\Http\Requests\Member\ApproveMembeDeletionrRequest;
+use App\Http\Requests\Member\ApproveMemberRequest;
 
 class AdminController extends Controller
 {
@@ -64,15 +69,40 @@ class AdminController extends Controller
     //
   }
 
-  public function approveMember(Request $request, $id)
+  public function approveMember(ApproveMemberRequest $request, $id)
   {
     $member = hr_members::find($id);
     $member->certificate_no = $request->certificate_no;
     $member->certificate_issued_at = $request->certificate_issued_at;
     $member->status = 4;
+    $member->approved_member_at = Carbon::now();
     $member->approved_by = Auth::id();
     $member->save();
 
     return response()->json(['message' => 'Approve member success.', 'data' => $member]);
+  }
+
+  public function approveDeletion(ApproveMembeDeletionrRequest $request, $id)
+  {
+    $member = hr_members::find($id);
+    $member->status = 7;
+    $member->admin_remarks = $request->remarks;
+    $member->approved_deleted_member_at = Carbon::now();
+    $member->approved_by = Auth::id();
+    $member->save();
+
+    return response()->json(['message' => 'Approve deletion success.', 'data' => $member]);
+  }
+
+  public function approveChangePlan(Request $request, $id)
+  {
+    $member = hr_members::find($id);
+    $member->status = 9;
+    $member->plan = $request->plan;
+    $member->approved_change_plan_at = Carbon::now();
+    $member->approved_by = Auth::id();
+    $member->save();
+
+    return response()->json(['message' => 'Approve change plan success.', 'data' => $member]);
   }
 }

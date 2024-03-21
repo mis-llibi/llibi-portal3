@@ -99,7 +99,7 @@ export default function ActiveMembers({ create, ...props }) {
           <>
             <div className="font-[poppins]">
               {' '}
-              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
         )
@@ -151,7 +151,7 @@ export default function ActiveMembers({ create, ...props }) {
             <div className="font-[poppins]">
               <p className="text-xs text-green-600">
                 {row.certificate_issued_at &&
-                  moment(row.certificate_issued_at).format('MMM DD Y')}
+                  moment(row.certificate_issued_at).format('MMM DD, Y')}
               </p>
               <p>{row.certificate_no}</p>
             </div>
@@ -198,7 +198,7 @@ export default function ActiveMembers({ create, ...props }) {
               <SlBan className="text-lg" />
             </button> */}
 
-            {row.status === 4 ? (
+            {row.status === 4 && (
               <div>
                 <ActionButton
                   key={row.id}
@@ -207,7 +207,9 @@ export default function ActiveMembers({ create, ...props }) {
                   handleChangePlan={handleChangePlan}
                 />
               </div>
-            ) : (
+            )}
+
+            {[3, 5, 8].includes(row.status) && (
               <div className="font-[poppins] text-[9px]">
                 <span className="bg-orange-600 text-white px-2 py-1 rounded-md uppercase">
                   {row.status_name}

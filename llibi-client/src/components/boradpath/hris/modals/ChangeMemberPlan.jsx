@@ -20,7 +20,6 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
 
   const onSubmit = async data => {
     setIsLoading(true)
-    const formData = { ...data, id: row.id }
 
     try {
       const response = await axios.patch(

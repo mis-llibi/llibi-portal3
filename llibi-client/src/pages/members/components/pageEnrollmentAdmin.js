@@ -14,6 +14,7 @@ import Button from '@/components/Button'
 import DataGrid from '@/components/DataGrid'
 import ActiveMembers from './broadpath/admin/pages/ActiveMembers'
 import PendingForApproval from './broadpath/admin/pages/PendingForApproval'
+import DeletedMembers from './broadpath/admin/pages/DeletedMembers'
 
 const pageEnrollmentAdmin = ({ props }) => {
   const [status, setStatus] = useState()
@@ -286,10 +287,15 @@ const pageEnrollmentAdmin = ({ props }) => {
             <DeletedMembers {...props} />
           )} */}
 
-          {Number(status) === 8 && (
-            // pending for approval
-            <PendingForApproval {...props} />
-          )}
+            {Number(status) === 8 && (
+              // pending for approval
+              <PendingForApproval {...props} />
+            )}
+
+            {Number(status) === 7 && (
+              // pending for approval
+              <DeletedMembers {...props} />
+            )}
 
             {/* MAIN DATA GRID TABLE */}
             {/* <DataGrid

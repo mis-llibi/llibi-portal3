@@ -66,7 +66,7 @@ export default function DeletedMembers({ create, ...props }) {
         return (
           <>
             <div className="font-[poppins]">
-              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
         )
@@ -117,7 +117,7 @@ export default function DeletedMembers({ create, ...props }) {
           <>
             <div className="font-[poppins]">
               {row.approved_deleted_member_at
-                ? moment(row.approved_deleted_member_at).format('MMM DD Y')
+                ? moment(row.approved_deleted_member_at).format('MMM DD, Y')
                 : ''}
             </div>
           </>

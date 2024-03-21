@@ -27,6 +27,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     ->prefix('admin')
     ->group(function () {
       Route::patch('/approve-members/{id}', 'approveMember');
-      Route::patch('/approve-delettion/{id}', 'approveDeletion');
+      Route::patch('/approve-deletion/{id}', 'approveDeletion');
+      Route::patch('/approve-change-plan/{id}', 'approveChangePlan');
     });
 });

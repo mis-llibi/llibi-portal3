@@ -43,34 +43,6 @@ export default function ActiveMembers({ ...props }) {
     setPageSize(data)
   }
 
-  const handleDelete = (cb, row) => {
-    // console.log(row)
-    cb()
-    setBody({
-      title: 'Delete Members',
-      content: (
-        <DeleteMemberRemarks row={row} mutate={mutate} setShow={setShow} />
-      ),
-      modalOuterContainer: 'w-full md:w-96 max-h-screen font-[poppins]',
-      modalContainer: 'h-full rounded-md',
-      modalBody: 'h-full',
-    })
-    toggle()
-  }
-
-  const handleChangePlan = (cb, row) => {
-    // console.log(row)
-    cb()
-    setBody({
-      title: 'Change Members Plan',
-      content: <ChangeMemberPlan row={row} mutate={mutate} setShow={setShow} />,
-      modalOuterContainer: 'w-full md:w-96 max-h-screen font-[poppins]',
-      modalContainer: 'h-full rounded-md',
-      modalBody: 'h-full',
-    })
-    toggle()
-  }
-
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, hide: true },
     {
@@ -99,7 +71,7 @@ export default function ActiveMembers({ ...props }) {
           <>
             <div className="font-[poppins]">
               {' '}
-              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
         )
@@ -151,7 +123,7 @@ export default function ActiveMembers({ ...props }) {
             <div className="font-[poppins]">
               <p className="text-xs text-green-600">
                 {row.certificate_issued_at &&
-                  moment(row.certificate_issued_at).format('MMM DD Y')}
+                  moment(row.certificate_issued_at).format('MMM DD, Y')}
               </p>
               <p>{row.certificate_no}</p>
             </div>
@@ -186,19 +158,7 @@ export default function ActiveMembers({ ...props }) {
       renderCell: ({ row }) => {
         return (
           <>
-            {/* <button
-              className="group border px-3 py-2 rounded-md hover:bg-gray-200"
-              title="Edit Enrollee"
-              onClick={() => updateEnrollee(row)}>
-              <SlPencil className="text-lg" />
-            </button> */}
-            {/* <button
-              className="group border px-3 py-2 rounded-md hover:bg-gray-200"
-              title="Delete Enrollee">
-              <SlBan className="text-lg" />
-            </button> */}
-
-            {row.status !== 4 && (
+            {![4, 6, 9].includes(row.status) && (
               <div className="font-[poppins] text-[9px]">
                 <span className="bg-orange-600 text-white px-2 py-1 rounded-md uppercase">
                   {row.status_name}
@@ -210,17 +170,6 @@ export default function ActiveMembers({ ...props }) {
       },
     },
   ]
-
-  const handleSubmitForDeletion = async () => {
-    if (selectionModel.length <= 0) {
-      Swal.fire('Error', 'Please select enrollee first.', 'error')
-      return
-    }
-    setLoader(true)
-    await submitForDeletionHooks(selectionModel)
-    mutate()
-    setLoader(false)
-  }
 
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>

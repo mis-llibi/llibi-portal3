@@ -66,7 +66,7 @@ export default function DeletedMembers({ create, ...props }) {
         return (
           <>
             <div className="font-[poppins]">
-              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
         )
@@ -117,7 +117,7 @@ export default function DeletedMembers({ create, ...props }) {
           <>
             <div className="font-[poppins]">
               {row.approved_deleted_member_at
-                ? moment(row.approved_deleted_member_at).format('MMM DD Y')
+                ? moment(row.approved_deleted_member_at).format('MMM DD, Y')
                 : ''}
             </div>
           </>
@@ -125,17 +125,6 @@ export default function DeletedMembers({ create, ...props }) {
       },
     },
   ]
-
-  const handleSubmitForDeletion = async () => {
-    if (selectionModel.length <= 0) {
-      Swal.fire('Error', 'Please select enrollee first.', 'error')
-      return
-    }
-    setLoader(true)
-    await submitForDeletionHooks(selectionModel)
-    mutate()
-    setLoader(false)
-  }
 
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>

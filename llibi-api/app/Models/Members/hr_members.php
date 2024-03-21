@@ -48,6 +48,8 @@ class hr_members extends Model
     'deleted_remarks',
     'approved_deleted_member_at',
     'approved_by',
+    'approved_member_at',
+    'approved_change_plan_at',
   ];
 
   protected $appends = ['status_name'];
@@ -92,7 +94,8 @@ class hr_members extends Model
 
   public function scopeApprovedMembers(Builder $query): void
   {
-    $query->where('status', 4);
+    // $query->where('status', 4);
+    $query->whereNotNull('approved_member_at')->where('status', '<>', 7);
   }
 
   public function scopePendingCorrection(Builder $query): void
@@ -134,5 +137,10 @@ class hr_members extends Model
   public function scopePrincipal(Builder $query): void
   {
     $query->where('relationship_id', 'PRINCIPAL');
+  }
+
+  public function changePlanPending()
+  {
+    return $this->hasOne(HrMemberChangePlanCorrection::class, 'member_link_id', 'id')->orderByDesc('id');
   }
 }

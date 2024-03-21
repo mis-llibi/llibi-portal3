@@ -19,12 +19,14 @@ use App\Models\Members\hr_members_correction;
 use App\Models\Members\hr_contact_correction;
 use App\Models\Members\hr_philhealth_correction;
 use App\Models\Members\HrMemberAttachment;
+use App\Models\Members\HrMemberChangePlanCorrection;
 use App\Models\Self_enrollment\attachment;
 use App\Models\Self_enrollment\members;
 use App\Services\SendingEmail;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -41,14 +43,15 @@ class ManageEnrolleeController extends Controller
      * 8 pending change plan
      */
 
+    /**
+     * 4 approved/active members
+     * 6 approved correction
+     * 9 approvd change plan
+     */
+
     $status = request()->query('status');
 
     $members =  hr_members::query();
-
-    // if ($status != 1 && $status != 4) {
-    //   $members = $members->whereIn('status', $status);
-    // }
-
     $members = match ($status) {
       '1' => $members->pendingSubmission(),
       '3' => $members->pendingDeletion(),
@@ -57,12 +60,13 @@ class ManageEnrolleeController extends Controller
       '6' => $members->approvedCorrection(),
       '7' => $members->deletedMember(),
       '8' => $members->pendingChangePlan(),
+      '9' => $members->approvedChangePlan(),
       '3,5,8' => $members->whereIn('status', [3, 5, 8]),
       '1,3,5,8' => $members->whereIn('status', explode(",", $status)),
       default => throw new Exception("Status not supported", 400),
     };
 
-    $members = $members->orderByDesc('id')->get();
+    $members = $members->with('changePlanPending:id,member_link_id,plan')->orderByDesc('id')->get();
 
     return $members;
   }
@@ -653,18 +657,21 @@ class ManageEnrolleeController extends Controller
 
   public function changePlan(Request $request, $id)
   {
-    $member = hr_members::query()->where('id', $id)->first();
-    // $member->plan = $request->plan;
-    $member->status = 8;
-    // $member->change_plan_at = Carbon::now();
-    $member->save();
+    DB::transaction(function () use ($request, $id) {
+      $member = hr_members::query()->where('id', $id)->first();
+      // $member->plan = $request->plan;
+      $member->status = 8;
+      $member->change_plan_at = Carbon::now();
+      $member->save();
 
-    $correction = hr_members_correction::create([
-      'member_link_id' => $id,
-      'plan' => $request->plan,
-    ]);
+      HrMemberChangePlanCorrection::create([
+        'member_link_id' => $id,
+        'plan' => $request->plan,
+        'created_by' => Auth::id(),
+      ]);
+    });
 
-    return response()->json(['message' => 'Changing plan request success.', 'data' => $correction]);
+    return response()->json(['message' => 'Changing plan request success.']);
   }
 
   public function deleteMember(Request $request, $id)

@@ -45,7 +45,7 @@ export default function ApprovePendingMember({
 
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={Boolean(showModal)}>
+      <Dialog fullWidth maxWidth="xs" open={showModal}>
         <DialogTitle>
           <span className="font-[poppins] font-bold uppercase">
             Approve Member

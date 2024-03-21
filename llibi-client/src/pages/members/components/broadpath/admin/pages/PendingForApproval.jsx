@@ -39,21 +39,6 @@ export default function PendingForApproval({ create, ...props }) {
     setPageSize(data)
   }
 
-  const handleDelete = async row => {
-    setLoader(true)
-    try {
-      const response = await axios.delete(
-        `/api/members-enrollment/delete-pending/${row.id}`,
-      )
-
-      mutate()
-      setLoader(false)
-    } catch (error) {
-      setLoader(false)
-      Swal.fire('Error', 'Something went wrong.', 'error')
-    }
-  }
-
   const columns = [
     { field: 'id', headerName: 'ID', width: 50, hide: true },
     {
@@ -82,7 +67,7 @@ export default function PendingForApproval({ create, ...props }) {
         return (
           <>
             <div className="font-[poppins]">
-              {row.birth_date ? moment(row.birth_date).format('MMM DD Y') : ''}
+              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
         )
@@ -224,15 +209,16 @@ export default function PendingForApproval({ create, ...props }) {
 
       {showModal === 'change-plan' && (
         <ApproveChangeMemberPlan
-          showModal={showModal}
+          showModal={Boolean(showModal)}
           setShowModal={setShowModal}
           row={selectedRow}
+          mutate={mutate}
         />
       )}
 
       {showModal === 'approve-member' && (
         <ApprovePendingMember
-          showModal={showModal}
+          showModal={Boolean(showModal)}
           setShowModal={setShowModal}
           row={selectedRow}
           mutate={mutate}
@@ -241,9 +227,10 @@ export default function PendingForApproval({ create, ...props }) {
 
       {showModal === 'approve-deletion' && (
         <ApproveDeleteMember
-          showModal={showModal}
+          showModal={Boolean(showModal)}
           setShowModal={setShowModal}
           row={selectedRow}
+          mutate={mutate}
         />
       )}
       <Loader loading={loader} />
