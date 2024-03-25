@@ -29,6 +29,7 @@ class LaboratoryController extends Controller
       'code' => Str::random(12),
       'laboratory' => trim($request->laboratory),
       'cost' => Str::replace(',', '', trim($request->cost)),
+      'class' => 1,
     ]);
 
     return response()->json($lab);

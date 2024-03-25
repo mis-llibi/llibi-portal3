@@ -168,7 +168,7 @@ export default function ActiveMembers({ create, ...props }) {
           <>
             {row.plan && (
               <div className="font-[poppins] text-[9px]">
-                <span className="bg-[#111111] text-white px-2 py-1 rounded-md">
+                <span className="bg-blue-100 text-blue-600 font-bold px-2 py-1 rounded-md">
                   {row.plan}
                 </span>
               </div>
@@ -211,7 +211,7 @@ export default function ActiveMembers({ create, ...props }) {
 
             {[3, 5, 8].includes(row.status) && (
               <div className="font-[poppins] text-[9px]">
-                <span className="bg-orange-600 text-white px-2 py-1 rounded-md uppercase">
+                <span className="bg-orange-100 text-orange-600 font-bold px-2 py-1 rounded-md uppercase">
                   {row.status_name}
                 </span>
               </div>
