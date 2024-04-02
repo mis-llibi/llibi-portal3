@@ -135,7 +135,7 @@ class SendingEmail
           ],
           [
             'name' => 'intermediateReport',
-            'contents' => 'true'
+            'contents' => true
           ],
           [
             'name' => 'track',
