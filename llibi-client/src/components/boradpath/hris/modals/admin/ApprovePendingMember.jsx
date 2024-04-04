@@ -53,7 +53,7 @@ export default function ApprovePendingMember({
         </DialogTitle>
         <form onSubmit={handleSubmit(submitForm)}>
           <DialogContent>
-            <Box noValidate component="form" className="font-[poppins]">
+            <Box className="font-[poppins]">
               <div className="mb-3">
                 <Label>Certificate No.</Label>
                 <input

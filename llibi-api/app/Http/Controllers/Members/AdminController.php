@@ -87,7 +87,8 @@ class AdminController extends Controller
     $member = hr_members::find($id);
     $member->status = 7;
     $member->admin_remarks = $request->remarks;
-    $member->approved_deleted_member_at = Carbon::now();
+    $member->approved_deleted_member_at = Carbon::parse($request->approved_deleted_member_at)->format('Y-m-d H:i');
+    $member->approved_deleted_member_at_original = Carbon::now();
     $member->approved_by = Auth::id();
     $member->save();
 

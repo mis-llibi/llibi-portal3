@@ -211,7 +211,12 @@ export default function ActiveMembers({ create, ...props }) {
 
             {[3, 5, 8].includes(row.status) && (
               <div className="font-[poppins] text-[9px]">
-                <span className="bg-orange-100 text-orange-600 font-bold px-2 py-1 rounded-md uppercase">
+                <span
+                  className={`${
+                    row.status === 3
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-blue-100 text-blue-600'
+                  } font-bold px-2 py-1 rounded-md uppercase`}>
                   {row.status_name}
                 </span>
               </div>

@@ -66,7 +66,15 @@ class ManageEnrolleeController extends Controller
       default => throw new Exception("Status not supported", 400),
     };
 
-    $members = $members->with('changePlanPending:id,member_link_id,plan')->orderByDesc('id')->get();
+    $members = $members->with('changePlanPending:id,member_link_id,plan');
+
+    if ($status == 7) {
+      $members = $members->orderByDesc('approved_deleted_member_at');
+    } else {
+      $members = $members->orderByDesc('id');
+    }
+
+    $members = $members->get();
 
     return $members;
   }
@@ -475,13 +483,12 @@ class ManageEnrolleeController extends Controller
 
   public function newEnrollment(Request $request)
   {
-    $oid = $request->oid;
+    $member_id = $request->member_id;
     $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
-    $attachment = $request->file('attachment');
 
-    $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $oid, 'birth_date' => $birth_date])->first();
+    $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $member_id, 'birth_date' => $birth_date])->first();
     $checkIfExistMember = hr_members::query()->where('last_name', 'LIKE', '%' . $request->lastname . '%')->where('birth_date', $birth_date)->first();
-    $checkingRelation = hr_members::query()->where('member_id', $oid)->where('relationship_id', $request->relation)->count();
+    $checkingRelation = hr_members::query()->where('member_id', $member_id)->where('relationship_id', $request->relation)->count();
 
     abort_if($checkIfExistPrincipal, 400, 'Already Enrolled');
     abort_if($checkIfExistMember, 400, 'Already Enrolled');
@@ -497,52 +504,66 @@ class ManageEnrolleeController extends Controller
     }
 
 
-    $enrollee = hr_members::create(
-      [
-        'client_company' => 'BROADPATH',
-        'member_id' => $oid,
-        'hash' => $request->relation === 'PRINCIPAL' ? Str::uuid() : '',
-        'relationship_id' => $request->relation,
-        'first_name' => Str::upper($request->firstname),
-        'last_name' => Str::upper($request->lastname),
-        'middle_name' => Str::upper($request->middlename) ?? '',
-        'birth_date' => $birth_date,
-        'gender' => $request->gender,
-        'civil_status' => $request->civilstatus,
-        'date_hired' => Carbon::now(),
-        'coverage_date' => Carbon::now()->addYear(),
-        'status' => 1,
-        'changed_status_at' => Carbon::now(),
-        'created_by' => auth()->id(),
-        'pending_submission_created_at' => Carbon::now(),
-      ]
-    );
+    DB::transaction(function () use ($request, $member_id, $birth_date) {
+      $enrollee = hr_members::create(
+        [
+          'client_company' => 'BROADPATH',
+          'member_id' => $member_id,
+          'hash' => $request->relation === 'PRINCIPAL' ? Str::uuid() : '',
+          'relationship_id' => $request->relation,
+          'first_name' => Str::upper($request->firstname),
+          'last_name' => Str::upper($request->lastname),
+          'middle_name' => Str::upper($request->middlename) ?? '',
+          'birth_date' => $birth_date,
+          'gender' => $request->gender,
+          'civil_status' => $request->civilstatus,
+          'date_hired' => Carbon::now(),
+          'coverage_date' => Carbon::now()->addYear(),
+          'status' => 1,
+          'changed_status_at' => Carbon::now(),
+          'created_by' => auth()->id(),
+          'pending_submission_created_at' => Carbon::now(),
+          'nationality' => $request->nationality,
+        ]
+      );
 
-    foreach ($attachment as $key => $attch) {
-      $path = $attch->store('members/attachments/' . $request->oid, 'broadpath');
-      $file_name = $attch->getClientOriginalName();
-
-      HrMemberAttachment::create([
+      $contact = hr_contact::create([
         'link_id' => $enrollee->id,
-        'file_name' => $file_name,
-        'file_link' => $path
+        'barangay' => $request->barangay,
+        'street' => $request->street,
+        'city' => $request->city,
+        'province' => $request->province,
+        'zip_code' => $request->zip_code,
+        'email' => $request->email,
+        'mobile_no' => $request->mobile_no,
       ]);
 
-      hr_members::where('id', $enrollee->id)->update(['attachments' => ++$key]);
-    }
+      $attachment = $request->file('attachment');
+      foreach ($attachment as $key => $attch) {
+        $path = $attch->store('members/attachments/' . $request->member_id, 'broadpath');
+        $file_name = $attch->getClientOriginalName();
 
+        HrMemberAttachment::create([
+          'link_id' => $enrollee->id,
+          'file_name' => $file_name,
+          'file_link' => $path
+        ]);
 
-    return response()->json(['message' => 'Successfully save new enroll', 'enrollee' => $enrollee]);
+        hr_members::where('id', $enrollee->id)->update(['attachments' => ++$key]);
+      }
+    });
+
+    return response()->json(['message' => 'Successfully save new enroll'], 201);
   }
 
   public function updateEnrollment(Request $request, $id)
   {
-    $oid = $request->oid;
+    $member_id = $request->member_id;
     $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
     $attachment = $request->file('attachment');
 
     $enrollee = hr_members::find($id);
-    $enrollee->member_id = $oid;
+    $enrollee->member_id = $member_id;
     $enrollee->relationship_id = $request->relation;
     $enrollee->first_name = Str::upper($request->firstname);
     $enrollee->last_name = Str::upper($request->lastname);
@@ -554,7 +575,7 @@ class ManageEnrolleeController extends Controller
 
     HrMemberAttachment::where('link_id', $id)->delete();
     foreach ($attachment as $key => $attch) {
-      $path = $attch->storeAs('Self_enrollment/Broadpath/' . $request->oid, $attch->getClientOriginalName(), 'public');
+      $path = $attch->store('members/attachments/' . $request->member_id, 'broadpath');
       $file_name = $attch->getClientOriginalName();
 
       HrMemberAttachment::create([

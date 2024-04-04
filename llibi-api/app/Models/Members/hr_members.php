@@ -50,6 +50,8 @@ class hr_members extends Model
     'approved_by',
     'approved_member_at',
     'approved_change_plan_at',
+    'nationality',
+    'approved_deleted_member_at_original',
   ];
 
   protected $appends = ['status_name'];

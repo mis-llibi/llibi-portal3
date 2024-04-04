@@ -53,7 +53,23 @@ export default function ApproveDeleteMember({
         </DialogTitle>
         <form onSubmit={handleSubmit(submitForm)}>
           <DialogContent>
-            <Box noValidate component="form" className="font-[poppins]">
+            <Box className="font-[poppins]">
+              <div className="mb-3">
+                <Label>Deletion Date</Label>
+                <input
+                  type="date"
+                  defaultValue={moment(row.pending_deleted_at).format(
+                    'Y-MM-DD',
+                  )}
+                  className="w-full rounded-md"
+                  {...register('approved_deleted_member_at', {
+                    required: 'Deletion Date is required.',
+                  })}
+                />
+                <span className="text-red-600 text-xs">
+                  {errors?.approved_deleted_member_at?.message}
+                </span>
+              </div>
               <div className="mb-3">
                 <Label>Remarks</Label>
                 <textarea

@@ -13,6 +13,7 @@ class hr_contact extends Model
 
     protected $fillable = [
         'link_id',
+        'barangay',
         'street',
         'city',
         'province',

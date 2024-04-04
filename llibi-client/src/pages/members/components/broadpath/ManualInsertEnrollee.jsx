@@ -121,7 +121,7 @@ const ManualInsertEnrollee = ({
     }
 
     reset({
-      oid: '',
+      member_id: '',
     })
   }, [enrollmentRelation])
 
@@ -131,7 +131,7 @@ const ManualInsertEnrollee = ({
         selectedPrincipal?.last_name && selectedPrincipal?.first_name
           ? `${selectedPrincipal?.last_name}, ${selectedPrincipal?.first_name} | ${selectedPrincipal?.civil_status}`
           : '',
-      oid: selectedPrincipal?.member_id ?? '',
+          member_id: selectedPrincipal?.member_id ?? '',
     })
   }, [selectedPrincipal])
 
@@ -184,151 +184,275 @@ const ManualInsertEnrollee = ({
             </Label>
           </div>
         </div>
-        {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
-          <div className="mb-3">
-            <Label htmlFor="oid">Principal Details</Label>
-            <Input
-              id="oid"
-              className="block mt-1 w-full"
-              register={register('principalName')}
-              disabled
-            />
+
+        <div className="grid grid-cols-2 gap-3">
+          {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
+            <div className="mb-3">
+              <Label htmlFor="principalName">Principal Details</Label>
+              <Input
+                id="principalName"
+                className="block mt-1 w-full"
+                register={register('principalName')}
+                disabled
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {/* COLUMN 1 */}
+          <div>
+            <div className="mb-3">
+              <Label htmlFor="member_id">Employee Number</Label>
+              <Input
+                id="member_id"
+                className="block mt-1 w-full"
+                register={register('member_id', {
+                  required: 'Employee Number is required',
+                })}
+                disabled={
+                  enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent
+                }
+                errors={errors?.member_id}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="lastname">Last Name</Label>
+              <Input
+                id="lastname"
+                className="block mt-1 w-full"
+                register={register('lastname', {
+                  required: 'Last Name is required',
+                })}
+                errors={errors?.lastname}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="firstname">First Name</Label>
+              <Input
+                id="firstname"
+                className="block mt-1 w-full"
+                register={register('firstname', {
+                  required: 'First Name is required',
+                })}
+                errors={errors?.firstname}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="middlename">
+                Middle Name{' '}
+                <span className="text-gray-500 font-light">(optional)</span>
+              </Label>
+              <Input
+                id="middlename"
+                className="block mt-1 w-full"
+                register={register('middlename')}
+                errors={errors?.middlename}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="birthdate">Birth Date</Label>
+              <Input
+                id="birthdate"
+                type="date"
+                className="block mt-1 w-full"
+                register={register('birthdate', {
+                  required: 'Birth Date is required',
+                  min: watch('relation')
+                    ? birthDayChecker('min', watch('relation'))
+                    : 0,
+                  max: watch('relation')
+                    ? birthDayChecker('max', watch('relation'))
+                    : 0,
+                })}
+                errors={errors?.birthdate}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                className="block mt-1 w-full"
+                register={register('email', { required: 'Email is required' })}
+                errors={errors?.email}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="mobile_no">Mobile Number</Label>
+              <Input
+                id="mobile_no"
+                className="block mt-1 w-full"
+                register={register('mobile_no', {
+                  required: 'Mobile is required',
+                })}
+                errors={errors?.mobile_no}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="street">House No./Street</Label>
+              <Input
+                id="street"
+                className="block mt-1 w-full"
+                register={register('street', {
+                  required: 'Street is required',
+                })}
+                errors={errors?.street}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="barangay">Barangay/District</Label>
+              <Input
+                id="barangay"
+                className="block mt-1 w-full"
+                register={register('barangay', {
+                  required: 'Barangay is required',
+                })}
+                errors={errors?.barangay}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                className="block mt-1 w-full"
+                register={register('city', { required: 'City is required' })}
+                errors={errors?.city}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="province">Province</Label>
+              <Input
+                id="province"
+                className="block mt-1 w-full"
+                register={register('province', {
+                  required: 'Province is required',
+                })}
+                errors={errors?.province}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="zip_code">Zip Code</Label>
+              <Input
+                id="zip_code"
+                className="block mt-1 w-full"
+                register={register('zip_code', {
+                  required: 'Zip Code is required',
+                })}
+                errors={errors?.zip_code}
+              />
+            </div>
           </div>
-        )}
-        <div className="mb-3">
-          <Label htmlFor="oid">Employee Number</Label>
-          <Input
-            id="oid"
-            className="block mt-1 w-full"
-            register={register('oid', {
-              required: 'Employee Number is required',
-            })}
-            disabled={
-              enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent
-            }
-            errors={errors?.oid}
-          />
-        </div>
-        <div className="mb-3">
-          <Label htmlFor="lastname">Last Name</Label>
-          <Input
-            id="lastname"
-            className="block mt-1 w-full"
-            register={register('lastname', {
-              required: 'Last Name is required',
-            })}
-            errors={errors?.lastname}
-          />
-        </div>
-        <div className="mb-3">
-          <Label htmlFor="firstname">First Name</Label>
-          <Input
-            id="firstname"
-            className="block mt-1 w-full"
-            register={register('firstname', {
-              required: 'First Name is required',
-            })}
-            errors={errors?.firstname}
-          />
-        </div>
-        <div className="mb-3">
-          <Label htmlFor="middlename">
-            Middle Name{' '}
-            <span className="text-gray-500 font-light">(optional)</span>
-          </Label>
-          <Input
-            id="middlename"
-            className="block mt-1 w-full"
-            register={register('middlename')}
-            errors={errors?.middlename}
-          />
-        </div>
-        <div className="mb-3">
-          <Label htmlFor="birthdate">Birth Date</Label>
-          <Input
-            id="birthdate"
-            type="date"
-            className="block mt-1 w-full"
-            register={register('birthdate', {
-              required: 'Birth Date is required',
-              min: watch('relation')
-                ? birthDayChecker('min', watch('relation'))
-                : 0,
-              max: watch('relation')
-                ? birthDayChecker('max', watch('relation'))
-                : 0,
-            })}
-            errors={errors?.birthdate}
-          />
-        </div>
-        <div className="mb-3">
-          <Label htmlFor="gender">Gender</Label>
-          <Select
-            id="gender"
-            className="block mt-1 w-full"
-            options={[
-              { label: 'Select Gender', value: '' },
-              { label: 'Male', value: 'MALE' },
-              { label: 'Female', value: 'FEMALE' },
-            ]}
-            register={register('gender', {
-              required: 'Gender is required',
-            })}
-            errors={errors?.gender}
-          />
-        </div>
-        {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
-          <div className="mb-3">
-            <Label htmlFor="relation">Relation</Label>
-            <Select
-              id="relation"
-              className={`block mt-1 w-full`}
-              options={broadpathRelationValidation(
-                selectedPrincipal?.civil_status,
-              )}
-              register={register('relation', {
-                required: 'Relation is required',
-              })}
-              errors={errors?.relation}
-            />
-          </div>
-        )}
-        <div className="mb-3">
-          <Label htmlFor="civilstatus">Civil Status</Label>
-          <Select
-            id="civilstatus"
-            className="block mt-1 w-full"
-            options={broadpathCivilStatusValidation(
-              selectedPrincipal?.civil_status,
-              watch('relation'),
+          {/* COLUMN 2 */}
+          <div>
+            <div className="mb-3">
+              <Label htmlFor="gender">Gender</Label>
+              <Select
+                id="gender"
+                className="block mt-1 w-full"
+                options={[
+                  { label: 'Select Gender', value: '' },
+                  { label: 'Male', value: 'MALE' },
+                  { label: 'Female', value: 'FEMALE' },
+                ]}
+                register={register('gender', {
+                  required: 'Gender is required',
+                })}
+                errors={errors?.gender}
+              />
+            </div>
+            {enrollmentRelation === INITIAL_ENROLLMENT_RELATION.dependent && (
+              <div className="mb-3">
+                <Label htmlFor="relation">Relation</Label>
+                <Select
+                  id="relation"
+                  className={`block mt-1 w-full`}
+                  options={broadpathRelationValidation(
+                    selectedPrincipal?.civil_status,
+                  )}
+                  register={register('relation', {
+                    required: 'Relation is required',
+                  })}
+                  errors={errors?.relation}
+                />
+              </div>
             )}
-            register={register('civilstatus', {
-              required: 'Civil Status is required',
-            })}
-            errors={errors?.civilstatus}
-          />
-        </div>
-        <div className="mb-3">
-          <Label htmlFor="attachment">
-            Document Requirement(s){' '}
-            <sup className="font-thin text-red-600">please select civil status</sup>:
-          </Label>
-          <InputFile
-            label={``}
-            id="attachment"
-            loading={loading}
-            setLoader={setLoader}
-            civilStatus={watch('civilstatus')}
-            rel={watch('relation')}
-            reset={reset}
-            type="file"
-            accept="image/*, application/pdf"
-            multiple
-            register={register('attachment', {
-              required: 'Attachment is required',
-            })}
-            errors={errors?.attachment}
-          />
+            <div className="mb-3">
+              <Label htmlFor="civilstatus">Civil Status</Label>
+              <Select
+                id="civilstatus"
+                className="block mt-1 w-full"
+                options={broadpathCivilStatusValidation(
+                  selectedPrincipal?.civil_status,
+                  watch('relation'),
+                )}
+                register={register('civilstatus', {
+                  required: 'Civil Status is required',
+                })}
+                errors={errors?.civilstatus}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="nationality">Nationality</Label>
+              <Input
+                id="nationality"
+                className="block mt-1 w-full"
+                register={register('nationality', {
+                  required: 'Nationality is required',
+                })}
+                errors={errors?.nationality}
+              />
+            </div>
+
+            <div className="mb-3">
+              <Label htmlFor="hiredate">Hire Date</Label>
+              <Input
+                id="hiredate"
+                type="date"
+                className="block mt-1 w-full"
+                register={register('hiredate', {
+                  required: 'Hire Date is required',
+                })}
+                errors={errors?.hiredate}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="egularization_date">Regularization Date</Label>
+              <Input
+                id="egularization_date"
+                type="date"
+                className="block mt-1 w-full"
+                register={register('egularization_date', {
+                  required: 'Regularization Date is required',
+                })}
+                errors={errors?.egularization_date}
+              />
+            </div>
+            <div className="mb-3">
+              <Label htmlFor="attachment">
+                Document Requirement(s){' '}
+                <sup className="font-thin text-red-600">
+                  please select civil status
+                </sup>
+                :
+              </Label>
+              <InputFile
+                label={``}
+                id="attachment"
+                loading={loading}
+                setLoader={setLoader}
+                civilStatus={watch('civilstatus')}
+                rel={watch('relation')}
+                reset={reset}
+                type="file"
+                accept="image/*, application/pdf"
+                multiple
+                register={register('attachment', {
+                  required: 'Attachment is required',
+                })}
+                errors={errors?.attachment}
+              />
+            </div>
+          </div>
         </div>
 
         <Button

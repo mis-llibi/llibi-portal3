@@ -51,10 +51,7 @@ export default function ApproveChangeMemberPlan({
         </DialogTitle>
         <form onSubmit={handleSubmit(submitForm)}>
           <DialogContent>
-            <Box
-              noValidate
-              component="form"
-              className="font-[poppins] text-center">
+            <Box className="font-[poppins] text-center">
               {/* <h1>{row?.plan}</h1> */}
               <p className="text-lg">
                 {row.plan} ➜ {row.change_plan_pending?.plan}
