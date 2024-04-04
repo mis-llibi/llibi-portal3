@@ -35,7 +35,8 @@ export default function ApprovePendingMember({
       handleClose()
       Swal.fire('Success', response?.data?.message, 'success')
     } catch (error) {
-      Swal.fire('Error', 'Something went wrong', 'error')
+      Swal.fire('Error', error?.response?.data?.message, 'error')
+      handleClose()
     }
   }
 
@@ -67,7 +68,7 @@ export default function ApprovePendingMember({
                   {errors?.certificate_no?.message}
                 </span>
               </div>
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <Label>Date Issue</Label>
                 <input
                   type="date"
@@ -80,7 +81,7 @@ export default function ApprovePendingMember({
                 <span className="text-red-600 text-xs">
                   {errors?.certificate_issued_at?.message}
                 </span>
-              </div>
+              </div> */}
             </Box>
           </DialogContent>
           <DialogActions className="font-[poppins]">

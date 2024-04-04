@@ -72,8 +72,18 @@ class AdminController extends Controller
   public function approveMember(ApproveMemberRequest $request, $id)
   {
     $member = hr_members::find($id);
+
+    abort_if(!$member, 404, 'Member not found.');
+
+    $principal = hr_members::query()->where('member_id', $member->member_id)->principal()->first();
+
+    if (is_null($principal->certificate_no) && $member->relationship_id != 'PRINCIPAL') {
+      return response()->json(['message' => 'The principal should have Certificate No. before approving dependents.', 'data' => $member], 400);
+    }
+
     $member->certificate_no = $request->certificate_no;
-    $member->certificate_issued_at = $request->certificate_issued_at;
+    // $member->certificate_issued_at = $request->certificate_issued_at;
+    $member->certificate_issued_at = Carbon::now();
     $member->status = 4;
     $member->approved_member_at = Carbon::now();
     $member->approved_by = Auth::id();

@@ -2,19 +2,8 @@ import React, { useEffect, useState } from 'react'
 
 import { DataGrid } from '@mui/x-data-grid'
 
-import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
-import { BiPlus, BiSend, BiUpload } from 'react-icons/bi'
-
-import {
-  useManageHrMember,
-  submitForEnrollmentHooks,
-} from '@/hooks/members/ManageHrMember'
-import Button from '@/components/Button'
-import ManualInsertEnrollee from '../../ManualInsertEnrollee'
-import Swal from 'sweetalert2'
-import ManualUpdateEnrollee from '../../ManualUpdateEnrollee'
+import { useManageHrMember } from '@/hooks/members/ManageHrMember'
 import Loader from '@/components/Loader'
-import axios from '@/lib/axios'
 import Label from '@/components/Label'
 import moment from 'moment'
 

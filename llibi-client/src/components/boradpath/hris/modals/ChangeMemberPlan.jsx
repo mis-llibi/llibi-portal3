@@ -13,8 +13,8 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm()
+    formState: { errors, isSubmitting },
+  } = useForm({ mode: 'onChange' })
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -55,10 +55,10 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
         </div>
         <div>
           <button
-            disabled={isLoading}
+            disabled={isSubmitting}
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
-            {isLoading ? <BiLoader size={14} /> : <BiSave size={14} />}
+            {isSubmitting ? <BiLoader size={14} /> : <BiSave size={14} />}
             <span>Save</span>
           </button>
         </div>

@@ -2,32 +2,12 @@ import React, { useEffect, useState } from 'react'
 
 import { DataGrid } from '@mui/x-data-grid'
 
-import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
-import {
-  BiPlus,
-  BiSend,
-  BiTrashAlt,
-  BiUpvote,
-  BiPencil,
-  BiDotsVerticalRounded,
-} from 'react-icons/bi'
+import { useManageHrMember } from '@/hooks/members/ManageHrMember'
 
-import {
-  useManageHrMember,
-  submitForDeletionHooks,
-} from '@/hooks/members/ManageHrMember'
-
-import Button from '@/components/Button'
-import ManualInsertEnrollee from '../../ManualInsertEnrollee'
-import Swal from 'sweetalert2'
-import ManualUpdateEnrollee from '../../ManualUpdateEnrollee'
 import Loader from '@/components/Loader'
 import Label from '@/components/Label'
-import ActionButton from '@/components/boradpath/hris/ActionButton'
 import ModalControl from '@/components/ModalControl'
 import Modal from '@/components/Modal'
-import DeleteMemberRemarks from '@/components/boradpath/hris/modals/DeleteMemberRemarks'
-import ChangeMemberPlan from '@/components/boradpath/hris/modals/ChangeMemberPlan'
 import moment from 'moment'
 
 export default function ActiveMembers({ ...props }) {

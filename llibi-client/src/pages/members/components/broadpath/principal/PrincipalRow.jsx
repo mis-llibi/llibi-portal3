@@ -1,7 +1,6 @@
 import moment from 'moment'
 import React from 'react'
 
-import { MdOutlineTouchApp } from 'react-icons/md'
 import { BiPointer } from 'react-icons/bi'
 
 export default function PrincipalRow({ row, handleSetSelected }) {
@@ -23,7 +22,7 @@ export default function PrincipalRow({ row, handleSetSelected }) {
       {/* <td className="p-3"></td> */}
       {/* <td className="p-3 text-center">{row.relationship_id}</td> */}
       <td className="p-3 text-center">
-        {moment(row.birth_date).format('Y-MM-DD')}
+        {moment(row.birth_date).format('MMM DD, Y')}
       </td>
       <td className="p-3 text-center">{row.gender}</td>
       <td className="p-3 text-center">{row.civil_status}</td>

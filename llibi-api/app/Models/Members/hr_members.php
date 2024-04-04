@@ -43,6 +43,7 @@ class hr_members extends Model
     'pending_deleted_at',
     'plan',
     'action_code',
+    'certificate_no',
     'certificate_issued_at',
     'change_plan_at',
     'deleted_remarks',

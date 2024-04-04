@@ -82,7 +82,7 @@ export const updateNewEnrollee = async ({
   }
 }
 
-export const insertNewEnrollee = async ({ setShow, data, reset, ...props }) => {
+export const insertNewEnrollee = async ({ data, reset, ...props }) => {
   try {
     const response = await axios.post(
       '/api/members-enrollment/new-enrollment',

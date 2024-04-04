@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import Modal from '@/components/Modal'
-import axios from '@/lib/axios'
 
-import { MdOutlineTouchApp, MdOutlineSearch } from 'react-icons/md'
+import { MdOutlineSearch } from 'react-icons/md'
 
 import { getPrincipal } from '@/hooks/members/PrincipalHooks'
 import PrincipalRow from './PrincipalRow'
@@ -21,8 +19,6 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
   const handleSearch = () => {
     setSearch(searchRef.current.value)
   }
-
-  console.log(search)
 
   if (errors) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>

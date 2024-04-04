@@ -42,13 +42,13 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
     <div className="font-[poppins] px-3">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
-          <Label htmlFor="effectivity_date" className="text-sm">
-            Effectivity Date
+          <Label htmlFor="pending_deleted_at" className="text-sm">
+            Deletion Date
           </Label>
           <input
             type="date"
-            name="effectivity_date"
-            id="effectivity_date"
+            name="pending_deleted_at"
+            id="pending_deleted_at"
             className="w-full rounded-md"
             defaultValue={dateNow}
             {...register('pending_deleted_at')}

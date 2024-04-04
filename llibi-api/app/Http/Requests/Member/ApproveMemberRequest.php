@@ -25,7 +25,7 @@ class ApproveMemberRequest extends FormRequest
   {
     return [
       'certificate_no' => 'required',
-      'certificate_issued_at' => 'required',
+      // 'certificate_issued_at' => 'required',
     ];
   }
 }

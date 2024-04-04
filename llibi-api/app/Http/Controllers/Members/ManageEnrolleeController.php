@@ -486,12 +486,16 @@ class ManageEnrolleeController extends Controller
     $member_id = $request->member_id;
     $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
 
-    $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $member_id, 'birth_date' => $birth_date])->first();
+
+    if ($request->relation == 'PRINCIPAL') {
+      $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $member_id])->principal()->first();
+      abort_if($checkIfExistPrincipal, 400, 'Principal already enrolled with the same employee number');
+    }
+    
     $checkIfExistMember = hr_members::query()->where('last_name', 'LIKE', '%' . $request->lastname . '%')->where('birth_date', $birth_date)->first();
     $checkingRelation = hr_members::query()->where('member_id', $member_id)->where('relationship_id', $request->relation)->count();
 
-    abort_if($checkIfExistPrincipal, 400, 'Already Enrolled');
-    abort_if($checkIfExistMember, 400, 'Already Enrolled');
+    abort_if($checkIfExistMember, 400, 'Dependent already enrolled');
 
     switch ($request->relation) {
       case 'SPOUSE':
@@ -517,7 +521,9 @@ class ManageEnrolleeController extends Controller
           'birth_date' => $birth_date,
           'gender' => $request->gender,
           'civil_status' => $request->civilstatus,
-          'date_hired' => Carbon::now(),
+          'date_hired' => Carbon::parse($request->hiredate)->format('Y-m-d'),
+          'reg_date' => Carbon::parse($request->regularization_date)->format('Y-m-d'),
+          'effective_date' => Carbon::parse($request->effectivity_date)->format('Y-m-d'),
           'coverage_date' => Carbon::now()->addYear(),
           'status' => 1,
           'changed_status_at' => Carbon::now(),
@@ -538,7 +544,7 @@ class ManageEnrolleeController extends Controller
         'mobile_no' => $request->mobile_no,
       ]);
 
-      $attachment = $request->file('attachment');
+      $attachment = $request->has('attachment') ? $request->file('attachment') : [];
       foreach ($attachment as $key => $attch) {
         $path = $attch->store('members/attachments/' . $request->member_id, 'broadpath');
         $file_name = $attch->getClientOriginalName();
@@ -594,7 +600,7 @@ class ManageEnrolleeController extends Controller
   {
     $search = request('q');
 
-    $members = hr_members::where('relationship_id', 'PRINCIPAL')->select(
+    $members = hr_members::query()->principal()->select(
       'id',
       'member_id',
       'relationship_id',
@@ -604,6 +610,8 @@ class ManageEnrolleeController extends Controller
       'birth_date',
       'gender',
       'civil_status',
+      'date_hired',
+      'reg_date',
     );
     if ($search) {
       $members = $members->where(function ($query) use ($search) {
@@ -698,9 +706,9 @@ class ManageEnrolleeController extends Controller
   public function deleteMember(Request $request, $id)
   {
     $member = hr_members::query()->where('id', $id)->first();
-    $member->deleted_remarks = $request->remarks;
+    $member->deleted_remarks = $request->deleted_remarks;
     $member->status = 3;
-    $member->pending_deleted_at = Carbon::now();
+    $member->pending_deleted_at = Carbon::parse($request->pending_deleted_at)->format('Y-m-d');
     $member->save();
 
     return response()->json(['message' => 'Success changing plan.', 'data' => $member]);

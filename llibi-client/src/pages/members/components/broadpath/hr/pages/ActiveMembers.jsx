@@ -2,25 +2,12 @@ import React, { useEffect, useState } from 'react'
 
 import { DataGrid } from '@mui/x-data-grid'
 
-import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
-import {
-  BiPlus,
-  BiSend,
-  BiTrashAlt,
-  BiUpvote,
-  BiPencil,
-  BiDotsVerticalRounded,
-} from 'react-icons/bi'
-
 import {
   useManageHrMember,
   submitForDeletionHooks,
 } from '@/hooks/members/ManageHrMember'
 
-import Button from '@/components/Button'
-import ManualInsertEnrollee from '../../ManualInsertEnrollee'
 import Swal from 'sweetalert2'
-import ManualUpdateEnrollee from '../../ManualUpdateEnrollee'
 import Loader from '@/components/Loader'
 import Label from '@/components/Label'
 import ActionButton from '@/components/boradpath/hris/ActionButton'
@@ -198,7 +185,16 @@ export default function ActiveMembers({ create, ...props }) {
               <SlBan className="text-lg" />
             </button> */}
 
-            {row.status === 4 && (
+            {/* 1 pending submission
+              3 Pending deletion
+              5 pending correction
+              8 pending change plan
+
+              4 approved/active members
+              6 approved correction
+              9 approvd change plan */}
+
+            {[4, 6, 9].includes(row.status) && (
               <div>
                 <ActionButton
                   key={row.id}

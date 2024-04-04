@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { DataGrid } from '@mui/x-data-grid'
 
-import { SlPencil, SlBan, SlEye, SlPeople } from 'react-icons/sl'
-import { BiPlus, BiSend, BiUpload } from 'react-icons/bi'
+import { BiPlus } from 'react-icons/bi'
 
 import {
   useManageHrMember,
@@ -124,7 +123,9 @@ export default function PendingForApproval({ create, ...props }) {
             <div className="font-[poppins] text-[9px]">
               <span
                 className={`${
-                  row.status === 3 ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                  row.status === 3
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-blue-100 text-blue-600'
                 } font-bold px-2 py-1 rounded-md uppercase`}>
                 {row.status_name}
               </span>
