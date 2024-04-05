@@ -11,4 +11,8 @@ class CompaniesSync extends Model
 
     protected $connection = 'mysql_sync';
     protected $table = 'companies';
+
+    protected $fillable = [
+        'benad_password',
+    ];
 }
