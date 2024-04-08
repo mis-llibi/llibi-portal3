@@ -491,7 +491,7 @@ class ManageEnrolleeController extends Controller
       $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $member_id])->principal()->first();
       abort_if($checkIfExistPrincipal, 400, 'Principal already enrolled with the same employee number');
     }
-    
+
     $checkIfExistMember = hr_members::query()->where('last_name', 'LIKE', '%' . $request->lastname . '%')->where('birth_date', $birth_date)->first();
     $checkingRelation = hr_members::query()->where('member_id', $member_id)->where('relationship_id', $request->relation)->count();
 
@@ -556,6 +556,27 @@ class ManageEnrolleeController extends Controller
         ]);
 
         hr_members::where('id', $enrollee->id)->update(['attachments' => ++$key]);
+
+        if (isset($request->isNewWedding) && $request->isNewWedding == 1) {
+          Log::info('update civil status');
+          // if newly wedded update principal to married
+          hr_members::query()
+            ->where('member_id', $request->member_id)
+            ->principal()
+            ->update([
+              'civil_status' => 'MARRIED'
+            ]);
+
+          Log::info('update status');
+          // and all the dependents update to deleted
+          hr_members::query()
+            ->where('member_id', $request->member_id)
+            ->where('id', '<>', $enrollee->id)
+            ->where('relationship_id', '<>', 'PRINCIPAL')
+            ->update([
+              'status' => 7
+            ]);
+        }
       }
     });
 

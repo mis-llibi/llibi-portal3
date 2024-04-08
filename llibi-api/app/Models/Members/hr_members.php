@@ -57,6 +57,22 @@ class hr_members extends Model
 
   protected $appends = ['status_name'];
 
+  /* 
+    * #####################
+    * # LEGENDS OF STATUS #
+    * #####################
+
+    * 1 pending submission
+    * 3 Pending deletion
+    * 5 pending correction
+    * 8 pending change plan
+
+    * 4 approved/active members
+    * 6 approved correction
+    * 7 approved deletion
+    * 9 approvd change plan
+  */
+
   protected function middleName(): Attribute
   {
     return Attribute::make(

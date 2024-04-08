@@ -74,6 +74,10 @@ export default function DependentEnrollment({
       FORMDATA.append('relation', 'PRINCIPAL')
     }
 
+    if (isNewWedding) {
+      FORMDATA.append('isNewWedding', 1)
+    }
+
     // console.log([...FORMDATA])
     await insertNewEnrollee({
       data: FORMDATA,
@@ -405,7 +409,7 @@ export default function DependentEnrollment({
                   errors={errors?.effectivity_date}
                 />
                 <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-36 text-center uppercase">
-                  {isNewBorn ? 'Newly Born' : 'Newly Wedding'}
+                  {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
                 </p>
               </div>
             ) : (

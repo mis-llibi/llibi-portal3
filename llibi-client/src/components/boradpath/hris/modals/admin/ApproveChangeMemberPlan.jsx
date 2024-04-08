@@ -51,11 +51,34 @@ export default function ApproveChangeMemberPlan({
         </DialogTitle>
         <form onSubmit={handleSubmit(submitForm)}>
           <DialogContent>
-            <Box className="font-[poppins] text-center">
-              {/* <h1>{row?.plan}</h1> */}
-              <p className="text-lg">
-                {row.plan} ➜ {row.change_plan_pending?.plan}
-              </p>
+            <Box className="font-[poppins]">
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold">
+                  Remarks
+                </label>
+                <textarea
+                  type="text"
+                  className="w-full rounded-md"
+                  {...register('remarks')}
+                  rows={4}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-md"
+                  {...register('approved_change_plan_at')}
+                />
+              </div>
+
+              <div className="text-center">
+                <p className="text-lg font-bold">
+                  {row.plan} ➜ {row.change_plan_pending?.plan}
+                </p>
+              </div>
             </Box>
           </DialogContent>
           <DialogActions className="font-[poppins]">

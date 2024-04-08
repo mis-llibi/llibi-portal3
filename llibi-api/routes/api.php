@@ -37,7 +37,12 @@ use App\Http\Controllers\SearchMasterlist\MasterlistController;
 use App\Http\Controllers\Self_service\ComplaintController;
 
 use App\Http\Controllers\Api_third_party\BenadEncryptor;
-
+use App\Mail\MailerSendTest;
+use App\Services\SendingEmail;
+use Illuminate\Support\Facades\Mail;
+use MailerSend\Helpers\Builder\EmailParams;
+use MailerSend\Helpers\Builder\Recipient;
+use MailerSend\MailerSend;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
@@ -136,3 +141,36 @@ Route::controller(ComplaintController::class)->group(function () {
 require __DIR__ . '/hris.php';
 
 Route::get('/excel-template', [ManageEnrolleeController::class, 'excelTemplate']);
+
+
+Route::get('/mailersend', function () {
+  // Mail::to('glenilagan@llibi.com')->send(new MailerSendTest);
+
+  // $mailersend = new MailerSend(['api_key' => env('MAILERSEND_API_KEY')]);
+
+  // $recipients = [
+  //   new Recipient('glenilagan@llibi.com', ''),
+  // ];
+
+  // $emailParams = (new EmailParams())
+  //   ->setFrom(env('MAILERSEND_API_ADDRESS_FROM'))
+  //   ->setFromName(env('MAILERSEND_API_ADDRESS_FROMNAME'))
+  //   ->setRecipients($recipients)
+  //   ->setSubject('CLIENT CARE PORTAL')
+  //   ->setHtml(view('test-mailer', ['data' => 'glennmore'])->render())
+  //   ->setAttachments(['https://llibi-storage.sgp1.cdn.digitaloceanspaces.com/eportal/masterlist-report-every-monday/2024/Apr/masterlist-member_1712548806_1.xlsx']);
+
+  // $mailersend->email->send($emailParams);
+
+  // $body = view('test-mailer', ['data' => 'glennmore'])->render();
+
+  $body = view('test-mailer', ['data' => 'glennmore'])->render();
+  $email = ['glenilagan@llibi.com', 'glenilagan@llibi.com'];
+  $subject = 'CLIENT CARE PORTAL';
+  $cc = ['test123@yopmail.com', 'test1123@yopmail.com'];
+  $bcc = ['test1234@yopmail.com', 'test12341@yopmail.com'];
+  $attachments = ['https://llibi-storage.sgp1.cdn.digitaloceanspaces.com/eportal/masterlist-report-every-monday/2024/Apr/masterlist-member_1712548806_1.xlsx'];
+
+  $sending = new SendingEmail();
+  $sending->sendMailerSendProvider($body, $email, $subject, $cc, $bcc, $attachments);
+});

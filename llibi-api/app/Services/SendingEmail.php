@@ -3,15 +3,21 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Mail\Attachment as MailAttachment;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use MailerSend\Helpers\Builder\Attachment;
+// MAILERSEND PROVIDER
+use MailerSend\Helpers\Builder\EmailParams;
+use MailerSend\Helpers\Builder\Recipient;
+use MailerSend\MailerSend;
 
 class SendingEmail
 {
   public function __construct(
-    public $email,
-    public $body,
+    public $email = null,
+    public $body = null,
     public $subject = 'CLIENT CARE PORTAL - NOTIFICATION',
     public $key = 'default',
     public $attachments = [],
@@ -194,6 +200,58 @@ class SendingEmail
     }
   }
 
+  private function mailerSendProvider(string $body, array $email, string $subject, array $cc, array $bcc, array $attachments)
+  {
+    try {
+      //code...
+      $mailersend = new MailerSend(['api_key' => env('MAILERSEND_API_KEY')]);
+
+      $subject = !empty($subject) ? Str::upper($subject) : 'CLIENT CARE PORTAL - NOTIFICATION';
+      $cc = !empty($cc) ? $cc : [];
+      $bcc = !empty($bcc) ? $bcc : [];
+      $attachments = !empty($attachments) ? $attachments : [];
+
+      $emailParams = (new EmailParams())
+        ->setFrom(env('MAILERSEND_API_ADDRESS_FROM'))
+        ->setFromName(env('MAILERSEND_API_ADDRESS_FROMNAME'))
+        ->setSubject($subject)
+        ->setHtml($body);
+
+      if (!empty($email)) {
+        foreach ($email as $key => $item) {
+          $emailParams->setRecipients([new Recipient($item, '')]);
+        }
+      }
+
+      if (!empty($cc)) {
+        foreach ($cc as $key => $item) {
+          $emailParams->setCc([new Recipient($item, '')]);
+        }
+      }
+
+      if (!empty($bcc)) {
+        foreach ($bcc as $key => $item) {
+          $emailParams->setBcc([new Recipient($item, '')]);
+        }
+      }
+
+      if (!empty($attachments)) {
+        // $emailParams->setAttachments([]);
+      }
+
+      $mailersend->email->send($emailParams);
+
+      Log::info('EMAIL SENT');
+      return true;
+    } catch (\Throwable $th) {
+      Log::error($th);
+      throw $th;
+      return false;
+    }
+  }
+
+
+
   public function send()
   {
     return $this->defaultSendMail();
@@ -202,5 +260,10 @@ class SendingEmail
   public function testSend()
   {
     return $this->testSendMail();
+  }
+
+  public function sendMailerSendProvider(string $body, array $email, string $subject, array $cc, array $bcc, array $attachments)
+  {
+    return $this->mailerSendProvider($body, $email, $subject, $cc, $bcc, $attachments);
   }
 }
