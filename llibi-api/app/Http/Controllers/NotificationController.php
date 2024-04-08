@@ -184,17 +184,17 @@ class NotificationController extends Controller
 
       $subject = (isset($message['subject']) ? $message['subject'] : 'CLIENT CARE PORTAL - NOTIFICATION');
 
-      $mail->to($email, $name)
+      $mail->to($email)
         ->subject($subject)
         ->html($message['body']);
       // $mail->from('notify@llibi.app', 'Lacson & Lacson Insurance Brokers Inc.');
 
       if (isset($message['bcc'])) {
-        $mail->bcc($message['bcc'], $message['name']);
+        $mail->bcc($message['bcc']);
       }
 
       if (isset($message['cc'])) {
-        $mail->cc($message['cc'], '');
+        $mail->cc($message['cc']);
       }
 
       if (isset($message['attachment'])) {

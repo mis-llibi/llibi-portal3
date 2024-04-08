@@ -300,9 +300,9 @@ class AdminController extends Controller
         ]),
         'attachment' => $attachment
       );
-      $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+      $mail = (new NotificationController)->NewMail($name, $email, $body);
       if (!empty($altEmail)) {
-        $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+        $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
       }
 
       // if ($is_send_to_provider == 1 && !empty($provider_email2)) {

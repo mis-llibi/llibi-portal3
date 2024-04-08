@@ -397,20 +397,20 @@ class ClientController extends Controller
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
-      // $body = array('body' => $mailMsg, 'attachment' => $attachment);
-      // $mail = (new NotificationController)->NewMail($name, $email, $body);
-
-      // if (!empty($altEmail)) {
-      //   $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
-      // }
-
-      $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
-      $emailer->send();
+      $body = array('body' => $mailMsg, 'attachment' => $attachment);
+      $mail = (new NotificationController)->NewMail($name, $email, $body);
 
       if (!empty($altEmail)) {
-        $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
-        $emailer->send();
+        $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
       }
+
+      // $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
+      // $emailer->send();
+
+      // if (!empty($altEmail)) {
+      //   $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
+      //   $emailer->send();
+      // }
     }
 
     if (!empty($contact)) {
