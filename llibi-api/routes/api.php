@@ -133,6 +133,6 @@ Route::controller(ComplaintController::class)->group(function () {
   Route::post('/complaint', 'store');
 });
 
-//require __DIR__ . '/hris.php';
+require __DIR__ . '/hris.php';
 
 Route::get('/excel-template', [ManageEnrolleeController::class, 'excelTemplate']);
