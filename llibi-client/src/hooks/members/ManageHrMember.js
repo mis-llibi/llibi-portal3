@@ -90,7 +90,19 @@ export const insertNewEnrollee = async ({ data, reset, ...props }) => {
     )
 
     reset()
-    Swal.fire('Success', response.data.message, 'success')
+    if (props?.isMileStone > 30 && props?.relation === 'SPOUSE') {
+      Swal.fire(
+        'Notice',
+        `
+        <p><strong>STATUS</strong> of TEST LASTNAME1, TEST FIRSTNAME1 was changed to <strong>MARRIED</strong>.</p>
+        <p><strong>STATUS</strong> of TEST LASTNAME1, FATHER was changed to <strong>INACTIVE</strong>.</p>
+        <p><strong>STATUS</strong> of TEST LASTNAME1, MOTHER was changed to <strong>INACTIVE</strong>.</p>
+        `,
+        'info',
+      )
+    } else {
+      Swal.fire('Success', response.data.message, 'success')
+    }
     return true
   } catch (error) {
     Swal.fire('Error', error?.response?.data?.message, 'error')

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Imports\Members\MasterlistImport;
+use App\Models\Members\DeletionAttachment;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\Members\hr_members;
@@ -724,13 +725,22 @@ class ManageEnrolleeController extends Controller
     return response()->json(['message' => 'Changing plan request success.']);
   }
 
-  public function deleteMember(Request $request, $id)
+  public function deleteMember(Request $request)
   {
-    $member = hr_members::query()->where('id', $id)->first();
-    $member->deleted_remarks = $request->deleted_remarks;
-    $member->status = 3;
-    $member->pending_deleted_at = Carbon::parse($request->pending_deleted_at)->format('Y-m-d');
-    $member->save();
+    $member = hr_members::query()->where('id', $request->id)->first();
+
+    DB::transaction(function () use ($request, $member) {
+      // $member->deleted_remarks = $request->deleted_remarks;
+      $member->status = 3;
+      $member->pending_deleted_at = Carbon::parse($request->pending_deleted_at)->format('Y-m-d');
+      $member->save();
+
+      DeletionAttachment::create([
+        'link_id' => $member->id,
+        'file_name' => $request->file('death_document')->getClientOriginalName(),
+        'file_link' => $request->file('death_document')->store('members/deletion/attachments/' . $member->member_id, 'broadpath'),
+      ]);
+    });
 
     return response()->json(['message' => 'Success changing plan.', 'data' => $member]);
   }

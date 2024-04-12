@@ -37,6 +37,7 @@ use App\Http\Controllers\SearchMasterlist\MasterlistController;
 use App\Http\Controllers\Self_service\ComplaintController;
 
 use App\Http\Controllers\Api_third_party\BenadEncryptor;
+use App\Http\Controllers\EmailProviderSettingController;
 use App\Mail\MailerSendTest;
 use App\Services\SendingEmail;
 use Illuminate\Support\Facades\Mail;
@@ -174,3 +175,5 @@ Route::get('/mailersend', function () {
   $sending = new SendingEmail();
   $sending->sendMailerSendProvider($body, $email, $subject, $cc, $bcc, $attachments);
 });
+
+Route::post('/provider-setting', EmailProviderSettingController::class)->middleware('throttle:5,1');

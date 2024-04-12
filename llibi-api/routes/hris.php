@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
       Route::get('/members', 'index');
 
       Route::patch('/change-plan/{id}', 'changePlan');
-      Route::patch('/delete-members/{id}', 'deleteMember');
+      Route::post('/delete-members', 'deleteMember');
     });
 });
 

@@ -71,8 +71,16 @@ class SendPendingNotMoving extends Command
 
       if ($elapse_minutes > $setting->minutes) {
         foreach ($email_to_array as $key => $new_email_to) {
-          $emailer = new SendingEmail($new_email_to, $body, $subject);
-          $response = $emailer->send();
+          switch (env('EMAIL_PROVIDER_SETTING', 'default')) {
+            case 'infobip':
+              $emailer = new SendingEmail($new_email_to, $body, $subject);
+              $response = $emailer->send();
+              break;
+
+            default:
+              (new NotificationController)->NewMail('', $setting->receiver, ['body' => $body, 'subject' => $subject]);
+              break;
+          }
         }
 
         $sms_message = "Lacson & Lacson Alert:\n\nRequest for $lastName, $firstName has not been attended for more than $setting->minutes minutes.";

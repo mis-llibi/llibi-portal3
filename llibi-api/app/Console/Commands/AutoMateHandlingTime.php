@@ -34,7 +34,7 @@ class AutoMateHandlingTime extends Command
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
       ->leftJoin('users as user', 'user.id', '=', 't1.user_id')
-      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+      ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
       ->select(
         't1.id',
         't1.created_at as createdAt',

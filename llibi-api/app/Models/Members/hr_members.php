@@ -55,6 +55,8 @@ class hr_members extends Model
     'approved_deleted_member_at_original',
   ];
 
+  // protected $guarded = [];
+
   protected $appends = ['status_name'];
 
   /* 

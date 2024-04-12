@@ -20,6 +20,7 @@ use mikehaertl\pdftk\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SelfService\AdminExport;
 use App\Models\Corporate\Hospitals;
+use App\Services\GetActiveEmailProvider;
 use App\Services\SendingEmail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -300,9 +301,21 @@ class AdminController extends Controller
         ]),
         'attachment' => $attachment
       );
-      $mail = (new NotificationController)->NewMail($name, $email, $body);
-      if (!empty($altEmail)) {
-        $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
+
+      switch (GetActiveEmailProvider::getProvider()) {
+        case 'infobip':
+          $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+          }
+          break;
+
+        default:
+          $mail = (new NotificationController)->NewMail($name, $email, $body);
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
+          }
+          break;
       }
 
       // if ($is_send_to_provider == 1 && !empty($provider_email2)) {

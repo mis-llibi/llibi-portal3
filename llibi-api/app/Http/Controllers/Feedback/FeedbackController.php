@@ -26,7 +26,7 @@ class FeedbackController extends Controller
   {
     $feedbacks = Feedback::query()
       ->join('app_portal_requests as request', 'request.client_id', '=', 'feedbacks.id')
-      ->leftJoin(env('DB_DATABASE_SYNC') . '.masterlist as mlist', 'mlist.member_id', '=', 'feedbacks.member_id')
+      ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 'feedbacks.member_id')
       ->select('feedbacks.*', 'request.loa_type', 'mlist.company_name')
       ->orderBy('feedbacks.id', 'DESC')->paginate(25);
 

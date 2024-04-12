@@ -28,6 +28,8 @@ const INITIAL_ENROLLMENT_RELATION = {
   dependent: 'DEPENDENT',
 }
 
+import Swal from 'sweetalert2'
+
 export default function DependentEnrollment({
   loading,
   setLoader,
@@ -49,6 +51,7 @@ export default function DependentEnrollment({
   const [selectedPrincipal, setSelectedPrincipal] = useState(null)
   const [isNewBorn, setIsNewBorn] = useState(false)
   const [isNewWedding, setIsNewWedding] = useState(false)
+  const [isMileStone, setIsMileStone] = useState(0)
 
   const submitForm = async data => {
     const FORMDATA = new FormData()
@@ -82,7 +85,10 @@ export default function DependentEnrollment({
     await insertNewEnrollee({
       data: FORMDATA,
       reset,
+      isMileStone: isMileStone,
+      relation: watchFields.relation,
     })
+        
     mutate()
   }
 
@@ -175,13 +181,15 @@ export default function DependentEnrollment({
 
     setIsNewBorn(
       daysDifferenceBirthDate('days') >= 15 &&
-        daysDifferenceBirthDate('days') <= 30 &&
+        daysDifferenceBirthDate('year') <= 18 &&
         daysDifferenceRegularizationDate >= 30,
     )
     setIsNewWedding(
       daysDifferenceBirthDate('year') >= 15 &&
         daysDifferenceRegularizationDate >= 30,
     )
+
+    setIsMileStone(daysDifferenceRegularizationDate)
   }, [watchFields.birthdate, selectedPrincipal?.reg_date])
 
   useEffect(() => {
@@ -202,11 +210,11 @@ export default function DependentEnrollment({
 
   const PrincipalDetails = () => {
     return (
-      <>
+      <div className="bg-gray-100 p-3 rounded-md">
         <h1 className="text-xl text-blue-900 font-extrabold mb-3">
           Principal Details:
         </h1>
-        <div className="grid grid-cols-2 gap-3 border-b mb-3">
+        <div className="grid grid-cols-2 gap-3 mb-3 ">
           <div className="mb-3">
             <Label htmlFor="principalMemberId">Member Number</Label>
             <Input
@@ -255,7 +263,7 @@ export default function DependentEnrollment({
             />
           </div>
         </div>
-      </>
+      </div>
     )
   }
 
@@ -395,8 +403,7 @@ export default function DependentEnrollment({
               />
             </div>
 
-            {(isNewBorn && watchFields.relation === 'CHILD') ||
-            (isNewWedding && watchFields.relation === 'SPOUSE') ? (
+            {isMileStone > 30 && (
               <div className="mb-3">
                 <Label htmlFor="effectivity_date">Effectivity Date</Label>
                 <Input
@@ -408,10 +415,14 @@ export default function DependentEnrollment({
                   })}
                   errors={errors?.effectivity_date}
                 />
-                <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-36 text-center uppercase">
-                  {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
-                </p>
               </div>
+            )}
+
+            {(isNewBorn && watchFields.relation === 'CHILD') ||
+            (isNewWedding && watchFields.relation === 'SPOUSE') ? (
+              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-36 text-center uppercase">
+                {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
+              </p>
             ) : (
               ''
             )}

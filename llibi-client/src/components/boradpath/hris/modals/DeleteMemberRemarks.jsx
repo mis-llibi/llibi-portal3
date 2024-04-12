@@ -13,26 +13,25 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm()
-
-  const [isLoading, setIsLoading] = useState(false)
+    formState: { errors, isSubmitting },
+  } = useForm({ mode: 'onChange' })
 
   const onSubmit = async data => {
-    setIsLoading(true)
-    const formData = { ...data, id: row.id }
+    const formData = new FormData()
+
+    formData.append('id', row.id)
+    formData.append('pending_deleted_at', data.pending_deleted_at)
+    formData.append('death_document', data.death_document[0])
 
     try {
-      const response = await axios.patch(
-        `/api/members-enrollment/delete-members/${row.id}`,
-        data,
+      const response = await axios.post(
+        `/api/members-enrollment/delete-members`,
+        formData,
       )
-      setIsLoading(false)
       setShow(false)
       mutate()
     } catch (error) {
       console.error('Something went wrong.')
-      setIsLoading(false)
     }
   }
 
@@ -55,21 +54,37 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
           />
         </div>
         <div className="mb-3">
-          <Label htmlFor="remarks" className="text-sm">
-            Remarks
-          </Label>
-          <textarea
-            name="remarks"
-            id="remarks"
-            rows="2"
-            className="w-full rounded-md"
-            {...register('deleted_remarks')}></textarea>
+          <Label className="flex gap-3 items-center">Death Documents</Label>
+          <input
+            type="file"
+            className='file:bg-blue-600 file:border-none file:rounded-md text-xs file:text-white file:px-3 file:py-1 w-full'
+            accept="image/*, application/pdf"
+            {...register('death_document', {
+              required: 'Death documents is required.',
+              validate: {
+                validPdf: value => {
+                  const allowedTypes = [
+                    'application/pdf',
+                    'image/jpeg',
+                    'image/png',
+                  ]
+                  if (allowedTypes.includes(value[0]?.type)) {
+                    return true
+                  }
+                  return 'Only PDF files, JPG and PNG images are allowed'
+                },
+              },
+            })}
+          />
+          <p className="text-red-600 text-xs">
+            {errors?.death_document?.message}
+          </p>
         </div>
-        <div>
+        <div className='mt-10'>
           <button
             type="submit"
             className="bg-red-500 hover:bg-red-600 px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
-            {isLoading ? <BiLoader size={14} /> : <BiTrashAlt size={14} />}
+            {isSubmitting ? <BiLoader size={14} /> : <BiTrashAlt size={14} />}
             <span>Delete</span>
           </button>
         </div>

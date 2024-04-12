@@ -17,6 +17,7 @@ use App\Models\Corporate\ProviderLink;
 use App\Models\Corporate\Doctors;
 use App\Models\Self_service\Attachment;
 use App\Services\ClientErrorLogService;
+use App\Services\GetActiveEmailProvider;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Validator;
@@ -397,20 +398,27 @@ class ClientController extends Controller
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
             </p>';
 
-      $body = array('body' => $mailMsg, 'attachment' => $attachment);
-      $mail = (new NotificationController)->NewMail($name, $email, $body);
 
-      if (!empty($altEmail)) {
-        $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
+      switch (GetActiveEmailProvider::getProvider()) {
+        case 'infobip':
+          $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
+          $emailer->send();
+
+          if (!empty($altEmail)) {
+            $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
+            $emailer->send();
+          }
+          break;
+
+        default:
+          $body = array('body' => $mailMsg, 'attachment' => $attachment);
+          $mail = (new NotificationController)->NewMail($name, $email, $body);
+
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
+          }
+          break;
       }
-
-      // $emailer = new SendingEmail(email: $email, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
-      // $emailer->send();
-
-      // if (!empty($altEmail)) {
-      //   $emailer = new SendingEmail(email: $altEmail, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION');
-      //   $emailer->send();
-      // }
     }
 
     if (!empty($contact)) {
