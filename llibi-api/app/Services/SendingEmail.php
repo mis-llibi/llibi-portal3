@@ -113,7 +113,7 @@ class SendingEmail
     }
   }
 
-  private function testSendMail()
+  private function testSendMail($sender)
   {
     try {
       $post_data = [
@@ -125,7 +125,7 @@ class SendingEmail
           ],
           [
             'name' => 'from',
-            'contents' => env('INFOBIP_SENDER_NOTIFY'),
+            'contents' => $sender,
           ],
           [
             'name' => 'to',
@@ -250,16 +250,14 @@ class SendingEmail
     }
   }
 
-
-
   public function send()
   {
     return $this->defaultSendMail();
   }
 
-  public function testSend()
+  public function testSend($sender)
   {
-    return $this->testSendMail();
+    return $this->testSendMail($sender);
   }
 
   public function sendMailerSendProvider(string $body, array $email, string $subject, array $cc, array $bcc, array $attachments)

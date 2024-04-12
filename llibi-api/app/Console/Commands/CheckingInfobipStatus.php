@@ -30,10 +30,13 @@ class CheckingInfobipStatus extends Command
   public function handle()
   {
     $mailer = new SendingEmail('glenilagan@llibi.com', view('send-infobip'), 'INFOBIP WORKING');
-    $mailer->testSend();
+    $mailer->send();
 
     $mailer = new SendingEmail('glenilagan@llibi.com', '<h1>Hello world</h1>', 'HELLO WORLD');
-    $mailer->testSend();
+    $mailer->testSend(env('INFOBIP_SENDER_NOTIFY'));
+
+    $mailer = new SendingEmail('glenilagan@llibi.com', '<h1>Hello world</h1>', 'HELLO WORLD');
+    $mailer->testSend(env('INFOBIP_SENDER_NOTIFY1'));
 
     // $message = [
     //   'body' => view('send-infobip')->render(),
