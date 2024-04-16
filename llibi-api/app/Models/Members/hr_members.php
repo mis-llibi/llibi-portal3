@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class hr_members extends Model
 {
@@ -57,7 +58,7 @@ class hr_members extends Model
 
   // protected $guarded = [];
 
-  protected $appends = ['status_name'];
+  protected $appends = ['status_name', 'full_name'];
 
   /* 
     * #####################
@@ -69,6 +70,7 @@ class hr_members extends Model
     * 5 pending correction
     * 8 pending change plan
 
+    * all this status is considered as active
     * 4 approved/active members
     * 6 approved correction
     * 7 approved deletion
@@ -80,6 +82,13 @@ class hr_members extends Model
     return Attribute::make(
       get: fn (string $value) => $value ?? '',
       set: fn (string $value) => $value ?? ''
+    );
+  }
+
+  protected function fullName(): Attribute
+  {
+    return Attribute::make(
+      get: fn () => $this->last_name . ', ' . $this->first_name . ' ' . $this->middle_name,
     );
   }
 
@@ -144,6 +153,17 @@ class hr_members extends Model
     $query->where('status', 9);
   }
 
+  public function scopeActiveMembers(Builder $query): void
+  {
+    /**
+     * 4 approved/active members
+     * 6 approved correction
+     * 7 approved deletion
+     * 9 approvd change plan
+     */
+    $query->whereIn('status', [4, 6, 7, 9]);
+  }
+
   public function scopePendingApproval(Builder $query): void
   {
     /**
@@ -160,8 +180,13 @@ class hr_members extends Model
     $query->where('relationship_id', 'PRINCIPAL');
   }
 
-  public function changePlanPending()
+  public function changePlanPending(): HasOne
   {
     return $this->hasOne(HrMemberChangePlanCorrection::class, 'member_link_id', 'id')->orderByDesc('id');
+  }
+
+  public function contact(): HasOne
+  {
+    return $this->hasOne(hr_contact::class, 'link_id', 'id');
   }
 }

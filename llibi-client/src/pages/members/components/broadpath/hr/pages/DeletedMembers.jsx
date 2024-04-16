@@ -128,13 +128,13 @@ export default function DeletedMembers({ create, ...props }) {
     <>
       {/* PENDING ENROLLMENT BOX */}
       <div className="mb-3 font-[poppins]">
-        <div className="flex justify-end gap-1">
-          <div className="grow">
+        <div className="flex gap-1">
+          <div className="w-56">
             <Label htmlFor="search">Seach</Label>
             <input
               type="text"
               id="search"
-              className="w-full rounded-md"
+              className="w-full rounded-md text-xs border border-gray-200"
               placeholder="Seach (ex. first name, last name)"
             />
           </div>
@@ -155,6 +155,9 @@ export default function DeletedMembers({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
+        // disableColumnFilter 
+        // disableColumnSelector
+        disableColumnMenu
         // checkboxSelection
         // selectionModel={selectionModel}
         // onSelectionModelChange={setSelectionModel}

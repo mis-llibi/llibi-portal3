@@ -29,6 +29,7 @@ const INITIAL_ENROLLMENT_RELATION = {
 }
 
 import Swal from 'sweetalert2'
+import ForInactiveDependents from '@/pages/members/components/broadpath/milestone/ForInactiveDependents'
 
 export default function DependentEnrollment({
   loading,
@@ -50,6 +51,12 @@ export default function DependentEnrollment({
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
   const [selectedPrincipal, setSelectedPrincipal] = useState(null)
   const [isNewBorn, setIsNewBorn] = useState(false)
+  const birthDateCountDays = useMemo(() => {
+    const todayDate = moment()
+    const birthDate = moment(watchFields.birthdate)
+
+    return todayDate.diff(birthDate, 'day')
+  }, [watchFields?.birthdate])
   const [isNewWedding, setIsNewWedding] = useState(false)
   const [isMileStone, setIsMileStone] = useState(0)
 
@@ -67,9 +74,27 @@ export default function DependentEnrollment({
           FORMDATA.append('attachment[]', data[key][index])
         }
       } else {
-        FORMDATA.append(key, data[key])
+        if (
+          ![
+            'principalMemberId',
+            'principalName',
+            'principalCivilStatus',
+          ].includes(key)
+        ) {
+          FORMDATA.append(key, data[key])
+        }
       }
     }
+
+    FORMDATA.append(
+      `principalInfo`,
+      JSON.stringify({
+        principalMemberId: data.principalMemberId,
+        principalName: data.principalName,
+        principalCivilStatus: data.principalCivilStatus,
+        principalBirthDate: data.principalBirthDate,
+      }),
+    )
 
     // if no relation key in data object
     if (enrollmentRelation === 'PRINCIPAL') {
@@ -77,19 +102,61 @@ export default function DependentEnrollment({
       FORMDATA.append('relation', 'PRINCIPAL')
     }
 
-    if (isNewWedding) {
-      FORMDATA.append('isNewWedding', 1)
+    FORMDATA.append('isMileStone', isMileStone >= 30 ? true : false)
+
+    if (watchFields.relation === 'SPOUSE' && isMileStone >= 30) {
+      showForInactiveDependents({
+        data,
+        reset,
+        isMileStone: isMileStone,
+        relation: watchFields.relation,
+      })
+    } else {
+      await insertNewEnrollee({
+        data: FORMDATA,
+        reset,
+        isMileStone: isMileStone,
+        relation: watchFields.relation,
+      })
     }
 
-    // console.log([...FORMDATA])
-    await insertNewEnrollee({
-      data: FORMDATA,
-      reset,
-      isMileStone: isMileStone,
-      relation: watchFields.relation,
+    reset({
+      member_id: '',
+      principalMemberId: '',
+      principalBirthDate: null,
+      principalName: '',
+      principalCivilStatus: '',
+      hiredate: null,
+      regularization_date: null,
+      principalEmail: '',
     })
-        
+
     mutate()
+  }
+
+  const showForInactiveDependents = ({
+    data,
+    reset,
+    isMileStone,
+    relation,
+  }) => {
+    setBody({
+      title: 'Are you sure do you want to proceed?',
+      content: (
+        <ForInactiveDependents
+          show={show}
+          setShow={modalSetShow}
+          data={data}
+          reset={reset}
+          isMileStone={isMileStone}
+          relation={relation}
+        />
+      ),
+      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+      modalContainer: 'h-full rounded-md',
+      modalBody: 'h-full',
+    })
+    toggle()
   }
 
   const showPrincipal = row => {
@@ -110,36 +177,30 @@ export default function DependentEnrollment({
   }
 
   const relationOptions = () => {
-    if (isNewBorn) {
-      return [
-        { label: 'Select Relation', value: '' },
-        { label: 'Child', value: 'CHILD' },
-      ]
-    }
+    const defaultOption = { label: 'Select Relation', value: '' }
 
-    if (isNewWedding) {
+    if (isMileStone >= 30 && watchFields?.principalCivilStatus === 'SINGLE') {
       return [
-        { label: 'Select Relation', value: '' },
+        { ...defaultOption },
+        { label: 'Child', value: 'CHILD' },
         { label: 'Spouse', value: 'SPOUSE' },
       ]
     }
+
     return broadpathRelationValidation(selectedPrincipal?.civil_status)
   }
 
   const civilOptions = () => {
-    if (isNewBorn) {
-      return [
-        { label: 'Select Relation', value: '' },
-        { label: 'Single', value: 'SINGLE' },
-      ]
+    const defaultOption = { label: 'Select Relation', value: '' }
+
+    if (isMileStone >= 30 && watchFields?.relation === 'CHILD') {
+      return [{ ...defaultOption }, { label: 'Single', value: 'SINGLE' }]
     }
 
-    if (isNewWedding) {
-      return [
-        { label: 'Select Relation', value: '' },
-        { label: 'Married', value: 'MARRIED' },
-      ]
+    if (isMileStone >= 30 && watchFields?.relation === 'SPOUSE') {
+      return [{ ...defaultOption }, { label: 'Married', value: 'MARRIED' }]
     }
+
     return broadpathCivilStatusValidation(
       selectedPrincipal?.civil_status,
       watch('relation'),
@@ -173,15 +234,9 @@ export default function DependentEnrollment({
       'days',
     )
 
-    // console.log(
-    //   daysDifferenceBirthDate('days'),
-    //   daysDifferenceBirthDate('years'),
-    //   daysDifferenceRegularizationDate,
-    // )
-
     setIsNewBorn(
       daysDifferenceBirthDate('days') >= 15 &&
-        daysDifferenceBirthDate('year') <= 18 &&
+        daysDifferenceBirthDate('days') <= 30 &&
         daysDifferenceRegularizationDate >= 30,
     )
     setIsNewWedding(
@@ -196,71 +251,143 @@ export default function DependentEnrollment({
     reset({
       member_id: selectedPrincipal?.member_id ?? '',
       principalMemberId: selectedPrincipal?.member_id ?? '',
+      principalBirthDate: selectedPrincipal?.birth_date,
       principalName:
         selectedPrincipal?.last_name && selectedPrincipal?.first_name
           ? `${selectedPrincipal?.last_name}, ${selectedPrincipal?.first_name}`
           : '',
       principalCivilStatus: selectedPrincipal?.civil_status ?? '',
-      hiredate: moment(selectedPrincipal?.date_hired).format('Y-MM-DD'),
-      regularization_date: moment(selectedPrincipal?.reg_date).format(
-        'Y-MM-DD',
-      ),
+      hiredate: selectedPrincipal?.date_hired,
+      regularization_date: selectedPrincipal?.reg_date,
+      principalEmail: selectedPrincipal?.contact?.email ?? '',
     })
-  }, [selectedPrincipal])
+  }, [selectedPrincipal?.member_id])
 
   const PrincipalDetails = () => {
     return (
-      <div className="bg-gray-100 p-3 rounded-md">
+      <div className="bg-gray-100 p-3 rounded-md mb-5">
         <h1 className="text-xl text-blue-900 font-extrabold mb-3">
           Principal Details:
         </h1>
-        <div className="grid grid-cols-2 gap-3 mb-3 ">
-          <div className="mb-3">
-            <Label htmlFor="principalMemberId">Member Number</Label>
-            <Input
-              id="principalMemberId"
-              className="block mt-1 w-full"
-              register={register('principalMemberId')}
-              disabled
-            />
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          {/* COL1 */}
+          <div>
+            <div>
+              <Label htmlFor="principalMemberId">
+                Member Number:{' '}
+                <span className="font-thin">
+                  {watchFields.principalMemberId}
+                </span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="principalMemberId"
+                  className="block mt-1 w-full"
+                  register={register('principalMemberId')}
+                  disabled
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="principalName">
+                Name:{' '}
+                <span className="font-thin">{watchFields.principalName}</span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="principalName"
+                  className="block mt-1 w-full"
+                  register={register('principalName')}
+                  disabled
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="principalEmail">
+                Email:{' '}
+                <span className="font-thin">{watchFields.principalEmail}</span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="principalEmail"
+                  className="block mt-1 w-full"
+                  register={register('principalEmail')}
+                  disabled
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="principalBirthDate">
+                Birth Date:{' '}
+                <span className="font-thin">
+                  {watchFields.principalBirthDate &&
+                    moment(watchFields.principalBirthDate).format('MMM DD, Y')}
+                </span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="principalBirthDate"
+                  className="block mt-1 w-full"
+                  register={register('principalBirthDate')}
+                  disabled
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="principalCivilStatus">
+                Civil Status:{' '}
+                <span className="font-thin">
+                  {watchFields.principalCivilStatus}
+                </span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="principalCivilStatus"
+                  className="block mt-1 w-full"
+                  register={register('principalCivilStatus')}
+                  disabled
+                />
+              </div>
+            </div>
           </div>
-          <div className="mb-3">
-            <Label htmlFor="principalCivilStatus">Civil Status</Label>
-            <Input
-              id="principalCivilStatus"
-              className="block mt-1 w-full"
-              register={register('principalCivilStatus')}
-              disabled
-            />
-          </div>
-          <div className="mb-3">
-            <Label htmlFor="principalName">Name</Label>
-            <Input
-              id="principalName"
-              className="block mt-1 w-full"
-              register={register('principalName')}
-              disabled
-            />
-          </div>
-          <div className="mb-3">
-            <Label htmlFor="hiredate">Hire Date</Label>
-            <Input
-              id="hiredate"
-              type="date"
-              className="block mt-1 w-full"
-              register={register('hiredate')}
-              disabled
-            />
-          </div>
-          <div className="mb-3">
-            <Label htmlFor="regularization_date">Regularization Date</Label>
-            <Input
-              id="regularization_date"
-              type="date"
-              className="block mt-1 w-full"
-              register={register('regularization_date')}
-              disabled
-            />
+          {/* COL2 */}
+          <div>
+            <div>
+              <Label htmlFor="hiredate">
+                Hired Date:{' '}
+                <span className="font-thin">
+                  {watchFields.hiredate &&
+                    moment(watchFields.hiredate).format('MMM DD, Y')}
+                </span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="hiredate"
+                  type="date"
+                  className="block mt-1 w-full"
+                  register={register('hiredate')}
+                  disabled
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="regularization_date">
+                Regularization Date:{' '}
+                <span className="font-thin">
+                  {watchFields.regularization_date &&
+                    moment(watchFields.regularization_date).format('MMM DD, Y')}
+                </span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="regularization_date"
+                  type="date"
+                  className="block mt-1 w-full"
+                  register={register('regularization_date')}
+                  disabled
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -275,11 +402,11 @@ export default function DependentEnrollment({
         <h1 className="text-xl text-blue-900 font-extrabold mb-3">
           Dependent Details:
         </h1>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-5">
           {/* COLUMN 1 */}
           <div>
             <div className="mb-3">
-              <Label htmlFor="member_id">Employee Number</Label>
+              <Label htmlFor="member_id">Member Number</Label>
               <Input
                 id="member_id"
                 className="block mt-1 w-full"
@@ -327,7 +454,10 @@ export default function DependentEnrollment({
               />
             </div>
             <div className="mb-3">
-              <Label htmlFor="birthdate">Birth Date</Label>
+              <Label htmlFor="birthdate">
+                Birth Date {birthDateCountDays} |{' '}
+                {Math.ceil(birthDateCountDays / 365)}
+              </Label>
               <Input
                 id="birthdate"
                 type="date"
@@ -420,8 +550,18 @@ export default function DependentEnrollment({
 
             {(isNewBorn && watchFields.relation === 'CHILD') ||
             (isNewWedding && watchFields.relation === 'SPOUSE') ? (
-              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-36 text-center uppercase">
+              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
                 {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
+              </p>
+            ) : (
+              ''
+            )}
+
+            {isMileStone &&
+            birthDateCountDays > 30 &&
+            watchFields.relation === 'CHILD' ? (
+              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
+                Milestone enrollment is only for newborns and newly married.
               </p>
             ) : (
               ''

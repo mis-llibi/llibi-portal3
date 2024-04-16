@@ -4,12 +4,12 @@ export default function broadpathRelationValidation(principalCivilStatus) {
       return [
         { label: 'Select Relation', value: '' },
         { label: 'Parent', value: 'PARENT' },
-        { label: 'Child', value: 'CHILD' },
+        // { label: 'Child', value: 'CHILD' },
         { label: 'Sibling', value: 'SIBLING' },
-        {
-          label: 'Domestic Partner / Same Gender Partner',
-          value: 'DOMESTIC PARTNER',
-        },
+        // {
+        //   label: 'Domestic Partner / Same Gender Partner',
+        //   value: 'DOMESTIC PARTNER',
+        // },
       ]
       break
     case 'SINGLE WITH DOMESTIC PARTNER':
@@ -26,6 +26,7 @@ export default function broadpathRelationValidation(principalCivilStatus) {
       return [
         { label: 'Select Relation', value: '' },
         { label: 'Child', value: 'CHILD' },
+        { label: 'Parent', value: 'PARENT' },
       ]
       break
     case 'MARRIED':

@@ -105,6 +105,7 @@ class AuthenticatedSessionController extends Controller
       // array("val0" => "UCLARAY, JESSA MAE", "val1" => "jessa.uclaray@gmail.com", "val2" => "jessa.uclaray@gmail.com"),
       // array("val0" => "COSME, JANE", "val1" => "cosmejaneeisen@gmail.com", "val2" => "cosmejaneeisen@gmail.com"),
       // array("val0" => "PALUMAR, JOHN PAUL", "val1" => "jmarkpalumar29@gmail.com", "val2" => "jmarkpalumar29@gmail.com"),
+      // array("val0" => "DULCE, DEN LOUISE", "val1" => "dendulce@llibi.com", "val2" => "dendulce@llibi.com"),
     );
 
     // user level 2

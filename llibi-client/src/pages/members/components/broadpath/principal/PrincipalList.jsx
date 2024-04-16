@@ -25,12 +25,12 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
 
   return (
     <>
-      <div className="h-[70vh] overflow-y-auto font-[poppins]">
+      <div className="max-h-[70vh] overflow-y-auto font-[poppins]">
         <label htmlFor="search" className="text-xs">
           Search
         </label>
         <div className="flex gap-1">
-          <div className="flex-1">
+          <div className="w-60">
             <input
               id="search"
               type="text"
@@ -49,16 +49,19 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
             </button>
           </div>
         </div>
-        <table className="w-full">
+        <table className="w-screen">
           <thead className="text-xs bg-blue-700 text-white">
             <tr className="uppercase">
-              <th className="p-3 w-32">Principal</th>
+              <th className="p-3">Principal</th>
               {/* <th className="p-3 flex-grow">Name</th> */}
               {/* <th className="p-3 ">Relation</th> */}
-              <th className="p-3 w-32">Birth Date</th>
-              <th className="p-3 ">Gender</th>
-              <th className="p-3 ">Civil Status</th>
-              <th className="p-3 ">Action</th>
+              <th className="p-3">Email</th>
+              <th className="p-3">Birth Date</th>
+              <th className="p-3">Gender</th>
+              <th className="p-3">Civil Status</th>
+              <th className="p-3">Hired Date</th>
+              <th className="p-3">Regularization Date</th>
+              {/* <th className="p-3">Action</th> */}
             </tr>
           </thead>
           <tbody className="text-xs">

@@ -217,10 +217,19 @@ export default function PendingForApproval({ create, ...props }) {
     <>
       {/* PENDING ENROLLMENT BOX */}
       <div className="mb-3 font-[poppins]">
-        <div className="flex justify-end">
+        <div className="flex justify-between items-center">
+          <div className="w-56">
+            <Label htmlFor="search">Seach</Label>
+            <input
+              type="text"
+              id="search"
+              className="w-full rounded-md text-xs border border-gray-200"
+              placeholder="Seach (ex. first name, last name)"
+            />
+          </div>
           <Button
             onClick={insertEnrollee}
-            className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
+            className="bg-blue-400 hover:bg-blue-700 h-8 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
             disabled={props?.loading}>
             <BiPlus size={16} />
             <span>New Transaction</span>
@@ -232,15 +241,6 @@ export default function PendingForApproval({ create, ...props }) {
             <BiUpload size={16} />
             <span>Submit for Enrollment</span>
           </Button> */}
-        </div>
-        <div className="w-full">
-          <Label htmlFor="search">Seach</Label>
-          <input
-            type="text"
-            id="search"
-            className="w-full rounded-md"
-            placeholder="Seach (ex. first name, last name)"
-          />
         </div>
       </div>
 
@@ -258,6 +258,9 @@ export default function PendingForApproval({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
+        // disableColumnFilter 
+        // disableColumnSelector
+        disableColumnMenu
         // checkboxSelection
         // selectionModel={selectionModel}
         // onSelectionModelChange={setSelectionModel}

@@ -6,6 +6,7 @@ use App\Exports\Members\LateEnrolledExport;
 use App\Exports\Members\PendingForSubmissionExport;
 use App\Exports\Members\PhilcareMemberExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Member\NewEnrollmentRequest;
 use Illuminate\Http\Request;
 
 use App\Imports\Members\MasterlistImport;
@@ -482,34 +483,35 @@ class ManageEnrolleeController extends Controller
     // return Storage::disk('public')->exists('uploaded-enrollee/1Fw94t8Wg1EvkzOo2rBKiulwf5OEs6VwPvdoH0Fb.txt');
   }
 
-  public function newEnrollment(Request $request)
+  public function newEnrollment(NewEnrollmentRequest $request)
   {
     $member_id = $request->member_id;
     $birth_date = Carbon::parse($request->birthdate)->format('Y-m-d');
-
+    $principalInfo = json_decode($request->principalInfo);
 
     if ($request->relation == 'PRINCIPAL') {
       $checkIfExistPrincipal = hr_members::query()->where(['member_id' => $member_id])->principal()->first();
       abort_if($checkIfExistPrincipal, 400, 'Principal already enrolled with the same employee number');
+    } else {
+      $checkIfExistMember = hr_members::query()->where('last_name', 'LIKE', '%' . $request->lastname . '%')->where('birth_date', $birth_date)->first();
+      $checkingRelation = hr_members::query()->where('member_id', $member_id)->where('relationship_id', $request->relation)->count();
+
+      abort_if($checkIfExistMember, 400, 'Dependent already enrolled');
+
+      switch ($request->relation) {
+        case 'SPOUSE':
+        case 'DOMESTIC PARTNER':
+          abort_if($checkingRelation >= 1, 400, 'Only 1 Spouse/Partner can be enrolled.');
+          break;
+        case 'PARENT':
+          abort_if($checkingRelation >= 2, 400, 'Only 1 Parent can be enrolled.');
+          break;
+      }
     }
 
-    $checkIfExistMember = hr_members::query()->where('last_name', 'LIKE', '%' . $request->lastname . '%')->where('birth_date', $birth_date)->first();
-    $checkingRelation = hr_members::query()->where('member_id', $member_id)->where('relationship_id', $request->relation)->count();
-
-    abort_if($checkIfExistMember, 400, 'Dependent already enrolled');
-
-    switch ($request->relation) {
-      case 'SPOUSE':
-      case 'DOMESTIC PARTNER':
-        abort_if($checkingRelation >= 1, 400, 'Only 1 Spouse/Partner can be enrolled.');
-        break;
-      case 'PARENT':
-        abort_if($checkingRelation >= 2, 400, 'Only 1 Parent can be enrolled.');
-        break;
-    }
 
 
-    DB::transaction(function () use ($request, $member_id, $birth_date) {
+    DB::transaction(function () use ($request, $member_id, $birth_date, $principalInfo) {
       $enrollee = hr_members::create(
         [
           'client_company' => 'BROADPATH',
@@ -547,7 +549,7 @@ class ManageEnrolleeController extends Controller
 
       $attachment = $request->has('attachment') ? $request->file('attachment') : [];
       foreach ($attachment as $key => $attch) {
-        $path = $attch->store('members/attachments/' . $request->member_id, 'broadpath');
+        $path = $attch->store(env('APP_ENV') . 'members/attachments/' . $request->member_id, 'broadpath');
         $file_name = $attch->getClientOriginalName();
 
         HrMemberAttachment::create([
@@ -557,27 +559,21 @@ class ManageEnrolleeController extends Controller
         ]);
 
         hr_members::where('id', $enrollee->id)->update(['attachments' => ++$key]);
+      }
 
-        if (isset($request->isNewWedding) && $request->isNewWedding == 1) {
-          Log::info('update civil status');
-          // if newly wedded update principal to married
-          hr_members::query()
-            ->where('member_id', $request->member_id)
-            ->principal()
-            ->update([
-              'civil_status' => 'MARRIED'
-            ]);
+      if ($request->isMileStone && $request->relation == 'CHILD' && $principalInfo->principalCivilStatus == 'SINGLE') {
+      }
 
-          Log::info('update status');
-          // and all the dependents update to deleted
-          hr_members::query()
-            ->where('member_id', $request->member_id)
-            ->where('id', '<>', $enrollee->id)
-            ->where('relationship_id', '<>', 'PRINCIPAL')
-            ->update([
-              'status' => 7
-            ]);
-        }
+      if ($request->isMileStone && $request->relation == 'SPOUSE' && $principalInfo->principalCivilStatus == 'SINGLE') {
+        hr_members::query()
+          ->where('member_id', $principalInfo->principalMemberId)
+          ->where('birth_date', $principalInfo->principalBirthDate)
+          ->update(['civil_status' => 'MARRIED']);
+
+        hr_members::query()
+          ->where('member_id', $principalInfo->principalMemberId)
+          ->whereNotIn('birth_date', [$birth_date, $principalInfo->principalBirthDate])
+          ->update(['status' => 7]);
       }
     });
 
@@ -603,7 +599,7 @@ class ManageEnrolleeController extends Controller
 
     HrMemberAttachment::where('link_id', $id)->delete();
     foreach ($attachment as $key => $attch) {
-      $path = $attch->store('members/attachments/' . $request->member_id, 'broadpath');
+      $path = $attch->store(env('APP_ENV') . 'members/attachments/' . $request->member_id, 'broadpath');
       $file_name = $attch->getClientOriginalName();
 
       HrMemberAttachment::create([
@@ -616,37 +612,6 @@ class ManageEnrolleeController extends Controller
     }
 
     return response()->json(['message' => 'Successfully update enrollee', 'enrollee' => $enrollee]);
-  }
-
-  public function fetchPrincipal()
-  {
-    $search = request('q');
-
-    $members = hr_members::query()->principal()->select(
-      'id',
-      'member_id',
-      'relationship_id',
-      'first_name',
-      'last_name',
-      'middle_name',
-      'birth_date',
-      'gender',
-      'civil_status',
-      'date_hired',
-      'reg_date',
-    );
-    if ($search) {
-      $members = $members->where(function ($query) use ($search) {
-        $query->where('first_name', 'LIKE', "%$search%");
-        $query->orWhere('last_name', 'LIKE', "%$search%");
-      });
-    }
-
-    $members = $members->take(100)
-      ->latest()
-      ->get();
-
-    return $members;
   }
 
   public function submitForEnrollment(Request $request)
@@ -668,7 +633,7 @@ class ManageEnrolleeController extends Controller
       hr_members::where('id', $row)->update($members);
     }
 
-    $filename = "members/pending-for-submission/$timestamp.csv";
+    $filename = env('APP_ENV') . "members/pending-for-submission/$timestamp.csv";
     $spacesFilename = env('DO_CDN_ENDPOINT') . '/' . $filename;
     $storingSuccess = Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'broadpath');
 
@@ -713,6 +678,7 @@ class ManageEnrolleeController extends Controller
       // $member->plan = $request->plan;
       $member->status = 8;
       $member->change_plan_at = Carbon::now();
+      $member->change_plan_at = Carbon::now();
       $member->save();
 
       HrMemberChangePlanCorrection::create([
@@ -733,12 +699,13 @@ class ManageEnrolleeController extends Controller
       // $member->deleted_remarks = $request->deleted_remarks;
       $member->status = 3;
       $member->pending_deleted_at = Carbon::parse($request->pending_deleted_at)->format('Y-m-d');
+      $member->change_plan_at = Carbon::now();
       $member->save();
 
       DeletionAttachment::create([
         'link_id' => $member->id,
         'file_name' => $request->file('death_document')->getClientOriginalName(),
-        'file_link' => $request->file('death_document')->store('members/deletion/attachments/' . $member->member_id, 'broadpath'),
+        'file_link' => $request->file('death_document')->store(env('APP_ENV') . 'members/deletion/attachments/' . $member->member_id, 'broadpath'),
       ]);
     });
 

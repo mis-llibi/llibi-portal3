@@ -13,7 +13,7 @@ export default function birthDayChecker(point, relation) {
     message = `${relation.toLowerCase()} must be 18 to 65 yrs old`
   } else if (relation === 'CHILD' || relation === 'SIBLING') {
     if (point === 'max') day = -15 //15 days
-    if (point === 'min') day = -8395 //23 years old
+    if (point === 'min') day = -8400 //23 years old
 
     message = `${relation.toLowerCase()} must be 15 days to 23 yrs old`
   }

@@ -77,6 +77,30 @@ export default function broadpathCivilStatusValidation(
             },
           ]
           break
+        case 'PARENT':
+          return [
+            {
+              value: '',
+              label: 'Select Civil Status',
+            },
+            {
+              value: 'SINGLE',
+              label: 'Single',
+            },
+            {
+              value: 'SINGLE WITH DOMESTIC PARTNER',
+              label: 'Single With Domestic Partner / Same Gender Partner',
+            },
+            {
+              value: 'SINGLE PARENT',
+              label: 'Single Parent / Solo Parent',
+            },
+            {
+              value: 'MARRIED',
+              label: 'Married',
+            },
+          ]
+          break
       }
       break
     case 'MARRIED':

@@ -4,6 +4,8 @@ use App\Http\Controllers\Members\AdminController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Members\ManageEnrolleeController;
+use App\Http\Controllers\Members\PrincipalController;
+use App\Http\Controllers\Members\MilestoneController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
   Route::controller(ManageEnrolleeController::class)
@@ -19,6 +21,19 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
       Route::patch('/change-plan/{id}', 'changePlan');
       Route::post('/delete-members', 'deleteMember');
+    });
+
+  Route::controller(PrincipalController::class)
+    ->prefix('members-enrollment')
+    ->group(function () {
+      Route::get('/principals', 'fetchPrincipal');
+    });
+
+  Route::controller(MilestoneController::class)
+    ->prefix('members-enrollment')
+    ->group(function () {
+      Route::get('/dependents-for-inactive', 'getDependentsForInactive');
+      Route::post('/dependents-for-inactive', 'submitDependentsForInactive');
     });
 });
 
