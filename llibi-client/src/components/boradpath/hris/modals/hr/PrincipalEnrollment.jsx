@@ -30,6 +30,7 @@ export default function PrincipalEnrollment({
   loading,
   setLoader,
   enrollmentRelation,
+  setEnrollmentRelation,
   mutate,
 }) {
   const {
@@ -75,6 +76,7 @@ export default function PrincipalEnrollment({
       reset,
     })
     mutate()
+    setEnrollmentRelation(null)
   }
 
   const showPrincipal = row => {

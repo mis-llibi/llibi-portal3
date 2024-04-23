@@ -4,13 +4,13 @@ import Swal from 'sweetalert2'
 import { basePath, api } from '@/../next.config'
 
 export const useProvider = () => {
-    const csrf = () => axios.get(`${api}/sanctum/csrf-cookie`)
+    const csrf = () => axios.get(`/sanctum/csrf-cookie`)
 
     const searchRequest = async ({ setRequest, setLoading, search }) => {
         await csrf()
 
         axios
-            .get(`${api}/provider-search-request/${search || 0}/0`)
+            .get(`/api/provider-search-request/${search || 0}/0`)
             .then(res => {
                 const result = res.data
                 if (result?.length === 0) {

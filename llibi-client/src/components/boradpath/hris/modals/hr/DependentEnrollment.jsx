@@ -35,6 +35,7 @@ export default function DependentEnrollment({
   loading,
   setLoader,
   enrollmentRelation,
+  setEnrollmentRelation,
   mutate,
 }) {
   const {
@@ -118,18 +119,19 @@ export default function DependentEnrollment({
         isMileStone: isMileStone,
         relation: watchFields.relation,
       })
-    }
 
-    reset({
-      member_id: '',
-      principalMemberId: '',
-      principalBirthDate: null,
-      principalName: '',
-      principalCivilStatus: '',
-      hiredate: null,
-      regularization_date: null,
-      principalEmail: '',
-    })
+      reset({
+        member_id: '',
+        principalMemberId: '',
+        principalBirthDate: null,
+        principalName: '',
+        principalCivilStatus: '',
+        hiredate: null,
+        regularization_date: null,
+        principalEmail: '',
+      })
+      setEnrollmentRelation(null)
+    }
 
     mutate()
   }
@@ -150,6 +152,7 @@ export default function DependentEnrollment({
           reset={reset}
           isMileStone={isMileStone}
           relation={relation}
+          setEnrollmentRelation={setEnrollmentRelation}
         />
       ),
       modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
@@ -179,15 +182,34 @@ export default function DependentEnrollment({
   const relationOptions = () => {
     const defaultOption = { label: 'Select Relation', value: '' }
 
-    if (isMileStone >= 30 && watchFields?.principalCivilStatus === 'SINGLE') {
-      return [
-        { ...defaultOption },
-        { label: 'Child', value: 'CHILD' },
-        { label: 'Spouse', value: 'SPOUSE' },
-      ]
+    if (birthDateCountDays > 0 && isMileStone >= 30) {
+      if (
+        (isMileStone >= 30 &&
+          watchFields?.principalCivilStatus === 'SINGLE' &&
+          birthDateCountDays >= 15 &&
+          birthDateCountDays <= 30) ||
+        Math.ceil(birthDateCountDays / 365) <= 17
+      ) {
+        return [{ ...defaultOption }, { label: 'Child', value: 'CHILD' }]
+      }
+
+      if (
+        isMileStone >= 30 &&
+        watchFields?.principalCivilStatus === 'SINGLE' &&
+        Math.ceil(birthDateCountDays / 365) >= 18 &&
+        Math.ceil(birthDateCountDays / 365) <= 65
+      ) {
+        return [{ ...defaultOption }, { label: 'Spouse', value: 'SPOUSE' }]
+      }
+
+      return broadpathRelationValidation(selectedPrincipal?.civil_status)
     }
 
-    return broadpathRelationValidation(selectedPrincipal?.civil_status)
+    if (birthDateCountDays > 0 && isMileStone < 30) {
+      return broadpathRelationValidation(selectedPrincipal?.civil_status)
+    }
+
+    return [{ ...defaultOption }]
   }
 
   const civilOptions = () => {
@@ -394,6 +416,8 @@ export default function DependentEnrollment({
     )
   }
 
+  console.log(moment().subtract(15, 'd').format('Y-MM-DD'))
+
   return (
     <>
       <Modal show={show} body={body} toggle={toggle} />
@@ -454,10 +478,7 @@ export default function DependentEnrollment({
               />
             </div>
             <div className="mb-3">
-              <Label htmlFor="birthdate">
-                Birth Date {birthDateCountDays} |{' '}
-                {Math.ceil(birthDateCountDays / 365)}
-              </Label>
+              <Label htmlFor="birthdate">Birth Date</Label>
               <Input
                 id="birthdate"
                 type="date"
@@ -542,8 +563,28 @@ export default function DependentEnrollment({
                   className="block mt-1 w-full"
                   register={register('effectivity_date', {
                     required: 'Effectivity Date is required',
+                    min: isMileStone &&
+                      watchFields.relation === 'SPOUSE' && {
+                        message:
+                          'Date of marriage should not more than 30 days.',
+                        value: moment().subtract(30, 'd').format('Y-MM-DD'),
+                      },
+                    max: {
+                      message: 'Future date not allowed',
+                      value: moment().add(0, 'd').format('Y-MM-DD'),
+                    },
                   })}
                   errors={errors?.effectivity_date}
+                  min={
+                    isMileStone &&
+                    watchFields.relation === 'SPOUSE' &&
+                    moment().subtract(30, 'd').format('Y-MM-DD')
+                  }
+                  max={
+                    isMileStone &&
+                    watchFields.relation === 'SPOUSE' &&
+                    moment().add(0, 'd').format('Y-MM-DD')
+                  }
                 />
               </div>
             )}

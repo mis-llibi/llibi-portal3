@@ -81,6 +81,7 @@ const ManualInsertEnrollee = ({
           loading={loading}
           setLoader={setLoader}
           enrollmentRelation={enrollmentRelation}
+          setEnrollmentRelation={setEnrollmentRelation}
           mutate={mutate}
         />
       )}
@@ -89,6 +90,7 @@ const ManualInsertEnrollee = ({
           loading={loading}
           setLoader={setLoader}
           enrollmentRelation={enrollmentRelation}
+          setEnrollmentRelation={setEnrollmentRelation}
           mutate={mutate}
         />
       )}

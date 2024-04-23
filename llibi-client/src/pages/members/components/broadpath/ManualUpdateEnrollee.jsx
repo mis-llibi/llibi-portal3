@@ -40,9 +40,9 @@ const ManualUpdateEnrollee = ({
       setShow,
       data: {
         ...row,
-        id: data.id,
+        id: data?.id,
         relation:
-          data.relationship_id === 'PRINCIPAL' ? 'PRINCIPAL' : row.relation,
+          data?.relationship_id === 'PRINCIPAL' ? 'PRINCIPAL' : row.relation,
       },
       reset,
     })
@@ -54,14 +54,14 @@ const ManualUpdateEnrollee = ({
 
   useEffect(() => {
     reset({
-      oid: data.member_id,
-      firstname: data.first_name,
-      lastname: data.last_name,
-      middlename: data.middle_name ?? '',
-      birthdate: data.birth_date,
-      gender: data.gender,
-      relation: data.relationship_id,
-      civilstatus: data.civil_status,
+      oid: data?.member_id,
+      firstname: data?.first_name,
+      lastname: data?.last_name,
+      middlename: data?.middle_name ?? '',
+      birthdate: data?.birth_date,
+      gender: data?.gender,
+      relation: data?.relationship_id,
+      civilstatus: data?.civil_status,
     })
   }, [])
 
@@ -145,7 +145,7 @@ const ManualUpdateEnrollee = ({
         </div>
         <div
           className={`mb-3 ${
-            data.relationship_id === 'PRINCIPAL' && 'hidden'
+            data?.relationship_id === 'PRINCIPAL' && 'hidden'
           }`}>
           <Label htmlFor="relation">Relation</Label>
           <Select
@@ -164,7 +164,7 @@ const ManualUpdateEnrollee = ({
             ]}
             register={register('relation', {
               required:
-                data.relationship_id !== 'PRINCIPAL' && 'Relation is required',
+                data?.relationship_id !== 'PRINCIPAL' && 'Relation is required',
             })}
             errors={errors?.relation}
           />

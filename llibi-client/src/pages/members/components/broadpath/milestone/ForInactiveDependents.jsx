@@ -12,6 +12,7 @@ export default function ForInactiveDependents({
   reset,
   isMileStone,
   relation,
+  setEnrollmentRelation,
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [lists, setLists] = useState(null)
@@ -60,6 +61,18 @@ export default function ForInactiveDependents({
 
       setShow(false)
       setIsSubmitting(false)
+
+      reset({
+        member_id: '',
+        principalMemberId: '',
+        principalBirthDate: null,
+        principalName: '',
+        principalCivilStatus: '',
+        hiredate: null,
+        regularization_date: null,
+        principalEmail: '',
+      })
+      setEnrollmentRelation(null)
     } catch (error) {
       setIsSubmitting(false)
       throw error
@@ -95,7 +108,7 @@ export default function ForInactiveDependents({
     <>
       <div className="max-h-[70vh] overflow-y-auto font-[poppins] mb-3 border-b">
         <h6 className="text-gray-600 text-sm mb-3">
-          All of this dependents will be affected when you proceed.
+          All of this dependents will be deleted if you proceed.
         </h6>
         <table className="w-full mb-3">
           <thead className="text-xs bg-blue-700 text-white">
@@ -110,7 +123,9 @@ export default function ForInactiveDependents({
           <tbody className="text-xs">
             {lists?.length <= 0 && (
               <tr>
-                <td className='text-center py-3' colSpan={5}>No Records</td>
+                <td className="text-center py-3" colSpan={5}>
+                  No Records
+                </td>
               </tr>
             )}
 

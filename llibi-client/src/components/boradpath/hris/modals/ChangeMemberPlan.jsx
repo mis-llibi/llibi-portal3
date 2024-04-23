@@ -49,8 +49,19 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
             {...register('plan')}
             defaultValue={row.plan}>
             <option value="">Select Plan</option>
-            <option value="RANK AND FILE">Rank and file</option>
-            <option value="SUPERVISOR">Supervisor</option>
+            {row.plan === 'SUPERVISOR' && (
+              <option value="RANK AND FILE">Rank and file</option>
+            )}
+            {row.plan === 'RANK AND FILE' && (
+              <option value="SUPERVISOR">Supervisor</option>
+            )}
+
+            {!row.plan && (
+              <>
+                <option value="RANK AND FILE">Rank and file</option>
+                <option value="SUPERVISOR">Supervisor</option>
+              </>
+            )}
           </select>
         </div>
         <div>
