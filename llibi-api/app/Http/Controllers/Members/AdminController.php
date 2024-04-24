@@ -116,4 +116,17 @@ class AdminController extends Controller
 
     return response()->json(['message' => 'Approve change plan success.', 'data' => $member]);
   }
+
+  public function disapproveMember(ApproveMembeDeletionrRequest $request, $id)
+  {
+    $member = hr_members::find($id);
+    $member->status = 10;
+    $member->admin_remarks = $request->remarks;
+    $member->approved_deleted_member_at = Carbon::parse($request->approved_deleted_member_at)->format('Y-m-d H:i');
+    $member->approved_deleted_member_at_original = Carbon::now();
+    $member->approved_by = Auth::id();
+    $member->save();
+
+    return response()->json(['message' => 'Disapprove member success.', 'data' => $member]);
+  }
 }

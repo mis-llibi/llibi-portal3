@@ -11,6 +11,8 @@ import { ActionButtonAdmin } from '@/components/boradpath/hris/ActionButton'
 import ApproveChangeMemberPlan from '@/components/boradpath/hris/modals/admin/ApproveChangeMemberPlan'
 import ApprovePendingMember from '@/components/boradpath/hris/modals/admin/ApprovePendingMember'
 import ApproveDeleteMember from '@/components/boradpath/hris/modals/admin/ApproveDeleteMember'
+import DisapproveMember from '@/components/boradpath/hris/modals/admin/DisapproveMember'
+import PendingDocuments from '@/components/boradpath/hris/modals/admin/PendingDocuments'
 
 export default function PendingForApproval({ create, ...props }) {
   const [selectionModel, setSelectionModel] = useState([])
@@ -89,7 +91,7 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'civil_status',
       headerName: 'Civil Status',
-      width: 150,
+      width: 250,
       renderCell: ({ row }) => {
         return (
           <>
@@ -189,7 +191,7 @@ export default function PendingForApproval({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
-        // disableColumnFilter 
+        // disableColumnFilter
         // disableColumnSelector
         disableColumnMenu
         // checkboxSelection
@@ -230,6 +232,25 @@ export default function PendingForApproval({ create, ...props }) {
           mutate={mutate}
         />
       )}
+
+      {showModal === 'disapprove-member' && (
+        <DisapproveMember
+          showModal={Boolean(showModal)}
+          setShowModal={setShowModal}
+          row={selectedRow}
+          mutate={mutate}
+        />
+      )}
+
+      {showModal === 'pending-documents' && (
+        <PendingDocuments
+          showModal={Boolean(showModal)}
+          setShowModal={setShowModal}
+          row={selectedRow}
+          mutate={mutate}
+        />
+      )}
+
       <Loader loading={loader} />
     </>
   )

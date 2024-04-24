@@ -29,7 +29,8 @@ const INITIAL_ENROLLMENT_RELATION = {
 }
 
 import Swal from 'sweetalert2'
-import ForInactiveDependents from '@/pages/members/components/broadpath/milestone/ForInactiveDependents'
+import SingleToMarried from '@/pages/members/components/broadpath/milestone/SingleToMarried'
+import SingleToSoloParent from '@/pages/members/components/broadpath/milestone/SingleToSoloParent'
 
 export default function DependentEnrollment({
   loading,
@@ -105,13 +106,30 @@ export default function DependentEnrollment({
 
     FORMDATA.append('isMileStone', isMileStone >= 30 ? true : false)
 
-    if (watchFields.relation === 'SPOUSE' && isMileStone >= 30) {
-      showForInactiveDependents({
+    if (
+      watchFields.relation === 'SPOUSE' &&
+      watchFields.principalCivilStatus === 'SINGLE' &&
+      isMileStone >= 30
+    ) {
+      showSingleToMarried({
         data,
         reset,
         isMileStone: isMileStone,
         relation: watchFields.relation,
       })
+      return
+    } else if (
+      watchFields.relation === 'CHILD' &&
+      watchFields.principalCivilStatus === 'SINGLE' &&
+      isMileStone >= 30
+    ) {
+      showSingleToSoloParent({
+        data,
+        reset,
+        isMileStone: isMileStone,
+        relation: watchFields.relation,
+      })
+      return
     } else {
       await insertNewEnrollee({
         data: FORMDATA,
@@ -136,16 +154,32 @@ export default function DependentEnrollment({
     mutate()
   }
 
-  const showForInactiveDependents = ({
-    data,
-    reset,
-    isMileStone,
-    relation,
-  }) => {
+  const showSingleToMarried = ({ data, reset, isMileStone, relation }) => {
     setBody({
-      title: 'Are you sure do you want to proceed?',
+      title: 'Are you sure you want to proceed?',
       content: (
-        <ForInactiveDependents
+        <SingleToMarried
+          show={show}
+          setShow={modalSetShow}
+          data={data}
+          reset={reset}
+          isMileStone={isMileStone}
+          relation={relation}
+          setEnrollmentRelation={setEnrollmentRelation}
+        />
+      ),
+      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+      modalContainer: 'h-full rounded-md',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
+  const showSingleToSoloParent = ({ data, reset, isMileStone, relation }) => {
+    setBody({
+      title: 'Are you sure you want to proceed?',
+      content: (
+        <SingleToSoloParent
           show={show}
           setShow={modalSetShow}
           data={data}
@@ -296,7 +330,7 @@ export default function DependentEnrollment({
           <div>
             <div>
               <Label htmlFor="principalMemberId">
-                Member Number:{' '}
+                Employee Number:{' '}
                 <span className="font-thin">
                   {watchFields.principalMemberId}
                 </span>
@@ -416,8 +450,6 @@ export default function DependentEnrollment({
     )
   }
 
-  console.log(moment().subtract(15, 'd').format('Y-MM-DD'))
-
   return (
     <>
       <Modal show={show} body={body} toggle={toggle} />
@@ -430,7 +462,7 @@ export default function DependentEnrollment({
           {/* COLUMN 1 */}
           <div>
             <div className="mb-3">
-              <Label htmlFor="member_id">Member Number</Label>
+              <Label htmlFor="member_id">Employee Number</Label>
               <Input
                 id="member_id"
                 className="block mt-1 w-full"
@@ -571,7 +603,7 @@ export default function DependentEnrollment({
                       },
                     max: {
                       message: 'Future date not allowed',
-                      value: moment().add(0, 'd').format('Y-MM-DD'),
+                      value: moment().format('Y-MM-DD'),
                     },
                   })}
                   errors={errors?.effectivity_date}
@@ -583,7 +615,7 @@ export default function DependentEnrollment({
                   max={
                     isMileStone &&
                     watchFields.relation === 'SPOUSE' &&
-                    moment().add(0, 'd').format('Y-MM-DD')
+                    moment().format('Y-MM-DD')
                   }
                 />
               </div>
@@ -601,8 +633,9 @@ export default function DependentEnrollment({
             {isMileStone &&
             birthDateCountDays > 30 &&
             watchFields.relation === 'CHILD' ? (
-              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
-                Milestone enrollment is only for newborns and newly married.
+              <p className="font-bold text-sm mt-3 bg-red-50 text-red-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
+                Milestone enrollment is applicable to newly born and newly
+                married only.
               </p>
             ) : (
               ''
@@ -611,8 +644,8 @@ export default function DependentEnrollment({
             <div className="mb-3">
               <Label htmlFor="attachment">
                 Document Requirement(s){' '}
-                <sup className="font-thin text-red-600">
-                  please select civil status
+                <sup className="font-thin text-green-600">
+                  please select relation and civil status
                 </sup>
                 :
               </Label>
@@ -628,13 +661,21 @@ export default function DependentEnrollment({
                 accept="image/*, application/pdf"
                 multiple
                 errors={errors?.attachment}
+                register={register('attachment', {
+                  required: isMileStone > 30 && 'Document is required.',
+                })}
               />
             </div>
           </div>
         </div>
 
         <Button
-          disabled={isSubmitting}
+          disabled={
+            isSubmitting ||
+            (isMileStone &&
+              birthDateCountDays > 30 &&
+              watchFields.relation === 'CHILD')
+          }
           className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2 flex gap-1"
           loading={isSubmitting}>
           <BiSave size={16} />

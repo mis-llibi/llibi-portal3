@@ -74,7 +74,8 @@ class hr_members extends Model
     * 4 approved/active members
     * 6 approved correction
     * 7 approved deletion
-    * 9 approvd change plan
+    * 9 approved change plan
+    * 10 disapproved member
   */
 
   protected function middleName(): Attribute
@@ -97,10 +98,18 @@ class hr_members extends Model
     return Attribute::make(
       get: function () {
         return match ($this->status) {
+          // pending
           1 => 'Pending Member',
           3 => 'Pending Deletion',
           5 => 'Pending Correction',
           8 => 'Pending Change Plan',
+
+          // approve or active
+          4 => 'Approved Member',
+          6 => 'Approved Correction',
+          7 => 'Approved Deletion',
+          9 => 'Approved Change Plan',
+          10 => 'Disapproved Member',
           default => '',
         };
       },
@@ -159,9 +168,10 @@ class hr_members extends Model
      * 4 approved/active members
      * 6 approved correction
      * 7 approved deletion
-     * 9 approvd change plan
+     * 9 approved change plan
+     * 10 disapproved member
      */
-    $query->whereIn('status', [4, 6, 7, 9]);
+    $query->whereIn('status', [4, 6, 7, 9, 10]);
   }
 
   public function scopePendingApproval(Builder $query): void
@@ -180,6 +190,13 @@ class hr_members extends Model
     $query->where('relationship_id', 'PRINCIPAL');
   }
 
+  public function scopeDisapprovedMember(Builder $query): void
+  {
+    $query->where('status', 10);
+  }
+
+
+  // ELOQUENT RELATIONSHIP
   public function changePlanPending(): HasOne
   {
     return $this->hasOne(HrMemberChangePlanCorrection::class, 'member_link_id', 'id')->orderByDesc('id');

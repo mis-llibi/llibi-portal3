@@ -48,7 +48,8 @@ class ManageEnrolleeController extends Controller
     /**
      * 4 approved/active members
      * 6 approved correction
-     * 9 approvd change plan
+     * 9 approved change plan
+     * 10 disapproved member
      */
 
     $status = request()->query('status');
@@ -63,6 +64,7 @@ class ManageEnrolleeController extends Controller
       '7' => $members->deletedMember(),
       '8' => $members->pendingChangePlan(),
       '9' => $members->approvedChangePlan(),
+      '10' => $members->disapprovedMember(),
       '3,5,8' => $members->whereIn('status', [3, 5, 8]),
       '1,3,5,8' => $members->whereIn('status', explode(",", $status)),
       default => throw new Exception("Status not supported", 400),
@@ -549,7 +551,7 @@ class ManageEnrolleeController extends Controller
 
       $attachment = $request->has('attachment') ? $request->file('attachment') : [];
       foreach ($attachment as $key => $attch) {
-        $path = $attch->store(env('APP_ENV') . 'members/attachments/' . $request->member_id, 'broadpath');
+        $path = $attch->store(env('APP_ENV') . '/members/attachments/' . $request->member_id, 'broadpath');
         $file_name = $attch->getClientOriginalName();
 
         HrMemberAttachment::create([
@@ -561,9 +563,24 @@ class ManageEnrolleeController extends Controller
         hr_members::where('id', $enrollee->id)->update(['attachments' => ++$key]);
       }
 
+      /**
+       * CHANGE TO SOLO PARENT
+       */
       if ($request->isMileStone && $request->relation == 'CHILD' && $principalInfo->principalCivilStatus == 'SINGLE') {
+        hr_members::query()
+          ->where('member_id', $principalInfo->principalMemberId)
+          ->where('birth_date', $principalInfo->principalBirthDate)
+          ->update(['civil_status' => 'SOLO PARENT']);
+
+        hr_members::query()
+          ->where('member_id', $principalInfo->principalMemberId)
+          ->whereIn('relationship_id', ['SIBLING'])
+          ->update(['status' => 7]);
       }
 
+      /** 
+       * CHANGE TO MARRIED
+       */
       if ($request->isMileStone && $request->relation == 'SPOUSE' && $principalInfo->principalCivilStatus == 'SINGLE') {
         hr_members::query()
           ->where('member_id', $principalInfo->principalMemberId)
@@ -572,7 +589,7 @@ class ManageEnrolleeController extends Controller
 
         hr_members::query()
           ->where('member_id', $principalInfo->principalMemberId)
-          ->whereNotIn('birth_date', [$birth_date, $principalInfo->principalBirthDate])
+          ->whereIn('relationship_id', ['PARENT', 'SIBLING'])
           ->update(['status' => 7]);
       }
     });
@@ -599,7 +616,7 @@ class ManageEnrolleeController extends Controller
 
     HrMemberAttachment::where('link_id', $id)->delete();
     foreach ($attachment as $key => $attch) {
-      $path = $attch->store(env('APP_ENV') . 'members/attachments/' . $request->member_id, 'broadpath');
+      $path = $attch->store(env('APP_ENV') . '/members/attachments/' . $request->member_id, 'broadpath');
       $file_name = $attch->getClientOriginalName();
 
       HrMemberAttachment::create([
@@ -633,7 +650,7 @@ class ManageEnrolleeController extends Controller
       hr_members::where('id', $row)->update($members);
     }
 
-    $filename = env('APP_ENV') . "members/pending-for-submission/$timestamp.csv";
+    $filename = env('APP_ENV') . "/members/pending-for-submission/$timestamp.csv";
     $spacesFilename = env('DO_CDN_ENDPOINT') . '/' . $filename;
     $storingSuccess = Excel::store(new PendingForSubmissionExport(['id' => $ids]), $filename, 'broadpath');
 
@@ -705,7 +722,7 @@ class ManageEnrolleeController extends Controller
       DeletionAttachment::create([
         'link_id' => $member->id,
         'file_name' => $request->file('death_document')->getClientOriginalName(),
-        'file_link' => $request->file('death_document')->store(env('APP_ENV') . 'members/deletion/attachments/' . $member->member_id, 'broadpath'),
+        'file_link' => $request->file('death_document')->store(env('APP_ENV') . '/members/deletion/attachments/' . $member->member_id, 'broadpath'),
       ]);
     });
 

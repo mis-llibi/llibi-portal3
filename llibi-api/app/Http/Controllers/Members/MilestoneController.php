@@ -16,8 +16,15 @@ class MilestoneController extends Controller
     $birthdate = request()->query('birthdate');
     $relation = request()->query('relation');
 
-    // remove principal
-    $dependents = hr_members::query()->where('member_id', $member_id)->activeMembers()->get();
+    $dependents = hr_members::query()->where('member_id', $member_id)->activeMembers();
+
+    if ($principal_civil_status == 'SINGLE' && $relation == 'CHILD') {
+      $dependents = $dependents->whereIn('relationship_id', ['PRINCIPAL', 'SIBLING']);
+    } else if ($principal_civil_status == 'SINGLE' && $relation == 'SPOUSE') {
+      $dependents = $dependents->whereIn('relationship_id', ['PRINCIPAL', 'SIBLING', 'PARENT']);
+    }
+
+    $dependents = $dependents->get();
 
     return response($dependents);
   }

@@ -104,7 +104,7 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'civil_status',
       headerName: 'Civil Status',
-      width: 150,
+      width: 250,
       renderCell: ({ row }) => {
         return (
           <>

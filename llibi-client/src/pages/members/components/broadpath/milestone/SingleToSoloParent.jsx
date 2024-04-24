@@ -5,7 +5,7 @@ import axios from '@/lib/axios'
 
 import { insertNewEnrollee } from '@/hooks/members/ManageHrMember'
 
-export default function ForInactiveDependents({
+export default function SingleToSoloParent({
   show,
   setShow,
   data,
@@ -107,9 +107,14 @@ export default function ForInactiveDependents({
   return (
     <>
       <div className="max-h-[70vh] overflow-y-auto font-[poppins] mb-3 border-b">
-        <h6 className="text-gray-600 text-sm mb-3">
-          All of this dependents will be deleted if you proceed.
-        </h6>
+        <div className="mb-3">
+          <h6 className="text-gray-600 text-sm">
+            Civil status will change from single to solo parent.
+          </h6>
+          <h6 className="text-gray-600 text-sm">
+            Enrolled dependent(s) will be deleted if you proceed.
+          </h6>
+        </div>
         <table className="w-full mb-3">
           <thead className="text-xs bg-blue-700 text-white">
             <tr className="uppercase">
@@ -136,10 +141,10 @@ export default function ForInactiveDependents({
                   <td>{row.full_name}</td>
                   <td className="text-center">{row.relationship_id}</td>
                   <td className="text-center">{row.civil_status}</td>
-                  <td className="text-center">
+                  <td className="text-left">
                     {row.relationship_id === 'PRINCIPAL' ? (
                       <>
-                        Change to <span className="font-bold">MARRIED</span>
+                        Change to <span className="font-bold">SOLO PARENT</span>
                       </>
                     ) : (
                       <>

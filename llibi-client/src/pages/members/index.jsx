@@ -33,7 +33,7 @@ const filterOptions = [
   },
   {
     icon: <BiTrashAlt size={24} />,
-    label: 'Deleted Members',
+    label: 'Deleted/Disapproved Members',
     value: 7,
   },
 ]

@@ -11,14 +11,12 @@ import {
   BiPencil,
   BiDotsVerticalRounded,
   BiUserCheck,
+  BiUserX,
+  BiFile,
 } from 'react-icons/bi'
 import ApproveChangeMemberPlan from './modals/admin/ApproveChangeMemberPlan'
 
-export default function ActionButton({
-  row,
-  handleDelete,
-  handleChangePlan,
-}) {
+export default function ActionButton({ row, handleDelete, handleChangePlan }) {
   const [anchorEl, setAnchorEl] = useState(null)
 
   const handleClick = event => {
@@ -116,6 +114,18 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
     handleClose()
   }
 
+  const handleDisApproveMemberModal = () => {
+    setSelectedRow(row)
+    setShowModal('disapprove-member')
+    handleClose()
+  }
+
+  const handlePendingDocumentsModal = () => {
+    setSelectedRow(row)
+    setShowModal('pending-documents')
+    handleClose()
+  }
+
   const open = Boolean(anchorEl)
 
   return (
@@ -158,7 +168,7 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
               content: '""',
               display: 'block',
               position: 'absolute',
-              top: 20,
+              top: row.status === 1 ? 50 : 20,
               right: -5,
               width: 10,
               height: 10,
@@ -170,12 +180,26 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
         }}>
         <Paper sx={{ width: 250 }}>
           {row.status === 1 && (
-            <MenuItem onClick={handleApproveMemberModal}>
-              <div className="flex gap-3 items-center font-[poppins] text-sm">
-                <BiUserCheck size={20} />
-                <span>Approve Member</span>
-              </div>
-            </MenuItem>
+            <>
+              <MenuItem onClick={handleApproveMemberModal}>
+                <div className="flex gap-3 items-center font-[poppins] text-sm">
+                  <BiUserCheck size={20} />
+                  <span>Approve Member</span>
+                </div>
+              </MenuItem>
+              <MenuItem onClick={handleDisApproveMemberModal}>
+                <div className="flex gap-3 items-center font-[poppins] text-sm">
+                  <BiUserX size={20} />
+                  <span>Disapprove Member</span>
+                </div>
+              </MenuItem>
+              <MenuItem onClick={handlePendingDocumentsModal}>
+                <div className="flex gap-3 items-center font-[poppins] text-sm">
+                  <BiFile size={20} />
+                  <span>Pending Documents</span>
+                </div>
+              </MenuItem>
+            </>
           )}
           {row.status === 3 && (
             <MenuItem onClick={handleApproveDeleteMemberModal}>

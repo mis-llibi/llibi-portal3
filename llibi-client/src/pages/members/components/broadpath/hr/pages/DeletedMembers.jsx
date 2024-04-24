@@ -17,7 +17,10 @@ import moment from 'moment'
 export default function DeletedMembers({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
   const [selectionModel, setSelectionModel] = useState([])
-  const { data, isLoading, error, mutate } = useManageHrMember({ status: 7 })
+  const [filter, setFilter] = useState(7)
+  const { data, isLoading, error, mutate } = useManageHrMember({
+    status: filter,
+  })
   const [loader, setLoader] = useState(false)
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
@@ -29,7 +32,7 @@ export default function DeletedMembers({ create, ...props }) {
     {
       field: 'member_id',
       headerName: 'Name',
-      flex: 1,
+      width: 300,
       renderCell: ({ row }) => {
         return (
           <>
@@ -94,7 +97,8 @@ export default function DeletedMembers({ create, ...props }) {
     },
     {
       field: 'approved_deleted_member_at',
-      headerName: 'Deleted Date',
+      headerName:
+        Number(filter) === 7 ? 'Termination Date' : 'Disapproval Date',
       width: 150,
       renderCell: ({ row }) => {
         return (
@@ -104,6 +108,18 @@ export default function DeletedMembers({ create, ...props }) {
                 ? moment(row.approved_deleted_member_at).format('MMM DD, Y')
                 : ''}
             </div>
+          </>
+        )
+      },
+    },
+    {
+      field: 'admin_remarks',
+      headerName: 'Remarks',
+      width: 300,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.admin_remarks}</div>
           </>
         )
       },
@@ -138,6 +154,18 @@ export default function DeletedMembers({ create, ...props }) {
               placeholder="Seach (ex. first name, last name)"
             />
           </div>
+          <div className="w-48">
+            <Label htmlFor="search">Filter</Label>
+            <select
+              name="filter"
+              id="filter"
+              className="w-full rounded-md text-xs border border-gray-200"
+              defaultValue={filter}
+              onChange={e => setFilter(e.target.value)}>
+              <option value="7">Deleted Members</option>
+              <option value="10">Disapproved Members</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -155,7 +183,7 @@ export default function DeletedMembers({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
-        // disableColumnFilter 
+        // disableColumnFilter
         // disableColumnSelector
         disableColumnMenu
         // checkboxSelection
