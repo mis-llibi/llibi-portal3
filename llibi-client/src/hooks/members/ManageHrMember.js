@@ -4,7 +4,7 @@ import axios from '@/lib/axios'
 import Swal from 'sweetalert2'
 
 const swrSetting = {
-  revalidateOnFocus: false,
+  revalidateOnFocus: true,
   revalidateOnMount: true,
   revalidateOnReconnect: false,
   refreshWhenOffline: false,

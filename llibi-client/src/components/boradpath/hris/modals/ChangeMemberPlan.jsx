@@ -39,6 +39,19 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
     <div className="font-[poppins] px-3">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
+          <Label htmlFor="change_plan_at" className="text-sm">
+            Deletion Date
+          </Label>
+          <input
+            type="date"
+            name="change_plan_at"
+            id="change_plan_at"
+            className="w-full rounded-md"
+            defaultValue={dateNow}
+            {...register('change_plan_at')}
+          />
+        </div>
+        <div className="mb-3">
           <Label htmlFor="plan" className="text-sm">
             Plan
           </Label>

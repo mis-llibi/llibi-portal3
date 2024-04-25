@@ -2,7 +2,7 @@ import useSWR from 'swr'
 import axios from '@/lib/axios'
 
 const swrSetting = {
-  revalidateOnFocus: false,
+  revalidateOnFocus: true,
   revalidateOnMount: true,
   revalidateOnReconnect: false,
   refreshWhenOffline: false,

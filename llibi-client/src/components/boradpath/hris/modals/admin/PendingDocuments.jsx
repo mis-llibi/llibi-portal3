@@ -88,7 +88,7 @@ export default function PendingDocuments({
                     required: 'Document is required please select',
                   })}>
                   {DOCUMENT_LISTS.map(item => (
-                    <option value={item.title.toUpperCase()}>
+                    <option key={item.title} value={item.title.toUpperCase()}>
                       {item.title}
                     </option>
                   ))}

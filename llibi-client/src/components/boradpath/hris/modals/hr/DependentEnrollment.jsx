@@ -61,6 +61,10 @@ export default function DependentEnrollment({
   }, [watchFields?.birthdate])
   const [isNewWedding, setIsNewWedding] = useState(false)
   const [isMileStone, setIsMileStone] = useState(0)
+  const [
+    showReasonForLateEnrollment,
+    setShowReasonForLateEnrollment,
+  ] = useState(false)
 
   const submitForm = async data => {
     const FORMDATA = new FormData()
@@ -450,6 +454,58 @@ export default function DependentEnrollment({
     )
   }
 
+  useEffect(() => {
+    if (isMileStone < 30) {
+      setValue(
+        'effectivity_date',
+        moment(watchFields.regularization_date).format('Y-MM-DD'),
+      )
+    } else {
+      if (watchFields.relation === 'SPOUSE') {
+        setValue(
+          'effectivity_date',
+          moment(watchFields.marriage_date).format('Y-MM-DD'),
+        )
+      } else if (watchFields.relation === 'CHILD') {
+        setValue(
+          'effectivity_date',
+          moment(watchFields.birthdate).add(15, 'days').format('Y-MM-DD'),
+        )
+      } else {
+        setValue(
+          'effectivity_date',
+          moment(watchFields.regularization_date).format('Y-MM-DD'),
+        )
+      }
+    }
+  }, [
+    watchFields.regularization_date,
+    watchFields.birthdate,
+    watchFields.relation,
+    watchFields.marriage_date,
+  ])
+
+  useEffect(() => {
+    if (isMileStone >= 30) {
+      const today = moment()
+      const birthdate = moment(watchFields.birthdate).add(30, 'days')
+
+      const birthdateDiffToday = birthdate.diff(today, 'days')
+
+      setShowReasonForLateEnrollment(birthdateDiffToday > 30)
+
+      // console.log(birthdate.format('Y-MM-DD'), birthdateDiffToday)
+
+      if (birthdateDiffToday > 30) {
+        Swal.fire(
+          'DISCLAIMER',
+          'Late enrollment please put a reason for late enrollment in the input box.',
+          'warning',
+        )
+      }
+    }
+  }, [watchFields.regularization_date, watchFields.birthdate])
+
   return (
     <>
       <Modal show={show} body={body} toggle={toggle} />
@@ -527,6 +583,26 @@ export default function DependentEnrollment({
                 errors={errors?.birthdate}
               />
             </div>
+
+            {(isNewBorn && watchFields.relation === 'CHILD') ||
+            (isNewWedding && watchFields.relation === 'SPOUSE') ? (
+              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
+                {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
+              </p>
+            ) : (
+              ''
+            )}
+
+            {isMileStone &&
+            birthDateCountDays > 30 &&
+            watchFields.relation === 'CHILD' ? (
+              <p className="font-bold text-sm mt-3 bg-red-50 text-red-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
+                Milestone enrollment is applicable to newly born and newly
+                married only.
+              </p>
+            ) : (
+              ''
+            )}
           </div>
           {/* COLUMN 2 */}
           <div>
@@ -586,59 +662,67 @@ export default function DependentEnrollment({
               />
             </div>
 
-            {isMileStone > 30 && (
+            {isMileStone >= 30 && watchFields.relation === 'SPOUSE' && (
               <div className="mb-3">
-                <Label htmlFor="effectivity_date">Effectivity Date</Label>
+                <Label htmlFor="marriage_date">Marriage Date</Label>
                 <Input
-                  id="effectivity_date"
+                  id="marriage_date"
                   type="date"
                   className="block mt-1 w-full"
-                  register={register('effectivity_date', {
-                    required: 'Effectivity Date is required',
-                    min: isMileStone &&
-                      watchFields.relation === 'SPOUSE' && {
-                        message:
-                          'Date of marriage should not more than 30 days.',
-                        value: moment().subtract(30, 'd').format('Y-MM-DD'),
-                      },
-                    max: {
-                      message: 'Future date not allowed',
-                      value: moment().format('Y-MM-DD'),
-                    },
-                  })}
-                  errors={errors?.effectivity_date}
-                  min={
-                    isMileStone &&
-                    watchFields.relation === 'SPOUSE' &&
-                    moment().subtract(30, 'd').format('Y-MM-DD')
-                  }
-                  max={
-                    isMileStone &&
-                    watchFields.relation === 'SPOUSE' &&
-                    moment().format('Y-MM-DD')
-                  }
+                  register={register('marriage_date', {})}
+                  errors={errors?.marriage_date}
                 />
               </div>
             )}
 
-            {(isNewBorn && watchFields.relation === 'CHILD') ||
-            (isNewWedding && watchFields.relation === 'SPOUSE') ? (
-              <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
-                {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
-              </p>
-            ) : (
-              ''
-            )}
+            <div className="mb-3">
+              <Label htmlFor="effectivity_date">Effectivity Date</Label>
+              <Input
+                id="effectivity_date"
+                type="date"
+                className="block mt-1 w-full"
+                register={register('effectivity_date', {
+                  // required: 'Effectivity Date is required',
+                  // min: isMileStone &&
+                  //   watchFields.relation === 'SPOUSE' && {
+                  //     message: 'Date of marriage should not more than 30 days.',
+                  //     value: moment().subtract(30, 'd').format('Y-MM-DD'),
+                  //   },
+                  // max: {
+                  //   message: 'Future date not allowed',
+                  //   value: moment().format('Y-MM-DD'),
+                  // },
+                })}
+                errors={errors?.effectivity_date}
+                // min={
+                //   isMileStone &&
+                //   watchFields.relation === 'SPOUSE' &&
+                //   moment().subtract(30, 'd').format('Y-MM-DD')
+                // }
+                // max={
+                //   isMileStone &&
+                //   watchFields.relation === 'SPOUSE' &&
+                //   moment().format('Y-MM-DD')
+                // }
+                disabled
+              />
+            </div>
 
-            {isMileStone &&
-            birthDateCountDays > 30 &&
-            watchFields.relation === 'CHILD' ? (
-              <p className="font-bold text-sm mt-3 bg-red-50 text-red-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
-                Milestone enrollment is applicable to newly born and newly
-                married only.
-              </p>
-            ) : (
-              ''
+            {showReasonForLateEnrollment && (
+              <div className="mb-3">
+                <Label htmlFor="reason_for_late_enrollment">
+                  Reason for late enrollment
+                </Label>
+                <Input
+                  id="reason_for_late_enrollment"
+                  type="text"
+                  className="block mt-1 w-full"
+                  register={register('reason_for_late_enrollment', {
+                    required: 'Reason for late enrollment is required',
+                  })}
+                  errors={errors?.reason_for_late_enrollment}
+                />
+              </div>
             )}
 
             <div className="mb-3">

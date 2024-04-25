@@ -20,6 +20,8 @@ import birthDayChecker from '@/lib/birthdateValidation'
 
 import broadpathRelationValidation from '@/lib/broadpathRelationValidation'
 import broadpathCivilStatusValidation from '@/lib/broadpathCivilStatusValidation'
+import moment from 'moment'
+import Swal from 'sweetalert2'
 
 const INITIAL_ENROLLMENT_RELATION = {
   principal: 'PRINCIPAL',
@@ -45,6 +47,10 @@ export default function PrincipalEnrollment({
 
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
   const [selectedPrincipal, setSelectedPrincipal] = useState(null)
+  const [
+    showReasonForLateEnrollment,
+    setShowReasonForLateEnrollment,
+  ] = useState(false)
 
   const submitForm = async data => {
     const FORMDATA = new FormData()
@@ -115,6 +121,25 @@ export default function PrincipalEnrollment({
       member_id: selectedPrincipal?.member_id ?? '',
     })
   }, [selectedPrincipal])
+
+  useEffect(() => {
+    setValue('effectivity_date', watch('regularization_date'))
+
+    const today = moment()
+    const regDate = moment(watch('regularization_date'))
+
+    const regDateDiffToday = today.diff(regDate, 'days')
+
+    setShowReasonForLateEnrollment(regDateDiffToday > 30)
+
+    if (regDateDiffToday > 30) {
+      Swal.fire(
+        'DISCLAIMER',
+        'Late enrollment please put a reason for late enrollment in the input box.',
+        'warning',
+      )
+    }
+  }, [watch('regularization_date')])
 
   return (
     <>
@@ -358,6 +383,33 @@ export default function PrincipalEnrollment({
                 errors={errors?.regularization_date}
               />
             </div>
+
+            <div className="mb-3">
+              <Label htmlFor="effectivity_date">Effectivity Date</Label>
+              <Input
+                id="effectivity_date"
+                type="date"
+                className="block mt-1 w-full"
+                register={register('effectivity_date')}
+                disabled
+              />
+            </div>
+            {showReasonForLateEnrollment && (
+              <div className="mb-3">
+                <Label htmlFor="reason_for_late_enrollment">
+                  Reason for late enrollment
+                </Label>
+                <Input
+                  id="reason_for_late_enrollment"
+                  type="text"
+                  className="block mt-1 w-full"
+                  register={register('reason_for_late_enrollment', {
+                    required: 'Reason for late enrollment is required',
+                  })}
+                  errors={errors?.reason_for_late_enrollment}
+                />
+              </div>
+            )}
             <div className="mb-3">
               <Label htmlFor="attachment">
                 Document Requirement(s)

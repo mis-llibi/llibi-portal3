@@ -55,12 +55,12 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
               <th className="p-3">Principal</th>
               {/* <th className="p-3 flex-grow">Name</th> */}
               {/* <th className="p-3 ">Relation</th> */}
+              <th className="p-3">Regularization Date</th>
+              <th className="p-3">Hired Date</th>
               <th className="p-3">Email</th>
               <th className="p-3">Birth Date</th>
               <th className="p-3">Gender</th>
               <th className="p-3">Civil Status</th>
-              <th className="p-3">Hired Date</th>
-              <th className="p-3">Regularization Date</th>
               {/* <th className="p-3">Action</th> */}
             </tr>
           </thead>

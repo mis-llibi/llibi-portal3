@@ -19,6 +19,12 @@ export default function PrincipalRow({ row, handleSetSelected }) {
         {/* <p className="font-bold text-[10px]">{row.civil_status}</p> */}
         <p>{`${row?.last_name}, ${row?.first_name} ${row?.middle_name}`}</p>
       </td>
+      <td className="p-3 text-center">
+        {moment(row?.reg_date).format('MMM DD, Y')}
+      </td>
+      <td className="p-3 text-center">
+        {moment(row?.date_hired).format('MMM DD, Y')}
+      </td>
       {/* <td className="p-3"></td> */}
       {/* <td className="p-3 text-center">{row.relationship_id}</td> */}
       <td className="p-3 text-center">{row?.contact?.email}</td>
@@ -27,12 +33,6 @@ export default function PrincipalRow({ row, handleSetSelected }) {
       </td>
       <td className="p-3 text-center">{row?.gender}</td>
       <td className="p-3 text-center">{row?.civil_status}</td>
-      <td className="p-3 text-center">
-        {moment(row?.date_hired).format('MMM DD, Y')}
-      </td>
-      <td className="p-3 text-center">
-        {moment(row?.reg_date).format('MMM DD, Y')}
-      </td>
       {/* <td className="p-3 text-center">
         <button
           className="group border px-3 py-2 rounded-md hover:bg-gray-100"
