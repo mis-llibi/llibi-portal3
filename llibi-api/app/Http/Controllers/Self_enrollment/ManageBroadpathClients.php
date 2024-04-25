@@ -451,12 +451,11 @@ class ManageBroadpathClients extends Controller
                 't2.email2',
                 't2.mobile_no')
             ->whereIn('t1.status', [1, 2, 4])
-            ->where('t1.member_id', 'LLIBI0025')
+            ->whereIn('t1.member_id', ['LLIBI0025', 'LLIBI0026', 'LLIBI0027'])
             ->where('client_company', 'BROADPATH')
             ->where('t1.relation', 'PRINCIPAL')
             ->where('t1.form_locked', 1)
             ->orderBy('t1.id', 'DESC')
-            ->limit(1)
             ->get();
 
         $notificationTitle = 'No Reminders For Sending...';
