@@ -75,6 +75,30 @@ export const ManageClientInfo = ({ id, company }) => {
       })
   }
 
+  const updateClientInfoRollover = async ({ setLoading, ...props }) => {
+    await csrf()
+
+    let runfinally = true
+
+    axios
+      .post(`/self-enrollment/update-client-info/${company}`, props)
+      .then(() => mutate())
+      .catch(error => {
+        const nerror = error?.response?.data?.message
+        swaerror('Dependent Renewal Update Failed', nerror)
+        runfinally = false
+      })
+      .finally(() => {
+        setLoading(false)
+        if (runfinally) {
+          swasuccess(
+            'Dependent Renewal Updated',
+            'You have successfully updated your dependent renewal form',
+          )
+        }
+      })
+  }
+
   const submitDependent = async ({ setLoading, ...props }) => {
     await csrf()
 
@@ -198,6 +222,7 @@ export const ManageClientInfo = ({ id, company }) => {
   return {
     client,
     updateClientInfo,
+    updateClientInfoRollover,
     submitDependent,
     submitWithoutDependent,
     milestoneUpdate,

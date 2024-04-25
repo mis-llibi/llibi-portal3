@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Self_enrollment\ManageBroadpathNotifications;
 
-class ManageBroadpathClients extends Controller
+class ManageBroadpathClientsTemp extends Controller
 {
     //CLIENT
     public function checkClient($id)
@@ -33,7 +33,7 @@ class ManageBroadpathClients extends Controller
         $dependent = members::where('member_id', (count($principal) > 0 ? $principal[0]->member_id : 'xxxxx'))
             ->where('client_company', 'BROADPATH')
             ->where('relation', '!=', 'PRINCIPAL')
-            ->whereIn('status', [2, 4])
+            ->where('status', 2)
             ->select('id as mId', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'attachments')
             ->get();
 
@@ -45,66 +45,33 @@ class ManageBroadpathClients extends Controller
 
     public function updateClientInfo(Request $request)
     {
-        if(isset($request->rollover)) {
-            
-            switch ($request->rollover) {
-                case 1:
-                    $member = 
-                        members::where('member_id', $request->member_id)
-                        ->where('status', 4)
-                        ->update(['form_locked' => 2, 'status' => 5]);
+        $update = [
+            'first_name' => $this->clean($request->first_name),
+            'middle_name' => $this->clean($request->middle_name),
+            'last_name' => $this->clean($request->last_name),
+            'civil_status' => strtoupper($request->civil_status),
+            'gender' => strtoupper($request->gender),
+            'birth_date' => $request->birth_date,
+            'status' => 2
+        ];
+        $member = members::where('id', $request->id)
+            ->update($update);
 
-                        print_r(1);
-                    break;
-                case 2:
-                    $member =
-                        members::where('member_id', $request->member_id)
-                        ->where('status', 4)
-                        ->update(['status' => 2]);
+        $updateContact = [
+            'street' => $this->clean($request->street),
+            'barangay' => $this->clean($request->barangay),
+            'city' => $this->clean($request->city),
+            'province' => $this->clean($request->province),
+            'zip_code' => $request->zipCode,
 
-                        print_r(2);
-                    break;
-                case 3:
-                    members::where('member_id', $request->member_id)
-                        ->where('status', 4)
-                        ->where('relation', '!=', 'PRINCIPAL')
-                        ->update(['status' => 0]);
-
-                    $member = 
-                        members::where('id', $request->id)
-                        ->update(['status' => 1]);
-
-                        print_r(3);
-                    break;
-            }
-        } else {
-            $update = [
-                'first_name' => $this->clean($request->first_name),
-                'middle_name' => $this->clean($request->middle_name),
-                'last_name' => $this->clean($request->last_name),
-                'civil_status' => strtoupper($request->civil_status),
-                'gender' => strtoupper($request->gender),
-                'birth_date' => $request->birth_date,
-                'status' => 2
-            ];
-            $member = members::where('id', $request->id)
-                ->update($update);
-
-            $updateContact = [
-                'street' => $this->clean($request->street),
-                'barangay' => $this->clean($request->barangay),
-                'city' => $this->clean($request->city),
-                'province' => $this->clean($request->province),
-                'zip_code' => $request->zipCode,
-
-            ];
-            $contact = contact::where('link_id', $request->id)
-                        ->update($updateContact);
-        }
+        ];
+        $contact = contact::where('link_id', $request->id)
+                    ->update($updateContact);
     }
 
     public function submitDependent(Request $request)
     {
+
         //Check attachment first before continuing to processing the data
         $rules = []; $att = [];
         for ($i=0; $i < count($request->list); $i++) { 
@@ -290,7 +257,7 @@ class ManageBroadpathClients extends Controller
 
         $info = [
             'name' => $upMember[0]->last_name.', '.$upMember[0]->first_name,
-            'email'  => $upContact[0]->email,
+            'email' => $upContact[0]->email,
             'email2' => $upContact[0]->email2,
             'mobile' => $upContact[0]->mobile_no,
             'depInfo' => $depInfo,
@@ -328,7 +295,7 @@ class ManageBroadpathClients extends Controller
         
         $info = [
             'name' => $upMember[0]->last_name.', '.$upMember[0]->first_name,
-            'email'  => $upContact[0]->email,
+            'email' => $upContact[0]->email,
             'email2' => $upContact[0]->email2,
             'mobile' => $upContact[0]->mobile_no,
         ];
@@ -391,7 +358,7 @@ class ManageBroadpathClients extends Controller
         foreach ($client as $key => $row) {        
             $info = [
                 'name' => $row->first_name.' '.$row->last_name,
-                'email'  => $row->email,
+                'email' => $row->email,
                 'email2' => $row->email2,
                 'mobile' => $row->mobile_no,
                 'insSms' => $body['sms'],
@@ -405,6 +372,18 @@ class ManageBroadpathClients extends Controller
 
     public function updateEnrollee($company, $request)
     {
+        /* 
+            $list = $this->getApprovals($request->empno, $company)['list'];
+            
+            foreach ($list as $key => $value) {
+                $members = [
+                    'status' =>  (!empty($request->{'cancelBox'.$value->id}) ? 3 : $value->status ),
+                    'form_locked' => (!empty($request->{'cancelBox'.$value->id}) ? 1 : 0 ),
+                ];
+                members::where('id', $value->id)
+                    ->update($members);
+            } 
+        */
 
         $list = (new ManageSelfEnrollmentController)
             ->getSubmittedAndApprovedClients($request->empno, $company)['list'];
@@ -421,9 +400,32 @@ class ManageBroadpathClients extends Controller
 
         $body = $this->getNotificationBodyListOfApprovedClient($request->empno, $company);
 
+        /* $list = (new ManageSelfEnrollmentController)
+            ->getSubmittedAndApprovedClients($request->empno, $company)['list'];
+
+            $insSms = []; $insMail = [];
+            foreach ($list as $key => $value) {
+
+                $certNo = (!empty($value->certificate_no) ? $value->certificate_no : 'X');
+                //if(!empty($value->certificate_no)) {
+                $insSms[] = 
+                ($value->relation == "PRINCIPAL" ? "P-" : "D-").ucwords(strtolower($value->last_name.', '.$value->first_name)).' / '.$certNo;
+
+                $insMail[] = 
+                '<tr>
+                    <td style="background-color:#fafafa;padding:4px;">'.($value->relation == "PRINCIPAL" ? "Principal" : "Dependent").'</td>
+                    <td style="background-color:#fafafa;padding:4px;">'.ucwords(strtolower($value->last_name)).'</td>
+                    <td style="background-color:#fafafa;padding:4px;">'.ucwords(strtolower($value->first_name)).'</td>
+                    <td style="background-color:#fafafa;padding:4px;">'.ucwords(strtolower($value->middle_name)).'</td>
+                    <td style="background-color:#fafafa;padding:4px;">'.$certNo.'</td>
+                </tr>';
+                //}
+            }
+        */
+
         $info = [
             'name' => $request->firstName.' '.$request->lastName,
-            'email'  => $request->email,
+            'email' => $request->email,
             'email2' => $request->altEmail,
             'mobile' => $request->mobile,
             'insSms' => $body['sms'],
@@ -450,13 +452,11 @@ class ManageBroadpathClients extends Controller
                 't2.email', 
                 't2.email2',
                 't2.mobile_no')
-            ->whereIn('t1.status', [1, 2, 4])
-            ->where('t1.member_id', 'LLIBI0025')
+            ->whereIn('t1.status', [1, 2])
             ->where('client_company', 'BROADPATH')
             ->where('t1.relation', 'PRINCIPAL')
-            ->where('t1.form_locked', 1)
+            ->where('t1.form_locked', 0)
             ->orderBy('t1.id', 'DESC')
-            ->limit(1)
             ->get();
 
         $notificationTitle = 'No Reminders For Sending...';
@@ -472,9 +472,7 @@ class ManageBroadpathClients extends Controller
                     ->where('client_id', $row->id)
                     ->where('client_company', $clientCompany)
                     ->whereIn('status', [
-                        'START RENEWAL: FIRST DAY ENROLLMENT',
                         'UNTOUCHED FORM: EVERY THREE DAYS REMINDER',
-                        'UNTOUCHED FORM: WARNING NO INTERACTION',
                         'UNTOUCHED FORM: FINAL REMINDER',
                         'UNTOUCHED FORM: LOCKED REMINDER',
                     ])
@@ -497,24 +495,8 @@ class ManageBroadpathClients extends Controller
                         if($dateFinalWarning >= $checkdate && $dateFinalWarning != $checkdate) {
 
                             $status = 0;
-
-                            //first day of enrollment
-                            if($checkdate == '2024-05-27') {
-                                $notificationTitle = 'Reminder: Renewal Start';
-                                $notification[] = [
-                                    'Message' => 'Notification Sent',
-                                    'to' => $info
-                                ];
-        
-                                (new ManageBroadpathNotifications)
-                                    ->rolloverInvite($info, $dateFinalWarning, $dateFormLocked);
-                                
-                                $status = 0;
-                                //$status = 'START RENEWAL: FIRST DAY ENROLLMENT';
-                            }
-
                             //check if still not submitting their enrollment then send notification
-                            if($row->status == 1 || $row->status == 2) {
+                            if($row->status == 1) {
 
                                 $addedDay = 
                                 date('Y-m-d H:i:s', strtotime($checkdate));
@@ -540,25 +522,11 @@ class ManageBroadpathClients extends Controller
 
                                 if($modulo == 0) {
                                     (new ManageBroadpathNotifications)
-                                        ->rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked);
+                                        ->everyThreeDays($info, $dateFinalWarning, $dateFormLocked);
 
-                                    $status = 0;
-                                    //$status = 'UNTOUCHED FORM: EVERY THREE DAYS REMINDER';
+                                    $status = 'UNTOUCHED FORM: EVERY THREE DAYS REMINDER';
                                 }
-                            }
 
-                            if($row->status == 4 && $checkdate == '2024-06-04') {
-                                $notificationTitle = 'Reminder: No Interaction';
-                                $notification[] = [
-                                    'Message' => 'Notification Sent',
-                                    'to' => $info
-                                ];
-
-                                (new ManageBroadpathNotifications)
-                                    ->rolloverWarningUntouchedForm($info, $dateFinalWarning, $dateFormLocked);
-
-                                $status = 0;
-                                //$status = 'UNTOUCHED FORM: WARNING NO INTERACTION';
                             }
                             
                         } else {
@@ -570,10 +538,9 @@ class ManageBroadpathClients extends Controller
                             ];
 
                             (new ManageBroadpathNotifications)
-                                ->rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked);
+                                ->warningLastDay($info, $dateFinalWarning, $dateFormLocked);
 
-                            $status = 0;
-                            //$status = 'UNTOUCHED FORM: FINAL REMINDER';
+                            $status = 'UNTOUCHED FORM: FINAL REMINDER';
                         }
 
                     } else {
@@ -585,14 +552,13 @@ class ManageBroadpathClients extends Controller
                         ];
 
                         (new ManageBroadpathNotifications)
-                            ->rolloverReminderLock($info);
-                        
-                        $status = 0;
-                        //$status = 'UNTOUCHED FORM: LOCKED REMINDER';
+                            ->reminderLock($info);
+
+                        $status = 'UNTOUCHED FORM: LOCKED REMINDER';
 
                         //set form to locked
-                        /* members::where('id', $row->id)
-                            ->update(['form_locked' => 2]); */
+                        members::where('id', $row->id)
+                            ->update(['form_locked' => 1]);
 
                     }
 

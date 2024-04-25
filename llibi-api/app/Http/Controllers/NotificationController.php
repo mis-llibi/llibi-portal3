@@ -35,6 +35,29 @@ class NotificationController extends Controller
     //Show the server response
   }
 
+  public function OldMailNotification($name, $email, $message)
+  {
+    Mail::send([], [], function ($mail) use ($name, $email, $message) {
+
+      $subject = (isset($message['subject']) ? $message['subject'] : 'Client Care Portal - Notification');
+
+      $mail->to($email, $name)
+        ->subject($subject)
+        ->html('<h4>' . $message['body'] . '</h4>');
+      $mail->from('notify@llibi.app');
+
+      if (isset($message['bcc'])) {
+        $mail->bcc($message['bcc'], $message['name']);
+      }
+
+      if (isset($message['attachment'])) {
+        foreach ($message['attachment'] as $file) {
+          $mail->attach(Storage::path($file));
+        }
+      }
+    });
+  }
+
   public function MailNotification($name, $email, $message)
   {
     // Mail::send([], [], function ($mail) use ($name, $email, $message) {
