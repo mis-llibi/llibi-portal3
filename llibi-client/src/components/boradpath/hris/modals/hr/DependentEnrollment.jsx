@@ -61,10 +61,7 @@ export default function DependentEnrollment({
   }, [watchFields?.birthdate])
   const [isNewWedding, setIsNewWedding] = useState(false)
   const [isMileStone, setIsMileStone] = useState(0)
-  const [
-    showReasonForLateEnrollment,
-    setShowReasonForLateEnrollment,
-  ] = useState(false)
+  const [lateMarriage, setLateMarriage] = useState(false)
 
   const submitForm = async data => {
     const FORMDATA = new FormData()
@@ -486,25 +483,43 @@ export default function DependentEnrollment({
   ])
 
   useEffect(() => {
-    if (isMileStone >= 30) {
-      const today = moment()
-      const birthdate = moment(watchFields.birthdate).add(30, 'days')
-
-      const birthdateDiffToday = birthdate.diff(today, 'days')
-
-      setShowReasonForLateEnrollment(birthdateDiffToday > 30)
-
-      // console.log(birthdate.format('Y-MM-DD'), birthdateDiffToday)
-
-      if (birthdateDiffToday > 30) {
-        Swal.fire(
-          'DISCLAIMER',
-          'Late enrollment please put a reason for late enrollment in the input box.',
-          'warning',
-        )
-      }
+    if (
+      isMileStone >= 30 &&
+      birthDateCountDays > 30 &&
+      watchFields.relation === 'CHILD'
+    ) {
+      Swal.fire(
+        'DISCLAIMER',
+        'Late enrollment please put a reason for late enrollment in the input box.',
+        'warning',
+      )
     }
-  }, [watchFields.regularization_date, watchFields.birthdate])
+
+    const todayDate = moment()
+    const marriageDate = moment(watchFields.marriage_date)
+
+    const marriageDateDiff = todayDate.diff(marriageDate, 'days')
+    console.log(marriageDateDiff)
+    if (
+      isMileStone >= 30 &&
+      marriageDateDiff > 30 &&
+      watchFields.relation === 'SPOUSE'
+    ) {
+      setLateMarriage(true)
+      Swal.fire(
+        'DISCLAIMER',
+        'Late enrollment please put a reason for late enrollment in the input box.',
+        'warning',
+      )
+    } else {
+      setLateMarriage(false)
+    }
+  }, [
+    watchFields.regularization_date,
+    birthDateCountDays,
+    watchFields.relation,
+    watchFields.marriage_date,
+  ])
 
   return (
     <>
@@ -568,6 +583,9 @@ export default function DependentEnrollment({
             <div className="mb-3">
               <Label htmlFor="birthdate">Birth Date</Label>
               <Input
+                onKeyDown={e => {
+                  e.preventDefault()
+                }}
                 id="birthdate"
                 type="date"
                 className="block mt-1 w-full"
@@ -585,7 +603,9 @@ export default function DependentEnrollment({
             </div>
 
             {(isNewBorn && watchFields.relation === 'CHILD') ||
-            (isNewWedding && watchFields.relation === 'SPOUSE') ? (
+            (isNewWedding &&
+              watchFields.relation === 'SPOUSE' &&
+              !lateMarriage) ? (
               <p className="font-bold text-sm mt-3 bg-blue-50 text-blue-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
                 {isNewBorn ? 'Newly Born' : 'Newly Wedded'}
               </p>
@@ -597,8 +617,17 @@ export default function DependentEnrollment({
             birthDateCountDays > 30 &&
             watchFields.relation === 'CHILD' ? (
               <p className="font-bold text-sm mt-3 bg-red-50 text-red-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
-                Milestone enrollment is applicable to newly born and newly
-                married only.
+                LATE ENROLLMENT
+              </p>
+            ) : (
+              ''
+            )}
+
+            {isMileStone &&
+            lateMarriage &&
+            watchFields.relation === 'SPOUSE' ? (
+              <p className="font-bold text-sm mt-3 bg-red-50 text-red-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
+                LATE ENROLLMENT
               </p>
             ) : (
               ''
@@ -666,6 +695,9 @@ export default function DependentEnrollment({
               <div className="mb-3">
                 <Label htmlFor="marriage_date">Marriage Date</Label>
                 <Input
+                  onKeyDown={e => {
+                    e.preventDefault()
+                  }}
                   id="marriage_date"
                   type="date"
                   className="block mt-1 w-full"
@@ -708,7 +740,7 @@ export default function DependentEnrollment({
               />
             </div>
 
-            {showReasonForLateEnrollment && (
+            {isMileStone >= 30 && birthDateCountDays > 30 && (
               <div className="mb-3">
                 <Label htmlFor="reason_for_late_enrollment">
                   Reason for late enrollment
@@ -754,12 +786,7 @@ export default function DependentEnrollment({
         </div>
 
         <Button
-          disabled={
-            isSubmitting ||
-            (isMileStone &&
-              birthDateCountDays > 30 &&
-              watchFields.relation === 'CHILD')
-          }
+          disabled={isSubmitting}
           className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2 flex gap-1"
           loading={isSubmitting}>
           <BiSave size={16} />

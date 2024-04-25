@@ -362,6 +362,9 @@ export default function PrincipalEnrollment({
             <div className="mb-3">
               <Label htmlFor="hiredate">Hire Date</Label>
               <Input
+                onKeyDown={e => {
+                  e.preventDefault()
+                }}
                 id="hiredate"
                 type="date"
                 className="block mt-1 w-full"
@@ -374,6 +377,9 @@ export default function PrincipalEnrollment({
             <div className="mb-3">
               <Label htmlFor="regularization_date">Regularization Date</Label>
               <Input
+                onKeyDown={e => {
+                  e.preventDefault()
+                }}
                 id="regularization_date"
                 type="date"
                 className="block mt-1 w-full"
@@ -410,6 +416,15 @@ export default function PrincipalEnrollment({
                 />
               </div>
             )}
+
+            <div className="mb-3">
+              {showReasonForLateEnrollment && (
+                <p className="font-bold text-sm mt-3 bg-red-50 text-red-600 px-3 py-2 rounded-md w-full text-center uppercase mb-3">
+                  LATE ENROLLMENT
+                </p>
+              )}
+            </div>
+
             <div className="mb-3">
               <Label htmlFor="attachment">
                 Document Requirement(s)
