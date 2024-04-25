@@ -24,8 +24,8 @@ class ManageBroadpathNotifications extends Controller
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
         $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
 
-        //$link = '<a href="https://portal.llibi.app/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
-        $link = '<a href="http://localhost:3000/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
+        $link = '<a href="https://portal.llibi.app/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
+        //$link = '<a href="http://localhost:3000/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
 
         $body =
         'Dear Member,<br /><br />
