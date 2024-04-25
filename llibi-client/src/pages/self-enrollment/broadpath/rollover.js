@@ -156,7 +156,50 @@ const rollover = () => {
     let html =
       '<div style="padding:4px;">You have no included dependent/s</div>'
     if (client?.dependent?.length > 0) {
-      html = `<table style="background-color:#333;width:100%;">
+      html = `<table style="background-color:#fafafa;width:100%;margin-bottom:10px;">
+                <thead>
+                  <tr>
+                    <th colspan="2" style="font-size:1.5em;color:#2980B9;">
+                    ${
+                      client
+                        ? client?.principal[0]?.first_name +
+                          ' ' +
+                          client?.principal[0]?.last_name
+                        : 'N/A'
+                    }
+                    <div style="margin-bottom:10px;"></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                      <td style="text-align:left;">Gender: 
+                        <b>${client?.principal[0]?.gender || 'N/A'}</b>
+                      </td>
+                      <td style="text-align:left;">Civil Status: 
+                        <b>${client?.principal[0]?.civil_status || 'N/A'}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:left;">Birth Date: 
+                        <b>${client?.principal[0]?.birth_date || 'N/A'}</b>
+                      </td>
+                      <td style="text-align:left;">Hire Date: 
+                        <b>${client?.principal[0]?.hire_date || 'N/A'}</b>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="text-align:left;">Member ID: 
+                        <b>${client?.principal[0]?.member_id || 'N/A'}</b>
+                      </td>
+                      <td style="text-align:left;">Room & Board: 
+                        <b>${client?.principal[0]?.room_and_board || 'N/A'}</b>
+                      </td>
+                    </tr>
+                </tbody>
+              </table>
+      
+              <table style="background-color:#333;width:100%;">
                 <thead>
                   <tr>
                     <th style="color:#fafafa;text-align:left;">Name</th>
@@ -196,7 +239,7 @@ const rollover = () => {
 
     Swal.fire({
       title: 'Rollover Information and Dependent/s',
-      width: 700,
+      width: 800,
       html: html,
       icon: 'warning',
       showCancelButton: true,
@@ -221,7 +264,7 @@ const rollover = () => {
     Swal.fire({
       title: 'Are you sure?',
       text:
-        'Thank you for your submission. Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
+        'Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -245,7 +288,7 @@ const rollover = () => {
     Swal.fire({
       title: 'Are you sure?',
       text:
-        'Thank you for your submission. Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
+        'Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -342,7 +385,7 @@ const rollover = () => {
                 </p>
               </div>
               <div className="md:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
-                <p>OID</p>
+                <p>Member ID</p>
                 <p className="ml-2 font-bold">
                   {client?.principal[0]?.member_id || 'N/A'}
                 </p>

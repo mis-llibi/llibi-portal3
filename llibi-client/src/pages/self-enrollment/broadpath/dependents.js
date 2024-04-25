@@ -266,7 +266,7 @@ const Dependents = () => {
                 </p>
               </div>
               <div className="md:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
-                <p>OID</p>
+                <p>Member ID</p>
                 <p className="ml-2 font-bold">
                   {client?.principal[0]?.member_id || 'N/A'}
                 </p>
