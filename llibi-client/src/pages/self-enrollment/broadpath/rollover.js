@@ -110,7 +110,7 @@ const rollover = () => {
       </tr>
       <tr>
         <td colspan="3" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:14px;">
-        ${num} Dependent: ${bil}% of ₱ ${bill?.toLocaleString(
+        ${num} Dependent: ${bil} of ₱ ${bill?.toLocaleString(
         'en',
         2,
       )} = ₱ ${com?.toLocaleString('en', 2)}
