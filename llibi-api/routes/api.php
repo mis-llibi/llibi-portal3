@@ -37,6 +37,7 @@ use App\Http\Controllers\SearchMasterlist\MasterlistController;
 use App\Http\Controllers\Self_service\ComplaintController;
 
 use App\Http\Controllers\Api_third_party\BenadEncryptor;
+use App\Http\Controllers\ClientPortalErrorLogsController;
 use App\Http\Controllers\EmailProviderSettingController;
 use App\Mail\MailerSendTest;
 use App\Services\SendingEmail;
@@ -177,3 +178,5 @@ Route::get('/mailersend', function () {
 });
 
 Route::post('/provider-setting', EmailProviderSettingController::class)->middleware('throttle:5,1');
+
+Route::get('/error-logs', [ClientPortalErrorLogsController::class, 'index']);

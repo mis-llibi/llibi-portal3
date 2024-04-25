@@ -192,12 +192,8 @@ export default function PrincipalEnrollment({
                 className="block mt-1 w-full"
                 register={register('birthdate', {
                   required: 'Birth Date is required',
-                  min: watch('relation')
-                    ? birthDayChecker('min', watch('relation'))
-                    : 0,
-                  max: watch('relation')
-                    ? birthDayChecker('max', watch('relation'))
-                    : 0,
+                  min: birthDayChecker('min', 'PRINCIPAL'),
+                  max: birthDayChecker('max', 'PRINCIPAL'),
                 })}
                 errors={errors?.birthdate}
               />

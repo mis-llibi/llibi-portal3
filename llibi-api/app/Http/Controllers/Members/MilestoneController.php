@@ -26,7 +26,7 @@ class MilestoneController extends Controller
 
     $dependents = $dependents->get();
 
-    return response($dependents);
+    return response()->json($dependents);
   }
 
   public function submitDependentsForInactive(Request $request)

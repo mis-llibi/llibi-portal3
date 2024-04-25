@@ -38,6 +38,6 @@ class PrincipalController extends Controller
       ->latest()
       ->get();
 
-    return $members;
+    return response()->json($members);
   }
 }

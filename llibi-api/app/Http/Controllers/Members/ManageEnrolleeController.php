@@ -70,7 +70,7 @@ class ManageEnrolleeController extends Controller
       default => throw new Exception("Status not supported", 400),
     };
 
-    $members = $members->with('changePlanPending:id,member_link_id,plan');
+    $members = $members->with(['changePlanPending:id,member_link_id,plan', 'contact']);
 
     if ($status == 7) {
       $members = $members->orderByDesc('approved_deleted_member_at');

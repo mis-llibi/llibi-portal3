@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\NotificationController;
 use App\Models\Self_service\ClientErrorLog;
 use Illuminate\Support\Facades\Log;
+use App\Services\GetActiveEmailProvider;
 
 use Illuminate\Support\Str;
 
@@ -29,5 +31,18 @@ class ClientErrorLogService
     ]);
 
     Log::info($errorLog);
+    $mailMsg = view('send-error-logs', ['data' => $errorLog]);
+    switch (GetActiveEmailProvider::getProvider()) {
+      case 'infobip':
+        $emailer = new SendingEmail(email: env('MAM_MAI'), body: $mailMsg, subject: 'CLIENT CARE PORTAL ERROR LOGS - NOTIFICATION', cc: [env('SIR_SEB')]);
+        $emailer->send();
+        break;
+
+      default:
+        $body = array('body' => $mailMsg, 'attachment' => [], 'cc' => [env('SIR_SEB')]);
+        $mail = (new NotificationController)->NewMail('', env('MAM_MAI'), $body);
+
+        break;
+    }
   }
 }

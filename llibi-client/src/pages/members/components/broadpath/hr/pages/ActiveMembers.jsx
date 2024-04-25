@@ -16,6 +16,8 @@ import Modal from '@/components/Modal'
 import DeleteMemberRemarks from '@/components/boradpath/hris/modals/DeleteMemberRemarks'
 import ChangeMemberPlan from '@/components/boradpath/hris/modals/ChangeMemberPlan'
 import moment from 'moment'
+import { excludeClickableColumns } from '@/util/column-headers'
+import ViewDependentsDetails from '@/components/boradpath/hris/modals/hr/ViewDependentsDetails'
 
 export default function ActiveMembers({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
@@ -63,8 +65,8 @@ export default function ActiveMembers({ create, ...props }) {
     {
       field: 'member_id',
       headerName: 'Name',
-      width: 300,
-      // flex: 1,
+      // width: 300,
+      flex: 1,
       renderCell: ({ row }) => {
         return (
           <>
@@ -77,33 +79,33 @@ export default function ActiveMembers({ create, ...props }) {
         )
       },
     },
-    {
-      field: 'birth_date',
-      headerName: 'Birth Date',
-      width: 150,
-      renderCell: ({ row }) => {
-        return (
-          <>
-            <div className="font-[poppins]">
-              {' '}
-              {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
-            </div>
-          </>
-        )
-      },
-    },
-    {
-      field: 'gender',
-      headerName: 'Gender',
-      width: 150,
-      renderCell: ({ row }) => {
-        return (
-          <>
-            <div className="font-[poppins]">{row.gender}</div>
-          </>
-        )
-      },
-    },
+    // {
+    //   field: 'birth_date',
+    //   headerName: 'Birth Date',
+    //   width: 150,
+    //   renderCell: ({ row }) => {
+    //     return (
+    //       <>
+    //         <div className="font-[poppins]">
+    //           {' '}
+    //           {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
+    //         </div>
+    //       </>
+    //     )
+    //   },
+    // },
+    // {
+    //   field: 'gender',
+    //   headerName: 'Gender',
+    //   width: 150,
+    //   renderCell: ({ row }) => {
+    //     return (
+    //       <>
+    //         <div className="font-[poppins]">{row.gender}</div>
+    //       </>
+    //     )
+    //   },
+    // },
     {
       field: 'relationship_id',
       headerName: 'Relation',
@@ -117,13 +119,16 @@ export default function ActiveMembers({ create, ...props }) {
       },
     },
     {
-      field: 'civil_status',
-      headerName: 'Civil Status',
-      width: 250,
+      field: 'effective_date',
+      headerName: 'Effectivity Date',
+      width: 150,
       renderCell: ({ row }) => {
         return (
           <>
-            <div className="font-[poppins]">{row.civil_status}</div>
+            <div className="font-[poppins]">
+              {row.effective_date &&
+                moment(row.effective_date).format('MM DD, Y')}
+            </div>
           </>
         )
       },
@@ -136,10 +141,6 @@ export default function ActiveMembers({ create, ...props }) {
         return (
           <>
             <div className="font-[poppins]">
-              <p className="text-xs text-green-600">
-                {row.certificate_issued_at &&
-                  moment(row.certificate_issued_at).format('MMM DD, Y')}
-              </p>
               <p>{row.certificate_no}</p>
             </div>
           </>
@@ -147,23 +148,40 @@ export default function ActiveMembers({ create, ...props }) {
       },
     },
     {
-      field: 'plan',
-      headerName: 'Plan',
+      field: 'certificate_issued_at',
+      headerName: 'Date Approved',
       width: 150,
       renderCell: ({ row }) => {
         return (
           <>
-            {row.plan && (
-              <div className="font-[poppins] text-[9px]">
-                <span className="bg-blue-100 text-blue-600 font-bold px-2 py-1 rounded-md">
-                  {row.plan}
-                </span>
-              </div>
-            )}
+            <div className="font-[poppins]">
+              <p>
+                {row.certificate_issued_at &&
+                  moment(row.certificate_issued_at).format('MMM DD, Y')}
+              </p>
+            </div>
           </>
         )
       },
     },
+    // {
+    //   field: 'plan',
+    //   headerName: 'Plan',
+    //   width: 150,
+    //   renderCell: ({ row }) => {
+    //     return (
+    //       <>
+    //         {row.plan && (
+    //           <div className="font-[poppins] text-[9px]">
+    //             <span className="bg-blue-100 text-blue-600 font-bold px-2 py-1 rounded-md">
+    //               {row.plan}
+    //             </span>
+    //           </div>
+    //         )}
+    //       </>
+    //     )
+    //   },
+    // },
     {
       field: 'action',
       headerName: '',
@@ -232,6 +250,23 @@ export default function ActiveMembers({ create, ...props }) {
     await submitForDeletionHooks(selectionModel)
     mutate()
     setLoader(false)
+  }
+
+  const handleViewDetails = (params, event, details) => {
+    if (!excludeClickableColumns.includes(params.colDef.headerName)) {
+      setBody({
+        title: (
+          <span className="font-bold text-xl text-gray-800">
+            Personal Information
+          </span>
+        ),
+        content: <ViewDependentsDetails row={params?.row} />,
+        modalOuterContainer: 'font-[poppins]',
+        modalContainer: 'h-full rounded-md',
+        modalBody: 'h-full',
+      })
+      toggle()
+    }
   }
 
   if (error) return <h1>Something went wrong.</h1>
@@ -308,6 +343,7 @@ export default function ActiveMembers({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
+        onCellClick={handleViewDetails}
         // disableColumnFilter
         // disableColumnSelector
         disableColumnMenu

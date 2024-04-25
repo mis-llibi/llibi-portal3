@@ -39,7 +39,7 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
     <div className="font-[poppins] px-3">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
-          <Label htmlFor="remarks" className="text-sm">
+          <Label htmlFor="plan" className="text-sm">
             Plan
           </Label>
           <select
@@ -63,6 +63,19 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
               </>
             )}
           </select>
+        </div>
+        <div className="mb-3">
+          <Label htmlFor="remarks" className="text-sm">
+            Reason
+          </Label>
+          <textarea
+            id="remarks"
+            className="w-full rounded-md"
+            {...register('remarks', {
+              required: 'Reason is required.',
+            })}
+          />
+          <p className="text-red-600 text-xs">{errors?.remarks?.message}</p>
         </div>
         <div>
           <button
