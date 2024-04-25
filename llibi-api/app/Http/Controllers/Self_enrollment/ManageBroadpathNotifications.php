@@ -46,7 +46,7 @@ class ManageBroadpathNotifications extends Controller
         <b>This is an auto-generated Email, please do not share. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'BROADPATH DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'BROADPATH RENEWAL ENROLLMENT NOTIFICATION',
             'body' => '<div style="font-weight:normal;">'.$body.'</div>'
         );
 
@@ -85,7 +85,7 @@ class ManageBroadpathNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'BROADPATH DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'BROADPATH RENEWAL ENROLLMENT NOTIFICATION',
             'body' => 
                 '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -135,7 +135,7 @@ class ManageBroadpathNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'BROADPATH DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'BROADPATH RENEWAL ENROLLMENT NOTIFICATION',
             'body' => 
                 '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -183,7 +183,7 @@ class ManageBroadpathNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'BROADPATH DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'BROADPATH RENEWAL ENROLLMENT NOTIFICATION',
             'body' => 
                 '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -225,7 +225,7 @@ class ManageBroadpathNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'BROADPATH DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'BROADPATH RENEWAL ENROLLMENT NOTIFICATION',
             'body' => 
                 '<table style="font-weight:normal;width:600px;">
                     <tr>
