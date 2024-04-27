@@ -445,6 +445,24 @@ export default function DependentEnrollment({
                 />
               </div>
             </div>
+            <div>
+              <Label htmlFor="regularization_date">
+                Effectivity Date:{' '}
+                <span className="font-thin">
+                  {watchFields.effectivity_date &&
+                    moment(watchFields.effectivity_date).format('MMM DD, Y')}
+                </span>
+              </Label>
+              <div className="sr-only">
+                <Input
+                  id="regularization_date"
+                  type="date"
+                  className="block mt-1 w-full"
+                  register={register('regularization_date')}
+                  disabled
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -490,16 +508,15 @@ export default function DependentEnrollment({
     ) {
       Swal.fire(
         'DISCLAIMER',
-        'Late enrollment please put a reason for late enrollment in the input box.',
+        'Please put a reason for late enrollment.',
         'warning',
       )
     }
 
     const todayDate = moment()
     const marriageDate = moment(watchFields.marriage_date)
-
     const marriageDateDiff = todayDate.diff(marriageDate, 'days')
-    console.log(marriageDateDiff)
+
     if (
       isMileStone >= 30 &&
       marriageDateDiff > 30 &&
@@ -508,7 +525,7 @@ export default function DependentEnrollment({
       setLateMarriage(true)
       Swal.fire(
         'DISCLAIMER',
-        'Late enrollment please put a reason for late enrollment in the input box.',
+        'Please put a reason for late enrollment.',
         'warning',
       )
     } else {
@@ -740,7 +757,7 @@ export default function DependentEnrollment({
               />
             </div>
 
-            {isMileStone >= 30 && birthDateCountDays > 30 && (
+            {isMileStone >= 30 && birthDateCountDays > 30 && lateMarriage && (
               <div className="mb-3">
                 <Label htmlFor="reason_for_late_enrollment">
                   Reason for late enrollment

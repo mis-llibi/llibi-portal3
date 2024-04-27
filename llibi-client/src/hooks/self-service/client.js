@@ -4,9 +4,11 @@ import { useRouter } from 'next/router'
 import Swal from 'sweetalert2'
 
 import { env } from '@/../next.config'
+import { useErrorLogsStore } from '@/store/useErrorLogsStore'
 
 export const useClient = () => {
   const router = useRouter()
+  const { setErrorLogs } = useErrorLogsStore()
 
   const csrf = () => axios.get(`sanctum/csrf-cookie`)
 
@@ -31,7 +33,7 @@ export const useClient = () => {
             icon: 'error',
             showDenyButton: false,
             showCancelButton: false,
-            confirmButtonText: 'OK',
+            confirmButtonText: 'Report',
             denyButtonText: `Send Complaint`,
           }).then(result => {
             /* Read more about isConfirmed, isDenied below */
@@ -39,11 +41,13 @@ export const useClient = () => {
               setLoading('send-complaint')
             } else {
               setLoading(false)
+              setErrorLogs(res.data?.error_data)
             }
           })
         } else {
           router.push(result?.link)
           setLoading(false)
+          setErrorLogs(null)
         }
       })
       .catch(error => {

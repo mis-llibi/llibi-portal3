@@ -30,19 +30,21 @@ class ClientErrorLogService
       'request_loa_type' => Str::upper($inputs['typeLOA']),
     ]);
 
-    Log::info($errorLog);
-    $mailMsg = view('send-error-logs', ['data' => $errorLog]);
+    // Log::info($errorLog);
+    // $mailMsg = view('send-error-logs', ['data' => $errorLog]);
     switch (GetActiveEmailProvider::getProvider()) {
       case 'infobip':
-        $emailer = new SendingEmail(email: env('MAM_MAI'), body: $mailMsg, subject: 'CLIENT CARE PORTAL ERROR LOGS - NOTIFICATION', cc: [env('SIR_SEB')]);
-        $emailer->send();
+        // $emailer = new SendingEmail(email: env('MAM_MAI'), body: $mailMsg, subject: 'CLIENT CARE PORTAL ERROR LOGS - NOTIFICATION', cc: [env('SIR_SEB')]);
+        // $emailer->send();
         break;
 
       default:
-        $body = array('body' => $mailMsg, 'attachment' => [], 'cc' => [env('SIR_SEB')]);
-        $mail = (new NotificationController)->NewMail('', env('MAM_MAI'), $body);
+        // $body = array('body' => $mailMsg, 'attachment' => [], 'cc' => [env('SIR_SEB')]);
+        // $mail = (new NotificationController)->NewMail('', env('MAM_MAI'), $body);
 
         break;
     }
+
+    return $errorLog;
   }
 }

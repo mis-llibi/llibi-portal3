@@ -135,7 +135,7 @@ export default function PrincipalEnrollment({
     if (regDateDiffToday > 30) {
       Swal.fire(
         'DISCLAIMER',
-        'Late enrollment please put a reason for late enrollment in the input box.',
+        'Please put a reason for late enrollment.',
         'warning',
       )
     }

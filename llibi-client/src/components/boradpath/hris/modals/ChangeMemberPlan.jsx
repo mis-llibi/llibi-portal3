@@ -40,14 +40,14 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
           <Label htmlFor="change_plan_at" className="text-sm">
-            Deletion Date
+            Effectivity Date
           </Label>
           <input
             type="date"
             name="change_plan_at"
             id="change_plan_at"
             className="w-full rounded-md"
-            defaultValue={dateNow}
+            defaultValue={moment().format('Y-MM-DD')}
             {...register('change_plan_at')}
           />
         </div>

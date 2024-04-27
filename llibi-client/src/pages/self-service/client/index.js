@@ -30,6 +30,8 @@ import TrackReferenceNumber from './TrackReferenceNumber'
 import ComplaintForms from '@/components/Self-Service/ComplaintForms'
 
 import { useClientRequestStore } from '@/store/useClientRequestStore'
+import { useErrorLogsStore } from '@/store/useErrorLogsStore'
+import ReportValidationError from '@/components/Self-Service/ReportValidationError'
 
 const Client = () => {
   const router = useRouter()
@@ -108,6 +110,8 @@ const Client = () => {
 
   const [request, setRequest] = useState()
   const [greeTingTime, setGreetingTime] = useState('')
+
+  const { errorLogs } = useErrorLogsStore()
 
   const TODAY = new Date()
   const CURRENT_HOUR = TODAY.getHours()
@@ -257,6 +261,19 @@ const Client = () => {
     const data = removeUndefined({ obj })
     validate({ setLoading, ...data })
   }
+
+  useEffect(() => {
+    if (errorLogs?.id) {
+      setBody({
+        title: ``,
+        content: <ReportValidationError />,
+        modalOuterContainer: '',
+        modalContainer: 'h-full rounded-md',
+        modalBody: 'h-full',
+      })
+      toggle()
+    }
+  }, [errorLogs?.id])
 
   useEffect(() => {
     if (request) {

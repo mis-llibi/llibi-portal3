@@ -34,6 +34,7 @@ class ClientController extends Controller
     $response = '';
     $client = '';
     $link = 'self-service/client/request?req=' . $request->toDo;
+    $error = null;
     switch ((int)$request->toDo) {
 
         //REQUEST FOR LOA
@@ -61,7 +62,7 @@ class ClientController extends Controller
           $clientRequest = $this->RequestForLoa($request, $client);
           $link .= '&loatype=' . $request->typeLOA . '&refno=' . $client['reference_number'];
         } else {
-          ClientErrorLogService::saveLog(collect([
+          $error = ClientErrorLogService::saveLog(collect([
             'firstName' => $request->firstName,
             'lastName' => $request->lastName,
             'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
@@ -90,7 +91,7 @@ class ClientController extends Controller
         if ($result) {
           $link = ('https://llibi.app/service-request?router=1&memberid=' . $principal['client'][0]['member_id'] . '&password=' . $principal['client'][0]['birth_date']);
         } else {
-          ClientErrorLogService::saveLog(collect([
+          $error = ClientErrorLogService::saveLog(collect([
             'firstName' => $request->firstName,
             'lastName' => $request->lastName,
             'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
@@ -127,6 +128,7 @@ class ClientController extends Controller
       'client' => $client,
       'response' => $result,
       'message' => $response,
+      'error_data' => $error,
     ]);
   }
 
