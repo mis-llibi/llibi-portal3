@@ -1,4 +1,5 @@
 import React from 'react'
+import { useRouter } from 'next/router'
 
 import {
   CiBank,
@@ -9,6 +10,9 @@ import {
 } from 'react-icons/ci'
 
 export default function PatientCardDetails({ employee }) {
+  const router = useRouter()
+  const { hospital_class } = router.query
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3 mb-3">
       <div className="flex gap-3 rounded-md flex-wrap">
@@ -44,7 +48,9 @@ export default function PatientCardDetails({ employee }) {
           </div>
           <div>
             <span className="text-white font-bold text-sm">
-              {employee?.masterlist?.last_name}, {employee?.masterlist?.first_name} {employee?.masterlist?.middle_name}
+              {employee?.masterlist?.last_name},{' '}
+              {employee?.masterlist?.first_name}{' '}
+              {employee?.masterlist?.middle_name}
             </span>
           </div>
         </div>
@@ -54,7 +60,7 @@ export default function PatientCardDetails({ employee }) {
           <div className="flex justify-between">
             <div>
               <h4 className="font-bold text-white text-sm uppercase">
-                Plan Type
+                Plan Type - CLASS {hospital_class}
               </h4>
             </div>
             <div>

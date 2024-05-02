@@ -22,19 +22,14 @@ import broadpathRelationValidation from '@/lib/broadpathRelationValidation'
 import broadpathCivilStatusValidation from '@/lib/broadpathCivilStatusValidation'
 import moment from 'moment'
 import Swal from 'sweetalert2'
+import { useEnrollmentRelationStore } from '@/store/useEnrollmentRelationStore'
 
 const INITIAL_ENROLLMENT_RELATION = {
   principal: 'PRINCIPAL',
   dependent: 'DEPENDENT',
 }
 
-export default function PrincipalEnrollment({
-  loading,
-  setLoader,
-  enrollmentRelation,
-  setEnrollmentRelation,
-  mutate,
-}) {
+export default function PrincipalEnrollment({ loading, setLoader, mutate }) {
   const {
     register,
     handleSubmit,
@@ -44,6 +39,11 @@ export default function PrincipalEnrollment({
     formState: { errors, isSubmitting },
     clearErrors,
   } = useForm({ mode: 'onChange' })
+
+  const {
+    enrollmentRelation,
+    setEnrollmentRelation,
+  } = useEnrollmentRelationStore()
 
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
   const [selectedPrincipal, setSelectedPrincipal] = useState(null)
@@ -140,6 +140,10 @@ export default function PrincipalEnrollment({
       )
     }
   }, [watch('regularization_date')])
+
+  useEffect(() => {
+    return () => !enrollmentRelation && setEnrollmentRelation(null)
+  }, [])
 
   return (
     <>

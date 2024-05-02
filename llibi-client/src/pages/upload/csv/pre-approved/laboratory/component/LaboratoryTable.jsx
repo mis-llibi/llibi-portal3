@@ -5,6 +5,8 @@ import { DataGrid } from '@mui/x-data-grid'
 import { CiEdit, CiTrash } from 'react-icons/ci'
 import Loader from '@/components/Loader'
 
+import { NumberFormatter } from '@/lib/number-formatter'
+
 export default function LaboratoryTable({
   LaboratoryRequest,
   handleButtonEdit,
@@ -26,9 +28,17 @@ export default function LaboratoryTable({
     },
     {
       field: 'cost',
-      headerName: 'Cost',
+      headerName: 'Class 1',
       // width: 160,
       flex: 1,
+      renderCell: ({ row }) => <span>{NumberFormatter.format(row.cost)}</span>,
+    },
+    {
+      field: 'cost2',
+      headerName: 'Class 2',
+      // width: 160,
+      flex: 1,
+      renderCell: ({ row }) => <span>{NumberFormatter.format(row.cost2)}</span>,
     },
     {
       field: 'action',

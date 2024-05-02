@@ -261,12 +261,12 @@ const Client = () => {
     const data = removeUndefined({ obj })
     validate({ setLoading, ...data })
   }
-
+  console.log(errorLogs)
   useEffect(() => {
     if (errorLogs?.id) {
       setBody({
         title: ``,
-        content: <ReportValidationError />,
+        content: <ReportValidationError setShow={setShow} />,
         modalOuterContainer: '',
         modalContainer: 'h-full rounded-md',
         modalBody: 'h-full',
@@ -548,7 +548,7 @@ const Client = () => {
                       <Label
                         htmlFor="principalTypePersonal"
                         className="text-blue-500">
-                        Use personal details{' '}
+                        Use personal details (as shown in Emergency Room card)
                         <span className="text-red-400 text-xs">
                           {errors?.principalType?.message}
                         </span>
@@ -597,6 +597,9 @@ const Client = () => {
                           Date of Birth
                         </Label>
                         <Input
+                          onKeyDown={e => {
+                            e.preventDefault()
+                          }}
                           id="dob"
                           type="date"
                           register={{
@@ -658,6 +661,9 @@ const Client = () => {
                           Date of Birth
                         </Label>
                         <Input
+                          onKeyDown={e => {
+                            e.preventDefault()
+                          }}
                           id="dob2"
                           type="date"
                           register={{
@@ -695,7 +701,7 @@ const Client = () => {
                       {...register('minorDependent')}
                       id="minorDependent"
                       className="w-3 h-3"
-                      disabled={!watch('typeLOA')}
+                      disabled={!watch('typeLOA') || !watch('principalType')}
                     />
                     <Label
                       htmlFor="minorDependent"

@@ -113,7 +113,7 @@ const INITIALSTATE = {
 }
 export default function PreApproveLoa() {
   const router = useRouter()
-  const { employee_id, patient_id, company_id } = router.query
+  const { employee_id, patient_id, company_id, hospital_class } = router.query
   const [state, dispatch] = useReducer(reducer, INITIALSTATE)
 
   const [value, setValue] = useState(0)
@@ -246,14 +246,18 @@ export default function PreApproveLoa() {
     if (checked) {
       dispatch({
         type: REDUCER_ACTIONS.ADD_LABORATORY,
-        payload: { laboratory: Number(params.cost) },
+        payload: {
+          laboratory: Number(hospital_class == 1 ? params.cost : params.cost2),
+        },
       })
 
       setSelectedLab([...selectedLab, { ...params, isSelected: true }])
     } else {
       dispatch({
         type: REDUCER_ACTIONS.MINUS_LABORATORY,
-        payload: { laboratory: Number(params.cost) },
+        payload: {
+          laboratory: Number(hospital_class == 1 ? params.cost : params.cost2),
+        },
       })
 
       const removeUnchecked = selectedLab.filter(row => row.id !== params.id)

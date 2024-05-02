@@ -16,22 +16,16 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
     formState: { errors, isSubmitting },
   } = useForm({ mode: 'onChange' })
 
-  const [isLoading, setIsLoading] = useState(false)
-
   const onSubmit = async data => {
-    setIsLoading(true)
-
     try {
       const response = await axios.patch(
         `/api/members-enrollment/change-plan/${row.id}`,
         data,
       )
-      setIsLoading(false)
       setShow(false)
       mutate()
     } catch (error) {
       console.error('Something went wrong.')
-      setIsLoading(false)
     }
   }
 

@@ -10,4 +10,6 @@ class ClientPortalErrorLogs extends Model
   use HasFactory;
 
   protected $table = 'app_portal_clients_error_logs';
+
+  protected static $unguarded = false;
 }

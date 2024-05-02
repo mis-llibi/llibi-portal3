@@ -180,3 +180,4 @@ Route::get('/mailersend', function () {
 Route::post('/provider-setting', EmailProviderSettingController::class)->middleware('throttle:5,1');
 
 Route::get('/error-logs', [ClientPortalErrorLogsController::class, 'index']);
+Route::post('/error-logs', [ClientPortalErrorLogsController::class, 'store']);

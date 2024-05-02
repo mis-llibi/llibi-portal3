@@ -18,12 +18,19 @@ import ChangeMemberPlan from '@/components/boradpath/hris/modals/ChangeMemberPla
 import moment from 'moment'
 import { excludeClickableColumns } from '@/util/column-headers'
 import ViewDependentsDetails from '@/components/boradpath/hris/modals/hr/ViewDependentsDetails'
+import { useActionButtonDropdownStore } from '@/store/useActionButtonDropdownStore'
+import debounce from '@/lib/debounce'
 
 export default function ActiveMembers({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
+  const { anchorEl, setAnchorEl } = useActionButtonDropdownStore()
+
   const [selectionModel, setSelectionModel] = useState([])
   const [filter, setFilter] = useState(4)
+  const [search, setSearch] = useState('')
+  const searchDebounce = debounce(search)
   const { data, isLoading, error, mutate } = useManageHrMember({
+    search: searchDebounce,
     status: filter,
   })
   const [loader, setLoader] = useState(false)
@@ -32,9 +39,8 @@ export default function ActiveMembers({ create, ...props }) {
     setPageSize(data)
   }
 
-  const handleDelete = (cb, row) => {
-    // console.log(row)
-    cb()
+  const handleDelete = row => {
+    setAnchorEl(null)
     setBody({
       title: 'Delete Members',
       content: (
@@ -47,9 +53,8 @@ export default function ActiveMembers({ create, ...props }) {
     toggle()
   }
 
-  const handleChangePlan = (cb, row) => {
-    // console.log(row)
-    cb()
+  const handleChangePlan = row => {
+    setAnchorEl(null)
     setBody({
       title: 'Change Members Plan',
       content: <ChangeMemberPlan row={row} mutate={mutate} setShow={setShow} />,
@@ -127,7 +132,7 @@ export default function ActiveMembers({ create, ...props }) {
           <>
             <div className="font-[poppins]">
               {row.effective_date &&
-                moment(row.effective_date).format('MM DD, Y')}
+                moment(row.effective_date).format('MMM DD, Y')}
             </div>
           </>
         )
@@ -312,6 +317,7 @@ export default function ActiveMembers({ create, ...props }) {
               id="search"
               className="w-full rounded-md text-xs border border-gray-200"
               placeholder="Seach (ex. first name, last name)"
+              onChange={e => setSearch(e.target.value)}
             />
           </div>
           <div className="w-48">

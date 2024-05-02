@@ -28,7 +28,7 @@ export default function EmailProviderSettingHomePage() {
     <>
       <div className="max-w-3xl mx-auto flex justify-center items-center h-[50vh] flex-col !font-[poppins]">
         <div className="w-full text-center">
-          <span className="text-[#191919] text-xl font-semibold uppercase">
+          <span className="text-fav-black text-xl font-semibold uppercase">
             Choose provider for email sending
           </span>
           <div className="flex justify-center gap-3 rounded-md p-3 mb-3">

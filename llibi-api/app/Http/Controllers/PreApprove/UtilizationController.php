@@ -141,7 +141,7 @@ class UtilizationController extends Controller
     $employees['utilization'] = $utilization;
     $employees['laboratory'] = $laboratory;
     // $employees['loa_util'] = $loaUtilization;
-    $employees['reserving_amount'] = $masterlist->plantype === 2 ? '5542.00' : $reserving_amount;
+    $employees['reserving_amount'] = $reserving_amount;
     $employees['masterlist'] = $masterlist;
 
     return response()->json($employees);

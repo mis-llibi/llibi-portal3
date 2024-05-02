@@ -23,15 +23,15 @@ export default function UtilizationTab({
         />
       </div>
       <div className="h-96 overflow-scroll">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs">
           <thead>
-            <tr className="uppercase bg-blue-50">
-              <th className='py-3'>Claim #</th>
-              <th className='py-3'>Claim Date</th>
-              <th className='py-3'>Claim Type</th>
-              <th className='py-3'>Relation</th>
-              <th className='py-3'>Diagnosis</th>
-              <th className='py-3'>Amount</th>
+            <tr className="uppercase bg-blue-600 text-white">
+              <th className="py-3">Claim #</th>
+              <th className="py-3">Claim Date</th>
+              <th className="py-3">Claim Type</th>
+              <th className="py-3">Relation</th>
+              <th className="py-3">Diagnosis</th>
+              <th className="py-3">Amount</th>
               <th>
                 {/* <input
                 onChange={e => handleSelectUtilizationAll(e)}
@@ -40,26 +40,26 @@ export default function UtilizationTab({
               </th>
             </tr>
           </thead>
-          <tbody className='text-xs'>
+          <tbody className="text-xs">
             {search?.map((util, i) => {
               return (
                 <tr key={util.id} className="even:bg-gray-100">
-                  <td className="py-3 text-center">{util.claimnumb}</td>
-                  <td className="py-3 text-center">{util.claimdate}</td>
-                  <td className="py-3 text-center">{util.claimtype}</td>
-                  <td className="py-3 text-center">
-                    {util.relation === 'EMPLOYEE' ? 'E' : 'D'}
-                  </td>
-                  <td>{util.diagname}</td>
-                  <td className="py-3 text-right">
-                    {formatter.format(util.eligible)}
-                  </td>
-                  <td className="py-3 text-center">
+                  <td className="px-3 py-3 text-center">
                     <input
                       checked={selectedUtil.some(row => row.id === util.id)}
                       onChange={e => handleSelectUtilization(e, util)}
                       type="checkbox"
                     />
+                  </td>
+                  <td className="px-3 py-3 text-center">{util.claimnumb}</td>
+                  <td className="px-3 py-3 text-center">{util.claimdate}</td>
+                  <td className="px-3 py-3 text-center">{util.claimtype}</td>
+                  <td className="px-3 py-3 text-center">
+                    {util.relation === 'EMPLOYEE' ? 'E' : 'D'}
+                  </td>
+                  <td>{util.diagname}</td>
+                  <td className="px-3 py-3 text-right">
+                    {formatter.format(util.eligible)}
                   </td>
                 </tr>
               )

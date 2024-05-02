@@ -33,6 +33,7 @@ class LaboratoryImport implements ToCollection, WithBatchInserts, WithChunkReadi
             'laboratory' => trim($row['description']),
             'slug_laboratory' => $slug_laboratory,
             'cost' => Str::replace(',', '', $row['pre_approved_rates']),
+            'cost2' => Str::replace(',', '', $row['pre_approved_rates']),
           ]);
         }
       } catch (\Throwable $th) {

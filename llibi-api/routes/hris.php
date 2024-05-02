@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Members\AdminController;
+use App\Http\Controllers\Members\DependentController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Members\ManageEnrolleeController;
@@ -27,6 +28,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     ->prefix('members-enrollment')
     ->group(function () {
       Route::get('/principals', 'fetchPrincipal');
+    });
+
+  Route::controller(DependentController::class)
+    ->prefix('members-enrollment')
+    ->group(function () {
+      Route::get('/view-dependents', 'getDependents');
     });
 
   Route::controller(MilestoneController::class)

@@ -1,11 +1,28 @@
 import Label from '@/components/Label'
+import axios from '@/lib/axios'
 import moment from 'moment'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 export default function ViewDependentsDetails({ row }) {
-  console.log(row)
+  const [deps, setDeps] = useState(null)
+
+  const getDependents = async () => {
+    try {
+      const response = await axios.get(
+        `/api/members-enrollment/view-dependents?id=${row?.id}&member_id=${row?.member_id}`,
+      )
+      setDeps(response.data)
+    } catch (error) {
+      throw new Error('Something went wrong.')
+    }
+  }
+
+  useEffect(() => {
+    getDependents()
+  }, [row?.id])
+
   return (
-    <div className="w-[90vw] md:w-[40em] px-2">
+    <div className="w-[90vw] md:w-[60em] px-2">
       <div className="grid grid-cols-2 gap-3 mb-3">
         {/* COL1 */}
         <div>
@@ -89,6 +106,34 @@ export default function ViewDependentsDetails({ row }) {
             </Label>
           </div>
         </div>
+      </div>
+
+      <div className='bg-gray-50'>
+        <h1 className='font-bold'>Relationship</h1>
+        <table className="text-xs w-full">
+          <thead>
+            <tr>
+              <th className="px-3 py-2 bg-blue-gray-50">Member ID</th>
+              <th className="px-3 py-2 bg-blue-gray-50">Name</th>
+              <th className="px-3 py-2 bg-blue-gray-50">Birthdate</th>
+              <th className="px-3 py-2 bg-blue-gray-50">Civil Status</th>
+              <th className="px-3 py-2 bg-blue-gray-50">Relation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {deps?.map(item => (
+              <tr key={item.id}>
+                <td className="px-3 py-1">{item.member_id}</td>
+                <td className="px-3 py-1">
+                  {item.last_name}, {item.first_name} {item.middle_name}
+                </td>
+                <td className="px-3 py-1">{item.birth_date}</td>
+                <td className="px-3 py-1">{item.civil_status}</td>
+                <td className="px-3 py-1">{item.relationship_id}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

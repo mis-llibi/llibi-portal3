@@ -531,7 +531,7 @@ const modalUpdateMember = ({ data }) => {
                 <hr className="mb-2"></hr>
 
                 {/* Check if philhealth member */}
-                <div className="block mt-3 flex">
+                <div className="block mt-3 md:flex">
                     <div className="flex-grow">
                         <label
                             htmlFor="philHealthMember"

@@ -31,14 +31,16 @@ export const useClient = () => {
             title: 'Validation Error',
             text: result?.message,
             icon: 'error',
-            showDenyButton: false,
+            showDenyButton: true,
             showCancelButton: false,
             confirmButtonText: 'Report',
-            denyButtonText: `Send Complaint`,
+            denyButtonText: `Close`,
           }).then(result => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isDenied) {
-              setLoading('send-complaint')
+              // setLoading('send-complaint')
+              setLoading(false)
+              setErrorLogs(null)
             } else {
               setLoading(false)
               setErrorLogs(res.data?.error_data)

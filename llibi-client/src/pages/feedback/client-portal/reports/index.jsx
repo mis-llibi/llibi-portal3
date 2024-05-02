@@ -150,7 +150,7 @@ export default function ReportHomePage() {
       <Head>
         <title>Client Portal Reports</title>
       </Head>
-      <div className="bg-[#f1faee]">
+      <div className="bg-[#f1faee] font-[poppins]">
         <nav className="bg-blue-300 h-16">
           <div className="flex gap-3 px-5">
             <img src="/logo.png" alt="LLIBI LOGO" width={200} />

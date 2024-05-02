@@ -12,7 +12,14 @@ module.exports = withMT({
         },
       },
       colors: {
-        'fav-black': '#1B1C1E',
+        'fav-black': '#424242',
+        'fav-subtitle': '#64748b',
+
+        'fav-blue-light': '#2563eb',
+        'fav-blue-dark': '#1d4ed8',
+
+        'fav-red-light': '#e11d48',
+        'fav-red-dark': '#be123c',
       },
     },
   },

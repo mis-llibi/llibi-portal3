@@ -15,6 +15,8 @@ const INITIAL_ENROLLMENT_RELATION = {
   dependent: 'DEPENDENT',
 }
 
+import { useEnrollmentRelationStore } from '@/store/useEnrollmentRelationStore'
+
 const ManualInsertEnrollee = ({
   create,
   loading,
@@ -22,11 +24,14 @@ const ManualInsertEnrollee = ({
   setShow,
   mutate,
 }) => {
-  const [enrollmentRelation, setEnrollmentRelation] = useState(null)
+  const {
+    enrollmentRelation,
+    setEnrollmentRelation,
+  } = useEnrollmentRelationStore()
 
-  const handleSetEnrollmentRelation = value => {
-    setEnrollmentRelation(value)
-  }
+  // const handleSetEnrollmentRelation = value => {
+  //   setEnrollmentRelation(value)
+  // }
 
   return (
     <div className="p-3 font-[poppins]">
@@ -46,7 +51,7 @@ const ManualInsertEnrollee = ({
               type="radio"
               id="enrollment_relation_principal"
               value="PRINCIPAL"
-              onChange={e => handleSetEnrollmentRelation(e.target.value)}
+              onChange={e => setEnrollmentRelation(e.target.value)}
               checked={
                 enrollmentRelation === INITIAL_ENROLLMENT_RELATION.principal
               }
@@ -80,8 +85,6 @@ const ManualInsertEnrollee = ({
         <PrincipalEnrollment
           loading={loading}
           setLoader={setLoader}
-          enrollmentRelation={enrollmentRelation}
-          setEnrollmentRelation={setEnrollmentRelation}
           mutate={mutate}
         />
       )}
@@ -89,8 +92,6 @@ const ManualInsertEnrollee = ({
         <DependentEnrollment
           loading={loading}
           setLoader={setLoader}
-          enrollmentRelation={enrollmentRelation}
-          setEnrollmentRelation={setEnrollmentRelation}
           mutate={mutate}
         />
       )}

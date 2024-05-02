@@ -30,7 +30,8 @@ class LaboratoryExport implements FromCollection, WithHeadings, ShouldAutoSize
     return [
       'CODE',
       'LABORATORY',
-      'COST',
+      'CLASS_1',
+      'CLASS_2',
     ];
   }
 }

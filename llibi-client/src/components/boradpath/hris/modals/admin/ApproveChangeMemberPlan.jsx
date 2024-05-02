@@ -54,6 +54,18 @@ export default function ApproveChangeMemberPlan({
             <Box className="font-[poppins]">
               <div className="mb-3">
                 <label htmlFor="" className="font-bold">
+                  Effectivity Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-md"
+                  {...register('approved_change_plan_at', {
+                    required: 'Effectivity Date is required.',
+                  })}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold">
                   Remarks
                 </label>
                 <textarea
@@ -61,16 +73,6 @@ export default function ApproveChangeMemberPlan({
                   className="w-full rounded-md"
                   {...register('remarks')}
                   rows={4}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="" className="font-bold">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full rounded-md"
-                  {...register('approved_change_plan_at')}
                 />
               </div>
 

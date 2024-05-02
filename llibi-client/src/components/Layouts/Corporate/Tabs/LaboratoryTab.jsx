@@ -1,5 +1,6 @@
 import React from 'react'
 import LaboratoryCard from './mobile/LaboratoryCard'
+import { useRouter } from 'next/router'
 
 export default function LaboratoryTab({
   search,
@@ -8,6 +9,8 @@ export default function LaboratoryTab({
   handleSelectLaboratory,
   selectedLab,
 }) {
+  const router = useRouter()
+  const { hospital_class } = router?.query
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'PHP',
@@ -24,9 +27,9 @@ export default function LaboratoryTab({
         />
       </div>
       <div className="h-96 overflow-scroll">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs">
           <thead>
-            <tr className="uppercase bg-blue-50">
+            <tr className="uppercase bg-blue-600 text-white">
               {/* <th>Code</th> */}
               <th className="py-3">Procedure</th>
               <th className="py-3">Cost</th>
@@ -43,11 +46,7 @@ export default function LaboratoryTab({
               return (
                 <tr key={lab.id} className="even:bg-gray-300">
                   {/* <td>{lab.code}</td> */}
-                  <td className="py-3">{lab.laboratory}</td>
-                  <td className="py-3 text-right">
-                    {formatter.format(lab.cost)}
-                  </td>
-                  <td className="py-3 text-center">
+                  <td className="px-3 py-3 text-center">
                     <input
                       checked={selectedLab.some(row => row.id === lab.id)}
                       onChange={e =>
@@ -55,6 +54,12 @@ export default function LaboratoryTab({
                       }
                       type="checkbox"
                     />
+                  </td>
+                  <td className="px-3 py-3">{lab.laboratory}</td>
+                  <td className="px-3 py-3 text-right">
+                    {hospital_class == 1
+                      ? formatter.format(lab.cost)
+                      : formatter.format(lab.cost2)}
                   </td>
                 </tr>
               )

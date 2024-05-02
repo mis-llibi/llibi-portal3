@@ -16,8 +16,11 @@ import {
 } from 'react-icons/bi'
 import ApproveChangeMemberPlan from './modals/admin/ApproveChangeMemberPlan'
 
+import { useActionButtonDropdownStore } from '@/store/useActionButtonDropdownStore'
+
 export default function ActionButton({ row, handleDelete, handleChangePlan }) {
-  const [anchorEl, setAnchorEl] = useState(null)
+  // const [anchorEl, setAnchorEl] = useState(null)
+  const { anchorEl, setAnchorEl } = useActionButtonDropdownStore()
 
   const handleClick = event => {
     setAnchorEl(anchorEl ? null : event.currentTarget)
@@ -59,13 +62,13 @@ export default function ActionButton({ row, handleDelete, handleChangePlan }) {
           'aria-labelledby': 'basic-button',
         }}>
         <Paper sx={{ width: 220 }}>
-          <MenuItem onClick={() => handleDelete(handleClose, row)}>
+          <MenuItem onClick={() => handleDelete(row)}>
             <div className="flex gap-3 items-center font-[poppins] text-sm">
               <BiTrashAlt size={20} />
               <span>Delete</span>
             </div>
           </MenuItem>
-          <MenuItem onClick={() => handleChangePlan(handleClose, row)}>
+          <MenuItem onClick={() => handleChangePlan(row)}>
             <div className="flex gap-3 items-center font-[poppins] text-sm">
               <BiUpvote size={20} />
               <span>Change Plan</span>

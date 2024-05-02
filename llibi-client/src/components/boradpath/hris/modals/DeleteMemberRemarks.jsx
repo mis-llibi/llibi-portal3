@@ -57,7 +57,7 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
           <Label className="flex gap-3 items-center">Death Documents</Label>
           <input
             type="file"
-            className='file:bg-blue-600 file:border-none file:rounded-md text-xs file:text-white file:px-3 file:py-1 w-full'
+            className="file:bg-blue-600 file:border-none file:rounded-md text-xs file:text-white file:px-3 file:py-1 w-full"
             accept="image/*, application/pdf"
             {...register('death_document', {
               required: 'Death documents is required.',
@@ -76,14 +76,14 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
               },
             })}
           />
-          <p className="text-red-600 text-xs">
+          <p className="text-fav-red-light text-xs">
             {errors?.death_document?.message}
           </p>
         </div>
-        <div className='mt-10'>
+        <div className="mt-10">
           <button
             type="submit"
-            className="bg-red-500 hover:bg-red-600 px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
+            className="bg-fav-red-light hover:bg-fav-red-dark px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
             {isSubmitting ? <BiLoader size={14} /> : <BiTrashAlt size={14} />}
             <span>Delete</span>
           </button>

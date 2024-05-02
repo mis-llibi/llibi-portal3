@@ -31,14 +31,9 @@ const INITIAL_ENROLLMENT_RELATION = {
 import Swal from 'sweetalert2'
 import SingleToMarried from '@/pages/members/components/broadpath/milestone/SingleToMarried'
 import SingleToSoloParent from '@/pages/members/components/broadpath/milestone/SingleToSoloParent'
+import { useEnrollmentRelationStore } from '@/store/useEnrollmentRelationStore'
 
-export default function DependentEnrollment({
-  loading,
-  setLoader,
-  enrollmentRelation,
-  setEnrollmentRelation,
-  mutate,
-}) {
+export default function DependentEnrollment({ loading, setLoader, mutate }) {
   const {
     register,
     handleSubmit,
@@ -49,6 +44,11 @@ export default function DependentEnrollment({
     clearErrors,
   } = useForm({ mode: 'onChange' })
   const watchFields = watch()
+
+  const {
+    enrollmentRelation,
+    setEnrollmentRelation,
+  } = useEnrollmentRelationStore()
 
   const { show, setShow: modalSetShow, body, setBody, toggle } = ModalControl()
   const [selectedPrincipal, setSelectedPrincipal] = useState(null)
@@ -317,8 +317,82 @@ export default function DependentEnrollment({
       hiredate: selectedPrincipal?.date_hired,
       regularization_date: selectedPrincipal?.reg_date,
       principalEmail: selectedPrincipal?.contact?.email ?? '',
+      principalEffectivityDate: selectedPrincipal?.reg_date,
     })
   }, [selectedPrincipal?.member_id])
+
+  useEffect(() => {
+    if (isMileStone < 30) {
+      setValue(
+        'effectivity_date',
+        moment(watchFields.regularization_date).format('Y-MM-DD'),
+      )
+    } else {
+      if (watchFields.relation === 'SPOUSE') {
+        setValue(
+          'effectivity_date',
+          moment(watchFields.marriage_date).format('Y-MM-DD'),
+        )
+      } else if (watchFields.relation === 'CHILD') {
+        setValue(
+          'effectivity_date',
+          moment(watchFields.birthdate).add(15, 'days').format('Y-MM-DD'),
+        )
+      } else {
+        setValue(
+          'effectivity_date',
+          moment(watchFields.regularization_date).format('Y-MM-DD'),
+        )
+      }
+    }
+  }, [
+    watchFields.regularization_date,
+    watchFields.birthdate,
+    watchFields.relation,
+    watchFields.marriage_date,
+  ])
+
+  useEffect(() => {
+    if (
+      isMileStone >= 30 &&
+      birthDateCountDays > 30 &&
+      watchFields.relation === 'CHILD'
+    ) {
+      Swal.fire(
+        'DISCLAIMER',
+        'Please put a reason for late enrollment.',
+        'warning',
+      )
+    }
+
+    const todayDate = moment()
+    const marriageDate = moment(watchFields.marriage_date)
+    const marriageDateDiff = todayDate.diff(marriageDate, 'days')
+
+    if (
+      isMileStone >= 30 &&
+      marriageDateDiff > 30 &&
+      watchFields.relation === 'SPOUSE'
+    ) {
+      setLateMarriage(true)
+      Swal.fire(
+        'DISCLAIMER',
+        'Please put a reason for late enrollment.',
+        'warning',
+      )
+    } else {
+      setLateMarriage(false)
+    }
+  }, [
+    watchFields.regularization_date,
+    birthDateCountDays,
+    watchFields.relation,
+    watchFields.marriage_date,
+  ])
+
+  useEffect(() => {
+    return () => !enrollmentRelation && setEnrollmentRelation(null)
+  }, [])
 
   const PrincipalDetails = () => {
     return (
@@ -449,8 +523,10 @@ export default function DependentEnrollment({
               <Label htmlFor="regularization_date">
                 Effectivity Date:{' '}
                 <span className="font-thin">
-                  {watchFields.effectivity_date &&
-                    moment(watchFields.effectivity_date).format('MMM DD, Y')}
+                  {watchFields.principalEffectivityDate &&
+                    moment(watchFields.principalEffectivityDate).format(
+                      'MMM DD, Y',
+                    )}
                 </span>
               </Label>
               <div className="sr-only">
@@ -468,75 +544,6 @@ export default function DependentEnrollment({
       </div>
     )
   }
-
-  useEffect(() => {
-    if (isMileStone < 30) {
-      setValue(
-        'effectivity_date',
-        moment(watchFields.regularization_date).format('Y-MM-DD'),
-      )
-    } else {
-      if (watchFields.relation === 'SPOUSE') {
-        setValue(
-          'effectivity_date',
-          moment(watchFields.marriage_date).format('Y-MM-DD'),
-        )
-      } else if (watchFields.relation === 'CHILD') {
-        setValue(
-          'effectivity_date',
-          moment(watchFields.birthdate).add(15, 'days').format('Y-MM-DD'),
-        )
-      } else {
-        setValue(
-          'effectivity_date',
-          moment(watchFields.regularization_date).format('Y-MM-DD'),
-        )
-      }
-    }
-  }, [
-    watchFields.regularization_date,
-    watchFields.birthdate,
-    watchFields.relation,
-    watchFields.marriage_date,
-  ])
-
-  useEffect(() => {
-    if (
-      isMileStone >= 30 &&
-      birthDateCountDays > 30 &&
-      watchFields.relation === 'CHILD'
-    ) {
-      Swal.fire(
-        'DISCLAIMER',
-        'Please put a reason for late enrollment.',
-        'warning',
-      )
-    }
-
-    const todayDate = moment()
-    const marriageDate = moment(watchFields.marriage_date)
-    const marriageDateDiff = todayDate.diff(marriageDate, 'days')
-
-    if (
-      isMileStone >= 30 &&
-      marriageDateDiff > 30 &&
-      watchFields.relation === 'SPOUSE'
-    ) {
-      setLateMarriage(true)
-      Swal.fire(
-        'DISCLAIMER',
-        'Please put a reason for late enrollment.',
-        'warning',
-      )
-    } else {
-      setLateMarriage(false)
-    }
-  }, [
-    watchFields.regularization_date,
-    birthDateCountDays,
-    watchFields.relation,
-    watchFields.marriage_date,
-  ])
 
   return (
     <>
@@ -757,22 +764,24 @@ export default function DependentEnrollment({
               />
             </div>
 
-            {isMileStone >= 30 && birthDateCountDays > 30 && lateMarriage && (
-              <div className="mb-3">
-                <Label htmlFor="reason_for_late_enrollment">
-                  Reason for late enrollment
-                </Label>
-                <Input
-                  id="reason_for_late_enrollment"
-                  type="text"
-                  className="block mt-1 w-full"
-                  register={register('reason_for_late_enrollment', {
-                    required: 'Reason for late enrollment is required',
-                  })}
-                  errors={errors?.reason_for_late_enrollment}
-                />
-              </div>
-            )}
+            {isMileStone >= 30 &&
+              (birthDateCountDays > 30 || lateMarriage) &&
+              watchFields.relation !== '' && (
+                <div className="mb-3">
+                  <Label htmlFor="reason_for_late_enrollment">
+                    Reason for late enrollment
+                  </Label>
+                  <Input
+                    id="reason_for_late_enrollment"
+                    type="text"
+                    className="block mt-1 w-full"
+                    register={register('reason_for_late_enrollment', {
+                      required: 'Reason for late enrollment is required',
+                    })}
+                    errors={errors?.reason_for_late_enrollment}
+                  />
+                </div>
+              )}
 
             <div className="mb-3">
               <Label htmlFor="attachment">

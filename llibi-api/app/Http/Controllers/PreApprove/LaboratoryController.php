@@ -29,6 +29,7 @@ class LaboratoryController extends Controller
       'code' => Str::random(12),
       'laboratory' => trim($request->laboratory),
       'cost' => Str::replace(',', '', trim($request->cost)),
+      'cost2' => Str::replace(',', '', trim($request->cost2)),
       'class' => 1,
     ]);
 
@@ -40,6 +41,7 @@ class LaboratoryController extends Controller
     $lab = Laboratory::where('id', $id)->update([
       'laboratory' => trim($request->laboratory),
       'cost' => Str::replace(',', '', trim($request->cost)),
+      'cost2' => Str::replace(',', '', trim($request->cost2)),
     ]);
 
     return response()->json($lab);
@@ -59,7 +61,7 @@ class LaboratoryController extends Controller
     $labs = Laboratory::query()
       ->where('code', 'LIKE', "%$q%")
       ->orWhere('laboratory', 'LIKE', "%$q%")
-      ->select('code', 'laboratory', 'cost')
+      ->select('code', 'laboratory', 'cost', 'cost2')
       ->latest()
       ->take(100)
       ->get();

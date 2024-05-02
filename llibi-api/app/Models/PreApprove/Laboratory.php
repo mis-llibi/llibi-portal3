@@ -12,7 +12,7 @@ class Laboratory extends Model
   protected $connection = 'mysql_pre_approve';
   protected $table = 'laboratory';
 
-  protected $fillable = ['code', 'laboratory', 'slug_laboratory', 'cost', 'class'];
+  protected $fillable = ['code', 'laboratory', 'slug_laboratory', 'cost', 'cost2'];
 
   // public function getCostAttribute($value)
   // {

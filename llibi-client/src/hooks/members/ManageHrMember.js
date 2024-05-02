@@ -12,13 +12,13 @@ const swrSetting = {
   refreshInterval: 30000, // revalidate every 5 minutes
 }
 
-export const useManageHrMember = ({ status }) => {
+export const useManageHrMember = ({ search = '', status }) => {
   return useSWR(
-    `/api/members-enrollment/members?status=${status}`,
+    `/api/members-enrollment/members?search=${search}&status=${status}`,
     async () => {
       try {
         const response = await axios.get(
-          `/api/members-enrollment/members?status=${status}`,
+          `/api/members-enrollment/members?search=${search}&status=${status}`,
         )
 
         return response.data

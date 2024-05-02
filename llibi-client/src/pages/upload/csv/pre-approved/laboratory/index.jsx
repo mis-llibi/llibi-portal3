@@ -10,6 +10,7 @@ import AddLaboratory from './component/AddLaboratory'
 import EditLaboratory from './component/EditLaboratory'
 import LaboratoryTable from './component/LaboratoryTable'
 import ImportLaboratory from './component/ImportLaboratory'
+import PreApprovedLayout from '@/components/Layouts/PreApprovedLayout'
 
 import debounce from '@/lib/debounce'
 
@@ -142,7 +143,7 @@ export default function LaboratoryPage() {
   // if (!LaboratoryRequest.data) return <h1>Loading...</h1>
 
   return (
-    <>
+    <PreApprovedLayout>
       {/* <div className="max-w-lg flex flex-col justify-between items-center border mx-auto mt-20 p-5 rounded-md h-[20rem]">
         <div>
           <h1 className="font-bold uppercase text-3xl mb-5 text-gray-900">
@@ -176,10 +177,10 @@ export default function LaboratoryPage() {
         </button>
       </div> */}
 
-      <div className="px-20 py-5">
+      <div className="px-5 max-w-7xl bg-white mx-auto mt-5 rounded-md py-5">
         <div className="flex justify-between items-center mb-3">
           <div>
-            <h1 className="uppercase text-3xl font-bold tracking-wider text-fav-black">
+            <h1 className="uppercase text-2xl font-bold text-fav-black">
               Laboratory List
             </h1>
           </div>
@@ -253,6 +254,6 @@ export default function LaboratoryPage() {
           mutate={LaboratoryRequest.mutate}
         />
       )}
-    </>
+    </PreApprovedLayout>
   )
 }

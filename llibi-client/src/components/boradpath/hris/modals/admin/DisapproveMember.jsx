@@ -58,12 +58,10 @@ export default function DisapproveMember({
                 <Label>Disapproval Date</Label>
                 <input
                   type="date"
-                  defaultValue={moment().format(
-                    'Y-MM-DD',
-                  )}
+                  defaultValue={moment().format('Y-MM-DD')}
                   className="w-full rounded-md"
                   {...register('approved_deleted_member_at', {
-                    required: 'Deletion Date is required.',
+                    required: 'Disapproval Date is required.',
                   })}
                 />
                 <span className="text-red-600 text-xs">

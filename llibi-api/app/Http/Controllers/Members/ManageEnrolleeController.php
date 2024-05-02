@@ -53,6 +53,7 @@ class ManageEnrolleeController extends Controller
      */
 
     $status = request()->query('status');
+    $search = request()->query('search');
 
     $members =  hr_members::query();
     $members = match ($status) {
@@ -72,6 +73,13 @@ class ManageEnrolleeController extends Controller
 
     $members = $members->with(['changePlanPending:id,member_link_id,plan', 'contact']);
 
+    if ($search) {
+      $members = $members->where(function ($query) use ($search) {
+        $query->where('first_name', 'LIKE', "%$search%");
+        $query->orWhere('last_name', 'LIKE', "%$search%");
+      });
+    }
+
     if ($status == 7) {
       $members = $members->orderByDesc('approved_deleted_member_at');
     } else {
@@ -82,6 +90,7 @@ class ManageEnrolleeController extends Controller
 
     return $members;
   }
+
   public function getEnrollees($status)
   {
     $list = DB::table('hr_members as t1')
@@ -551,7 +560,7 @@ class ManageEnrolleeController extends Controller
 
       $attachment = $request->has('attachment') ? $request->file('attachment') : [];
       foreach ($attachment as $key => $attch) {
-        $path = $attch->store(env('APP_ENV') . '/members/attachments/' . $request->member_id, 'broadpath');
+        $path = $attch->store(env('APP_ENV') . '/members/attachments/' . $enrollee->id . '/' . $request->member_id, 'broadpath');
         $file_name = $attch->getClientOriginalName();
 
         HrMemberAttachment::create([
@@ -616,7 +625,7 @@ class ManageEnrolleeController extends Controller
 
     HrMemberAttachment::where('link_id', $id)->delete();
     foreach ($attachment as $key => $attch) {
-      $path = $attch->store(env('APP_ENV') . '/members/attachments/' . $request->member_id, 'broadpath');
+      $path = $attch->store(env('APP_ENV') . '/members/attachments/' . $enrollee->id . '/' . $request->member_id, 'broadpath');
       $file_name = $attch->getClientOriginalName();
 
       HrMemberAttachment::create([
@@ -692,10 +701,9 @@ class ManageEnrolleeController extends Controller
   {
     DB::transaction(function () use ($request, $id) {
       $member = hr_members::query()->where('id', $id)->first();
-      // $member->plan = $request->plan;
       $member->status = 8;
       $member->change_plan_at = Carbon::now();
-      $member->change_plan_at = Carbon::now();
+      $member->client_remarks = $request->remarks;
       $member->save();
 
       HrMemberChangePlanCorrection::create([
@@ -716,13 +724,12 @@ class ManageEnrolleeController extends Controller
       // $member->deleted_remarks = $request->deleted_remarks;
       $member->status = 3;
       $member->pending_deleted_at = Carbon::parse($request->pending_deleted_at)->format('Y-m-d');
-      $member->change_plan_at = Carbon::now();
       $member->save();
 
       DeletionAttachment::create([
         'link_id' => $member->id,
         'file_name' => $request->file('death_document')->getClientOriginalName(),
-        'file_link' => $request->file('death_document')->store(env('APP_ENV') . '/members/deletion/attachments/' . $member->member_id, 'broadpath'),
+        'file_link' => $request->file('death_document')->store(env('APP_ENV') . '/members/deletion/attachments/' . $member->id . '/' . $member->member_id, 'broadpath'),
       ]);
     });
 

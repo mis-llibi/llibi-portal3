@@ -10,19 +10,24 @@ import DialogTitle from '@mui/material/DialogTitle'
 import axios from '@/lib/axios'
 import Label from '@/components/Label'
 
+import { useForm } from 'react-hook-form'
+
 import { addLaboratory } from '@/hooks/pre-approved/laboratory'
 
 export default function AddLaboratory({ row, ...props }) {
-  const labRef = useRef('')
-  const costRef = useRef(0)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+    clearErrors,
+  } = useForm()
 
-  const handleAddLab = async () => {
-    let laboratory = labRef.current.value
-    let cost = costRef.current.value
-
+  const handleAddLab = async data => {
     await addLaboratory({
-      laboratory: laboratory,
-      cost: cost,
+      ...data,
     })
 
     props.handleClose()
@@ -36,28 +41,50 @@ export default function AddLaboratory({ row, ...props }) {
           <span className="font-bold text-gray-800">Add Laboratory</span>
         </DialogTitle>
         <DialogContent>
-          <div className="mb-3">
-            <Label>Laboratory</Label>
-            <input
-              className="w-full rounded-md"
-              type="text"
-              name="laboratory"
-              ref={labRef}
-            />
-          </div>
-          <div className="mb-3">
-            <Label>Cost (E.g. 1500, 2500)</Label>
-            <input
-              className="w-full rounded-md"
-              type="text"
-              name="cost"
-              ref={costRef}
-            />
-          </div>
+          <form>
+            <div className="mb-3">
+              <Label>Laboratory</Label>
+              <input
+                className="w-full rounded-md"
+                type="text"
+                name="laboratory"
+                {...register('laboratory', {
+                  required: 'Laboratory is required',
+                })}
+              />
+              <p className="text-xs text-red-600">
+                {errors?.laboratory?.message}
+              </p>
+            </div>
+            <div className="mb-3">
+              <Label>Class 1</Label>
+              <input
+                className="w-full rounded-md"
+                type="text"
+                name="cost"
+                {...register('cost', {
+                  required: 'Class 1 is required',
+                })}
+              />
+              <p className="text-xs text-red-600">{errors?.cost?.message}</p>
+            </div>
+            <div className="mb-3">
+              <Label>Class 2</Label>
+              <input
+                className="w-full rounded-md"
+                type="text"
+                name="cost2"
+                {...register('cost2', {
+                  required: 'Class 2 is required',
+                })}
+              />
+              <p className="text-xs text-red-600">{errors?.cost2?.message}</p>
+            </div>
+          </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose}>Cancel</Button>
-          <Button onClick={handleAddLab}>Save</Button>
+          <Button onClick={handleSubmit(handleAddLab)}>Save</Button>
         </DialogActions>
       </Dialog>
     </>
