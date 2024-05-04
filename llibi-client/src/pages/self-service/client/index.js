@@ -548,7 +548,8 @@ const Client = () => {
                       <Label
                         htmlFor="principalTypePersonal"
                         className="text-blue-500">
-                        Use personal details (as shown in Emergency Room card)
+                        Use principal member personal details (as shown in
+                        Emergency Room card)
                         <span className="text-red-400 text-xs">
                           {errors?.principalType?.message}
                         </span>
@@ -629,7 +630,7 @@ const Client = () => {
                       <Label
                         htmlFor="principalTypeMember"
                         className="text-blue-500">
-                        Use insurance details
+                        Use principal member insurance details
                       </Label>
                     </h1>
                     <div className="w-full border-b-2 border-dotted mb-2"></div>
@@ -709,7 +710,7 @@ const Client = () => {
                       <span className="text-blue-800">
                         (Request for your dependent)
                       </span>{' '}
-                      Please provide membership information for your dependent.
+                      Please provide membership information of your dependent.
                       Please choose one (1) only.
                     </Label>
                   </div>
@@ -731,7 +732,8 @@ const Client = () => {
                       <Label
                         htmlFor="dependentTypePersonal"
                         className="text-blue-500">
-                        Use dependent personal details{' '}
+                        Use dependent member personal details (as shown in
+                        Emergency Room card)
                         <span className="text-red-400 text-xs">
                           {errors?.dependentType?.message}
                         </span>
@@ -780,6 +782,9 @@ const Client = () => {
                           Date of Birth
                         </Label>
                         <Input
+                          onKeyDown={e => {
+                            e.preventDefault()
+                          }}
                           id="depDob"
                           type="date"
                           register={{
@@ -810,7 +815,7 @@ const Client = () => {
                       <Label
                         htmlFor="dependentTypeMember"
                         className="text-blue-500">
-                        Use dependent insurance details
+                        Use dependent member insurance details
                       </Label>
                     </h1>
                     <div className="w-full border-b-2 border-dotted mb-2"></div>
@@ -839,6 +844,9 @@ const Client = () => {
                           Date of Birth
                         </Label>
                         <Input
+                          onKeyDown={e => {
+                            e.preventDefault()
+                          }}
                           id="depDob2"
                           type="date"
                           register={{

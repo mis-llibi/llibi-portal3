@@ -47,13 +47,13 @@ class ClientController extends Controller
 
         if ($principal['count'] == 0) {
           $result = false;
-          $response = 'System cannot find your information to our database, please check your input and try again';
+          $response = 'System cannot find your information in our database, please check your input and try again';
         }
 
         if ($request->minorDependent) {
           if ($dependent['count'] == 0) {
             $result = false;
-            $response = 'System cannot find your dependent information to our database, please check your input and try again';
+            $response = 'System cannot find your dependent information in our database, please check your input and try again';
           }
         }
 

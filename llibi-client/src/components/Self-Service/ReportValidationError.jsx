@@ -32,7 +32,11 @@ export default function ReportValidationError({ setShow }) {
       })
       // console.log(response.data)
 
-      Swal.fire('Success', 'Report to support success', 'success')
+      Swal.fire(
+        'Success',
+        'Please allow 4 - 8 hours to validate your membership information. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.',
+        'success',
+      )
       setErrorLogs(null)
       setShow(false)
     } catch (error) {

@@ -2,22 +2,49 @@ import axios from '@/lib/axios'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 
+import ClientErrorLogsHooks from '@/hooks/self-service/client-error-logs'
+import { MoonLoader } from 'react-spinners'
+import ActionButton from '@/components/client-error-logs/ActionButton'
+import ErrorLogsRow from '@/components/client-error-logs/table/ErrorLogsRow'
+import ModalControl from '@/components/ModalControl'
+import Modal from '@/components/Modal'
+
+import { useModalNotifyCaeStore } from '@/store/useModalNotifyCaeStore'
+
 export default function ClientPortalErrorLogsHomePage() {
-  const [data, setData] = useState([])
+  // const { show, setShow, body, setBody, toggle } = ModalControl()
+  // const { Mshow, Mbody, setModalToggle } = useModalNotifyCaeStore()
+  // const [data, setData] = useState([])
 
-  const getErrorLogs = async () => {
-    try {
-      const response = await axios.get('/api/error-logs')
-      // console.log(response.data)
-      setData(response.data)
-    } catch (error) {
-      alert('Something went wrong.')
-    }
-  }
+  // const getErrorLogs = async () => {
+  //   try {
+  //     const response = await axios.get('/api/error-logs')
+  //     // console.log(response.data)
+  //     setData(response.data)
+  //   } catch (error) {
+  //     alert('Something went wrong.')
+  //   }
+  // }
 
-  useEffect(() => {
-    getErrorLogs()
-  }, [])
+  // useEffect(() => {
+  //   getErrorLogs()
+  // }, [])
+
+  const { data, error, mutate } = ClientErrorLogsHooks()
+
+  if (!data || data?.length <= 0)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <MoonLoader color="#1d4ed8" />
+      </div>
+    )
+
+  if (error)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Something went wrong.
+      </div>
+    )
 
   return (
     <>
@@ -49,86 +76,22 @@ export default function ClientPortalErrorLogsHomePage() {
                 <th className="px-3 py-2 w-60 whitespace-nowrap">
                   CALL ALLOWED
                 </th>
-                <th className="px-3 py-2 w-60 whitespace-nowrap">CREATED AT</th>
+                <th className="px-3 py-2 w-60 whitespace-nowrap">
+                  DATE CREATED
+                </th>
+                <th className="px-3 py-2 w-60 whitespace-nowrap">ACTION</th>
               </tr>
             </thead>
             <tbody>
               {data?.map(row => (
-                <tr className="even:bg-gray-100">
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    <p>
-                      <span className="font-bold">Member Id: </span>
-                      {row.member_id}
-                    </p>
-                    <p>
-                      <span className="font-bold">Firstname: </span>
-                      {row.first_name}
-                    </p>
-                    <p>
-                      <span className="font-bold">Lastname: </span>
-                      {row.last_name}
-                    </p>
-                  </td>
-                  <td className="text-center px-3 py-2 whitespace-nowrap">
-                    {row.dob}
-                  </td>
-                  <td className="text-center px-3 py-2 whitespace-nowrap">
-                    {row.is_dependent === 1 ? 'YES' : 'NO'}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    <p>
-                      <span className="font-bold">Member Id: </span>
-                      {row.dependent_member_id}
-                    </p>
-                    <p>
-                      <span className="font-bold">Firstname: </span>
-                      {row.dependent_first_name}
-                    </p>
-                    <p>
-                      <span className="font-bold">Lastname: </span>
-                      {row.dependent_last_name}
-                    </p>
-                  </td>
-                  <td className="text-center px-3 py-2 whitespace-nowrap">
-                    {row.dependent_dob}
-                  </td>
-                  <td className="text-left px-3 py-2 whitespace-nowrap">
-                    {(row.company || row.email) && (
-                      <>
-                        <p>
-                          <span className="font-bold">Company: </span>
-                          {row.company}
-                        </p>
-                        <p>
-                          <span className="font-bold">Email: </span> {row.email}
-                        </p>
-                        <p>
-                          <span className="font-bold">Mobile: </span>
-                          {row.mobile}
-                        </p>
-                        <p>
-                          <span className="font-bold">Principal: </span>
-                          {row.deps_fullname}
-                        </p>
-                        <p>
-                          <span className="font-bold">Dependent: </span>
-                          {row.deps_fullname}
-                        </p>
-                      </>
-                    )}
-                  </td>
-                  <td className="text-center px-3 py-2 whitespace-nowrap">
-                    {Number(row.is_allow_to_call) === 1 ? 'YES' : 'NO'}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
-                    {moment(row.created_at).format('MM DD, Y HH:mm A')}
-                  </td>
-                </tr>
+                <ErrorLogsRow key={row.id} row={row} />
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* <Modal show={Mshow} body={Mbody} toggle={setModalToggle} /> */}
     </>
   )
 }

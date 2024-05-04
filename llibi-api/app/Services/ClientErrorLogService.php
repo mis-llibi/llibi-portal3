@@ -34,13 +34,13 @@ class ClientErrorLogService
     $mailMsg = view('send-error-logs', ['data' => $errorLog]);
     switch (GetActiveEmailProvider::getProvider()) {
       case 'infobip':
-        $emailer = new SendingEmail(email: env('CCE_EMAIL'), body: $mailMsg, subject: 'CLIENT CARE PORTAL ERROR LOGS - NOTIFICATION');
+        $emailer = new SendingEmail(email: env('GLEN'), body: $mailMsg, subject: 'CLIENT CARE PORTAL ERROR LOGS - NOTIFICATION');
         $emailer->send();
         break;
 
       default:
-        $body = array('body' => $mailMsg, 'attachment' => [], 'cc' => [env('SIR_SEB')]);
-        $mail = (new NotificationController)->NewMail('', env('CCE_EMAIL'), $body);
+        // $body = array('body' => $mailMsg, 'attachment' => [], 'cc' => [env('SIR_SEB')]);
+        // $mail = (new NotificationController)->NewMail('', env('GLEN'), $body);
 
         break;
     }

@@ -1,7 +1,7 @@
 {
   "name": "llibi-portal",
   "homepage": "https://portal.llibi.app",
-  "version": "1.20.6",
+  "version": "1.20.8",
   "private": true,
   "scripts": {
     "dev": "next dev",

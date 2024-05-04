@@ -30,7 +30,7 @@ class SendingEmail
   {
     try {
       $post_data = [
-        'headers' => ['Authorization' => config('app.infobip_key')],
+        'headers' => ['Authorization' => env('INFOBIP_API_KEY')],
         'multipart' => [
           [
             'name' => 'bulkId',
@@ -38,7 +38,7 @@ class SendingEmail
           ],
           [
             'name' => 'from',
-            'contents' => config('app.infobip_sender'),
+            'contents' => env('INFOBIP_SENDER'),
           ],
           [
             'name' => 'to',
@@ -100,7 +100,7 @@ class SendingEmail
         }
       }
       $client = new Client();
-      $response = $client->post(config('app.infobip_url') . '/email/3/send', $post_data);
+      $response = $client->post(env('INFOBIP_API_URL') . '/email/3/send', $post_data);
       $body = $response->getBody();
 
       Log::info('EMAIL SENT');

@@ -33,6 +33,7 @@ export const useClient = () => {
             icon: 'error',
             showDenyButton: true,
             showCancelButton: false,
+            showConfirmButton: true,
             confirmButtonText: 'Report',
             denyButtonText: `Close`,
           }).then(result => {
