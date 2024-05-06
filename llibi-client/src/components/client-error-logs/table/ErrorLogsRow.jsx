@@ -2,7 +2,7 @@ import moment from 'moment'
 import React from 'react'
 import ActionButton from '../ActionButton'
 
-export default function ErrorLogsRow({ row }) {
+export default function ErrorLogsRow({ row, mutate }) {
   return (
     <tr
       key={row.id}
@@ -76,7 +76,7 @@ export default function ErrorLogsRow({ row }) {
         {moment(row.created_at).format('MM DD, Y HH:mm A')}
       </td>
       <td>
-        <ActionButton key={row.id} row={row} />
+        <ActionButton key={row.id} row={row} mutate={mutate} />
       </td>
     </tr>
   )

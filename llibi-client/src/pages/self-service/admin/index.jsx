@@ -230,6 +230,12 @@ const Admin = () => {
     }
   }, [clients])
 
+  useEffect(() => {
+    if (user && user?.email === 'mailynramos@llibi.com') {
+      router.push('/complaint/error-logs/')
+    }
+  }, [user?.email])
+
   return (
     <ProviderLayout>
       <Head>
@@ -293,6 +299,44 @@ const Admin = () => {
 
             {/* Action Form */}
             <form onChange={handleSubmit(searchForm)} className="w-full">
+              <div className="flex mb-5 gap-1 items-center">
+                {[2, 3].includes(user?.user_level) && (
+                  <>
+                    <div className="flex gap-1">
+                      <Button
+                        type="button"
+                        className="text-[.55em]"
+                        onClick={handleShowModalSetDate}>
+                        Export
+                      </Button>
+                      <Button
+                        type="button"
+                        className="text-[.55em]"
+                        onClick={handleShowModalSetting}>
+                        Settings
+                      </Button>
+                      <Button
+                        type="button"
+                        className="text-[.55em]"
+                        onClick={handleShowLogs}>
+                        Logs
+                      </Button>
+                      <a
+                        className="text-blue-700 font-bold self-center capitalize border border-gray-200 px-3 py-2 rounded-md text-xs"
+                        href="/search-masterlist"
+                        target="_blank">
+                        Search to masterlist
+                      </a>
+                    </div>
+                    <a
+                      className="text-blue-700 font-bold self-center capitalize  border border-gray-200 px-3 py-2 rounded-md text-xs"
+                      href="/complaint/error-logs"
+                      target="_blank">
+                      client portal error logs
+                    </a>
+                  </>
+                )}
+              </div>
               <div className="flex gap-2">
                 <div className="basis-1/3 mb-2">
                   <Label htmlFor="name" className="text-blue-500 text-bold">
@@ -326,26 +370,6 @@ const Admin = () => {
                 </div>
                 <div className="basis-1/3 flex place-items-center pl-5">
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
-                </div>
-                <div className="basis-1/3 mb-2 flex justify-end items-center">
-                  {[2, 3].includes(user?.user_level) && (
-                    <>
-                      <div className="flex gap-1">
-                        <a className='text-blue-700 font-bold w-40 self-center' href='/search-masterlist' target='_blank'>
-                          Search to masterlist
-                        </a>
-                        <Button type="button" onClick={handleShowModalSetDate}>
-                          Export
-                        </Button>
-                        <Button type="button" onClick={handleShowModalSetting}>
-                          Settings
-                        </Button>
-                        <Button type="button" onClick={handleShowLogs}>
-                          Logs
-                        </Button>
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
 

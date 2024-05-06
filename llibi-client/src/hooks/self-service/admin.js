@@ -60,11 +60,15 @@ export const useAdmin = ({ name, status }) => {
 
     let runfinally = true
 
+    const controller = new AbortController()
+    const signal = controller.signal
+
     axios
       .get(
         `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
           status || 2
         }`,
+        { signal: signal },
       )
       .then(() => mutate())
       .catch(error => {

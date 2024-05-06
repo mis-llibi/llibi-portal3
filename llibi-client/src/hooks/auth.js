@@ -90,12 +90,12 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       .then(response => setStatus(response.data.status))
   }
 
-  const logout = async (path = '/self-service/admin/login') => {
+  const logout = async () => {
     if (!error) {
       await axios.post('/logout').then(() => mutate())
     }
 
-    window.location.pathname = path
+    window.location.pathname = '/self-service/admin/login'
   }
 
   useEffect(() => {

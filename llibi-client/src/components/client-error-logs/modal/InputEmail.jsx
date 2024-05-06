@@ -3,7 +3,7 @@ import Label from '@/components/Label'
 import { SendNotify } from '@/hooks/self-service/client-error-logs'
 import { useForm } from 'react-hook-form'
 
-export default function InputEmail({ row, notifyTo, setShow }) {
+export default function InputEmail({ row, notifyTo, setShow, mutate }) {
   const {
     handleSubmit,
     register,
@@ -16,6 +16,7 @@ export default function InputEmail({ row, notifyTo, setShow }) {
 
   const submitForm = async data => {
     await SendNotify({ row, notifyTo, cae_email: data.cae_email })
+    mutate()
     setShow(false)
   }
 

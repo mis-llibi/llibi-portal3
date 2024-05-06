@@ -21,8 +21,12 @@ import {
 import InputEmail from './modal/InputEmail'
 
 import { SendNotify } from '@/hooks/self-service/client-error-logs'
+import { useAuth } from '@/hooks/auth'
 
-export default function ActionButton({ row }) {
+export default function ActionButton({ row, mutate }) {
+  const { user } = useAuth({
+    middleware: 'auth',
+  })
   const { show, setShow, body, setBody, toggle } = ModalControl()
   // const { Mshow, Mbody, setModalState } = useModalNotifyCaeStore()
 
@@ -40,6 +44,7 @@ export default function ActionButton({ row }) {
   const handleNotify = async (row, notifyTo) => {
     await SendNotify({ row, notifyTo })
 
+    mutate()
     handleClose()
   }
 
@@ -50,7 +55,14 @@ export default function ActionButton({ row }) {
           Notify to CAE
         </span>
       ),
-      content: <InputEmail row={row} notifyTo={notifyTo} setShow={setShow} />,
+      content: (
+        <InputEmail
+          row={row}
+          notifyTo={notifyTo}
+          setShow={setShow}
+          mutate={mutate}
+        />
+      ),
       modalOuterContainer: '',
       modalContainer: 'h-full rounded-md',
       modalBody: 'h-full',
@@ -66,7 +78,9 @@ export default function ActionButton({ row }) {
     <>
       <button
         onClick={handleClick}
-        className="group border px-2 py-1 rounded-md hover:bg-gray-200"
+        className={`group border px-2 py-1 rounded-md hover:bg-gray-200 ${
+          row.notify_status === 1 && 'hidden'
+        }`}
         title="Action"
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
@@ -96,18 +110,30 @@ export default function ActionButton({ row }) {
               <span>Notify Member</span>
             </div>
           </MenuItem>
-          <MenuItem onClick={() => handleNotify(row, 'mis')}>
-            <div className="flex gap-3 items-center font-[poppins] text-sm">
-              <BiInfoCircle size={20} />
-              <span>Notify MIS</span>
-            </div>
-          </MenuItem>
-          <MenuItem onClick={() => handleShowModal(row, 'cae')}>
-            <div className="flex gap-3 items-center font-[poppins] text-sm">
-              <BiInfoCircle size={20} />
-              <span>Notify CAE</span>
-            </div>
-          </MenuItem>
+
+          {/* show only for cae */}
+          {!['mailynramos@llibi.com'].includes(user?.email) && (
+            <MenuItem
+              disabled={row.notify_status === 2}
+              onClick={() => handleNotify(row, 'mis')}>
+              <div className="flex gap-3 items-center font-[poppins] text-sm">
+                <BiInfoCircle size={20} />
+                <span>Notify MIS</span>
+              </div>
+            </MenuItem>
+          )}
+
+          {/* show only for mam mai */}
+          {['mailynramos@llibi.com'].includes(user?.email) && (
+            <MenuItem
+              disabled={row.notify_status === 3}
+              onClick={() => handleShowModal(row, 'cae')}>
+              <div className="flex gap-3 items-center font-[poppins] text-sm">
+                <BiInfoCircle size={20} />
+                <span>Notify CAE</span>
+              </div>
+            </MenuItem>
+          )}
         </Paper>
       </Menu>
 
