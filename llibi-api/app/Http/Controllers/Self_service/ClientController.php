@@ -15,6 +15,7 @@ use App\Models\Self_service\Sync;
 use App\Models\Corporate\Hospitals;
 use App\Models\Corporate\ProviderLink;
 use App\Models\Corporate\Doctors;
+use App\Models\Holiday;
 use App\Models\Self_service\Attachment;
 use App\Services\ClientErrorLogService;
 use App\Services\GetActiveEmailProvider;
@@ -24,7 +25,8 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Services\SendingEmail;
 
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ClientController extends Controller
 {
@@ -35,6 +37,16 @@ class ClientController extends Controller
     $client = '';
     $link = 'self-service/client/request?req=' . $request->toDo;
     $error = null;
+
+    $currentDateTime = Carbon::now();
+    $isWeekends = $currentDateTime->isWeekend();
+    $isFriday = $currentDateTime->isFriday();
+
+    $threePm = Carbon::today()->setHour(15)->setMinute(0)->setSecond(0);
+    $isCutOff = $currentDateTime->greaterThan($threePm);
+
+    $isHoliday = Holiday::where('holiday_date', $currentDateTime->format('Y-m-d'))->exists();
+
     switch ((int)$request->toDo) {
 
         //REQUEST FOR LOA
@@ -47,13 +59,23 @@ class ClientController extends Controller
 
         if ($principal['count'] == 0) {
           $result = false;
-          $response = 'System cannot validate your information.';
+
+          if ($isCutOff || $isWeekends || $isHoliday) {
+            $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
+          } else {
+            $response = 'We are unable to validate your information. Please check your input and try again.';
+          }
         }
 
         if ($request->minorDependent) {
           if ($dependent['count'] == 0) {
             $result = false;
-            $response = 'System cannot validate your information.';
+
+            if ($isCutOff || $isWeekends || $isHoliday) {
+              $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
+            } else {
+              $response = 'We are unable to validate your information. Please check your input and try again.';
+            }
           }
         }
 
@@ -85,7 +107,12 @@ class ClientController extends Controller
 
         if ($principal['count'] == 0) {
           $result = false;
-          $response = 'System cannot find your information to our database, please check your input and try again';
+
+          if ($isCutOff || $isWeekends || $isHoliday) {
+            $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
+          } else {
+            $response = 'We are unable to validate your information. Please check your input and try again.';
+          }
         }
 
         if ($result) {

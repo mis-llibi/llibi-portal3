@@ -17,6 +17,7 @@ return new class extends Migration
       $table->id();
       $table->string('company_code');
       $table->string('member_id');
+      $table->string('approval_code')->nullable();
       $table->string('comments')->nullable();
       $table->integer('question1')->nullable();
       $table->integer('question2')->nullable();

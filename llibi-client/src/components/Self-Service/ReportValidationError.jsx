@@ -6,6 +6,16 @@ import { useForm } from 'react-hook-form'
 import axios from '@/lib/axios'
 import Swal from 'sweetalert2'
 
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+
+const FORM_SCHEMA = z.object({
+  email: z.string().email(),
+  fullname: z.string().min(1, 'Principal Member Full Name is required'),
+  // deps_fullname: z.string().min(1, 'Dependent Member Full Name is required'),
+  company: z.string().min(1, 'Company is required'),
+})
+
 export default function ReportValidationError({ setShow }) {
   const { errorLogs, setErrorLogs } = useErrorLogsStore()
 
@@ -17,7 +27,7 @@ export default function ReportValidationError({ setShow }) {
     resetField,
     clearErrors,
     formState: { errors, isSubmitting },
-  } = useForm({ mode: 'onChange' })
+  } = useForm({ mode: 'onChange', resolver: zodResolver(FORM_SCHEMA) })
 
   const submitForm = async (data, allowType) => {
     // console.log(errorLogs)
@@ -32,13 +42,24 @@ export default function ReportValidationError({ setShow }) {
       })
       // console.log(response.data)
 
+      setErrorLogs(null)
+      setShow(false)
+
+      if (allowType === 0) {
+        Swal.fire(
+          'Success',
+          'We are sorry the system was not able to validate your information. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.',
+          'success',
+        )
+
+        return
+      }
+
       Swal.fire(
         'Success',
         'Please allow 4 - 8 hours to validate your membership information. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.',
         'success',
       )
-      setErrorLogs(null)
-      setShow(false)
     } catch (error) {
       throw new Error('Something went wrong.')
     }
@@ -66,7 +87,7 @@ export default function ReportValidationError({ setShow }) {
       <form className="mb-3">
         <div className="mb-3">
           <Label htmlFor="fullname" className={'mb-1'}>
-            Full Name
+            Principal Member Full Name
           </Label>
           <input
             {...register('fullname', { required: 'Fullname is required.' })}
@@ -84,7 +105,7 @@ export default function ReportValidationError({ setShow }) {
         {errorLogs?.is_dependent && (
           <div className="mb-3">
             <Label htmlFor="deps_fullname" className={'mb-1'}>
-              Full Name of Dependent
+              Dependent Member Full Name
             </Label>
             <input
               {...register('deps_fullname', {

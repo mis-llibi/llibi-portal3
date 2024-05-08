@@ -233,6 +233,11 @@ const Admin = () => {
   useEffect(() => {
     if (user && user?.email === 'mailynramos@llibi.com') {
       router.push('/complaint/error-logs/')
+      return
+    }
+    if (user && user?.email === 'manilacae@llibi.com') {
+      router.push('/complaint/error-logs/monitoring')
+      return
     }
   }, [user?.email])
 
@@ -328,14 +333,14 @@ const Admin = () => {
                         Search to masterlist
                       </a>
                     </div>
-                    <a
-                      className="text-blue-700 font-bold self-center capitalize  border border-gray-200 px-3 py-2 rounded-md text-xs"
-                      href="/complaint/error-logs"
-                      target="_blank">
-                      client portal error logs
-                    </a>
                   </>
                 )}
+                <a
+                  className="text-blue-700 font-bold self-center capitalize  border border-gray-200 px-3 py-2 rounded-md text-xs"
+                  href="/complaint/error-logs"
+                  target="_blank">
+                  client portal error logs
+                </a>
               </div>
               <div className="flex gap-2">
                 <div className="basis-1/3 mb-2">

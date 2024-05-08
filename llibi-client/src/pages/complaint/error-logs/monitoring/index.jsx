@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 
 import { MoonLoader } from 'react-spinners'
@@ -9,36 +9,15 @@ import ProviderLayout from '@/components/Layouts/Self-service/ProviderLayout'
 import ClientPortalErrorLogsLayout from '@/components/Layouts/Self-service/ClientPortalErrorLogsLayout'
 
 import { useAuth } from '@/hooks/auth'
-import { useRouter } from 'next/router'
-
-export default function ClientPortalErrorLogsHomePage() {
+export default function MonitoringHomePage() {
   const { user } = useAuth({
     middleware: 'auth',
   })
 
-  const router = useRouter()
-
-  const isMonitoring = useMemo(
-    () => router.pathname.split('/').includes('monitoring'),
-    [router.pathname],
-  )
-
-  const [filter, setFilter] = useState('')
   const { data, isValidating, error, mutate } = ClientErrorLogsHooks({
     search: '',
-    filter: filter,
+    filter: 3,
   })
-
-  const handleFilter = e => {
-    setFilter(e.target.value)
-  }
-
-  useEffect(() => {
-    if (user && user?.email === 'manilacae@llibi.com') {
-      router.push('/complaint/error-logs/monitoring')
-      return
-    }
-  }, [user?.email])
 
   if (isValidating) {
     return (
@@ -65,33 +44,6 @@ export default function ClientPortalErrorLogsHomePage() {
 
         <ClientPortalErrorLogsLayout>
           <div className="flex h-[75vh] flex-col items-center justify-center  rounded">
-            <div className="self-start mb-3 w-full">
-              <div className="flex gap-3 justify-between">
-                <div>
-                  <label className="mr-3 text-fav-black block">Filter:</label>
-                  <select
-                    className="rounded-md border border-gray-200 text-xs"
-                    value={filter}
-                    onChange={handleFilter}>
-                    <option value="">All</option>
-                    <option value="3">Pending with CAE</option>
-                    <option value="2">Pending with MIS</option>
-                  </select>
-                </div>
-
-                <div className="flex gap-1 items-center">
-                  <span className="bg-green-300 px-3 py-2 text-white text-xs uppercase w-[4.5em] text-center">
-                    Done
-                  </span>
-                  <span className="bg-orange-300 px-3 py-2 text-white text-xs uppercase w-[4.5em] text-center">
-                    MIS
-                  </span>
-                  <span className="bg-red-300 px-3 py-2 text-white text-xs uppercase w-[4.5em] text-center">
-                    CAE
-                  </span>
-                </div>
-              </div>
-            </div>
             <div className="font-[poppins] w-full overflow-scroll h-[80vh] mx-auto">
               <table className="text-xs">
                 <thead>
@@ -118,9 +70,7 @@ export default function ClientPortalErrorLogsHomePage() {
                     <th className="px-3 py-2 w-60 whitespace-nowrap">
                       DATE CREATED
                     </th>
-                    <th className="px-3 py-2 w-60 whitespace-nowrap">
-                      {!isMonitoring && 'ACTION'}
-                    </th>
+                    <th className="px-3 py-2 w-60 whitespace-nowrap">ACTION</th>
                   </tr>
                 </thead>
                 <tbody>

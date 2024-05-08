@@ -42,10 +42,7 @@ class MemberNotificationListener
       switch ($notify_to) {
         case 'member':
           $body = view('client-error-logs.send-notify-member');
-          $sending = new SendingEmail('test32llibi@yopmail.com', $body);
-          // $sending->send();
-
-          $sending = new SendingEmail(env('GLEN'), $body);
+          $sending = new SendingEmail($email, $body);
           $sending->send();
           $status = 1;
           break;
@@ -53,30 +50,24 @@ class MemberNotificationListener
           $body = view('client-error-logs.send-notify-mis', [
             'member_info' => $member_info,
           ]);
-          $sending = new SendingEmail('test32llibi@yopmail.com', $body);
-          // $sending->send();
 
-          $sending = new SendingEmail(env('GLEN'), $body);
+          $sending = new SendingEmail(env('EDP_EMAIL'), $body);
           $sending->send();
           $status = 2;
           break;
         case 'cae':
           $cae_email = $data['cae_email'];
+
+          // send to member
+          $member_body = view('client-error-logs.send-notify-member-2-3-days');
+          $sending = new SendingEmail($email, $member_body);
+          $sending->send();
+
           // send to cae
           $cae_body = view('client-error-logs.send-notify-cae', [
             'member_info' => $member_info,
           ]);
-          $sending = new SendingEmail('test32llibi@yopmail.com', $cae_body);
-          // $sending->send();
-
-          // send to member
-          $member_body = view('client-error-logs.send-notify-member-2-3-days');
-          $sending = new SendingEmail('test32llibi@yopmail.com', $member_body);
-          // $sending->send();
-
-          $sending = new SendingEmail(env('GLEN'), $cae_body);
-          $sending->send();
-          $sending = new SendingEmail(env('GLEN'), $member_body);
+          $sending = new SendingEmail($cae_email, $cae_body);
           $sending->send();
           $status = 3;
           break;
@@ -97,6 +88,3 @@ class MemberNotificationListener
     }
   }
 }
-
-// 
-// We are sorry the system was not able to validate your information. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.
