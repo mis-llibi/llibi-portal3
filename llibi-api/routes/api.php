@@ -24,6 +24,8 @@ use App\Http\Controllers\Dental_insurance\DentalInsuranceManageMemberController;
 use App\Http\Controllers\Da_extract\ManageDaMemberController;
 use App\Http\Controllers\Corporate\MembersController as CorporateMembers;
 use App\Http\Controllers\Self_service\AdminController as SelfService;
+use App\Http\Controllers\Self_service\ProviderController as ProviderSelfService;
+
 use App\Http\Controllers\Self_service\AutoSendPendingNotMoving;
 use App\Http\Controllers\SettingController;
 use App\Models\User;
@@ -79,6 +81,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
   //SELF ENROLLMENT FOR LIFE INSURANCE
   Route::get('/self-enrollment/get-clients-for-life-insurance/{status}', [SelfEnrollmentController::class, 'getClientsForLifeInsurance']);
+
 });
 
 Route::get('/self-enrollment/testing', [SelfEnrollmentController::class, 'testing']);
@@ -97,6 +100,9 @@ Route::post('/self-service/admin/export', [SelfService::class, 'export']);
 Route::post('/self-service/admin/export-records', [SelfService::class, 'exportRecords']);
 Route::post('/self-service/admin/preview-export-records', [SelfService::class, 'previewExport']);
 Route::get('/self-service/admin/update-tat', [SelfService::class, 'updateTAT']);
+
+
+Route::get('/provider-search-request/{search}/{id}', [ProviderSelfService::class, 'SearchRequest']);
 
 //MOBILE SELF-SERVICE LOGIN
 // Route::get('/user-mobile', [MobileAuthenticatedSessionController::class, 'checkSession']);

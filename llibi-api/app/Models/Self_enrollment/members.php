@@ -41,4 +41,9 @@ class members extends Model
     'form_locked',
     'status',
   ];
+
+  public function contact()
+  {
+      return $this->hasOne(Contact::class, 'link_id');
+  }
 }

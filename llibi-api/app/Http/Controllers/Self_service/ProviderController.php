@@ -29,6 +29,7 @@ class ProviderController extends Controller
                 $query->orWhere('t2.loa_number', strtoupper($search));
                 $query->orWhere('t2.approval_code', strtoupper($search));
             })
+            ->limit(20)
             ->get();
 
         return $request;

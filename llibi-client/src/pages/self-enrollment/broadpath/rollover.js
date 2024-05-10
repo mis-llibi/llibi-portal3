@@ -14,6 +14,14 @@ import { useForm } from 'react-hook-form'
 
 import Swal from 'sweetalert2'
 
+import useAge from './components/UseAge'
+
+import options from '@/hooks/self-enrollment/BroadpathOptions'
+
+import Modal from '@/components/Modal'
+import ModalControl from '@/components/ModalControl'
+
+import ChangeAddress from './components/ChangeAddress'
 const rollover = () => {
   const router = useRouter()
 
@@ -71,26 +79,34 @@ const rollover = () => {
 
   const onRollover = () => {
     let tr = ''
-    let num, bil, com
+    let num,
+      bil,
+      com,
+      count = 0
+
     client?.dependent.map((item, i) => {
-      switch (i) {
-        case 0:
-          num = i + 1 + 'st'
-          bil = '20%'
-          com = bill * 0.2
-          break
+      if (options.ageEval(useAge(item?.birth_date), item?.relation)) {
+        count++
+      }
+
+      switch (count) {
         case 1:
-          num = i + 1 + 'nd'
+          num = '1st'
           bil = '20%'
           com = bill * 0.2
           break
         case 2:
-          num = i + 1 + 'rd'
+          num = '2nd'
+          bil = '20%'
+          com = bill * 0.2
+          break
+        case 3:
+          num = '3rd'
           bil = '100%'
           com = bill * 1
           break
         default:
-          num = i + 1 + 'th'
+          num = count + 1 + 'th'
           bil = '100%'
           com = bill * 1
           break
@@ -105,105 +121,141 @@ const rollover = () => {
             ${item?.birth_date}
           </td>
           <td style="background-color:#fafafa;text-align:left;">
+            ${useAge(item?.birth_date)}
+          </td>
+          <td style="background-color:#fafafa;text-align:left;">
             ${item?.relation}
           </td>
+          <td style="background-color:#fafafa;text-align:left;">
+            ${
+              options.ageEval(useAge(item?.birth_date), item?.relation)
+                ? '<div style="background-color:#53E73C;padding:2px;font-size:12px;">Retain</div>'
+                : '<div style="background-color:#E74C3C;padding:2px;font-size:12px;color:#EEEEEE;">Overage</div>'
+            }
+          </td>
+        </tr>
+      ${
+        options.ageEval(useAge(item?.birth_date), item?.relation)
+          ? `<tr>
+            <td colspan="5" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:14px;">
+            ${num} Dependent: ${bil} of ₱ ${bill?.toLocaleString(
+              'en',
+              2,
+            )} = ₱ ${com?.toLocaleString('en', 2)}
+            </td>
+          </tr>`
+          : `<tr>
+          <td colspan="5" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:13px;color:#E7513C;">
+            This dependent will be excluded in the renewal due to overage. (Premium already excluded in the computation)
+          </td>
+        </tr>`
+      }
+      <tr>
+        <td colspan="5" style="background-color:#fafafa;padding:2px;"></td>
       </tr>
       <tr>
-        <td colspan="3" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:14px;">
-        ${num} Dependent: ${bil} of ₱ ${bill?.toLocaleString(
-        'en',
-        2,
-      )} = ₱ ${com?.toLocaleString('en', 2)}
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3" style="background-color:#fafafa;padding:2px;"></td>
-      </tr>
-      <tr>
-        <td colspan="3" style="background-color:#fafafa;padding:2px;"></td>
+        <td colspan="5" style="background-color:#fafafa;padding:2px;"></td>
       </tr>`)
     })
 
-    const computation = client?.dependent?.map((item, i) => {
-      switch (i) {
-        case 0:
-          com = bill * 0.2
-          break
-        case 1:
-          com = bill * 0.2
-          break
-        case 2:
-          com = bill * 1
-          break
-        default:
-          com = bill * 1
-          break
-      }
+    const computation = client?.dependent
+      ?.filter(item => {
+        // Make sure item, item.birth_date, and item.relation are defined
+        if (!item || !item.birth_date || !item.relation) {
+          return false
+        }
+        const age = useAge(item.birth_date) // Assuming useAge returns the age correctly
+        return options.ageEval(age, item.relation)
+      })
+      ?.map((item, i) => {
+        let nCom
 
-      return {
-        num,
-        bil,
-        com,
-      }
-    })
+        switch (i) {
+          case 0:
+            nCom = bill * 0.2
+            break
+          case 1:
+            nCom = bill * 0.2
+            break
+          case 2:
+            nCom = bill * 1
+            break
+          default:
+            nCom = bill * 1
+            break
+        }
+
+        return { nCom }
+      })
 
     const annual = computation.reduce(function (s, a) {
-      return s + a.com
+      return s + a.nCom
     }, 0)
 
     const monthly = annual / 12
 
+    const info = `<table style="background-color:#fafafa;width:100%;margin-bottom:10px;">
+                    <thead>
+                      <tr>
+                        <th colspan="2" style="font-size:1.5em;color:#2980B9;">
+                        ${
+                          client
+                            ? client?.principal[0]?.first_name +
+                              ' ' +
+                              client?.principal[0]?.last_name
+                            : 'N/A'
+                        }
+                        <div style="margin-bottom:10px;"></div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                          <td style="text-align:left;">Gender: 
+                            <b>${client?.principal[0]?.gender || 'N/A'}</b>
+                          </td>
+                          <td style="text-align:left;">Civil Status: 
+                            <b>${
+                              client?.principal[0]?.civil_status || 'N/A'
+                            }</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="text-align:left;">Birth Date: 
+                            <b>${
+                              client?.principal[0]?.birth_date || 'N/A'
+                            }</b> / 
+                            Age: 
+                            <b>${
+                              useAge(client?.principal[0]?.birth_date) || 'N/A'
+                            }</b>
+                          </td>
+                          <td style="text-align:left;">Hire Date: 
+                            <b>${client?.principal[0]?.hire_date || 'N/A'}</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="text-align:left;">Member ID: 
+                            <b>${client?.principal[0]?.member_id || 'N/A'}</b>
+                          </td>
+                          <td style="text-align:left;">Room & Board: 
+                            <b>${
+                              client?.principal[0]?.room_and_board || 'N/A'
+                            }</b>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>`
+
     let html =
-      '<div style="padding:4px;">You have no included dependent/s</div>'
+      '<div style="padding:4px;color:#E74C3C;background-color:#eeeeee;">You have no included dependent/s</div>'
     if (client?.dependent?.length > 0) {
-      html = `<table style="background-color:#fafafa;width:100%;margin-bottom:10px;">
-                <thead>
-                  <tr>
-                    <th colspan="2" style="font-size:1.5em;color:#2980B9;">
-                    ${
-                      client
-                        ? client?.principal[0]?.first_name +
-                          ' ' +
-                          client?.principal[0]?.last_name
-                        : 'N/A'
-                    }
-                    <div style="margin-bottom:10px;"></div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                      <td style="text-align:left;">Gender: 
-                        <b>${client?.principal[0]?.gender || 'N/A'}</b>
-                      </td>
-                      <td style="text-align:left;">Civil Status: 
-                        <b>${client?.principal[0]?.civil_status || 'N/A'}</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="text-align:left;">Birth Date: 
-                        <b>${client?.principal[0]?.birth_date || 'N/A'}</b>
-                      </td>
-                      <td style="text-align:left;">Hire Date: 
-                        <b>${client?.principal[0]?.hire_date || 'N/A'}</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="text-align:left;">Member ID: 
-                        <b>${client?.principal[0]?.member_id || 'N/A'}</b>
-                      </td>
-                      <td style="text-align:left;">Room & Board: 
-                        <b>${client?.principal[0]?.room_and_board || 'N/A'}</b>
-                      </td>
-                    </tr>
-                </tbody>
-              </table>
-      
-              <table style="background-color:#333;width:100%;">
+      html = `<table style="background-color:#333;width:100%;">
                 <thead>
                   <tr>
                     <th style="color:#fafafa;text-align:left;">Name</th>
                     <th style="color:#fafafa;text-align:left;">Birth Date</th>
+                    <th style="color:#fafafa;text-align:left;">Age</th>
                     <th style="color:#fafafa;text-align:left;">Relationship</th>
                   </tr>
                 </thead>
@@ -213,7 +265,7 @@ const rollover = () => {
                     <td style="background-color:#F3F0C4;font-size:25px;">
                       Annual: 
                     </td>
-                    <td  colspan="2" style="background-color:#F3F0C4;font-size:25px;text-align:left;">₱ <b>${annual?.toLocaleString(
+                    <td  colspan="4" style="background-color:#F3F0C4;font-size:25px;text-align:left;">₱ <b>${annual?.toLocaleString(
                       'en',
                       2,
                     )}</b></td>
@@ -222,7 +274,7 @@ const rollover = () => {
                     <td style="background-color:#F3F0C4;font-size:25px;">
                       Monthly: 
                     </td>
-                    <td colspan="2" style="background-color:#F3F0C4;font-size:25px;text-align:left;">₱ <b>${monthly?.toLocaleString(
+                    <td colspan="4" style="background-color:#F3F0C4;font-size:25px;text-align:left;">₱ <b>${monthly?.toLocaleString(
                       'en',
                       2,
                     )}</b></td>
@@ -240,12 +292,12 @@ const rollover = () => {
     Swal.fire({
       title: 'Rollover Information and Dependent/s',
       width: 800,
-      html: html,
+      html: info + html,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, continue rollover',
+      confirmButtonText: 'Yes, retain dependent/s',
     }).then(result => {
       if (result.isConfirmed) {
         setLoading(true)
@@ -300,6 +352,21 @@ const rollover = () => {
         updateClientInfoRollover({ ...ndata, setLoading })
       }
     })
+  }
+
+  const { show, body, setBody, toggle } = ModalControl()
+
+  const onView = () => {
+    setBody({
+      title: (
+        <b className="text-blue-900">Change Address (For Card Delivery)</b>
+      ),
+      content: <ChangeAddress props={client?.principal[0]?.contact} />,
+      modalOuterContainer: 'w-full md:w-6/12 max-h-screen',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    toggle()
   }
 
   //privacy notice
@@ -378,6 +445,12 @@ const rollover = () => {
                   {client?.principal[0]?.birth_date || 'N/A'}
                 </p>
               </div>
+              <div className="md:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
+                <p>Age</p>
+                <p className="ml-2 font-bold">
+                  {useAge(client?.principal[0]?.birth_date) || 'N/A'}
+                </p>
+              </div>
               <div className="lg:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
                 <p>Hire Date</p>
                 <p className="ml-2 font-bold">
@@ -408,22 +481,37 @@ const rollover = () => {
             </div>
           </div>
 
+          {/* change address */}
+          <div className="mt-3 p-1">
+            <Button
+              onClick={handleSubmit(onView)}
+              className="p-3 bg-orange-400 hover:bg-orange-700 focus:bg-orange-900 active:bg-orange-500 ring-orange-200">
+              Change Address (For Card Delivery)
+            </Button>
+          </div>
+
           {/* instructions */}
           <div className="mt-3 bg-gray-100 p-4 rounded-lg">
             <div className="mb-3">
               <h1 className="font-bold text-xl">Instructions</h1>
             </div>
-            <div className="mb-3 border-b-2 border-gray-400 border-dotted pb-3">
-              <h1 className="font-bold mb-2 text-green-400">Roll Over:</h1>
+            <div
+              onClick={handleSubmit(onRollover)}
+              className="mb-3 border-b hover:border-2 border-gray-400 hover:border-dotted py-2 hover:shadow-xs hover:pl-2 hover:rounded-md cursor-pointer hover:bg-blue-50 transition duration-500 delay-200">
+              <h1 className="font-bold mb-2 text-green-400">
+                Roll Over / Retain Dependent/s:
+              </h1>
               <p className="text-sm">
                 Allows you to enroll existing dependents. Your enrollment will
                 have no changes in your information as well as that of your
                 dependent/s.
               </p>
             </div>
-            <div className="mb-3 border-b-2 border-gray-400 border-dotted pb-3">
+            <div
+              onClick={handleSubmit(onUpdateExisting)}
+              className="mb-3 border-b hover:border-2 border-gray-400 hover:border-dotted py-2 hover:shadow-xs hover:pl-2 hover:rounded-md cursor-pointer hover:bg-blue-50 transition duration-500 delay-200">
               <h1 className="font-bold mb-2 text-blue-400">
-                Updating Existing:
+                Updating Existing (Add/Delete Dependent/s):
               </h1>
               <p className="text-sm">
                 Allows you to add, delete and/or change enrolled dependent/s and
@@ -431,6 +519,7 @@ const rollover = () => {
                 supporting documents.
               </p>
             </div>
+            {/* 
             <div className="mb-3 border-b-2 border-gray-400 border-dotted pb-3">
               <h1 className="font-bold mb-2 text-red-400">Reset:</h1>
               <p className="text-sm">
@@ -439,6 +528,7 @@ const rollover = () => {
                 to submit supporting documents.
               </p>
             </div>
+            */}
             <div className="mb-3">
               <p className="font-bold italic text-red-500 text-center text-xs">
                 Please choose your enrollment option carefully. Once chosen, you
@@ -448,24 +538,27 @@ const rollover = () => {
           </div>
 
           {/* buttons */}
-          <div className="mt-4 grid md:grid-cols-3 gap-0.5">
+          <div className="mt-4 grid md:grid-cols-2 gap-0.5">
             <Button
               onClick={handleSubmit(onRollover)}
               className="p-3 bg-green-400 hover:bg-green-700 focus:bg-green-900 active:bg-green-500 ring-green-200">
-              Roll Over
+              Roll Over / Retain Dependent/s
             </Button>
             <Button
               onClick={handleSubmit(onUpdateExisting)}
               className="p-3  bg-blue-400 hover:bg-blue-700 focus:bg-blue-900 active:bg-blue-500 ring-blue-200">
-              Update Existing
+              Update Existing (Add/Delete Dependent/s)
             </Button>
-            <Button
+            {/* <Button
               onClick={handleSubmit(onReset)}
               className="p-3 bg-red-400 hover:bg-red-700 focus:bg-red-900 active:bg-red-500 ring-red-200">
               Reset
-            </Button>
+            </Button> */}
           </div>
         </div>
+
+        <Modal className={'hidden'} show={show} body={body} toggle={toggle} />
+
         <Loader loading={loading} />
       </GuestLayout>
     </>

@@ -17,52 +17,98 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Self_enrollment\ManageBroadpathNotifications;
 
+use Carbon\Carbon;  // Carbon is used for date manipulation in Laravel
+
 class ManageBroadpathClients extends Controller
 {
+
     //CLIENT
     public function checkClient($id)
     {
-        $principal = members::where('hash', $id)
+        $principal = members::with(['contact:link_id,street,barangay,city,province,zip_code'])
+            ->where('hash', $id)
             ->where('client_company', 'BROADPATH')
             ->where('relation', 'PRINCIPAL')
-            ->select('id', 'member_id', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'hire_date', 'coverage_date', 'mbl', 'room_and_board', 'status', 'form_locked')
             ->orderBy('id', 'DESC')
             ->limit(1)
-            ->get();
+            ->get(['id', 'member_id', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'hire_date', 'coverage_date', 'mbl', 'room_and_board', 'status', 'form_locked']);
 
         $dependent = members::where('member_id', (count($principal) > 0 ? $principal[0]->member_id : 'xxxxx'))
             ->where('client_company', 'BROADPATH')
             ->where('relation', '!=', 'PRINCIPAL')
             ->whereIn('status', [2, 4])
-            ->select('id as mId', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'attachments')
-            ->get();
+            ->get(['id as mId', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'attachments']);
 
         return array(
-                'principal' => $principal,
-                'dependent' => $dependent
-            );
+            'principal' => $principal,
+            'dependent' => $dependent
+        );
+    }
+
+    public function checkAgeByBirthdate($birthdate, $relationship)
+    {
+        // Convert the birthdate to a Carbon instance
+        $dateOfBirth = Carbon::parse($birthdate);
+
+        // Calculate the age
+        $age = $dateOfBirth->age;
+
+        // Check the age based on the relationship type
+        switch ($relationship) {
+            case 'SIBLING':
+            case 'CHILD':
+                // Age must be >= 0 and <= 23
+                return $age >= 0 && $age <= 23;
+            case 'PARENT':
+            case 'SPOUSE':
+            case 'DOMESTIC PARTNER':
+                // Age must be >= 18 and <= 65
+                return $age >= 18 && $age <= 65;
+            default:
+                // If an unknown relationship type is passed, return false
+                return false;
+        }
     }
 
     public function updateClientInfo(Request $request)
     {
         if(isset($request->rollover)) {
-            
             switch ($request->rollover) {
-                case 1:
+                case 1: 
+
                     $member = 
-                        members::where('member_id', $request->member_id)
+                    members::where('member_id', $request->member_id)
                         ->where('status', 4)
+                        ->where('relation', '!=', 'PRINCIPAL')
+                        ->get(['id', 'relation', 'birth_date']);
+
+                    $ids = [];
+                    foreach ($member as $key => $row) {
+                        if($this->checkAgeByBirthdate($row->birth_date, $row->relation)) $ids[] = $row->id;
+                    }
+
+                    members::where('member_id', $request->member_id)
+                        ->where('status', 4)
+                        ->where('relation', 'PRINCIPAL')
                         ->update(['form_locked' => 2, 'status' => 5]);
 
-                        print_r(1);
+                    members::where('member_id', $request->member_id)
+                        ->where('status', 4)
+                        ->where('relation', '!=', 'PRINCIPAL')
+                        ->update(['status' => 3]);
+
+                    members::where('member_id', $request->member_id)
+                        ->where('status', 3)
+                        ->where('relation', '!=', 'PRINCIPAL')
+                        ->whereIn('id', $ids)
+                        ->update(['status' => 5]);
+
                     break;
                 case 2:
                     $member =
                         members::where('member_id', $request->member_id)
                         ->where('status', 4)
                         ->update(['status' => 2]);
-
-                        print_r(2);
                     break;
                 case 3:
                     members::where('member_id', $request->member_id)
@@ -73,10 +119,18 @@ class ManageBroadpathClients extends Controller
                     $member = 
                         members::where('id', $request->id)
                         ->update(['status' => 1]);
-
-                        print_r(3);
                     break;
             }
+        } else if(isset($request->changeAddress)) {
+            $updateContact = [
+                'street' => $this->clean($request->street),
+                'barangay' => $this->clean($request->barangay),
+                'city' => $this->clean($request->city),
+                'province' => $this->clean($request->province),
+                'zip_code' => $request->zipCode,
+            ];
+            $contact = contact::where('link_id', $request->linkId)
+                        ->update($updateContact);
         } else {
             $update = [
                 'first_name' => $this->clean($request->first_name),
@@ -87,6 +141,7 @@ class ManageBroadpathClients extends Controller
                 'birth_date' => $request->birth_date,
                 'status' => 2
             ];
+
             $member = members::where('id', $request->id)
                 ->update($update);
 
@@ -96,7 +151,6 @@ class ManageBroadpathClients extends Controller
                 'city' => $this->clean($request->city),
                 'province' => $this->clean($request->province),
                 'zip_code' => $request->zipCode,
-
             ];
             $contact = contact::where('link_id', $request->id)
                         ->update($updateContact);
@@ -107,30 +161,35 @@ class ManageBroadpathClients extends Controller
     {
         //Check attachment first before continuing to processing the data
         $rules = []; $att = [];
-        for ($i=0; $i < count($request->list); $i++) { 
-            if($request->hasfile("attachment$i"))
-            {   
-                foreach($request->file("attachment$i") as $key => $file)
-                {
-                    $rules["dependent_$i"."_with_attachment_$key"] = 'mimes:jpg,jpeg,bmp,png,gif,svg,pdf';
-                    $att["dependent_$i"."_with_attachment_$key"] = $file;
+
+        if(isset($request->list)) {
+            for ($i=0; $i < count($request->list); $i++) { 
+                if($request->hasfile("attachment$i"))
+                {   
+                    foreach($request->file("attachment$i") as $key => $file)
+                    {
+                        $rules["dependent_$i"."_with_attachment_$key"] = 'mimes:jpg,jpeg,bmp,png,gif,svg,pdf';
+                        $att["dependent_$i"."_with_attachment_$key"] = $file;
+                    }
                 }
             }
-        }
 
-        $validator = Validator::make($att, $rules);
+            $validator = Validator::make($att, $rules);
 
-        if ($validator->fails()) {
-            return response()->json(array(
-                'success' => false,
-                'errors' => $validator->getMessageBag()->toArray(),
-                'message' => 'Attachment/s must be an image or pdf only!'
-            ) , 400);
+            if ($validator->fails()) {
+                return response()->json(array(
+                    'success' => false,
+                    'errors' => $validator->getMessageBag()->toArray(),
+                    'message' => 'Attachment/s must be an image or pdf only!'
+                ) , 400);
+            }
         }
 
         $update = [
             'civil_status' => $request->principalCivilStatus,
             'gender' => $request->genderPrincipal,
+            'form_locked' => 2,
+            'status' => 5
         ];
         $member = members::where('id', $request->principalId)
             ->update($update);
@@ -142,7 +201,7 @@ class ManageBroadpathClients extends Controller
             ->update(['status' => 3]);
 
         $upMember = members::where('id', $request->principalId)
-            ->where('status', 2)
+            ->where('status', 5)
             ->limit(1)
             ->get(['id', 'member_id', 'last_name', 'first_name', 'mbl']);
 
@@ -161,138 +220,140 @@ class ManageBroadpathClients extends Controller
                 break;
         }
 
-        $arr = []; $depInfo = ''; $computation = ''; $annual = 0; $monthly = 0; $succeeding = '';
+        $arr = []; $depInfo = ''; $computation = ''; $annual = 0; $monthly = 0; $succeeding = ''; $premiumComputation = ''; 
         //breakdown of all dependents for enrollment
-        for ($i=0; $i < count($request->list); $i++) { 
+        if(isset($request->list)) {
+            for ($i=0; $i < count($request->list); $i++) { 
 
-            $arr['client_company'] = 'BROADPATH';
-            $arr['member_id'] = $request->memberId;
-            $arr['hire_date'] = $request->hireDate;
-            $arr['coverage_date'] = $request->coverageDate;
-            $arr['status'] = 2;
+                $arr['client_company'] = 'BROADPATH';
+                $arr['member_id'] = $request->memberId;
+                $arr['hire_date'] = $request->hireDate;
+                $arr['coverage_date'] = $request->coverageDate;
+                $arr['status'] = 5; //due to renewal changing the status to 5
 
-            $arr['first_name'] = $this->clean($request->first_name[$i]);
-            $arr['last_name'] = $this->clean($request->last_name[$i]);
-            $arr['middle_name'] = $this->clean($request->middle_name[$i]);
-            $arr['relation'] = strtoupper($request->relation[$i]);
-            $arr['birth_date'] = $request->birth_date[$i];
-            $arr['gender'] = strtoupper($request->gender[$i]);
-            $arr['civil_status'] = strtoupper($request->civil_status[$i]);
-            
-            //add or update dependent information
-            if(isset($request->id[$i]) && (string)$request->id[$i] != 'undefined') {
-                members::where('id', $request->id[$i])
-                    ->update($arr);
-                $id = $request->id[$i];
-            } else {
-                $member = members::create($arr);
-                $id = $member->id;
-            }
-            
-            //check every dependents if they have attachments
-            if($request->hasfile("attachment$i"))
-            {
-                foreach($request->file("attachment$i") as $key => $file)
-                {
-                    $path = $file->storeAs('Self_enrollment/Broadpath/'.$request->memberId, $file->getClientOriginalName(), 'public');
-                    $name = $file->getClientOriginalName();
-
-                    attachment::create([
-                        'link_id' => $id,
-                        'file_name' => $name,
-                        'file_link' => $path
-                    ]);
-
-                    members::where('id', $id)
-                        ->update(['attachments' => 1]);
+                $arr['first_name'] = $this->clean($request->first_name[$i]);
+                $arr['last_name'] = $this->clean($request->last_name[$i]);
+                $arr['middle_name'] = $this->clean($request->middle_name[$i]);
+                $arr['relation'] = strtoupper($request->relation[$i]);
+                $arr['birth_date'] = $request->birth_date[$i];
+                $arr['gender'] = strtoupper($request->gender[$i]);
+                $arr['civil_status'] = strtoupper($request->civil_status[$i]);
+                
+                //add or update dependent information
+                if(isset($request->id[$i]) && (string)$request->id[$i] != 'undefined') {
+                    members::where('id', $request->id[$i])
+                        ->update($arr);
+                    $id = $request->id[$i];
+                } else {
+                    $member = members::create($arr);
+                    $id = $member->id;
                 }
+                
+                //check every dependents if they have attachments
+                if($request->hasfile("attachment$i"))
+                {
+                    foreach($request->file("attachment$i") as $key => $file)
+                    {
+                        $path = $file->storeAs('Self_enrollment/Broadpath/'.$request->memberId, $file->getClientOriginalName(), 'public');
+                        $name = $file->getClientOriginalName();
+
+                        attachment::create([
+                            'link_id' => $id,
+                            'file_name' => $name,
+                            'file_link' => $path
+                        ]);
+
+                        members::where('id', $id)
+                            ->update(['attachments' => 1]);
+                    }
+                }
+
+                $count = $i + 1;
+
+                //breakdown of each dependents personal info
+                $depInfo .= '<b>Dependent '.$count.'</b>: '.$this->clean($request->first_name[$i]).' '.$this->clean($request->last_name[$i]).' -- '.date('F j, Y', strtotime($request->birth_date[$i])).' -- '.strtoupper($request->relation[$i]).'<br />';
+
+                //if there is a 3rd and succeeding dependent, show this
+                if($i == 2)
+                    $succeeding = '<br /><i style="font-size:14px;">By enrolling your 3rd and succeeding dependents, you are agreeing to 100% premium dependent contribution.</i><br />';
+
+                //lookup dependents order
+                switch ($i) {
+                    case 0:
+                        $num = $i + 1 . 'st';
+                        $bil = '20%';
+                        $com = $bill * 0.2;
+                        break;
+                    case 1:
+                        $num = $i + 1 . 'nd';
+                        $bil = '20%';
+                        $com = $bill * 0.2;
+                        break;
+                    case 2:
+                        $num = $i + 1 . 'rd';
+                        $bil = '100%';
+                        $com = $bill * 1;
+                        break;
+                    default:
+                        $num = $i + 1 . 'th';
+                        $bil = '100%';
+                        $com = $bill * 1;
+                        break;
+                }
+
+                //breakdown of each dependents premiusm computation
+                $computation .= 
+                '<tr>
+                    <td colspan="2">'.$num.' Dependent: '.$bil.' of ₱'.number_format($bill,2).' = '.number_format($com,2).'</td>
+                </tr>';
+
+                //sum all dependents premium, that is their annual
+                $annual += $com;
             }
+            
+            //divide annual for monthly
+            $monthly = $annual / 12;
 
-            $count = $i + 1;
-
-            //breakdown of each dependents personal info
-            $depInfo .= '<b>Dependent '.$count.'</b>: '.$this->clean($request->first_name[$i]).' '.$this->clean($request->last_name[$i]).' -- '.date('F j, Y', strtotime($request->birth_date[$i])).' -- '.strtoupper($request->relation[$i]).'<br />';
-
-            //if there is a 3rd and succeeding dependent, show this
-            if($i == 2)
-                $succeeding = '<br /><i style="font-size:14px;">By enrolling your 3rd and succeeding dependents, you are agreeing to 100% premium dependent contribution.</i><br />';
-
-            //lookup dependents order
-            switch ($i) {
-                case 0:
-                    $num = $i + 1 . 'st';
-                    $bil = '20%';
-                    $com = $bill * 0.2;
-                    break;
-                case 1:
-                    $num = $i + 1 . 'nd';
-                    $bil = '20%';
-                    $com = $bill * 0.2;
-                    break;
-                case 2:
-                    $num = $i + 1 . 'rd';
-                    $bil = '100%';
-                    $com = $bill * 1;
-                    break;
-                default:
-                    $num = $i + 1 . 'th';
-                    $bil = '100%';
-                    $com = $bill * 1;
-                    break;
-            }
-
-            //breakdown of each dependents premiusm computation
-            $computation .= 
-            '<tr>
-                <td colspan="2">'.$num.' Dependent: '.$bil.' of ₱'.number_format($bill,2).' = '.number_format($com,2).'</td>
-            </tr>';
-
-            //sum all dependents premium, that is their annual
-            $annual += $com;
+            //table for dependent premium computation
+            $premiumComputation = 
+            '<table style="width:350px;border:2px solid black">
+                <tr>
+                    <td colspan="2" style="font-weight:bold;">
+                        Your premium contribution is estimated as follows:
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:6px;"></td>
+                </tr>
+                <tr>
+                    <td style="background-color:#fafafa;font-weight:bold;">Annual:</td>
+                    <td style="background-color:#fafafa;">'.number_format($annual,2).'</td>
+                </tr>
+                <tr>
+                    <td style="background-color:#fafafa;font-weight:bold;">Monthly:</td>
+                    <td style="background-color:#fafafa;">'.number_format($monthly,2).'</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:6px;"></td>
+                </tr>
+                '.$computation.'
+                <tr>
+                    <td colspan="2" style="padding:6px;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="color:red;font-weight:bold;">
+                        Premium refund is not allowed if membership is terminated /
+                        deleted mid policy year.
+                    </td>
+                </tr>
+            </table>';
         }
-        
-        //divide annual for monthly
-        $monthly = $annual / 12;
-
-        //table for dependent premium computation
-        $premiumComputation = 
-        '<table style="width:350px;border:2px solid black">
-            <tr>
-                <td colspan="2" style="font-weight:bold;">
-                    Your premium contribution is estimated as follows:
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="padding:6px;"></td>
-            </tr>
-            <tr>
-                <td style="background-color:#fafafa;font-weight:bold;">Annual:</td>
-                <td style="background-color:#fafafa;">'.number_format($annual,2).'</td>
-            </tr>
-            <tr>
-                <td style="background-color:#fafafa;font-weight:bold;">Monthly:</td>
-                <td style="background-color:#fafafa;">'.number_format($monthly,2).'</td>
-            </tr>
-            <tr>
-                <td colspan="2" style="padding:6px;"></td>
-            </tr>
-            '.$computation.'
-            <tr>
-                <td colspan="2" style="padding:6px;"></td>
-            </tr>
-            <tr>
-                <td colspan="2" style="color:red;font-weight:bold;">
-                    Premium refund is not allowed if membership is terminated /
-                    deleted mid policy year.
-                </td>
-            </tr>
-        </table>';
 
         $info = [
             'name' => $upMember[0]->last_name.', '.$upMember[0]->first_name,
-            'email'  => $upContact[0]->email,
-            'email2' => $upContact[0]->email2,
-            'mobile' => $upContact[0]->mobile_no,
+            'email'  => 'mc_cimperial@yahoo.com',//$upContact[0]->email,
+            'email2' => 'markimperial@llibi.com',//$upContact[0]->email2,
+            'mobile' => '09989829829',//$upContact[0]->mobile_no,
             'depInfo' => $depInfo,
             'succeeding' => $succeeding,
             'premiumComputation' => $premiumComputation
@@ -343,7 +404,8 @@ class ManageBroadpathClients extends Controller
     }
 
     //ADMIN
-    function getNotificationBodyListOfApprovedClient($empno, $company) {
+    function getNotificationBodyListOfApprovedClient($empno, $company) 
+    {
 
         $list = (new ManageSelfEnrollmentController)
             ->getSubmittedAndApprovedClients($empno, $company)['list'];
