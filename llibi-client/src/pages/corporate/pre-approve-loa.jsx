@@ -4,11 +4,8 @@ import Head from 'next/head'
 
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import Chip from '@mui/material/Chip'
-import Stack from '@mui/material/Stack'
 
 import axios from '@/lib/axios'
-import useSWR from 'swr'
 
 import DisplaySelectedUtilization from '@/components/Layouts/Corporate/DisplaySelectedUtilization'
 import DisplaySelectedLaboratory from '@/components/Layouts/Corporate/DisplaySelectedLaboratory'
@@ -17,31 +14,14 @@ import LaboratoryTab from '@/components/Layouts/Corporate/Tabs/LaboratoryTab'
 
 import Loader from '@/components/Loader'
 
-import {
-  CiBank,
-  CiUser,
-  CiCircleList,
-  CiBadgeDollar,
-  CiSaveDown1,
-} from 'react-icons/ci'
 import Swal from 'sweetalert2'
 import PatientCardDetails from '@/components/corporate/pre-approved/PatientCardDetails'
 import ReservationCardDetails from '@/components/corporate/pre-approved/ReservationCardDetails'
 
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props
+import { FaEye, FaFileContract } from 'react-icons/fa'
 
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}>
-      {value === index && children}
-    </div>
-  )
-}
+import { useLaboratoryStore } from '@/store/useLaboratoryStore'
+import { useUtulizationStore } from '@/store/useUtulizationStore'
 
 const REDUCER_ACTIONS = {
   GET_EMPLOYEE: 'getEmployee',
@@ -117,8 +97,13 @@ export default function PreApproveLoa() {
   const [state, dispatch] = useReducer(reducer, INITIALSTATE)
 
   const [value, setValue] = useState(0)
-  const [selectedUtil, setSelectedUtil] = useState([])
-  const [selectedLab, setSelectedLab] = useState([])
+  // const [selectedUtil, setSelectedUtil] = useState([])
+  // const [selectedLab, setSelectedLab] = useState([])
+
+  const { selectedLab, setSelectedLab } = useLaboratoryStore()
+  const { selectedUtil, setSelectedUtil } = useUtulizationStore()
+
+  console.log(selectedUtil)
 
   const MBL = () => {
     if (Number(state.employee?.ipr) > 0) {
@@ -170,6 +155,7 @@ export default function PreApproveLoa() {
 
   const getEmployee = async () => {
     try {
+      const patient_id = patient_id ?? employee_id
       const response = await axios.get(
         `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}&patient_id=${patient_id}&company_id=${company_id}`,
       )
@@ -336,38 +322,50 @@ export default function PreApproveLoa() {
           alt="LLIBI LOGO"
           width={250}
         />
-        <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3">
-          <div className="flex-grow bg-gray-100 shadow p-3 rounded-md">
-            <div className="w-full">
+        <div className="flex flex-col-reverse lg:flex-row px-3 mt-5 gap-3 font-[poppins]">
+          <div className="flex-grow border border-gray-300  p-3 rounded-md">
+            <div className="w-full lg:w-[60vw]">
               <Tabs
                 className="mb-3"
                 value={value}
                 onChange={handleChange}
                 aria-label="basic tabs example">
-                <Tab label="Utilization" />
-                <Tab label="Laboratory" />
+                <Tab className="font-[poppins] text-xs" label="Utilization" />
+                <Tab className="font-[poppins] text-xs" label="Laboratory" />
+                <div className="w-full flex justify-end items-center gap-1">
+                  <button
+                    className="border h-8  px-2 rounded-md bg-blue-600"
+                    title="View selected util & lab">
+                    <FaEye size={16} className=" text-white" />
+                    <span className="sr-only">View Selected Util & Lab</span>
+                  </button>
+                  <button
+                    className="border h-8 px-2 rounded-md bg-green-600"
+                    title="View policy">
+                    <FaFileContract size={16} className="text-white" />
+                    <span className="sr-only">View Policy</span>
+                  </button>
+                </div>
               </Tabs>
               <CustomTabPanel value={value} index={0}>
                 <UtilizationTab
                   search={search}
                   handleSearch={handleSearch}
-                  handleSelectUtilizationAll={handleSelectUtilizationAll}
+                  // handleSelectUtilizationAll={handleSelectUtilizationAll}
                   handleSelectUtilization={handleSelectUtilization}
-                  selectedUtil={selectedUtil}
+                  // selectedUtil={selectedUtil}
                 />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
                 <LaboratoryTab
                   search={searchLab}
                   handleSearch={handleSearchLab}
-                  // handleSelectUtilizationAll={handleSelectUtilizationAll}
                   handleSelectLaboratory={handleSelectLaboratory}
-                  selectedLab={selectedLab}
                 />
               </CustomTabPanel>
             </div>
           </div>
-          <div className="w-full lg:w-[400px] bg-gray-100 shadow p-3 rounded-md">
+          <div className="w-full lg:w-[400px] border border-gray-300 p-3 rounded-md">
             {!state.employee ? (
               <div>Loading...</div>
             ) : (
@@ -384,13 +382,28 @@ export default function PreApproveLoa() {
           </div>
         </div>
 
-        <div className="flex gap-3">
+        {/* <div className="flex gap-3">
           <DisplaySelectedUtilization utilization={selectedUtil} />
           <DisplaySelectedLaboratory laboratory={selectedLab} />
-        </div>
+        </div> */}
       </div>
 
       {!state.employee && <Loader loading={true} />}
     </>
+  )
+}
+
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && children}
+    </div>
   )
 }
