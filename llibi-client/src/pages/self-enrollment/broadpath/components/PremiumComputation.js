@@ -51,6 +51,7 @@ const PremiumComputation = ({ fields = [], bill = 0 }) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }
+
   return (
     <>
       {/* premium box */}
@@ -89,9 +90,9 @@ const PremiumComputation = ({ fields = [], bill = 0 }) => {
                     <td>
                       {row.num} Dependent:
                       {/* 
-                            <br />
-                            {row.bil} of ₱{' '}
-                            {bill?.toLocaleString('en', opt)} 
+                        <br />
+                        {row.bil} of ₱{' '}
+                        {bill?.toLocaleString('en', opt)} 
                       */}
                     </td>
                     <td className="font-bold">

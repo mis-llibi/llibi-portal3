@@ -99,6 +99,31 @@ export const ManageClientInfo = ({ id, company }) => {
       })
   }
 
+  const updateClientAddress = async ({ setLoading, reset, ...props }) => {
+    await csrf()
+
+    let runfinally = true
+
+    axios
+      .post(`/self-enrollment/update-client-info/${company}`, props)
+      .then(() => mutate())
+      .catch(error => {
+        const nerror = error?.response?.data?.message
+        swaerror('Change Address Failed', nerror)
+        runfinally = false
+      })
+      .finally(() => {
+        setLoading(false)
+        if (runfinally) {
+          swasuccess(
+            'Address Updated',
+            'You have successfully updated your address for card delivery',
+          )
+          reset()
+        }
+      })
+  }
+
   const submitDependent = async ({ setLoading, ...props }) => {
     await csrf()
 
@@ -223,6 +248,7 @@ export const ManageClientInfo = ({ id, company }) => {
     client,
     updateClientInfo,
     updateClientInfoRollover,
+    updateClientAddress,
     submitDependent,
     submitWithoutDependent,
     milestoneUpdate,

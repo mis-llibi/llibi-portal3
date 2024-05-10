@@ -20,6 +20,8 @@ import { useRouter } from 'next/router'
 
 import Swal from 'sweetalert2'
 
+import useAge from './components/UseAge'
+
 const Dependents = () => {
   const router = useRouter()
 
@@ -119,29 +121,51 @@ const Dependents = () => {
   const onSubmitDependent = data => {
     let tr = ''
     data?.deps.map(item => {
-      return (tr +=
-        '<tr><td style="width:150px;background-color:#fafafa;">' +
-        item?.last_name.toUpperCase() +
-        ', ' +
-        item?.first_name.toUpperCase() +
-        '</td><td style="width:150px;background-color:#fafafa;">' +
-        item?.birth_date +
-        '</td><td style="width:150px;background-color:#fafafa;">' +
-        item?.relation +
-        '</td></tr>')
+      return (tr += `
+        <tr>
+          <td style="background-color:#fafafa;text-align:left;">${
+            item?.last_name.toUpperCase() +
+            ', ' +
+            item?.first_name.toUpperCase()
+          }</td>
+          <td style="background-color:#fafafa;text-align:left;">${
+            item?.birth_date
+          }</td>
+          <td style="background-color:#fafafa;text-align:left;">${
+            item?.relation
+          }</td>
+        </tr>`)
     })
 
+    let html =
+        '<div style="padding:4px;color:#E74C3C;background-color:#eeeeee;">You have no included dependent/s</div>',
+      btn = 'Yes, submit without dependent'
+
+    if (data?.deps.length > 0) {
+      btn = 'Yes, submit with dependent/s'
+      html = `
+        <table style="background-color:#333;width:100%;">
+          <thead>
+            <tr>
+              <th style="color:#fafafa;text-align:left;">Name</th>
+              <th style="color:#fafafa;text-align:left;">Birth Date</th>
+              <th style="color:#fafafa;text-align:left;">Relationship</th>
+            </tr>
+          </thead>
+            <tbody>
+              ${tr}
+            </tbody>
+        </table>`
+    }
+
     Swal.fire({
-      title: 'Enrolling Dependents',
-      html:
-        '<table style="background-color:#333;"><thead><tr><th style="color:#fafafa;">Name</th><th style="color:#fafafa;">Birth Date</th><th style="color:#fafafa;">Relationship</th></tr></thead><tbody>' +
-        tr +
-        '</tbody></table>',
+      title: 'Submitting Renewal',
+      html: html,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, submit with dependents',
+      confirmButtonText: btn,
     }).then(result => {
       if (result.isConfirmed) {
         setLoading(true)
@@ -259,6 +283,12 @@ const Dependents = () => {
                   {client?.principal[0]?.birth_date || 'N/A'}
                 </p>
               </div>
+              <div className="md:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
+                <p>Age</p>
+                <p className="ml-2 font-bold">
+                  {useAge(client?.principal[0]?.birth_date) || 'N/A'}
+                </p>
+              </div>
               <div className="lg:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
                 <p>Hire Date</p>
                 <p className="ml-2 font-bold">
@@ -312,7 +342,7 @@ const Dependents = () => {
         <div className="float-right">
           {/* submit with dependent button */}
           <Button
-            disabled={!client?.principal[0] || fields.length == 0}
+            //removed for renewal 2024-05-10 / disabled={!client?.principal[0] || fields.length == 0}
             className={
               'normal-case bg-purple-400 hover:bg-purple-700 focus:bg-purple-900 active:bg-purple-500 ring-purple-200 p-2 mb-2 md:mt-0 md:mr-2'
             }
@@ -320,7 +350,7 @@ const Dependents = () => {
             Submit my dependent/s information
           </Button>
           {/* submit without dependent button */}
-          <Button
+          {/* <Button
             disabled={!client?.principal[0]}
             className={
               'normal-case bg-orange-400 hover:bg-orange-700 focus:bg-orange-900 active:bg-orange-500 ring-orange-200 p-2'
@@ -334,6 +364,21 @@ const Dependents = () => {
               })
             }>
             Submit without dependents
+          </Button> */}
+          <Button
+            disabled={!client?.principal[0]}
+            className={
+              'normal-case bg-green-400 hover:bg-green-700 focus:bg-green-900 active:bg-green-500 ring-green-200 p-2'
+            }
+            onClick={() =>
+              onSubmitWithoutDependent({
+                id: watch('id'),
+                memberId: watch('memberId'),
+                civilStatus: watch('civilStatus'),
+                gender: watch('gender'),
+              })
+            }>
+            Save and submit later
           </Button>
         </div>
 

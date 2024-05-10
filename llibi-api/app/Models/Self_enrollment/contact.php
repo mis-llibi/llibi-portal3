@@ -22,4 +22,8 @@ class contact extends Model
         'email2',
         'mobile_no',
     ];
+
+    public function member() {
+        return $this->belongsTo(Member::class, 'link_id');
+    }
 }
