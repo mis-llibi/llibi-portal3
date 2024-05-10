@@ -43,6 +43,7 @@ use App\Mail\MailerSendTest;
 use App\Services\SendingEmail;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\Recipient;
 use MailerSend\MailerSend;
@@ -184,4 +185,10 @@ Route::controller(ClientPortalErrorLogsController::class)->group(function () {
   Route::get('/error-logs', 'index');
   Route::post('/error-logs', 'store');
   Route::post('/error-logs-send-notify', 'sendNotify');
+});
+
+use Spatie\Browsershot\Browsershot;
+
+Route::get('/gg', function () {
+  Browsershot::url('https://google.com')->base64pdf();
 });

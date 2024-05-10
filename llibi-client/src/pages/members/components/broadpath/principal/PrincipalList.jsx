@@ -36,7 +36,7 @@ export default function PrincipalList({ show, setShow, setSelectedPrincipal }) {
               type="text"
               name="search"
               placeholder="Input search (ex: first name, last name)"
-              className="border rounded-md w-full mb-3 text-xs border-gray-200"
+              className="border rounded-md w-full mb-3 text-xs border-gray-300"
               ref={searchRef}
             />
           </div>

@@ -276,7 +276,7 @@ const pageEnrollmentAdmin = ({ props }) => {
             <div className="clear-both"></div>
           </div> */}
 
-          <div className="p-3 bg-white border-b border-gray-200">
+          <div className="p-3 bg-white border-b border-gray-300">
             {Number(status) === 4 && (
               // active members
               <ActiveMembers {...props} />

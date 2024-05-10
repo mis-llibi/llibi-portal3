@@ -70,7 +70,7 @@ export default function ClientPortalErrorLogsHomePage() {
                 <div>
                   <label className="mr-3 text-fav-black block">Filter:</label>
                   <select
-                    className="rounded-md border border-gray-200 text-xs"
+                    className="rounded-md border border-gray-300 text-xs"
                     value={filter}
                     onChange={handleFilter}>
                     <option value="">All</option>

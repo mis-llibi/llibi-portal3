@@ -15,7 +15,7 @@ const PreApprovedLayout = ({ header, children }) => {
 
   //console.log(user)
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 font-[poppins]">
       <nav className="bg-white border-b border-gray-100">
         {/* Primary Navigation Menu */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,7 +89,7 @@ const PreApprovedLayout = ({ header, children }) => {
             </div>
 
             {/* Responsive Settings Options */}
-            <div className="pt-4 pb-1 border-t border-gray-200">
+            <div className="pt-4 pb-1 border-t border-gray-300">
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
                   <svg

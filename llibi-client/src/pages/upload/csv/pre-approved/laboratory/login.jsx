@@ -7,14 +7,14 @@ import GuestLayout from '@/components/Layouts/GuestLayout'
 import Input from '@/components/Input'
 import Label from '@/components/Label'
 import Link from 'next/link'
-import { useAuth } from '@/hooks/members/auth'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { usePreApproveAuth } from '@/hooks/pre-approved/pre-approve-auth'
 
 const LaboratoryLoginPage = () => {
   const router = useRouter()
 
-  const { login } = useAuth({
+  const { login } = usePreApproveAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/upload/csv/pre-approved/laboratory',
   })

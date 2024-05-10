@@ -21,6 +21,7 @@ import {
   CiImport,
   CiExport,
 } from 'react-icons/ci'
+import Swal from 'sweetalert2'
 
 export default function LaboratoryPage() {
   const router = useRouter()
@@ -35,35 +36,6 @@ export default function LaboratoryPage() {
     q: debounceValue,
   })
 
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Please select csv file first.')
-      return
-    }
-    setIsLoading(true)
-    const FORMDATA = new FormData()
-    if (file) {
-      for (let index = 0; index < file.length; index++) {
-        FORMDATA.append('file[]', file[index])
-      }
-    }
-
-    uploadLaboratoryCsv({ setIsLoading, FORMDATA })
-
-    // await axios.get(`sanctum/csrf-cookie`)
-
-    // try {
-    //   const response = await axios.post(
-    //     `${process.env.apiPath}/pre-approve/laboratory`,
-    //     FORMDATA,
-    //   )
-    //   setIsLoading(false)
-    // } catch (error) {
-    //   setIsLoading(false)
-    //   throw error
-    // }
-  }
-
   const handleButtonAdd = () => {
     setModalIsOpen('add-laboratory')
   }
@@ -74,8 +46,18 @@ export default function LaboratoryPage() {
   }
 
   const handleButtonDelete = async row => {
-    await deleteLaboratory(row.id)
-    LaboratoryRequest.mutate()
+    try {
+      await deleteLaboratory(row.id)
+      LaboratoryRequest.mutate()
+
+      Swal.fire('Success', 'The item has been successfully deleted.', 'success')
+    } catch (error) {
+      Swal.fire(
+        'Error',
+        'Oops! Something went wrong. Please try again later.',
+        'error',
+      )
+    }
   }
 
   const handleButtonEditModalClose = () => {
@@ -96,87 +78,8 @@ export default function LaboratoryPage() {
     )
   }
 
-  // const columns = [
-  //   // { field: 'id', headerName: 'ID', width: 50 },
-  //   {
-  //     field: 'code',
-  //     headerName: 'Code',
-  //     // width: 100,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: 'laboratory',
-  //     headerName: 'Laboratory',
-  //     // width: 160,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: 'cost',
-  //     headerName: 'Cost',
-  //     // width: 160,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: 'action',
-  //     headerName: 'Action',
-  //     sortable: false,
-  //     width: 200,
-  //     align: 'center',
-  //     renderCell: ({ row }) => (
-  //       <div className="flex gap-1">
-  //         <button
-  //           onClick={() => handleButtonEdit(row)}
-  //           className="border hover:bg-gray-400 p-2 rounded-md text-white uppercase font-semibold text-xs">
-  //           <CiEdit className="text-fav-black md:text-2xl" />
-  //         </button>
-  //         <button
-  //           onClick={() => handleButtonDelete(row)}
-  //           className="border hover:bg-gray-400 p-2 rounded-md text-white uppercase font-semibold text-xs">
-  //           <CiTrash className="text-fav-black md:text-2xl" />
-  //         </button>
-  //       </div>
-  //     ),
-  //   },
-  // ]
-
-  // if (LaboratoryRequest.error) return <h1>Error...</h1>
-  // if (!LaboratoryRequest.data) return <h1>Loading...</h1>
-
   return (
     <PreApprovedLayout>
-      {/* <div className="max-w-lg flex flex-col justify-between items-center border mx-auto mt-20 p-5 rounded-md h-[20rem]">
-        <div>
-          <h1 className="font-bold uppercase text-3xl mb-5 text-gray-900">
-            UPLOAD CSV FOR LABORATORY
-          </h1>
-          <label htmlFor="file" className="text-gray-700 text-sm font-semibold">
-            Select CSV File
-          </label>
-          <input
-            className="mb-5 w-full border bg-blue-50 p-3 rounded-md cursor-pointer"
-            type="file"
-            name="file"
-            id="file"
-            multiple
-            accept=".csv"
-            onChange={e => setFile(e.target.files)}
-          />
-        </div>
-        <button
-          className="p-3 w-full rounded-md font-bold hover:underline"
-          onClick={() => router.push('/upload/csv/pre-approved/utilization')}>
-          Switch to Utilization
-        </button>
-        <button
-          disabled={isLoading}
-          className={`${
-            isLoading ? 'bg-gray-900' : 'bg-blue-700 hover:bg-blue-900'
-          }  p-3 w-full rounded-md uppercase text-white font-bold`}
-          onClick={handleUpload}>
-          Upload
-        </button>
-      </div> */}
-
       <div className="px-5 max-w-7xl bg-white mx-auto mt-5 rounded-md py-5">
         <div className="flex justify-between items-center mb-3">
           <div>
@@ -184,24 +87,27 @@ export default function LaboratoryPage() {
               Laboratory List
             </h1>
           </div>
-          <div>
+          <div className="flex gap-1">
             <button
-              className="hover:bg-gray-300 p-1 rounded-md text-white uppercase font-semibold text-xs"
+              className="hover:bg-gray-100 px-2 py-1 rounded-md text-blue-700 uppercase font-semibold text-xs flex gap-1 items-center border border-gray-300"
               onClick={handleButtonAdd}
               title="New">
-              <CiSquarePlus className="text-2xl text-blue-700" />
+              <CiSquarePlus className="text-2xl " />
+              <span>Add New</span>
             </button>
             <button
-              className="hover:bg-gray-300 p-1 rounded-md text-white uppercase font-semibold text-xs"
+              className="hover:bg-gray-100 px-2 py-1 rounded-md text-orange-700 uppercase font-semibold text-xs flex gap-1 items-center border border-gray-300"
               onClick={handleButtonImport}
               title="Import">
-              <CiImport className="text-2xl text-orange-700" />
+              <CiImport className="text-2xl " />
+              <span>Import</span>
             </button>
             <button
-              className="hover:bg-gray-300 p-1 rounded-md text-white uppercase font-semibold text-xs"
+              className="hover:bg-gray-100 px-2 py-1 rounded-md text-green-700 uppercase font-semibold text-xs flex gap-1 items-center border border-gray-300"
               onClick={handleButtonExport}
               title="Export">
-              <CiExport className="text-2xl text-green-700" />
+              <CiExport className="text-2xl" />
+              <span>Excel</span>
             </button>
           </div>
         </div>
@@ -212,7 +118,7 @@ export default function LaboratoryPage() {
           </label>
           <input
             type="text"
-            className="w-full rounded-md border-gray-300"
+            className="flex h-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Search Laboratory"
             onChange={e => handleSearch(e.target.value)}
           />

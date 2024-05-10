@@ -35,12 +35,7 @@ export default function ImportLaboratory({ row, ...props }) {
 
   return (
     <>
-      <Dialog
-        open={true}
-        onClose={props.handleClose}
-        fullWidth
-        maxWidth={'md'}
-        sx={{ zIndex: '1000' }}>
+      <Dialog open={true} onClose={props.handleClose} fullWidth maxWidth={'md'}>
         <DialogTitle>
           <span className="font-bold text-gray-800">Import Laboratory</span>
         </DialogTitle>

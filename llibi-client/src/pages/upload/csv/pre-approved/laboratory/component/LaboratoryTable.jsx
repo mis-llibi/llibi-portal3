@@ -19,26 +19,48 @@ export default function LaboratoryTable({
       headerName: 'Code',
       // width: 100,
       flex: 1,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.code}</div>
+          </>
+        )
+      },
     },
     {
       field: 'laboratory',
       headerName: 'Laboratory',
       // width: 160,
       flex: 1,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            <div className="font-[poppins]">{row.laboratory}</div>
+          </>
+        )
+      },
     },
     {
       field: 'cost',
       headerName: 'Class 1',
       // width: 160,
       flex: 1,
-      renderCell: ({ row }) => <span>{NumberFormatter.format(row.cost)}</span>,
+      renderCell: ({ row }) => (
+        <span className="font-[poppins]">
+          {NumberFormatter.format(row.cost)}
+        </span>
+      ),
     },
     {
       field: 'cost2',
       headerName: 'Class 2',
       // width: 160,
       flex: 1,
-      renderCell: ({ row }) => <span>{NumberFormatter.format(row.cost2)}</span>,
+      renderCell: ({ row }) => (
+        <span className="font-[poppins]">
+          {NumberFormatter.format(row.cost2)}
+        </span>
+      ),
     },
     {
       field: 'action',
@@ -50,12 +72,12 @@ export default function LaboratoryTable({
         <div className="flex gap-1">
           <button
             onClick={() => handleButtonEdit(row)}
-            className="border hover:bg-gray-400 p-2 rounded-md text-white uppercase font-semibold text-xs">
+            className="border border-gray-300 hover:bg-gray-200 px-2 py-1 rounded-md text-white uppercase font-semibold text-xs">
             <CiEdit className="text-fav-black md:text-2xl" />
           </button>
           <button
             onClick={() => handleButtonDelete(row)}
-            className="border hover:bg-gray-400 p-2 rounded-md text-white uppercase font-semibold text-xs">
+            className="border border-gray-300 hover:bg-gray-200 px-2 py-1 rounded-md text-white uppercase font-semibold text-xs">
             <CiTrash className="text-fav-black md:text-2xl" />
           </button>
         </div>
@@ -68,6 +90,12 @@ export default function LaboratoryTable({
 
   return (
     <DataGrid
+      sx={{
+        '.MuiDataGrid-columnHeaderTitle': {
+          fontFamily: 'poppins !important',
+          fontWeight: 'bold',
+        },
+      }}
       rows={LaboratoryRequest?.data || []}
       columns={columns}
       pageSize={100}

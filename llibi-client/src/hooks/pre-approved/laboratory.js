@@ -5,12 +5,10 @@ import axios from '@/lib/axios'
 
 export default function Laboratory({ q }) {
   const LaboratoryRequest = useSWR(
-    `${process.env.apiPath}/pre-approve/laboratory?q=${q}`,
+    `/api/pre-approve/laboratory?q=${q}`,
     async () => {
       try {
-        const response = await axios.get(
-          `${process.env.apiPath}/pre-approve/laboratory?q=${q}`,
-        )
+        const response = await axios.get(`/api/pre-approve/laboratory?q=${q}`)
 
         return response.data
       } catch (error) {
@@ -82,10 +80,7 @@ export default function Laboratory({ q }) {
 
 export const addLaboratory = async data => {
   try {
-    const response = await axios.post(
-      `${process.env.apiPath}/pre-approve/laboratory`,
-      data,
-    )
+    const response = await axios.post(`/api/pre-approve/laboratory`, data)
   } catch (error) {
     throw error
   }

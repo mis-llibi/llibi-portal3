@@ -315,7 +315,7 @@ export default function ActiveMembers({ create, ...props }) {
             <input
               type="text"
               id="search"
-              className="w-full rounded-md text-xs border border-gray-200"
+              className="w-full rounded-md text-xs border border-gray-300"
               placeholder="Seach (ex. first name, last name)"
               onChange={e => setSearch(e.target.value)}
             />
@@ -325,7 +325,7 @@ export default function ActiveMembers({ create, ...props }) {
             <select
               name="filter"
               id="filter"
-              className="w-full rounded-md text-xs border border-gray-200"
+              className="w-full rounded-md text-xs border border-gray-300"
               defaultValue={filter}
               onChange={e => setFilter(e.target.value)}>
               <option value="4">Active</option>

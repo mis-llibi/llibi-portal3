@@ -4,6 +4,8 @@ namespace App\Http\Controllers\PreApprove;
 
 use App\Exports\PreApproved\LaboratoryExport;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PreApprove\Laboratory\AddLaboratoryRequest;
+use App\Http\Requests\PreApprove\Laboratory\EditLaboratoryRequest;
 use App\Imports\PreApprove\LaboratoryImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -23,7 +25,7 @@ class LaboratoryController extends Controller
       ->latest()->take(250)->get();
   }
 
-  public function store(Request $request)
+  public function store(AddLaboratoryRequest $request)
   {
     $lab = Laboratory::create([
       'code' => Str::random(12),
@@ -36,7 +38,7 @@ class LaboratoryController extends Controller
     return response()->json($lab);
   }
 
-  public function update(Request $request, $id)
+  public function update(EditLaboratoryRequest $request, $id)
   {
     $lab = Laboratory::where('id', $id)->update([
       'laboratory' => trim($request->laboratory),

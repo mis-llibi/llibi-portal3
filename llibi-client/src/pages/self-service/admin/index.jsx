@@ -252,7 +252,7 @@ const Admin = () => {
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           {/* Main form white background */}
-          <div className="p-6 bg-white border-b border-gray-200 shadow-sm sm:rounded-lg">
+          <div className="p-6 bg-white border-b border-gray-300 shadow-sm sm:rounded-lg">
             {/* Main Header, title and logo */}
             <div className="flex-none md:flex gap-5 font-bold text-xl text-gray-900">
               <ApplicationLogo width={200} />
@@ -327,7 +327,7 @@ const Admin = () => {
                         Logs
                       </Button>
                       <a
-                        className="text-blue-700 font-bold self-center capitalize border border-gray-200 px-3 py-2 rounded-md text-xs"
+                        className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs"
                         href="/search-masterlist"
                         target="_blank">
                         Search to masterlist
@@ -336,7 +336,7 @@ const Admin = () => {
                   </>
                 )}
                 <a
-                  className="text-blue-700 font-bold self-center capitalize  border border-gray-200 px-3 py-2 rounded-md text-xs"
+                  className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
                   href="/complaint/error-logs"
                   target="_blank">
                   client portal error logs

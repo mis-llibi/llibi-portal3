@@ -223,7 +223,7 @@ export default function PendingForApproval({ create, ...props }) {
             <input
               type="text"
               id="search"
-              className="w-full rounded-md text-xs border border-gray-200"
+              className="w-full rounded-md text-xs border border-gray-300"
               placeholder="Seach (ex. first name, last name)"
             />
           </div>
