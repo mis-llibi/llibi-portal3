@@ -7,8 +7,6 @@ import Tab from '@mui/material/Tab'
 
 import axios from '@/lib/axios'
 
-import DisplaySelectedUtilization from '@/components/Layouts/Corporate/DisplaySelectedUtilization'
-import DisplaySelectedLaboratory from '@/components/Layouts/Corporate/DisplaySelectedLaboratory'
 import UtilizationTab from '@/components/Layouts/Corporate/Tabs/UtilizationTab'
 import LaboratoryTab from '@/components/Layouts/Corporate/Tabs/LaboratoryTab'
 
@@ -18,10 +16,11 @@ import Swal from 'sweetalert2'
 import PatientCardDetails from '@/components/corporate/pre-approved/PatientCardDetails'
 import ReservationCardDetails from '@/components/corporate/pre-approved/ReservationCardDetails'
 
-import { FaEye, FaFileContract } from 'react-icons/fa'
-
 import { useLaboratoryStore } from '@/store/useLaboratoryStore'
 import { useUtulizationStore } from '@/store/useUtulizationStore'
+import ShowSelectedUtilAndLab from '@/components/corporate/pre-approved/modal/ShowSelectedUtilAndLab'
+import ShowSpecialInstruction from '@/components/corporate/pre-approved/modal/ShowSpecialInstruction'
+import HeaderTabButton from '@/components/corporate/pre-approved/HeaderTabButton'
 
 const REDUCER_ACTIONS = {
   GET_EMPLOYEE: 'getEmployee',
@@ -91,19 +90,23 @@ const INITIALSTATE = {
   reservation: 0,
   remainingLimit: 0,
 }
-export default function PreApproveLoa() {
+
+import {
+  MODAL_AVAILABLE,
+  useModalUtilAndLabStore,
+} from '@/store/useModalUtilAndLabStore'
+
+export default function PreApprovedLoa() {
   const router = useRouter()
   const { employee_id, patient_id, company_id, hospital_class } = router.query
   const [state, dispatch] = useReducer(reducer, INITIALSTATE)
 
   const [value, setValue] = useState(0)
-  // const [selectedUtil, setSelectedUtil] = useState([])
-  // const [selectedLab, setSelectedLab] = useState([])
 
   const { selectedLab, setSelectedLab } = useLaboratoryStore()
   const { selectedUtil, setSelectedUtil } = useUtulizationStore()
 
-  console.log(selectedUtil)
+  const showModal = useModalUtilAndLabStore(state => state.showModal)
 
   const MBL = () => {
     if (Number(state.employee?.ipr) > 0) {
@@ -199,35 +202,6 @@ export default function PreApproveLoa() {
     }
   }
 
-  const handleSelectUtilizationAll = async e => {
-    if (e.target.checked) {
-      const totalEligible = state.employee?.utilization?.reduce(
-        (n, { eligible }) => Number(n) + Number(eligible),
-        0,
-      )
-      dispatch({
-        type: REDUCER_ACTIONS.ADD_UTILIZATION,
-        payload: { utilization: Number(totalEligible) },
-      })
-
-      const dump_arr = []
-      const dump = {
-        ...state.employee?.utilization.map(item => {
-          return dump_arr.push({ ...item, isSelected: true })
-        }),
-      }
-      setSelectedUtil(dump_arr)
-      // console.log(dump_arr)
-    } else {
-      dispatch({
-        type: REDUCER_ACTIONS.RESET_UTILIZATION,
-        payload: { utilization: Number(0) },
-      })
-
-      setSelectedUtil([])
-    }
-  }
-
   const handleSelectLaboratory = async (checked, params) => {
     if (checked) {
       dispatch({
@@ -250,11 +224,6 @@ export default function PreApproveLoa() {
       setSelectedLab(removeUnchecked)
     }
   }
-
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'PHP',
-  })
 
   const [search, setSearch] = useState()
   const handleSearch = e => {
@@ -314,7 +283,7 @@ export default function PreApproveLoa() {
   return (
     <>
       <Head>
-        <title>Pre Approve Loa</title>
+        <title>LLIBI - PRE APPROVED LOA</title>
       </Head>
       <div className="max-w-7xl mx-auto">
         <img
@@ -332,28 +301,13 @@ export default function PreApproveLoa() {
                 aria-label="basic tabs example">
                 <Tab className="font-[poppins] text-xs" label="Utilization" />
                 <Tab className="font-[poppins] text-xs" label="Laboratory" />
-                <div className="w-full flex justify-end items-center gap-1">
-                  <button
-                    className="border h-8  px-2 rounded-md bg-blue-600"
-                    title="View selected util & lab">
-                    <FaEye size={16} className=" text-white" />
-                    <span className="sr-only">View Selected Util & Lab</span>
-                  </button>
-                  <button
-                    className="border h-8 px-2 rounded-md bg-green-600"
-                    title="View policy">
-                    <FaFileContract size={16} className="text-white" />
-                    <span className="sr-only">View Policy</span>
-                  </button>
-                </div>
+                <HeaderTabButton state={state} />
               </Tabs>
               <CustomTabPanel value={value} index={0}>
                 <UtilizationTab
                   search={search}
                   handleSearch={handleSearch}
-                  // handleSelectUtilizationAll={handleSelectUtilizationAll}
                   handleSelectUtilization={handleSelectUtilization}
-                  // selectedUtil={selectedUtil}
                 />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
@@ -381,12 +335,12 @@ export default function PreApproveLoa() {
             )}
           </div>
         </div>
-
-        {/* <div className="flex gap-3">
-          <DisplaySelectedUtilization utilization={selectedUtil} />
-          <DisplaySelectedLaboratory laboratory={selectedLab} />
-        </div> */}
       </div>
+
+      {showModal === MODAL_AVAILABLE.viewSelected && <ShowSelectedUtilAndLab />}
+      {showModal === MODAL_AVAILABLE.viewSpecialInstruction && (
+        <ShowSpecialInstruction />
+      )}
 
       {!state.employee && <Loader loading={true} />}
     </>

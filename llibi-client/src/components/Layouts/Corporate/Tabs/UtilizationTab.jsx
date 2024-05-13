@@ -38,37 +38,37 @@ export default function UtilizationTab({
                     type="checkbox"
                     className="hidden peer"
                   />
-                  <div className="peer-checked:bg-gray-200 peer-checked:text-fav-black p-3 rounded-md h-full relative">
-                    <div className="font-bold text-xs min-h-12 flex gap-3">
+                  <div className="peer-checked:bg-blue-600 peer-checked:text-white p-3 rounded-md h-full relative">
+                    <div className="font-thin text-xs min-h-12 flex gap-3">
                       <span className="uppercase w-20">Claim No.:</span>
                       <span className="text-right flex-1">
                         {util.claimnumb}
                       </span>
                     </div>
-                    <div className="font-bold text-xs min-h-12 flex gap-3">
+                    <div className="font-thin text-xs min-h-12 flex gap-3">
                       <span className="uppercase w-20">Claim Date:</span>
                       <span className="text-right flex-1">
                         {util.claimdate}
                       </span>
                     </div>
-                    <div className="font-bold text-xs min-h-12 flex gap-3">
+                    <div className="font-thin text-xs min-h-12 flex gap-3">
                       <span className="uppercase w-20">Claim Type:</span>
                       <span className="text-right flex-1">
                         {util.claimtype}
                       </span>
                     </div>
-                    <div className="font-bold text-xs min-h-12 flex gap-3">
+                    <div className="font-thin text-xs min-h-12 flex gap-3">
                       <span className="uppercase w-20">Diagnosis:</span>
                       <span className="text-right flex-1">{util.diagname}</span>
                     </div>
-                    <div className="font-bold text-xs mb-5 min-h-12 flex gap-3">
+                    <div className="font-thin text-xs mb-5 min-h-12 flex gap-3">
                       <span className="uppercase w-20">Relation:</span>
                       <span className="text-right flex-1">
                         {util.relation === 'EMPLOYEE' ? 'E' : 'D'}
                       </span>
                     </div>
                     <span
-                      className={`block font-bold text-fav-subtitle text-xs absolute right-0 bottom-0 p-3`}>
+                      className={`block font-bold text-xs absolute right-0 bottom-0 p-3`}>
                       {formatter.format(util.eligible)}
                     </span>
                   </div>

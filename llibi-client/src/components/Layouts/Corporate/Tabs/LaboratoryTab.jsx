@@ -45,12 +45,12 @@ export default function LaboratoryTab({
                     type="checkbox"
                     className="hidden peer"
                   />
-                  <div className="peer-checked:bg-gray-200 peer-checked:text-fav-black p-3 rounded-md h-full relative">
-                    <span className="block font-bold text-xs mb-5 min-h-12">
+                  <div className="peer-checked:bg-blue-600 peer-checked:text-white p-3 rounded-md h-full relative">
+                    <span className="block font-thin text-xs mb-5 min-h-12">
                       {lab.laboratory}
                     </span>
                     <span
-                      className={`block font-bold text-fav-subtitle text-xs absolute right-0 bottom-0 p-3`}>
+                      className={`block font-bold peer-checked:text-white text-xs absolute right-0 bottom-0 p-3`}>
                       {hospital_class == 1
                         ? formatter.format(lab.cost)
                         : formatter.format(lab.cost2)}
