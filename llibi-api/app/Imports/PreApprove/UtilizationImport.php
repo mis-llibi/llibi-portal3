@@ -26,7 +26,7 @@ class UtilizationImport implements ToCollection, WithBatchInserts, WithChunkRead
 
       $dateString = $row['claimdate'];
       $date  = Carbon::createFromFormat('m/d/Y', $dateString);
-      
+
       try {
         Utilization::insert([
           'uniqcode' => trim($row['uniqcode']),
@@ -39,7 +39,7 @@ class UtilizationImport implements ToCollection, WithBatchInserts, WithChunkRead
           'diagcode' => trim($row['diagcode']),
           'diagname' => trim($row['diagname']),
           'eligible' => trim($row['eligible']),
-          'relation' => trim($row['insrela']),
+          // 'relation' => trim($row['insrela']),
         ]);
       } catch (\Throwable $th) {
         Log::error($th->getMessage());
