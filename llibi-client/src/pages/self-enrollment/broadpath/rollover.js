@@ -249,6 +249,7 @@ const rollover = () => {
 
     let html =
       '<div style="padding:4px;color:#E74C3C;background-color:#eeeeee;">You have no included dependent/s</div>'
+
     if (client?.dependent?.length > 0) {
       html = `<table style="background-color:#333;width:100%;">
                 <thead>
@@ -290,7 +291,7 @@ const rollover = () => {
     }
 
     Swal.fire({
-      title: 'Rollover Information and Dependent/s',
+      title: 'Rollover / retain existing principal and dependent information',
       width: 800,
       html: info + html,
       icon: 'warning',
@@ -358,9 +359,7 @@ const rollover = () => {
 
   const onView = () => {
     setBody({
-      title: (
-        <b className="text-blue-900">Change Address (For Card Delivery)</b>
-      ),
+      title: <b className="text-blue-900">Update my card delivery address</b>,
       content: <ChangeAddress props={client?.principal[0]?.contact} />,
       modalOuterContainer: 'w-full md:w-6/12 max-h-screen',
       modalContainer: 'h-full',
@@ -486,7 +485,7 @@ const rollover = () => {
             <Button
               onClick={handleSubmit(onView)}
               className="p-3 bg-orange-400 hover:bg-orange-700 focus:bg-orange-900 active:bg-orange-500 ring-orange-200">
-              Change Address (For Card Delivery)
+              Update my card delivery address
             </Button>
           </div>
 

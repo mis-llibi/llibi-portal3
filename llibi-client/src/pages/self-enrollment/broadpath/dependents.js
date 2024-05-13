@@ -50,8 +50,10 @@ const Dependents = () => {
     handleSubmit,
     watch,
     setValue,
+    getValues,
     reset,
     resetField,
+    trigger,
     formState: { isDirty, errors },
   } = useForm({
     defaultValues: {
@@ -83,7 +85,7 @@ const Dependents = () => {
         break
     }
     if (client?.principal[0]?.form_locked == 2) {
-      window.location.pathname = `/self-enrollment/broadpath/form-locked`
+      window.location.pathname = `/self-enrollment/broadpath/form-locked-submitted`
     } else {
       if (client?.principal.length > 0)
         if (client?.principal[0]?.status == 1) {
@@ -174,7 +176,7 @@ const Dependents = () => {
     })
   }
 
-  const onSubmitWithoutDependent = data => {
+  /* const onSubmitWithoutDependent = data => {
     Swal.fire({
       title: 'Are you sure?',
       text:
@@ -193,6 +195,37 @@ const Dependents = () => {
         })
       }
     })
+  } */
+
+  const onSave = data => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Saving your transaction only and will not submit.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, save only',
+    }).then(result => {
+      if (result.isConfirmed) {
+        setLoading(true)
+        submitWithoutDependent({ ...data, setLoading })
+        /* reset({
+          deps: [depsForm],
+        }) */
+      }
+    })
+  }
+
+  const handleSave = async () => {
+    onSave(getValues()) // Proceed to save after optional validation check
+  }
+
+  const handleSubmission = async () => {
+    const result = await trigger() // Ensure validation is triggered
+    if (result) {
+      handleSubmit(onSubmitDependent)() // Proceed to submit after validation
+    }
   }
 
   //privacy notice
@@ -346,11 +379,12 @@ const Dependents = () => {
             className={
               'normal-case bg-purple-400 hover:bg-purple-700 focus:bg-purple-900 active:bg-purple-500 ring-purple-200 p-2 mb-2 md:mt-0 md:mr-2'
             }
-            onClick={handleSubmit(onSubmitDependent)}>
+            onClick={handleSubmission}>
             Submit my dependent/s information
           </Button>
           {/* submit without dependent button */}
-          {/* <Button
+          {/* 
+          <Button
             disabled={!client?.principal[0]}
             className={
               'normal-case bg-orange-400 hover:bg-orange-700 focus:bg-orange-900 active:bg-orange-500 ring-orange-200 p-2'
@@ -364,20 +398,14 @@ const Dependents = () => {
               })
             }>
             Submit without dependents
-          </Button> */}
+          </Button> 
+          */}
           <Button
             disabled={!client?.principal[0]}
             className={
               'normal-case bg-green-400 hover:bg-green-700 focus:bg-green-900 active:bg-green-500 ring-green-200 p-2'
             }
-            onClick={() =>
-              onSubmitWithoutDependent({
-                id: watch('id'),
-                memberId: watch('memberId'),
-                civilStatus: watch('civilStatus'),
-                gender: watch('gender'),
-              })
-            }>
+            onClick={handleSave}>
             Save and submit later
           </Button>
         </div>

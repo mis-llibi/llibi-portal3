@@ -48,7 +48,7 @@ const Input = ({ register, disabled = false, errors, className, ...props }) => {
     const rel = props?.rel
 
     const image = props?.civilStatus
-    // if (rel == 'DOMESTIC PARTNER') image = 'SINGLE WITH DOMESTIC PARTNER'
+    //if (rel == 'DOMESTIC PARTNER') image = 'SINGLE WITH DOMESTIC PARTNER'
 
     setBody({
       title: '',

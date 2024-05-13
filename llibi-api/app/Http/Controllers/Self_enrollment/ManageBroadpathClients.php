@@ -36,7 +36,7 @@ class ManageBroadpathClients extends Controller
         $dependent = members::where('member_id', (count($principal) > 0 ? $principal[0]->member_id : 'xxxxx'))
             ->where('client_company', 'BROADPATH')
             ->where('relation', '!=', 'PRINCIPAL')
-            ->whereIn('status', [2, 4])
+            ->whereIn('status', [2, 4, 5])
             ->get(['id as mId', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'attachments']);
 
         return array(
@@ -365,6 +365,103 @@ class ManageBroadpathClients extends Controller
     
     public function submitWithoutDependent(Request $request)
     {
+        //Check attachment first before continuing to processing the data
+        $rules = []; $att = [];
+
+        if(isset($request->list)) {
+            for ($i=0; $i < count($request->list); $i++) { 
+                if($request->hasfile("attachment$i"))
+                {   
+                    foreach($request->file("attachment$i") as $key => $file)
+                    {
+                        $rules["dependent_$i"."_with_attachment_$key"] = 'mimes:jpg,jpeg,bmp,png,gif,svg,pdf';
+                        $att["dependent_$i"."_with_attachment_$key"] = $file;
+                    }
+                }
+            }
+
+            $validator = Validator::make($att, $rules);
+
+            if ($validator->fails()) {
+                return response()->json(array(
+                    'success' => false,
+                    'errors' => $validator->getMessageBag()->toArray(),
+                    'message' => 'Attachment/s must be an image or pdf only!'
+                ) , 400);
+            }
+        }
+
+        $update = [
+            'civil_status' => $request->principalCivilStatus,
+            'gender' => $request->genderPrincipal,
+        ];
+        $member = members::where('id', $request->principalId)
+            ->update($update);
+
+        $upMember = members::where('id', $request->principalId)
+            ->where('status', 2)
+            ->limit(1)
+            ->get(['id', 'member_id', 'last_name', 'first_name', 'mbl']);
+
+        $upContact = contact::where('link_id', $request->principalId)
+            ->get();
+
+        $bill = 0;
+
+        $arr = []; $depInfo = ''; $computation = ''; $annual = 0; $monthly = 0; $succeeding = ''; $premiumComputation = ''; 
+        //breakdown of all dependents for enrollment
+        if(isset($request->list)) {
+            for ($i=0; $i < count($request->list); $i++) { 
+
+                $arr['client_company'] = 'BROADPATH';
+                $arr['member_id'] = $request->memberId;
+                $arr['hire_date'] = $request->hireDate;
+                $arr['coverage_date'] = $request->coverageDate;
+                //$arr['status'] = 5; //due to renewal changing the status to 5
+
+                $arr['first_name'] = $this->clean($request->first_name[$i]);
+                $arr['last_name'] = $this->clean($request->last_name[$i]);
+                $arr['middle_name'] = $this->clean($request->middle_name[$i]);
+                $arr['relation'] = strtoupper($request->relation[$i]);
+                $arr['birth_date'] = $request->birth_date[$i];
+                $arr['gender'] = strtoupper($request->gender[$i]);
+                $arr['civil_status'] = strtoupper($request->civil_status[$i]);
+                
+                //add or update dependent information
+                if(isset($request->id[$i]) && (string)$request->id[$i] != 'undefined') {
+                    members::where('id', $request->id[$i])
+                        ->update($arr);
+                    $id = $request->id[$i];
+                } else {
+                    $member = members::create($arr);
+                    $id = $member->id;
+                }
+                
+                //check every dependents if they have attachments
+                if($request->hasfile("attachment$i"))
+                {
+                    foreach($request->file("attachment$i") as $key => $file)
+                    {
+                        $path = $file->storeAs('Self_enrollment/Broadpath/'.$request->memberId, $file->getClientOriginalName(), 'public');
+                        $name = $file->getClientOriginalName();
+
+                        attachment::create([
+                            'link_id' => $id,
+                            'file_name' => $name,
+                            'file_link' => $path
+                        ]);
+
+                        members::where('id', $id)
+                            ->update(['attachments' => 1]);
+                    }
+                }
+
+            }
+        }
+    }
+
+    /* public function submitWithoutDependent(Request $request)
+    {
         $update = [
             'civil_status' => $request->civilStatus,
             'gender' => $request->gender,
@@ -396,7 +493,7 @@ class ManageBroadpathClients extends Controller
 
         (new ManageBroadpathNotifications)
             ->submittedWithoutDep($info);
-    }
+    } */
 
     public function clean($text)
     {

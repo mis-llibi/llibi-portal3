@@ -44,7 +44,7 @@ const home = () => {
     setValue('civil_status', client?.principal[0]?.civil_status)
 
     if (client?.principal[0]?.form_locked == 2) {
-      window.location.pathname = `/self-enrollment/broadpath/form-locked`
+      window.location.pathname = `/self-enrollment/broadpath/form-locked-submitted`
     } else {
       if (client?.principal.length > 0)
         if (client?.principal[0]?.status == 2) {

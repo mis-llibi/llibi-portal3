@@ -201,7 +201,7 @@ const ArrayField = ({ props }) => {
                                 rel,
                             )) ||
                         ''
-                    } */
+                    }*/
                   type="file"
                   /*disabled={
                         !options.falseRelation(
@@ -209,7 +209,7 @@ const ArrayField = ({ props }) => {
                             principalLName,
                             rel,
                         )
-                    } */
+                    }*/
                   accept="image/*, application/pdf"
                   multiple
                   register={props?.register(`deps.${i}.attachment`, {
@@ -218,14 +218,14 @@ const ArrayField = ({ props }) => {
                         lName,
                         principalLName,
                         rel,
-                    ) && !item?.attachments, */
+                    ) && !item?.attachments,*/
                   })}
                   errors={
                     /*options.falseRelation(
                         lName,
                         principalLName,
                         rel,
-                    ) && */
+                    ) &&*/
                     !item?.attachments && props?.errors?.deps?.[i]?.attachment
                   }
                 />
