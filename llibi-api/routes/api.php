@@ -81,7 +81,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
   //SELF ENROLLMENT FOR LIFE INSURANCE
   Route::get('/self-enrollment/get-clients-for-life-insurance/{status}', [SelfEnrollmentController::class, 'getClientsForLifeInsurance']);
-
 });
 
 Route::get('/self-enrollment/testing', [SelfEnrollmentController::class, 'testing']);
@@ -119,8 +118,8 @@ Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMem
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
 
 //COMPANIES SYNC API
-Route::get('/ebdencrypt/show-companies', [BenadEncryptor::class, 'GetCompanies']);
-Route::post('/ebdencrypt/update-password', [BenadEncryptor::class, 'UpdateCompanyPassword']);
+require __DIR__ . '/ebd.php';
+
 
 Route::get('/create-client-portal-account', [AuthenticatedSessionController::class, 'createUser']);
 Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
@@ -191,10 +190,4 @@ Route::controller(ClientPortalErrorLogsController::class)->group(function () {
   Route::get('/error-logs', 'index');
   Route::post('/error-logs', 'store');
   Route::post('/error-logs-send-notify', 'sendNotify');
-});
-
-use Spatie\Browsershot\Browsershot;
-
-Route::get('/gg', function () {
-  Browsershot::url('https://google.com')->base64pdf();
 });

@@ -98,7 +98,13 @@ import {
 
 export default function PreApprovedLoa() {
   const router = useRouter()
-  const { employee_id, patient_id, company_id, hospital_class } = router.query
+  const {
+    employee_id,
+    patient_id,
+    company_id,
+    hospital_class,
+    hospital_id,
+  } = router.query
   const [state, dispatch] = useReducer(reducer, INITIALSTATE)
 
   const [value, setValue] = useState(0)
@@ -158,9 +164,9 @@ export default function PreApprovedLoa() {
 
   const getEmployee = async () => {
     try {
-      const patient_id = patient_id ?? employee_id
+      const patient_ids = patient_id || employee_id
       const response = await axios.get(
-        `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}&patient_id=${patient_id}&company_id=${company_id}`,
+        `${process.env.apiPath}/pre-approve/get-employees?employee_id=${employee_id}&patient_id=${patient_ids}&company_id=${company_id}&hospital_id=${hospital_id}`,
       )
 
       dispatch({

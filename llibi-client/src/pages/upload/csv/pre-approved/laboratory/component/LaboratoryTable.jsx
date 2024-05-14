@@ -72,13 +72,13 @@ export default function LaboratoryTable({
         <div className="flex gap-1">
           <button
             onClick={() => handleButtonEdit(row)}
-            className="border border-gray-300 hover:bg-gray-200 px-2 py-1 rounded-md text-white uppercase font-semibold text-xs">
-            <CiEdit className="text-fav-black md:text-2xl" />
+            className="bg-blue-600 hover:bg-blue-500 px-2 py-1 rounded-md text-white uppercase font-semibold text-xs">
+            <CiEdit className="text-white md:text-2xl" />
           </button>
           <button
             onClick={() => handleButtonDelete(row)}
-            className="border border-gray-300 hover:bg-gray-200 px-2 py-1 rounded-md text-white uppercase font-semibold text-xs">
-            <CiTrash className="text-fav-black md:text-2xl" />
+            className="bg-red-600 hover:bg-red-500 px-2 py-1 rounded-md text-white uppercase font-semibold text-xs">
+            <CiTrash className="text-white md:text-2xl" />
           </button>
         </div>
       ),
