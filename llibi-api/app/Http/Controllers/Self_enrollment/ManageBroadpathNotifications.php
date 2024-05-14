@@ -341,6 +341,12 @@ class ManageBroadpathNotifications extends Controller
 
         '.$info['premiumComputation'].'
 
+        <br />
+
+        Your registered home address for card delivery is '.$info['address'].'
+
+        <br /><br />
+
         If there are changes in the dependent enrollment, you may make changes until '.$dateFinalWarning.'. Enrollment will officially close on '.$dateFormLocked.' and will no longer accept any changes.
         <br /><br />
 

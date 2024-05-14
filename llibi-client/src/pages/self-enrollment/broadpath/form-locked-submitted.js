@@ -41,7 +41,10 @@ const SubmittedPage = () => {
 
   useEffect(() => {
     if (client?.principal.length > 0) {
-      if (client?.principal[0]?.status == 1) {
+      if (
+        client?.principal[0]?.status == 1 ||
+        client?.principal[0]?.status == 4
+      ) {
         window.location.pathname = `/self-enrollment/broadpath/`
       } else if (client?.principal[0]?.status == 2) {
         window.location.pathname = `/self-enrollment/broadpath/dependents/`

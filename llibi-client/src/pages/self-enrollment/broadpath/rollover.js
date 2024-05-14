@@ -53,7 +53,7 @@ const rollover = () => {
 
   useEffect(() => {
     if (client?.principal[0]?.form_locked == 2) {
-      window.location.pathname = `/self-enrollment/broadpath/form-locked`
+      window.location.pathname = `/self-enrollment/broadpath/form-locked-submitted`
     } else {
       switch (client?.principal[0]?.mbl) {
         case 200000:

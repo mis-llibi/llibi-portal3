@@ -351,9 +351,10 @@ class ManageBroadpathClients extends Controller
 
         $info = [
             'name' => $upMember[0]->last_name.', '.$upMember[0]->first_name,
-            'email'  => 'mc_cimperial@yahoo.com',//$upContact[0]->email,
-            'email2' => 'markimperial@llibi.com',//$upContact[0]->email2,
+            'email'  => 'markimperial@llibi.com',//$upContact[0]->email,
+            'email2' => 'mc_cimperial@yahoo.com',//$upContact[0]->email2,
             'mobile' => '09989829829',//$upContact[0]->mobile_no,
+            'address' => $upContact[0]->street.', '.$upContact[0]->barangay.', '.$upContact[0]->city.', '.$upContact[0]->province.', '.$upContact[0]->zip_code,
             'depInfo' => $depInfo,
             'succeeding' => $succeeding,
             'premiumComputation' => $premiumComputation
