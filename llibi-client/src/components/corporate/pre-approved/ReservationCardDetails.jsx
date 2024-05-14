@@ -26,14 +26,14 @@ export default function ReservationCardDetails({
           <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
             <div className="flex justify-between">
               <div>
-                <h4 className="font-bold text-white text-sm">MBL</h4>
+                <h4 className="font-bold text-white text-xs">MBL</h4>
               </div>
               <div>
                 <CiBadgeDollar className="text-white text-3xl" />
               </div>
             </div>
             <div>
-              <span className="text-white font-bold text-sm">
+              <span className="text-white font-bold text-xs">
                 {formatter.format(mbl)}
               </span>
             </div>
@@ -41,14 +41,14 @@ export default function ReservationCardDetails({
           <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
             <div className="flex justify-between">
               <div>
-                <h4 className="font-bold text-white text-sm">Reservation</h4>
+                <h4 className="font-bold text-white text-xs">Reservation</h4>
               </div>
               <div>
                 <CiBadgeDollar className="text-white text-3xl" />
               </div>
             </div>
             <div>
-              <span className="text-white font-bold text-sm">
+              <span className="text-white font-bold text-xs">
                 {formatter.format(state.employee?.reserving_amount)}
               </span>
             </div>
@@ -56,14 +56,14 @@ export default function ReservationCardDetails({
           <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
             <div className="flex justify-between">
               <div>
-                <h4 className="font-bold text-white text-sm">Utilization</h4>
+                <h4 className="font-bold text-white text-xs">Utilization</h4>
               </div>
               <div>
                 <CiBadgeDollar className="text-white text-3xl" />
               </div>
             </div>
             <div>
-              <span className="text-white font-bold text-sm">
+              <span className="text-white font-bold text-xs">
                 {formatter.format(state.utilization)}
               </span>
             </div>
@@ -71,7 +71,7 @@ export default function ReservationCardDetails({
           <div className="flex-1 bg-gradient-to-tl from-blue-600 via-cyan-600 to-teal-600 p-3 rounded-md">
             <div className="flex justify-between">
               <div>
-                <h4 className="font-bold text-white text-sm">
+                <h4 className="font-bold text-white text-xs">
                   Laboratory Cost
                 </h4>
               </div>
@@ -80,7 +80,7 @@ export default function ReservationCardDetails({
               </div>
             </div>
             <div>
-              <span className="text-white font-bold text-sm">
+              <span className="text-white font-bold text-xs">
                 {formatter.format(state.laboratory)}
               </span>
             </div>
@@ -93,14 +93,14 @@ export default function ReservationCardDetails({
         <div className="flex-1 bg-gradient-to-tl from-green-600 via-green-800 to-green-900 p-3 rounded-md">
           <div className="flex justify-between">
             <div>
-              <h4 className="font-bold text-white text-sm">Remaining Limit</h4>
+              <h4 className="font-bold text-white text-xs">Remaining Limit</h4>
             </div>
             <div>
               <CiBadgeDollar className="text-white text-3xl" />
             </div>
           </div>
           <div>
-            <span className="text-white font-bold">
+            <span className="text-white font-bold text-xs">
               {formatter.format(remainingLimit || 0)}
             </span>
           </div>

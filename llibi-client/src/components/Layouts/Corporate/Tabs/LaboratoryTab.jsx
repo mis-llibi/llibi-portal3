@@ -25,12 +25,12 @@ export default function LaboratoryTab({
       <div className="mb-3">
         <input
           type="text"
-          className="rounded-md w-full"
+          className="rounded-md w-full border border-gray-300"
           placeholder="Search"
           onChange={handleSearch}
         />
       </div>
-      <div className="h-96 overflow-y-scroll">
+      <div className="h-[100vh] overflow-y-scroll">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {search?.map((lab, i) => {
             return (
@@ -50,7 +50,7 @@ export default function LaboratoryTab({
                       {lab.laboratory}
                     </span>
                     <span
-                      className={`block font-bold peer-checked:text-white text-xs absolute right-0 bottom-0 p-3`}>
+                      className={`block font-bold peer-checked:text-white text-sm absolute right-0 bottom-0 p-3`}>
                       {hospital_class == 1
                         ? formatter.format(lab.cost)
                         : formatter.format(lab.cost2)}

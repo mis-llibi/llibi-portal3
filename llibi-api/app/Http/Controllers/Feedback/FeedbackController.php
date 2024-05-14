@@ -226,6 +226,13 @@ class FeedbackController extends Controller
 
   public function store(FeedbackRequest $request)
   {
+
+    $llibixadmu_key = $request->header('X-LLIBIXADMU-KEY');
+
+    if ($llibixadmu_key !== env('LLIBIXADMU_KEY') && $request->member_id === 'MANUAL' && $request->company_code === 'admu') {
+      abort(401, 'Unauthorized api key');
+    }
+
     $comment = $request->comment ?? "";
     $questionOne = $request->questionOne;
     $questionTwo = $request->questionTwo;
@@ -236,11 +243,11 @@ class FeedbackController extends Controller
     $member_id = $request->member_id;
     $request_status = $request->request_status;
 
-    if ($this->checkingIfAlreadyFeedback($request_id)) {
+    if ($request_id != 0 && $this->checkingIfAlreadyFeedback($request_id)) {
       return response()->json(['status' => false, 'message' => 'You are already send feedback.'], 400);
     }
 
-    if ($this->checkingIfFeedbackLinkIsExpired($request_id)) {
+    if ($request_id != 0 && $this->checkingIfFeedbackLinkIsExpired($request_id)) {
       return response()->json(['status' => false, 'message' => 'Feedback link already expired.'], 400);
     }
 

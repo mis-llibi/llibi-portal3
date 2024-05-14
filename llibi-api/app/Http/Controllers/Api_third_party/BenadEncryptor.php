@@ -12,7 +12,7 @@ class BenadEncryptor extends Controller
 {
   public function GetCompanies()
   {
-    $request = CompaniesSync::get(['id', 'ebd_compcode', 'name', 'benad_password']);
+    $request = CompaniesSync::get(['id', 'corporate_compcode', 'name', 'benad_password']);
 
     return (count($request) > 0 ? $request : '');
   }

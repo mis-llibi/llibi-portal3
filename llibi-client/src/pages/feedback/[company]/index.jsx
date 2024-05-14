@@ -4,7 +4,6 @@ import Head from 'next/head'
 
 import Button from '@/components/Button'
 import Label from '@/components/Label'
-import QuestionComponent from './questions/QuestionComponent'
 
 import axios from '@/lib/axios'
 
@@ -19,10 +18,11 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 
 import Swal from 'sweetalert2'
+import QuestionComponent from '../questions/QuestionComponent'
 
-export default function FeedBackIndex() {
+export default function FeedBackManual() {
   const router = useRouter()
-  const { rid, compcode, memid, reqstat } = router.query
+  const { company } = router.query
   // https://dev.to/michaelburrows/create-a-custom-react-star-rating-component-5o6
   // const [rating, setRating] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -40,49 +40,35 @@ export default function FeedBackIndex() {
     await csrf()
 
     try {
-      const response = await axios.post(`${process.env.apiPath}/feedbacks`, {
-        comment: comment,
-        questionOne: questionOne,
-        questionTwo: questionTwo,
-        questionThree: questionThree,
-        questionFour: questionFour,
-        request_id: rid,
-        company_code: compcode,
-        member_id: memid,
-        request_status: reqstat,
-      })
+      const response = await axios.post(
+        `/api/feedbacks`,
+        {
+          comment: comment,
+          questionOne: questionOne,
+          questionTwo: questionTwo,
+          questionThree: questionThree,
+          questionFour: questionFour,
+
+          request_id: 0,
+          company_code: company,
+          member_id: 'MANUAL',
+          request_status: 3,
+        },
+        {
+          headers: {
+            'X-LLIBIXADMU-KEY': process.env.LLIBIXADMU_KEY,
+          },
+        },
+      )
       Swal.fire('Success', response.data.message, 'success')
       setLoading(false)
       window.close()
     } catch (error) {
       setLoading(false)
-      Swal.fire('Error', error.response.data.message, 'error')
+      Swal.fire(error.response.data.message, '', 'info')
       throw error
     }
   }
-
-  const checkIfAlreadyFeedback = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.apiPath}/feedbacks/${rid}`,
-      )
-      if (response.data === 1) {
-        // router.push('/')
-        window.close()
-      }
-    } catch (error) {
-      alert('Something wrong.')
-      throw error
-    }
-  }
-
-  useEffect(() => {
-    if (rid) {
-      checkIfAlreadyFeedback()
-    }
-  }, [router.query])
-
-  if (!rid) return <h1>Loading...</h1>
 
   const questions = [
     {
@@ -97,6 +83,8 @@ export default function FeedBackIndex() {
       setQuestion: setQuestionTwo,
     },
   ]
+
+  if (!company) return <h1>Loading...</h1>
 
   return (
     <>

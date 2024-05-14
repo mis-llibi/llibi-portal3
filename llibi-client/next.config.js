@@ -7,6 +7,7 @@ const nextConfig = {
       : 'http://localhost:8000',
     apiPath: '/api',
     llibiDigitalOceanSpaces: process.env.NEXT_PUBLIC_LLIBI_DIGITALOCEAN_SPACES,
+    LLIBIXADMU_KEY: process.env.NEXT_PUBLIC_LLIBIXADMU_KEY,
   },
   trailingSlash: true,
   basePath: '',

@@ -12,6 +12,7 @@ use App\Models\PreApprove\Laboratory;
 use App\Models\PreApprove\Utilization;
 use App\Models\Self_service\Sync;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 trait PreApprovedDetailsTrait
 {
@@ -115,21 +116,24 @@ trait PreApprovedDetailsTrait
       ->where('companycode', $companies->code)
       ->get();
 
+    Log::debug($employees);
+    Log::debug($loaUtilization);
+
     $reserving_amount = 0;
 
-    if ($loaUtilization) {
+    if (count($loaUtilization) > 0) {
       foreach ($loaUtilization as $key => $row) {
-        $loa_employee = LoaEmployee::query()
-          ->where('employee_id', $employees->id)
-          ->where(function ($query) use ($row) {
-            $query->whereDate('incepfrom', '<=', Carbon::parse($row->dateissued)->format('Y-m-d'));
-            $query->whereDate('incepto', '>=', Carbon::parse($row->dateissued)->format('Y-m-d'));
-          })
-          ->first();
+        // $loa_employee = LoaEmployee::query()
+        //   ->where('employee_id', $employees->id)
+        //   ->where(function ($query) use ($row) {
+        //     $query->whereDate('incepfrom', '<=', Carbon::parse($row->dateissued)->format('Y-m-d'));
+        //     $query->whereDate('incepto', '>=', Carbon::parse($row->dateissued)->format('Y-m-d'));
+        //   })
+        //   ->first();
 
-        if ($loa_employee) {
-          $reserving_amount += $row->amount;
-        }
+        // if ($loa_employee) {
+        $reserving_amount += $row->amount;
+        // }
       }
     }
 

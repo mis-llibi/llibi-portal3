@@ -20,12 +20,12 @@ export default function UtilizationTab({
       <div className="mb-3">
         <input
           type="text"
-          className="rounded-md w-full"
+          className="rounded-md w-full border border-gray-300"
           placeholder="Search"
           onChange={handleSearch}
         />
       </div>
-      <div className="h-96 overflow-y-scroll">
+      <div className="h-[100vh] overflow-y-scroll">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {search?.map((util, i) => {
             return (
@@ -68,7 +68,7 @@ export default function UtilizationTab({
                       </span>
                     </div>
                     <span
-                      className={`block font-bold text-xs absolute right-0 bottom-0 p-3`}>
+                      className={`block font-bold text-sm absolute right-0 bottom-0 p-3`}>
                       {formatter.format(util.eligible)}
                     </span>
                   </div>
