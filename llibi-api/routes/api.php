@@ -122,6 +122,7 @@ require __DIR__ . '/ebd.php';
 
 
 Route::get('/create-client-portal-account', [AuthenticatedSessionController::class, 'createUser']);
+Route::post('/update-client-portal-account', [AuthenticatedSessionController::class, 'updateUser']);
 Route::get('/auto-send', [AutoSendPendingNotMoving::class, 'autoSendEmail']);
 Route::post('/view-by', [SelfService::class, 'viewBy']);
 Route::get('/view-logs', [SelfService::class, 'viewLogs']);

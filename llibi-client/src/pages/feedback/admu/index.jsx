@@ -18,11 +18,11 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 
 import Swal from 'sweetalert2'
-import QuestionComponent from '../questions/QuestionComponent'
+import QuestionComponent from '../../questions/QuestionComponent'
 
 export default function FeedBackManual() {
   const router = useRouter()
-  const { company } = router.query
+  // const { company } = router.query
   // https://dev.to/michaelburrows/create-a-custom-react-star-rating-component-5o6
   // const [rating, setRating] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -50,7 +50,7 @@ export default function FeedBackManual() {
           questionFour: questionFour,
 
           request_id: 0,
-          company_code: company,
+          company_code: 'admu',
           member_id: 'MANUAL',
           request_status: 3,
         },
@@ -84,7 +84,7 @@ export default function FeedBackManual() {
     },
   ]
 
-  if (!company) return <h1>Loading...</h1>
+  // if (!company) return <h1>Loading...</h1>
 
   return (
     <>

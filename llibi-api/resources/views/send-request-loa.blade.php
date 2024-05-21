@@ -8,7 +8,7 @@
   {{-- <title>Document</title> --}}
 </head>
 
-<body style="font-family:Arial, Helvetica, sans-serif;">
+<body>
   Hi <b>{{ $name }},</b>
   <br /><br />
 
@@ -33,12 +33,19 @@
     CONFIDENTIALITY STATEMENT
   </span>
   <br>
-  <span style="font-style: italic;">
+  {{-- <span style="font-style: italic;">
     This email contains confidential and sensitive personal information and is intended only for the recipient who
     made
     the LOA request. If we sent this to you by error, please let us know and destroy all copies of this email and
     attachments. Do not reproduce or disseminate any part of this email and its attachments to any unintended
     recipients.
+  </span> --}}
+
+  <span style="font-style: italic;">
+    This email may contain personal sensitive information and is intended for the recipients to which it is addressed
+    only. If you are not the recipient to whom this email is addressed, reproduction or dissemination of any part of
+    this email is strictly prohibited. If you received this in error, please contact sender and immediately delete this
+    email and any attachments.
   </span>
   <br />
 

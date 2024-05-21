@@ -51,7 +51,7 @@ export default function LaboratoryTab({
                     </span>
                     <span
                       className={`block font-bold peer-checked:text-white text-sm absolute right-0 bottom-0 p-3`}>
-                      {hospital_class == 1
+                      {Number(hospital_class) === 1
                         ? formatter.format(lab.cost)
                         : formatter.format(lab.cost2)}
                     </span>

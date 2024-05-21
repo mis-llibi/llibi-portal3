@@ -39,17 +39,17 @@ export default function UtilizationPage() {
     // }
   }
   return (
-    <>
-      <div className="max-w-lg flex flex-col justify-between items-center border mx-auto mt-20 p-5 rounded-md h-[20rem]">
+    <div className="h-screen bg-gray-100 font-[poppins] flex items-center">
+      <div className="max-w-lg flex flex-col justify-between items-center border mx-auto p-5 rounded-md h-[20rem] bg-white">
         <div>
-          <h1 className="font-bold uppercase text-3xl mb-5 text-gray-900">
+          <h1 className="font-bold uppercase text-center text-3xl mb-5 text-fav-black">
             UPLOAD CSV FOR UTILIZATION
           </h1>
           <label htmlFor="file" className="text-gray-700 text-sm font-semibold">
             Select CSV File
           </label>
           <input
-            className="mb-5 w-full border bg-blue-50 p-3 rounded-md cursor-pointer"
+            className="mb-5 w-full border  p-3 rounded-md cursor-pointer file:bg-blue-600 file:rounded-md file:text-white file:border-none file:px-3 file:py-1"
             type="file"
             name="file"
             id="file"
@@ -60,7 +60,7 @@ export default function UtilizationPage() {
         </div>
 
         <button
-          className="p-3 w-full rounded-md font-bold hover:underline"
+          className="p-3 w-full rounded-md font-bold hover:underline text-fav-subtitle uppercase underline"
           onClick={() => router.push('/upload/csv/pre-approved/laboratory')}>
           Switch to Laboratory
         </button>
@@ -73,6 +73,6 @@ export default function UtilizationPage() {
           Upload
         </button>
       </div>
-    </>
+    </div>
   )
 }

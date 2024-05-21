@@ -8,7 +8,7 @@
   {{-- <title>Document</title> --}}
 </head>
 
-<body style="font-family:Arial, Helvetica, sans-serif;">
+<body>
   <p>Request for {{ $lastName ?? '' }}, {{ $firstName ?? '' }} has not been attended for more than {{ $minutes }}
     minutes.</p>
 </body>

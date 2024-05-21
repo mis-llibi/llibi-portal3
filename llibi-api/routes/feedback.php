@@ -5,7 +5,7 @@ use App\Http\Controllers\Feedback\FeedbackController;
 use App\Http\Controllers\Feedback\FeedbackCorporateController;
 
 // feedback client portal
-Route::post('/feedbacks', [FeedbackController::class, 'store']);
+Route::post('/feedbacks', [FeedbackController::class, 'store'])->middleware('throttle:3,1');
 Route::get('/feedbacks/{request_id}', [FeedbackController::class, 'checkingIfAlreadyFeedback']);
 Route::get('/feedbacks/is-expired/{request_id}', [FeedbackController::class, 'checkingIfFeedbackLinkIsExpired']);
 Route::get('/feedbacks', [FeedbackController::class, 'index']);

@@ -8,7 +8,7 @@
   {{-- <title>Document</title> --}}
 </head>
 
-<body style="font-family:Arial, Helvetica, sans-serif;">
+<body>
   <p style="font-weight:normal;">
     Hi <b>{{ $first_name }},</b>
     <br /><br />

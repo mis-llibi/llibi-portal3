@@ -28,7 +28,7 @@ export const useAdmin = ({ name, status }) => {
       revalidateOnReconnect: false,
       refreshWhenOffline: false,
       refreshWhenHidden: true,
-      refreshInterval: 5000,
+      refreshInterval: 10000,
     },
   )
 
@@ -105,6 +105,7 @@ export const useAdmin = ({ name, status }) => {
     }
     formData.append('hospital_email1', props.hospital_email1)
     formData.append('hospital_email2', props.hospital_email2)
+    formData.append('email_format_type', props.email_format_type)
 
     let runfinally = true
 
@@ -200,12 +201,12 @@ export const useAdmin = ({ name, status }) => {
           alert('error')
         }),
     {
-      revalidateOnFocus: true,
+      revalidateOnFocus: false,
       revalidateOnMount: true,
       revalidateOnReconnect: false,
       refreshWhenOffline: false,
-      refreshWhenHidden: false,
-      refreshInterval: 60000,
+      refreshWhenHidden: true,
+      refreshInterval: 10000,
     },
   )
 
@@ -213,7 +214,7 @@ export const useAdmin = ({ name, status }) => {
     await csrf()
 
     try {
-      const response = await axios.put(`${env.apiPath}/settings`, payload)
+      const response = await axios.put(`/api/settings`, payload)
 
       if (response.data.status) {
         Swal.fire({
@@ -232,7 +233,7 @@ export const useAdmin = ({ name, status }) => {
 
     try {
       const response = await axios.post(
-        `${env.apiPath}/self-service/admin/preview-export-records`,
+        `/api/self-service/admin/preview-export-records`,
         {
           search: name ?? 0,
           status: status ?? 2,

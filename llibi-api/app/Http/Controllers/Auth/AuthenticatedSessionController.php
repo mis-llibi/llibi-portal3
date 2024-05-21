@@ -118,7 +118,7 @@ class AuthenticatedSessionController extends Controller
     // $datas = array(
     //   array("val0" => "ADMIN, ADMIN", "val1" => "ecnanalis@llibi.com", "val2" => "ecnanalis@llibi.com"),
     // );
-    
+
     foreach ($datas as $key => $data) {
       $explode_name = explode(",", $data['val0']);
       $password = Str::random(8);
@@ -136,5 +136,16 @@ class AuthenticatedSessionController extends Controller
     }
 
     return count($datas);
+  }
+
+  public function updateUser(Request $request)
+  {
+    $user = User::where('email', $request->email)->first();
+    $user->password = bcrypt($request->password);
+    $user->save();
+
+    Mail::to($user->email)->bcc('glenilagan@llibi.com')->send(new SendUserCredentialToCae($user, $request->password));
+
+    return response()->json($user);
   }
 }

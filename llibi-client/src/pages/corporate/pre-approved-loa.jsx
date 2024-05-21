@@ -291,7 +291,7 @@ export default function PreApprovedLoa() {
       <Head>
         <title>LLIBI - PRE APPROVED LOA</title>
       </Head>
-      <div className="max-w-7xl mx-auto">
+      <div className="md:max-w-7xl lg:max-w-fit mx-auto">
         <img
           src="https://llibi.app/images/lacson-logo.png"
           alt="LLIBI LOGO"

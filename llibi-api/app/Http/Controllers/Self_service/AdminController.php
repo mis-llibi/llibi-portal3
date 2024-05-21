@@ -22,6 +22,7 @@ use App\Exports\SelfService\AdminExport;
 use App\Models\Corporate\Hospitals;
 use App\Services\GetActiveEmailProvider;
 use App\Services\SendingEmail;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -176,6 +177,7 @@ class AdminController extends Controller
       'company_code' => $client[0]->company_code,
       'member_id' => $client[0]->memberID,
       'request_id' => $client[0]->id,
+      'email_format_type' => $request->email_format_type
     ];
 
     $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
@@ -267,30 +269,53 @@ class AdminController extends Controller
       <br /><br />';
 
       if ($data['status'] === 3) {
-        $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+        switch ($data['email_format_type']) {
+          case 'consultation':
+            $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+            break;
+          case 'laboratory':
+            $statusRemarks = '
+            <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
+            <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+            break;
+          case '2n1-standalone':
+            $statusRemarks = '
+            <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
+            <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+            break;
+          case 'pre-approved-laboratory':
+            $statusRemarks = '
+            <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p> 
+            <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+            break;
+
+          default:
+            throw new Exception("Email format is not supported", 1);
+            break;
+        }
       } else {
         $statusRemarks = 'Your LOA request is <b>disapproved</b> with remarks: ' . $remarks;
         $feedbackLink = '';
       }
 
 
-      $mailMsg =
-        '<p style="font-weight:normal;">
-                Hi <b>' . $name . ',</b><br /><br />
-                ' . $statusRemarks . '<br /><br />
-                For further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.<br /><br />
-                Manila Line: (02) 8236-6492<br/>
-                Mobile number for Calls Only:<br />
-                0917-8055424<br />
-                0917-8855424<br />
-                0919-0749433<br />
+      // $mailMsg =
+      //   '<p style="font-weight:normal;">
+      //           Hi <b>' . $name . ',</b><br /><br />
+      //           ' . $statusRemarks . '<br /><br />
+      //           For further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.<br /><br />
+      //           Manila Line: (02) 8236-6492<br/>
+      //           Mobile number for Calls Only:<br />
+      //           0917-8055424<br />
+      //           0917-8855424<br />
+      //           0919-0749433<br />
 
-                Email: clientcare@llibi.com<br /><br />
+      //           Email: clientcare@llibi.com<br /><br />
 
-                Your reference number is <b>' . $ref . '</b>.<br />
-                ' . $feedbackLink . '
-                <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
-            </p>';
+      //           Your reference number is <b>' . $ref . '</b>.<br />
+      //           ' . $feedbackLink . '
+      //           <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
+      //       </p>';
 
       $body = array(
         'body' => view('send-request-loa', [
@@ -345,7 +370,9 @@ class AdminController extends Controller
       ->select('id', 'file_name', 'file_link')
       ->get();
 
-    return $attachment;
+    $client_request = Client::query()->with('clientRequest:id,client_id,loa_type')->where('id', $id)->first();
+
+    return ['attachment' => $attachment, 'client_request' => $client_request];
   }
 
   public function export(Request $request)

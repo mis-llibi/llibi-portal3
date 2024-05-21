@@ -253,7 +253,7 @@ class FeedbackController extends Controller
 
     $feedback = Feedback::create([
       'request_id' => $request_id,
-      'company_code' => $company_code,
+      'company_code' => Str::upper($company_code),
       'member_id' => $member_id,
       'request_status' => $request_status,
       'question1' => $questionOne,
