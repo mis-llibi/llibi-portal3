@@ -239,7 +239,7 @@ const Form = ({ setRequest, row }) => {
             {client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
-                data={`${process.env.backEndUrl}/${client?.loaAttachment}`}
+                data={`${basePath}/${client?.loaAttachment}`}
                 type="application/pdf"></object>
             ) : (
               <div className="flex flex-grow bg-black/30 justify-center place-items-center py-10">
@@ -289,7 +289,7 @@ const Form = ({ setRequest, row }) => {
                 </div>
               </div>
 
-              {/* {watch('status') === '3' && (
+              {watch('status') === '3' && (
                 <>
                   <Label className="text-bold text-md mb-2">
                     EMAIL FORMAT:
@@ -371,7 +371,7 @@ const Form = ({ setRequest, row }) => {
                       '*Email format that will be sent to the client.'}
                   </span>
                 </>
-              )} */}
+              )}
             </div>
 
             {/* APPROVE BOX */}
@@ -654,13 +654,13 @@ const Form = ({ setRequest, row }) => {
                         key={i}
                         className="bg-blue-50 p-2 rounded-md shadow-sm">
                         <a
-                          href={`${process.env.backEndUrl}/storage/${item?.file_link}`}
+                          href={`${basePath}/storage/${item?.file_link}`}
                           target="_blank"
                           key={i}
                           className="bg-gray-200 w-full h-32 flex place-items-center cursor-pointer hover:shadow-md transition-all duration-200 ease-in truncate touch-pan-right grayscale hover:grayscale-0 scale-95 hover:scale-100 hover:origin-top">
                           <img
                             onError={onImageError}
-                            src={`${process.env.backEndUrl}/storage/${item?.file_link}`}
+                            src={`${basePath}/storage/${item?.file_link}`}
                           />
                         </a>
                         <div className="text-xs mt-2 font-bold text-center truncate">

@@ -18,7 +18,7 @@ import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 
 import Swal from 'sweetalert2'
-import QuestionComponent from '../../questions/QuestionComponent'
+import QuestionComponent from '../questions/QuestionComponent'
 
 export default function FeedBackManual() {
   const router = useRouter()

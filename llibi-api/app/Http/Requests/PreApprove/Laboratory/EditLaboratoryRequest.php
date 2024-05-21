@@ -29,4 +29,20 @@ class EditLaboratoryRequest extends FormRequest
       'cost2' => 'required|regex:/^[0-9]{1,3}(,[0-9]{3})*(\.[0-9]+)*$/',
     ];
   }
+
+  // public function messages(): array
+  // {
+  //   return [
+  //     'cost.required' => 'Class is required',
+  //     'cost2.required' => 'Class2 is required',
+  //   ];
+  // }
+
+  public function attributes(): array
+  {
+    return [
+      'cost' => 'Class',
+      'cost2' => 'Class 2',
+    ];
+  }
 }

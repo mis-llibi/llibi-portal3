@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { DropdownButton } from '@/components/DropdownLink'
-import { useAuth } from '@/hooks/auth'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import ApplicationLogo from '../ApplicationLogo'
 import Dropdown from '../Dropdown'
+import { useAuth } from '@/hooks/pre-approved/auth'
 
 const PreApprovedLayout = ({ header, children }) => {
   const router = useRouter()

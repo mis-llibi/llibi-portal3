@@ -22,7 +22,7 @@ class LaboratoryController extends Controller
     return Laboratory::query()
       ->where('code', 'LIKE', "%{$q}%")
       ->orWhere('laboratory', 'LIKE', "%{$q}%")
-      ->latest()->take(250)->get();
+      ->latest()->take(500)->get();
   }
 
   public function store(AddLaboratoryRequest $request)
