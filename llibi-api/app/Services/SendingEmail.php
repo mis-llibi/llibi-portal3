@@ -199,6 +199,93 @@ class SendingEmail
       return false;
     }
   }
+  
+  private function llibiBenAdSendMail()
+  {
+    try {
+      $post_data = [
+        'headers' => ['Authorization' => env('INFOBIP_API_KEY')],
+        'multipart' => [
+          [
+            'name' => 'bulkId',
+            'contents' => trim(Str::slug($this->subject))
+          ],
+          [
+            'name' => 'from',
+            'contents' => env('INFOBIP_SENDER_NOTIFY_JOYCE'),
+          ],
+          [
+            'name' => 'to',
+            'contents' => trim($this->email)
+          ],
+          [
+            'name' => 'subject',
+            'contents' => trim($this->subject)
+          ],
+          [
+            'name' => 'html',
+            'contents' => $this->body
+          ],
+          [
+            'name' => 'intermediateReport',
+            'contents' => 'true'
+          ],
+          [
+            'name' => 'track',
+            'contents' => false
+          ],
+          [
+            'name' => 'trackClicks',
+            'contents' => false
+          ],
+          [
+            'name' => 'trackOpens',
+            'contents' => false
+          ],
+          [
+            'name' => 'trackingUrl',
+            'contents' => false
+          ],
+        ]
+      ];
+
+      if (!empty($this->attachments)) {
+        foreach ($this->attachments as $key => $file) {
+          array_push($post_data['multipart'], [
+            'name' => 'attachment',
+            'contents' => fopen($file, 'r')
+          ]);
+        }
+      }
+      if (!empty($this->cc)) {
+        foreach ($this->cc as $key => $cc) {
+          array_push($post_data['multipart'], [
+            'name' => 'cc',
+            'contents' => $cc
+          ]);
+        }
+      }
+      if (!empty($this->bcc)) {
+        foreach ($this->bcc as $key => $bcc) {
+          array_push($post_data['multipart'], [
+            'name' => 'bcc',
+            'contents' => $bcc
+          ]);
+        }
+      }
+      $client = new Client();
+      $response = $client->post(env('INFOBIP_API_URL') . '/email/3/send', $post_data);
+      $body = $response->getBody();
+
+      Log::info('EMAIL SENT');
+      return true;
+      // return json_decode($body);
+    } catch (\Throwable $th) {
+      echo $th;
+      Log::error($th);
+      return false;
+    }
+  }
 
   private function testSendMail($sender)
   {
@@ -345,6 +432,11 @@ class SendingEmail
   public function sendLlibi()
   {
     return $this->llibiSendMail();
+  }
+
+  public function sendLlibiBenAd()
+  {
+    return $this->llibiBenAdSendMail();
   }
 
   public function testSend($sender)

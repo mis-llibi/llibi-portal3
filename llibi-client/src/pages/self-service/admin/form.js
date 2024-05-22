@@ -289,7 +289,7 @@ const Form = ({ setRequest, row }) => {
                 </div>
               </div>
 
-              {watch('status') === '3' && (
+              {/* {watch('status') === '3' && (
                 <>
                   <Label className="text-bold text-md mb-2">
                     EMAIL FORMAT:
@@ -371,7 +371,7 @@ const Form = ({ setRequest, row }) => {
                       '*Email format that will be sent to the client.'}
                   </span>
                 </>
-              )}
+              )} */}
             </div>
 
             {/* APPROVE BOX */}

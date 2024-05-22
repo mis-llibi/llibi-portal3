@@ -11,7 +11,7 @@ use App\Models\Corporate\Employees;
 use App\Models\FeedbackCorporate;
 use App\Models\Self_service\Sync;
 use App\Services\SendingEmail;
-
+use Exception;
 use Illuminate\Http\File;
 use Illuminate\Mail\Attachment;
 use Illuminate\Support\Facades\Log;
@@ -261,7 +261,7 @@ class FeedbackCorporateController extends Controller
   function sendLoa(ManualSendFeedbackRequest $request)
   {
     $employee_id = $request->employee_id;
-    $approval_code = $request->approval_code;
+    $approval_code = $request->approval_code ?? '';
     $email = $request->email;
     $provider_email = $request->provider_email;
     $loa = $request->file('loa');
@@ -304,10 +304,37 @@ class FeedbackCorporateController extends Controller
     //   'feedback_url' => $feedback_url,
     // ])->render();
 
+    $statusRemarks = '';
+    switch ($request->email_format_type) {
+      case 'consultation':
+        $statusRemarks = '<p>Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.</p>';
+        break;
+      case 'laboratory':
+        $statusRemarks = '
+            <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
+            <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        break;
+      case '2n1-standalone':
+        $statusRemarks = '
+            <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
+            <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+        break;
+      case 'pre-approved-laboratory':
+        $statusRemarks = '
+            <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p> 
+            <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        break;
+
+      default:
+        throw new Exception("Email format is not supported", 1);
+        break;
+    }
+
     $mailMsg = view('send-corporate-loa', [
       'homepage' => 'https://portal.llibi.app',
       'first_name' => $masterlist->first_name,
-      'feedback_url' => $feedback_url
+      'feedback_url' => $feedback_url,
+      'status_remarks' => $statusRemarks,
     ]);
 
     if (App::environment('local')) {
@@ -319,15 +346,15 @@ class FeedbackCorporateController extends Controller
       );
       $emailer->send();
 
-      if ($provider_email) {
-        $emailer = new SendingEmail(
-          email: $provider_email,
-          body: $mailMsg,
-          subject: 'LLIBI LOA TO PROVIDER',
-          attachments: [Storage::path($path)],
-        );
-        $emailer->send();
-      }
+      // if ($provider_email) {
+      //   $emailer = new SendingEmail(
+      //     email: $provider_email,
+      //     body: $mailMsg,
+      //     subject: 'LLIBI LOA TO PROVIDER',
+      //     attachments: [Storage::path($path)],
+      //   );
+      //   $emailer->send();
+      // }
     }
 
     if (App::environment('production')) {
