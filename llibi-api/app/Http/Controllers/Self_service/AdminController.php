@@ -93,7 +93,9 @@ class AdminController extends Controller
           }
         }
       })
+      ->whereDate('t1.created_at', now()->format('Y-m-d'))
       ->orderBy('t1.id', 'DESC')
+      // ->offset(0)
       ->limit(20)
       ->get();
 

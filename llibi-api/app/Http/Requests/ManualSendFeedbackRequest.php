@@ -27,6 +27,8 @@ class ManualSendFeedbackRequest extends FormRequest
       'loa' => 'required|mimes:pdf',
       'email' => 'required|email:rfc,dns',
       'provider_email' => 'nullable|email:rfc,dns',
+      'company_id' => 'required|int',
+      'email_format_type' => 'required|string',
     ];
   }
 }

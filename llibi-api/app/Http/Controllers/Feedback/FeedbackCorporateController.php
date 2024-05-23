@@ -265,11 +265,18 @@ class FeedbackCorporateController extends Controller
     $email = $request->email;
     $provider_email = $request->provider_email;
     $loa = $request->file('loa');
+    $company_id = $request->company_id;
 
-    $path = $request->file('loa')->storeAs(
-      'public/corporate/upload/loa',
-      $loa->getClientOriginalName()
-    );
+    // $path = $request->file('loa')->storeAs(
+    //   'public/corporate/upload/loa',
+    //   $loa->getClientOriginalName()
+    // );
+
+    $original_name = $loa->getClientOriginalName();
+    Log::info($original_name);
+      
+    $path = $loa->storeAs('client-portal/' . env('APP_ENV') . '/sent/loa/' . $request->email_format_type . '/' . $company_id . '/' . $employee_id, $original_name, 'llibiapp');
+    Log::info($path);
 
     $employee = Employees::where('id', $employee_id)->first();
     // if (!$employee) {
@@ -292,37 +299,46 @@ class FeedbackCorporateController extends Controller
     $q = Str::random(64);
     $company_code = $masterlist->company_code;
     $member_id = $masterlist->member_id;
-    $feedback_url = "https://portal.llibi.app/feedback/corporate?q=$q&company_code=$company_code&member_id=$member_id&approval_code=$approval_code";
+    $feedback_url = env('FRONTEND_URL') . "/feedback/corporate?q=$q&company_code=$company_code&member_id=$member_id&approval_code=$approval_code";
 
-    // $mailMsg = view('send-corporate-loa', [
-    //   'homepage' => 'https://portal.llibi.app',
-    //   'first_name' => $masterlist->first_name,
-    //   // 'member_id' => $masterlist->member_id,
-    //   // 'company_code' => $masterlist->company_code,
-    //   // 'approval_code' => $approval_code,
-    //   // 'q' => Str::random(64)
-    //   'feedback_url' => $feedback_url,
-    // ])->render();
+    $isAdmu = in_array($company_id, [91, 92, 94, 371, 411]);
 
+    $viewTemplate = 'send-corporate-loa';
     $statusRemarks = '';
     switch ($request->email_format_type) {
       case 'consultation':
+        // if ($isAdmu) {
+        //   $viewTemplate = '';
+        // } else {
+        // }
         $statusRemarks = '<p>Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.</p>';
         break;
       case 'laboratory':
+        // if ($isAdmu) {
+        //   $viewTemplate = '';
+        // } else {
+        // }
         $statusRemarks = '
-            <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
-            <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
+        <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
         break;
       case '2n1-standalone':
-        $statusRemarks = '
-            <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
-            <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+        if ($isAdmu) {
+          $viewTemplate = 'admu-corporate.send-standalone';
+        } else {
+          $statusRemarks = '
+              <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
+              <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+        }
         break;
       case 'pre-approved-laboratory':
-        $statusRemarks = '
-            <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p> 
-            <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        if ($isAdmu) {
+          $viewTemplate = 'admu-corporate.send-pre-approved-laboratory';
+        } else {
+          $statusRemarks = '
+              <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p> 
+              <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        }
         break;
 
       default:
@@ -330,8 +346,8 @@ class FeedbackCorporateController extends Controller
         break;
     }
 
-    $mailMsg = view('send-corporate-loa', [
-      'homepage' => 'https://portal.llibi.app',
+    $mailMsg = view($viewTemplate, [
+      'homepage' => env('FRONTEND_URL'),
       'first_name' => $masterlist->first_name,
       'feedback_url' => $feedback_url,
       'status_remarks' => $statusRemarks,
@@ -341,8 +357,8 @@ class FeedbackCorporateController extends Controller
       $emailer = new SendingEmail(
         email: 'glenilagan@llibi.com',
         body: $mailMsg,
-        subject: 'CORPORATE REQUEST LOA',
-        attachments: [Storage::path($path)],
+        subject: 'LACSON & LACSON CLIENT CARE NOTIFICATION',
+        attachments: [env('DO_LLIBI_URL') . '/' . $path],
       );
       $emailer->send();
 
@@ -364,8 +380,8 @@ class FeedbackCorporateController extends Controller
       $emailer = new SendingEmail(
         email: $email,
         body: $mailMsg,
-        subject: 'CORPORATE REQUEST LOA',
-        attachments: [Storage::path($path)],
+        subject: 'LACSON & LACSON CLIENT CARE NOTIFICATION',
+        attachments: [env('DO_LLIBI_URL') . '/' . $path],
         cc: ['clientcare@llibi.com'],
       );
       $emailer->send();
@@ -376,8 +392,8 @@ class FeedbackCorporateController extends Controller
         $emailer = new SendingEmail(
           email: $provider_email,
           body: $mailMsg,
-          subject: 'LLIBI LOA TO PROVIDER',
-          attachments: [Storage::path($path)],
+          subject: 'LACSON & LACSON CLIENT CARE NOTIFICATION',
+          attachments: [env('DO_LLIBI_URL') . '/' . $path],
         );
         $emailer->send();
       }

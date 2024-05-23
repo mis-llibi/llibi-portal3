@@ -90,6 +90,7 @@ export default function SendingFeedback() {
     FORMDATA.append('email_format_type', data.email_format_type)
     FORMDATA.append('employee_id', employee_id)
     FORMDATA.append('approval_code', approval_code)
+    FORMDATA.append('company_id', company_id)
 
     setOpen(true)
     try {
@@ -226,7 +227,7 @@ export default function SendingFeedback() {
                     <label
                       className="text-sm font-bold"
                       htmlFor="2n1-standalone">
-                      2n1 Standalone
+                      2 in 1 Standalone
                     </label>
                   </div>
                 </>
