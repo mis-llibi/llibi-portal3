@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Corporate\CompaniesSync;
 use App\Services\SendingEmail;
+use Illuminate\Support\Facades\Log;
 
 class BenadEncryptor extends Controller
 {
@@ -31,6 +32,8 @@ class BenadEncryptor extends Controller
   {
     $email = $request->email;
     $password = $request->password;
+
+    Log::info($request->all());
 
     $body = view('ebd.encrypt-files', compact('password'));
 
