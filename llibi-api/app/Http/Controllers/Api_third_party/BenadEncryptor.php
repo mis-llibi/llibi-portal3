@@ -33,8 +33,6 @@ class BenadEncryptor extends Controller
     $email = $request->email;
     $password = $request->password;
 
-    Log::info($request->all());
-
     $body = view('ebd.encrypt-files', compact('password'));
 
     $sending = new SendingEmail($email, $body, 'LLIBI PASSWORD');
