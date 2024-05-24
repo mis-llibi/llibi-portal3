@@ -16,8 +16,8 @@
   <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s
     laboratory referral and evaluation of the diagnosis.</p>
 
-  <p>Consultation and Outpatient procedures shall be paid by the member if your diagnosis will fall under the following
-    policy exclusions including but not limited to: </p>
+  <p>Consultation shall be paid by the member if your diagnosis will fall under the following policy exclusions
+    including but not limited to: </p>
 
   <span>1. Routine child health examination</span><br>
   <span>2. Essentially Normal findings</span><br>
@@ -25,7 +25,7 @@
   <span>4. Disorder of Refraction</span><br>
   <span>5. Supervision of Normal pregnancy</span><br>
 
-  <p>Other policy exclusions of Ateneo de Manila University not stated above shall be strictly enforced. </p>
+  <p>Other policy exclusions of Ateneo de Manila University not stated above shall be strictly enforced.</p>
 
   <p>For further inquiry and assistance, feel free to contact us through following channels: </p>
 

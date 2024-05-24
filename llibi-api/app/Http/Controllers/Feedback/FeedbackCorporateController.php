@@ -274,7 +274,7 @@ class FeedbackCorporateController extends Controller
 
     $original_name = $loa->getClientOriginalName();
     Log::info($original_name);
-      
+
     $path = $loa->storeAs('client-portal/' . env('APP_ENV') . '/sent/loa/' . $request->email_format_type . '/' . $company_id . '/' . $employee_id, $original_name, 'llibiapp');
     Log::info($path);
 
@@ -307,20 +307,20 @@ class FeedbackCorporateController extends Controller
     $statusRemarks = '';
     switch ($request->email_format_type) {
       case 'consultation':
-        // if ($isAdmu) {
-        //   $viewTemplate = '';
-        // } else {
-        // }
-        $statusRemarks = '<p>Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.</p>';
+        if ($isAdmu) {
+          $viewTemplate = 'admu-corporate.send-standalone';
+        } else {
+          $statusRemarks = '<p>Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.</p>';
+        }
         break;
       case 'laboratory':
-        // if ($isAdmu) {
-        //   $viewTemplate = '';
-        // } else {
-        // }
-        $statusRemarks = '
-        <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
-        <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        if ($isAdmu) {
+          $viewTemplate = 'admu-corporate.send-standalone';
+        } else {
+          $statusRemarks = '
+          <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
+          <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        }
         break;
       case '2n1-standalone':
         if ($isAdmu) {
