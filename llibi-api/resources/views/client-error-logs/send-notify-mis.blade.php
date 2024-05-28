@@ -31,6 +31,11 @@
       <span>Last Name: {{ $member_info['dependent_last_name'] }} </span><br>
       <span>Birthday: {{ $member_info['dependent_dob'] }} </span><br>
     @endif
+
+    <br>
+
+    <span style="font-weight: bold;">REMARKS:</span><br>
+    {!! $remarks !!}
   </main>
 
   <br />

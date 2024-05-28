@@ -27,6 +27,7 @@ use App\Services\SendingEmail;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Events\RealtimeNotificationEvent;
 
 class ClientController extends Controller
 {
@@ -348,6 +349,12 @@ class ClientController extends Controller
 
     $this->sendNotification($request->refno, $client[0]->firstName . ' ' . $client[0]->lastName, $request->email, $request->altEmail, $contact, $request->loaType);
 
+    $data = [
+      'message' => 'New claim request',
+      'date_created' => Carbon::now()->diffForHumans(),
+    ];
+
+    event(new RealtimeNotificationEvent($data));
     return $client;
   }
 

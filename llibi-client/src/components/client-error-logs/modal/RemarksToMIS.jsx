@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@radix-ui/themes'
 import { RocketIcon } from '@radix-ui/react-icons'
 
-export default function InputEmail({ row, notifyTo, setShow, mutate }) {
+export default function RemarksToMIS({ row, notifyTo, setShow, mutate }) {
   const {
     handleSubmit,
     register,
@@ -18,12 +18,7 @@ export default function InputEmail({ row, notifyTo, setShow, mutate }) {
   } = useForm({ mode: 'onChange' })
 
   const submitForm = async data => {
-    await SendNotify({
-      row,
-      notifyTo,
-      cae_email: data.cae_email,
-      remarks: data.remarks,
-    })
+    await SendNotify({ row, notifyTo, remarks: data.remarks })
     mutate()
     setShow(false)
   }
@@ -31,15 +26,6 @@ export default function InputEmail({ row, notifyTo, setShow, mutate }) {
   return (
     <div className="w-[50em] px-4 font-[poppins]">
       <form onSubmit={handleSubmit(submitForm)}>
-        <div className="mb-3">
-          <Label htmlFor="">Email:</Label>
-          <input
-            type="text"
-            className="block w-full rounded-md border-gray-300"
-            {...register('cae_email', { required: 'Email is required' })}
-          />
-          <p className="text-red-600">{errors?.cae_email?.message}</p>
-        </div>
         <div className="mb-3">
           <Label htmlFor="">Remarks:</Label>
           <textarea
@@ -51,7 +37,8 @@ export default function InputEmail({ row, notifyTo, setShow, mutate }) {
         </div>
 
         <Button type="submit" disabled={isSubmitting}>
-          <RocketIcon /> Send
+          <RocketIcon />
+          Send
         </Button>
       </form>
     </div>

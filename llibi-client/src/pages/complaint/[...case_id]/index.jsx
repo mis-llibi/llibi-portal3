@@ -6,6 +6,8 @@ import axios from '@/lib/axios'
 import { FaRegUser, FaSearch } from 'react-icons/fa'
 import ComplaintInformation from '@/components/Self-Service/ComplaintInformation'
 
+import ErrorPage from 'next/error'
+
 export default function ComplaintDetails() {
   const router = useRouter()
 
@@ -28,6 +30,8 @@ export default function ComplaintDetails() {
 
   // console.log(complaint)
 
+  return <ErrorPage statusCode={404} />
+
   return (
     <>
       <div className="flex gap-5 justify-center items-center h-[50vh] bg-gray-50">
@@ -38,7 +42,11 @@ export default function ComplaintDetails() {
         <div className="w-3/4">
           <div className="flex items-center gap-1">
             <div className="flex-grow">
-              <input type="text" className="w-full rounded-md" placeholder='Search by name' />
+              <input
+                type="text"
+                className="w-full rounded-md"
+                placeholder="Search by name"
+              />
             </div>
             <div>
               <button className="bg-blue-700 p-3 text-white rounded-md">

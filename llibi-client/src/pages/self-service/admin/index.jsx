@@ -36,6 +36,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import MUIButton from '@mui/material/Button'
 import Link from 'next/link'
 
+import { CustomPusher } from '@/lib/pusher'
+
 const Admin = () => {
   const router = useRouter()
   // const [play] = useSound('/thepurge.mp3')
@@ -240,6 +242,27 @@ const Admin = () => {
       return
     }
   }, [user?.email])
+
+  useEffect(() => {
+    const channel = CustomPusher.subscribe('channel-realtime')
+    channel.bind('realtime-notification-event', data => {
+      const { message, date_created } = data.data
+
+      // setMessages(prevMessages => [...prevMessages, { message, date_created }])
+
+      Swal.fire({
+        title: 'Good day!',
+        text: message,
+        icon: 'info',
+      })
+      console.log(message, date_created)
+    })
+
+    return () => {
+      channel.unbind_all()
+      channel.unsubscribe()
+    }
+  }, [])
 
   return (
     <ProviderLayout>

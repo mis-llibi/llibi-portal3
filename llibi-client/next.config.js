@@ -8,6 +8,8 @@ const nextConfig = {
     apiPath: '/api',
     llibiDigitalOceanSpaces: process.env.NEXT_PUBLIC_LLIBI_DIGITALOCEAN_SPACES,
     LLIBIXADMU_KEY: process.env.NEXT_PUBLIC_LLIBIXADMU_KEY,
+    PUSHER_APP_KEY: process.env.NEXT_PUBLIC_PUSHER_APP_KEY,
+    PUSHER_APP_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
   },
   trailingSlash: true,
   basePath: '',

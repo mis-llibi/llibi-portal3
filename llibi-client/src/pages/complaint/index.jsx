@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import ComplaintHooks from '@/hooks/self-service/complaint'
 import moment from 'moment'
 
 import { FaRegEye } from 'react-icons/fa'
+
+import ErrorPage from 'next/error'
 
 export default function ComplaintHomePage() {
   const { complaints } = ComplaintHooks()
@@ -15,6 +17,8 @@ export default function ComplaintHomePage() {
   const handleViewDependet = uuid => {
     setShowDeps(uuid)
   }
+
+  return <ErrorPage statusCode={404} />
 
   return (
     <div>

@@ -19,6 +19,7 @@ import {
 } from 'react-icons/bi'
 
 import InputEmail from './modal/InputEmail'
+import RemarksToMIS from './modal/RemarksToMIS'
 
 import { SendNotify } from '@/hooks/self-service/client-error-logs'
 import { useAuth } from '@/hooks/auth'
@@ -57,6 +58,30 @@ export default function ActionButton({ row, mutate }) {
       ),
       content: (
         <InputEmail
+          row={row}
+          notifyTo={notifyTo}
+          setShow={setShow}
+          mutate={mutate}
+        />
+      ),
+      modalOuterContainer: '',
+      modalContainer: 'h-full rounded-md',
+      modalBody: 'h-full',
+    })
+
+    toggle()
+    handleClose()
+  }
+
+  const handleShowModalMessageToMIS = (row, notifyTo) => {
+    setBody({
+      title: (
+        <span className="text-xl font-bold uppercase text-fav-black">
+          Remarks
+        </span>
+      ),
+      content: (
+        <RemarksToMIS
           row={row}
           notifyTo={notifyTo}
           setShow={setShow}
@@ -115,7 +140,7 @@ export default function ActionButton({ row, mutate }) {
           {!['mailynramos@llibi.com'].includes(user?.email) && (
             <MenuItem
               disabled={row.notify_status === 2}
-              onClick={() => handleNotify(row, 'mis')}>
+              onClick={() => handleShowModalMessageToMIS(row, 'mis')}>
               <div className="flex gap-3 items-center font-[poppins] text-sm">
                 <BiInfoCircle size={20} />
                 <span>Notify MIS</span>

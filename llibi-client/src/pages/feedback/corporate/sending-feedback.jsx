@@ -227,7 +227,7 @@ export default function SendingFeedback() {
                     <label
                       className="text-sm font-bold"
                       htmlFor="2n1-standalone">
-                      2 in 1 Standalone
+                      2 in 1
                     </label>
                   </div>
                 </>

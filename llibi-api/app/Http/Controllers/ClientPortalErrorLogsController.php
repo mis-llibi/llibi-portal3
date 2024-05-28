@@ -46,10 +46,12 @@ class ClientPortalErrorLogsController extends Controller
   public function sendNotify(Request $request)
   {
     $notify_to = $request->notifyTo;
+    $remarks = $request?->remarks;
     $row = $request->row;
 
 
     $data = [
+      'remarks' => $remarks,
       'notify_to' => $notify_to,
       'member_info' => $row,
       'cae_email' => $request->filled('cae_email') ? $request->cae_email : '',

@@ -16,12 +16,12 @@ export default function ClientErrorLogsHooks({ search, filter }) {
       }
     },
     {
-      revalidateOnFocus: true,
+      revalidateOnFocus: false,
       revalidateOnMount: true,
       revalidateOnReconnect: false,
       refreshWhenOffline: false,
       refreshWhenHidden: false,
-      refreshInterval: 30000,
+      refreshInterval: 30 * 1000,
     },
   )
 }

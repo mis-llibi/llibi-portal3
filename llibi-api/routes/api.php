@@ -192,3 +192,5 @@ Route::controller(ClientPortalErrorLogsController::class)->group(function () {
   Route::post('/error-logs', 'store');
   Route::post('/error-logs-send-notify', 'sendNotify');
 });
+
+require __DIR__ . '/test-route.php';

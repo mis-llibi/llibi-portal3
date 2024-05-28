@@ -4,6 +4,7 @@ namespace App\Listeners\ClientPortal;
 
 use App\Models\ClientPortalErrorLogs;
 use App\Services\SendingEmail;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,7 @@ class MemberNotificationListener
   public function handle($event)
   {
     $data = $event->data;
-    // Log::debug($data);
+    Log::debug($data);
 
     $notify_to = $data['notify_to'];
     $email = $data['member_info']['email'];
@@ -47,16 +48,19 @@ class MemberNotificationListener
           $status = 1;
           break;
         case 'mis':
+          $remarks = $data['remarks'];
           $body = view('client-error-logs.send-notify-mis', [
             'member_info' => $member_info,
+            'remarks' => $remarks,
           ]);
 
-          $sending = new SendingEmail(env('EDP_EMAIL'), $body);
+          $sending = new SendingEmail(env('EDP_EMAIL', 'glenilagan@llibi.com'), $body);
           $sending->send();
           $status = 2;
           break;
         case 'cae':
           $cae_email = $data['cae_email'];
+          $remarks = $data['remarks'];
 
           // send to member
           $member_body = view('client-error-logs.send-notify-member-2-3-days');
@@ -66,13 +70,14 @@ class MemberNotificationListener
           // send to cae
           $cae_body = view('client-error-logs.send-notify-cae', [
             'member_info' => $member_info,
+            'remarks' => $remarks,
           ]);
           $sending = new SendingEmail($cae_email, $cae_body);
           $sending->send();
           $status = 3;
           break;
         default:
-          # code...
+          throw new Exception("Request not supported");
           break;
       }
 

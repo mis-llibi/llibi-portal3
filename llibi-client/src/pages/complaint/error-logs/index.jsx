@@ -40,7 +40,7 @@ export default function ClientPortalErrorLogsHomePage() {
     }
   }, [user?.email])
 
-  if (isValidating) {
+  if (!data) {
     return (
       <div className="h-screen flex items-center justify-center">
         <MoonLoader color="#1d4ed8" />
@@ -80,13 +80,13 @@ export default function ClientPortalErrorLogsHomePage() {
                 </div>
 
                 <div className="flex gap-1 items-center">
-                  <span className="bg-green-300 px-3 py-2 text-white text-xs uppercase w-[4.5em] text-center">
+                  <span className="bg-green-300 px-3 py-2 text-white text-xs rounded-md uppercase w-[5em] text-center">
                     Done
                   </span>
-                  <span className="bg-orange-300 px-3 py-2 text-white text-xs uppercase w-[4.5em] text-center">
+                  <span className="bg-orange-300 px-3 py-2 text-white text-xs rounded-md uppercase w-[5em] text-center">
                     MIS
                   </span>
-                  <span className="bg-red-300 px-3 py-2 text-white text-xs uppercase w-[4.5em] text-center">
+                  <span className="bg-red-300 px-3 py-2 text-white text-xs rounded-md uppercase w-[5em] text-center">
                     CAE
                   </span>
                 </div>
