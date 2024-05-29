@@ -318,8 +318,11 @@ class FeedbackCorporateController extends Controller
           $viewTemplate = 'admu-corporate.send-standalone';
         } else {
           $statusRemarks = '
+              <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
+              <p>Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+          /* $statusRemarks = '
           <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
-          <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+          <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>'; */
         }
         break;
       case '2n1-standalone':
@@ -328,7 +331,7 @@ class FeedbackCorporateController extends Controller
         } else {
           $statusRemarks = '
               <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
-              <p>Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+              <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
         }
         break;
       case 'pre-approved-laboratory':
