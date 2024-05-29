@@ -328,7 +328,7 @@ class FeedbackCorporateController extends Controller
         } else {
           $statusRemarks = '
               <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
-              <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+              <p>Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
         }
         break;
       case 'pre-approved-laboratory':

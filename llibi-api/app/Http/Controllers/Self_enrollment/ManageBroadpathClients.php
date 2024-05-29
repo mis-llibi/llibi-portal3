@@ -36,8 +36,8 @@ class ManageBroadpathClients extends Controller
         $dependent = members::where('member_id', (count($principal) > 0 ? $principal[0]->member_id : 'xxxxx'))
             ->where('client_company', 'BROADPATH')
             ->where('relation', '!=', 'PRINCIPAL')
-            ->whereIn('status', [2, 4, 5])
-            ->get(['id as mId', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'attachments']);
+            ->whereIn('status', [2, 3, 4, 5])
+            ->get(['id as mId', 'last_name', 'first_name', 'middle_name', 'relation', 'birth_date', 'gender', 'civil_status', 'attachments', 'status']);
 
         return array(
             'principal' => $principal,
@@ -103,6 +103,8 @@ class ManageBroadpathClients extends Controller
                         ->whereIn('id', $ids)
                         ->update(['status' => 5]);
 
+                    $this->mailRollover($request->member_id);
+
                     break;
                 case 2:
                     $member =
@@ -157,15 +159,170 @@ class ManageBroadpathClients extends Controller
         }
     }
 
+    public function mailRollover($memberid) {
+
+        $principal = 
+            members::where('member_id', $memberid)
+                ->where('relation', 'PRINCIPAL')
+                ->get(['id', 'mbl', 'first_name', 'last_name']);
+
+        $member = 
+            members::where('member_id', $memberid)
+                ->where('relation', '!=', 'PRINCIPAL')
+                ->whereIn('status', [3, 5])
+                ->get(['id', 'first_name', 'last_name', 'relation', 'birth_date']);
+
+        $contact = contact::where('link_id', $principal[0]->id)
+                ->get();
+
+        $bill = 0;
+
+        //premium checker
+        switch ($principal[0]->mbl) {
+            case 200000:
+                $bill = 19807.2;
+                break;
+            case 150000:
+                $bill = 19398.4;
+                break;
+        }
+
+        $arr = []; $depInfo = ''; $computation = ''; $annual = 0; $monthly = 0; $succeeding = ''; $premiumComputation = ''; $i = 0; $s = 0;
+
+        foreach ($member as $key => $row) {
+            //lookup dependents order
+            switch ($s) {
+                case 0:
+                    $num = $i + 1 . 'st';
+                    break;
+                case 1:
+                    $num = $i + 1 . 'nd';
+                    break;
+                case 2:
+                    $num = $i + 1 . 'rd';
+                    break;
+                default:
+                    $num = $i + 1 . 'th';
+                    break;
+            }
+
+            //lookup dependents order
+            switch ($s) {
+                case 0:
+                    $num = $i + 1 . 'st';
+                    $bil = '20%';
+                    $com = $bill * 0.2;
+                    break;
+                case 1:
+                    $num = $i + 1 . 'nd';
+                    $bil = '20%';
+                    $com = $bill * 0.2;
+                    break;
+                case 2:
+                    $num = $i + 1 . 'rd';
+                    $bil = '100%';
+                    $com = $bill * 1;
+                    break;
+                default:
+                    $num = $i + 1 . 'th';
+                    $bil = '100%';
+                    $com = $bill * 1;
+                    break;
+            }
+
+            $count = $i + 1;
+
+            //breakdown of each dependents personal info
+            $depInfo .= '<b>Dependent '.$count.'</b>: '.$this->clean($row->first_name).' '.$this->clean($row->last_name).' -- '.date('F j, Y', strtotime($row->birth_date)).' -- '.strtoupper($row->relation).'<br />';
+
+            //if there is a 3rd and succeeding dependent, show this
+            if($i == 2)
+                $succeeding = 
+                    '<br /><i style="font-size:14px;">By enrolling your 3rd and succeeding dependents, you are agreeing to 100% premium dependent contribution.</i><br />';
+
+            if($this->checkAgeByBirthdate($row->birth_date, $row->relation)) {
+                //breakdown of each dependents premiusm computation
+                $computation .= 
+                    '<tr>
+                        <td colspan="2">'.$num.' Dependent: '.$bil.' of ₱'.number_format($bill,2).' = '.number_format($com,2).'</td>
+                    </tr>';
+                
+                //sum all dependents premium, that is their annual
+                $annual += $com;
+
+                $s++;
+            } else {
+                $computation .= 
+                    '<tr>
+                        <td colspan="2">'.$num.' Dependent: Overage. Removed from enrollment.</td>
+                    </tr>';
+            }
+
+            $i++;
+        }
+
+        //divide annual for monthly
+        $monthly = $annual / 52;
+
+        //table for dependent premium computation
+        $premiumComputation = 
+            '<table style="width:450px;border:2px solid black">
+                <tr>
+                    <td colspan="2" style="font-weight:bold;">
+                        Your premium contribution is estimated as follows:
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:6px;"></td>
+                </tr>
+                <tr>
+                    <td style="background-color:#fafafa;font-weight:bold;">Annual:</td>
+                    <td style="background-color:#fafafa;">'.number_format($annual,2).'</td>
+                </tr>
+                <tr>
+                    <td style="background-color:#fafafa;font-weight:bold;">Weekly:</td>
+                    <td style="background-color:#fafafa;">'.number_format($monthly,2).'</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:6px;"></td>
+                </tr>
+                    '.$computation.'
+                <tr>
+                    <td colspan="2" style="padding:6px;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="color:red;font-weight:bold;">
+                        Premium refund is not allowed if membership is terminated /
+                        deleted mid policy year.
+                    </td>
+                </tr>
+            </table>';
+
+            $info = [
+                'name' => $principal[0]->last_name.', '.$principal[0]->first_name,
+                'email'  => 'markimperial@llibi.com',//$upContact[0]->email,
+                'email2' => 'mc_cimperial@yahoo.com',//$upContact[0]->email2,
+                'mobile' => '09989829829',//$upContact[0]->mobile_no,
+                'address' => $contact[0]->street.', '.$contact[0]->barangay.', '.$contact[0]->city.', '.$contact[0]->province.', '.$contact[0]->zip_code,
+                'depInfo' => $depInfo,
+                'succeeding' => $succeeding,
+                'premiumComputation' => $premiumComputation
+            ];
+    
+            (new ManageBroadpathNotifications)
+                ->submittedWithDep($info);
+
+    }
+
     public function submitDependent(Request $request)
     {
         //Check attachment first before continuing to processing the data
         $rules = []; $att = [];
 
         if(isset($request->list)) {
-            for ($i=0; $i < count($request->list); $i++) { 
+            for ($i=0; $i < count($request->list); $i++) {
                 if($request->hasfile("attachment$i"))
-                {   
+                {
                     foreach($request->file("attachment$i") as $key => $file)
                     {
                         $rules["dependent_$i"."_with_attachment_$key"] = 'mimes:jpg,jpeg,bmp,png,gif,svg,pdf';
@@ -223,7 +380,7 @@ class ManageBroadpathClients extends Controller
         $arr = []; $depInfo = ''; $computation = ''; $annual = 0; $monthly = 0; $succeeding = ''; $premiumComputation = ''; 
         //breakdown of all dependents for enrollment
         if(isset($request->list)) {
-            for ($i=0; $i < count($request->list); $i++) { 
+            for ($i=0; $i < count($request->list); $i++) {
 
                 $arr['client_company'] = 'BROADPATH';
                 $arr['member_id'] = $request->memberId;
@@ -312,7 +469,7 @@ class ManageBroadpathClients extends Controller
             }
             
             //divide annual for monthly
-            $monthly = $annual / 12;
+            $monthly = $annual / 52;
 
             //table for dependent premium computation
             $premiumComputation = 
@@ -330,13 +487,13 @@ class ManageBroadpathClients extends Controller
                     <td style="background-color:#fafafa;">'.number_format($annual,2).'</td>
                 </tr>
                 <tr>
-                    <td style="background-color:#fafafa;font-weight:bold;">Monthly:</td>
+                    <td style="background-color:#fafafa;font-weight:bold;">Weekly:</td>
                     <td style="background-color:#fafafa;">'.number_format($monthly,2).'</td>
                 </tr>
                 <tr>
                     <td colspan="2" style="padding:6px;"></td>
                 </tr>
-                '.$computation.'
+                    '.$computation.'
                 <tr>
                     <td colspan="2" style="padding:6px;"></td>
                 </tr>
@@ -494,7 +651,8 @@ class ManageBroadpathClients extends Controller
 
         (new ManageBroadpathNotifications)
             ->submittedWithoutDep($info);
-    } */
+    }
+    */
 
     public function clean($text)
     {

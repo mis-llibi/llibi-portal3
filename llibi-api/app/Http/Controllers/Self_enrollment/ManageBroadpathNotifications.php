@@ -12,10 +12,10 @@ class ManageBroadpathNotifications extends Controller
     public function getDates()
     {
         return [
-            'dateStart'            => '2024-05-27',
+            'dateStart'            => '2024-06-13',
             'dateWarningUntouched' => '2024-06-04',
-            'dateFinalWarning'     => '2024-06-06',
-            'dateFormLocked'       => '2024-06-07'
+            'dateFinalWarning'     => '2024-06-20',
+            'dateFormLocked'       => '2024-06-21'
         ];
     }
 
@@ -38,10 +38,7 @@ class ManageBroadpathNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in BroadPath’s renewal. You are encouraged to complete this from '.$startDate.' to '.$dateFinalWarning.' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by June 7, you and your dependents will not be enrolled in Broadpath’s healthcare plan renewal.<br /><br />
-
-        If you do not respond to this notification by June 7, you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
-
+        If you do not respond to this notification by '.date('F j', strtotime($dateFormLocked)).', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         <b>This is an auto-generated Email, please do not share. Doesn’t support replies and calls.</b>';
 
@@ -76,7 +73,7 @@ class ManageBroadpathNotifications extends Controller
         We have noticed that you haven’t completed the online enrollment forms. Please visit this link '.$link.' to complete this now. You are encouraged to complete this until '.date('F j, Y', strtotime($dateFinalWarning)).' to avoid any coverage issues.
         <br /><br />
 
-        If there are changes in the dependent enrollment, you may make changes until '.date('F j, Y', strtotime($dateFinalWarning)).'. Renewal Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and after that, changes will no longer be accepted.
+        If there are changes in the dependent enrollment, you may make changes until '.date('F j, Y', strtotime($dateFinalWarning)).'. Renewal Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and after that, changes will no longer be accepted. If you have already completed the form, you may disregard this message.
         <br /><br />
 
         If you have already completed the form, you may disregard this message.
@@ -103,7 +100,7 @@ class ManageBroadpathNotifications extends Controller
 
         if(!empty($info['email2']))
             (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
+                ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         /* $smsBody = 
         "From BroadPath & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
@@ -128,9 +125,7 @@ class ManageBroadpathNotifications extends Controller
         
         Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and after that, changes will no longer be accepted.<br /><br />
 
-        If you do not respond to this notification by June 7, you and your dependents will not be enrolled in Broadpath’s healthcare plan renewal.<br /><br />
-
-        If you do not respond to this notification by June 7, you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by '.$startDate.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
@@ -165,6 +160,9 @@ class ManageBroadpathNotifications extends Controller
 
     public function rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked)
     {
+
+        $startDate = date('F j', strtotime($this->getDates()['dateStart']));
+
         $link = '<a href="https://portal.llibi.app/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
 
         $body =
@@ -174,9 +172,7 @@ class ManageBroadpathNotifications extends Controller
 
         Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and will no longer accept enrollment and any changes.<br /><br />
 
-        If you do not respond to this notification by June 7, you and your dependents will not be enrolled in Broadpath’s healthcare plan renewal.<br /><br />
-
-        If you do not respond to this notification by June 7, you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by '.$startDate.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         If you have already completed the form, you may disregard this message.<br /><br />
 
@@ -331,7 +327,9 @@ class ManageBroadpathNotifications extends Controller
         $dateFormLocked = date('F j, Y', strtotime($this->getDates()['dateFormLocked']));
 
         $body = 
-        'Thank you for submitting your enrollment.  Below is the summary of your dependents: <br /><br />
+        'Thank you for submitting your enrollment. Your submission is final and can no longer make any changes. <br /><br />
+        
+        Below is the summary of your dependents: <br /><br />
 
         '.$info['depInfo'].'
         
@@ -344,10 +342,6 @@ class ManageBroadpathNotifications extends Controller
         <br />
 
         Your registered home address for card delivery is '.$info['address'].'
-
-        <br /><br />
-
-        If there are changes in the dependent enrollment, you may make changes until '.$dateFinalWarning.'. Enrollment will officially close on '.$dateFormLocked.' and will no longer accept any changes.
         <br /><br />
 
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';

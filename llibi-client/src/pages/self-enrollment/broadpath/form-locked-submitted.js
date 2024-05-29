@@ -93,14 +93,14 @@ const SubmittedPage = () => {
               com = bill * 1
               break
             default:
-              num = count + 'th'
+              num = count + 1 + 'th'
               bil = '100%'
               com = bill * 1
               break
           }
 
           return (
-            <tr key={i}>
+            <tr key={i} className={`${item?.status === 3 && 'bg-red-100'}`}>
               <td className="border pl-2">
                 {item?.last_name.toUpperCase()},{' '}
                 {item?.first_name.toUpperCase()}
@@ -108,7 +108,14 @@ const SubmittedPage = () => {
               <td className="border pl-2">{item?.birth_date}</td>
               <td className="border pl-2">{useAge(item?.birth_date)}</td>
               <td className="border pl-2">{item?.relation}</td>
-              <td className="border pl-2">
+              <td
+                className={`border pl-2 text-xs ${
+                  item?.status !== 3 && 'hidden'
+                }`}>
+                Dependent excluded in the renewal due to overage. No premium
+                computation.
+              </td>
+              <td className={`border pl-2 ${item?.status === 3 && 'hidden'}`}>
                 {num} Dependent: {bil} of ₱ {bill?.toLocaleString('en', 2)} = ₱{' '}
                 {com?.toLocaleString('en', 2)}
               </td>
@@ -117,32 +124,41 @@ const SubmittedPage = () => {
         }),
       )
 
-      const computation = client?.dependent?.map((item, i) => {
-        let nCom
+      const computation = client?.dependent
+        ?.filter(item => {
+          // Make sure item, item.birth_date, and item.relation are defined
+          if (!item || !item.birth_date || !item.relation) {
+            return false
+          }
+          const age = useAge(item.birth_date) // Assuming useAge returns the age correctly
+          return options.ageEval(age, item.relation)
+        })
+        ?.map((item, i) => {
+          let nCom
 
-        switch (i) {
-          case 0:
-            nCom = bill * 0.2
-            break
-          case 1:
-            nCom = bill * 0.2
-            break
-          case 2:
-            nCom = bill * 1
-            break
-          default:
-            nCom = bill * 1
-            break
-        }
+          switch (i) {
+            case 0:
+              nCom = bill * 0.2
+              break
+            case 1:
+              nCom = bill * 0.2
+              break
+            case 2:
+              nCom = bill * 1
+              break
+            default:
+              nCom = bill * 1
+              break
+          }
 
-        return { nCom }
-      })
+          return { nCom }
+        })
 
       const annual = computation.reduce(function (s, a) {
         return s + a.nCom
       }, 0)
 
-      const monthly = annual / 12
+      const monthly = annual / 52
 
       setAnnual(annual)
       setMonthly(monthly)
@@ -290,7 +306,7 @@ const SubmittedPage = () => {
                 <tr>
                   <td className="p-3" colSpan={4}>
                     <b>Annual: ₱</b> {annual?.toLocaleString('en', 2)},{' '}
-                    <b>Monthly: ₱</b> {monthly?.toLocaleString('en', 2)}
+                    <b>Weekly: ₱</b> {monthly?.toLocaleString('en', 2)}
                   </td>
                 </tr>
               </tbody>
@@ -317,7 +333,7 @@ const SubmittedPage = () => {
             </Button>
           </div>
 
-          <div className="mt-3 p-2">
+          <div className="mt-3 p-2 hidden">
             If there are changes in the dependent enrollment, you may make
             changes until June 6, 2024. Enrollment will officially close on June
             7, 2024 and will no longer accept any changes.
