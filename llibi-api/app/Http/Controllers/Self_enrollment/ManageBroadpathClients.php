@@ -801,9 +801,9 @@ class ManageBroadpathClients extends Controller
                 $info = [
                     'hash'   => $row->hash,
                     'name'   => $row->last_name.', '.$row->first_name,
-                    'email'  => $row->email,
-                    'email2' => $row->email2,
-                    'mobile' => $row->mobile_no
+                    'email'  => 'markimperial@llibi.com', //$row->email,
+                    'email2' => 'mc_cimperial@yahoo.com', //$row->email2,
+                    'mobile' => '09989829829', //$row->mobile_no
                 ];
 
                 //check if there is notification set on that day
@@ -816,7 +816,7 @@ class ManageBroadpathClients extends Controller
                             $status = 0;
 
                             //first day of enrollment
-                            if($checkdate == '2024-05-27') {
+                            if($checkdate == '2024-06-13') {
                                 $notificationTitle = 'Reminder: Renewal Start';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
@@ -826,12 +826,13 @@ class ManageBroadpathClients extends Controller
                                 (new ManageBroadpathNotifications)
                                     ->rolloverInvite($info, $dateFinalWarning, $dateFormLocked);
                                 
-                                $status = 0;
-                                //$status = 'START RENEWAL: FIRST DAY ENROLLMENT';
+                                //$status = 0;
+                                $status = 'START RENEWAL: FIRST DAY ENROLLMENT';
                             }
 
                             //check if still not submitting their enrollment then send notification
-                            if($row->status == 1 || $row->status == 2) {
+                            //if($row->status == 1 || $row->status == 2) {
+                            if($row->status == 2) {
 
                                 $addedDay = 
                                 date('Y-m-d H:i:s', strtotime($checkdate));
@@ -859,12 +860,13 @@ class ManageBroadpathClients extends Controller
                                     (new ManageBroadpathNotifications)
                                         ->rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked);
 
-                                    $status = 0;
-                                    //$status = 'UNTOUCHED FORM: EVERY THREE DAYS REMINDER';
+                                    //$status = 0;
+                                    $status = 'UNTOUCHED FORM: EVERY THREE DAYS REMINDER';
                                 }
                             }
-
-                            if($row->status == 4 && $checkdate == '2024-06-04') {
+                            
+                            //SEND WARNING FOR NO INTERACTION ON JUNE 18, 2024
+                            if($row->status == 4 && $checkdate == '2024-06-18') {
                                 $notificationTitle = 'Reminder: No Interaction';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
@@ -874,8 +876,8 @@ class ManageBroadpathClients extends Controller
                                 (new ManageBroadpathNotifications)
                                     ->rolloverWarningUntouchedForm($info, $dateFinalWarning, $dateFormLocked);
 
-                                $status = 0;
-                                //$status = 'UNTOUCHED FORM: WARNING NO INTERACTION';
+                                //$status = 0;
+                                $status = 'UNTOUCHED FORM: WARNING NO INTERACTION';
                             }
                             
                         } else {
@@ -889,8 +891,8 @@ class ManageBroadpathClients extends Controller
                             (new ManageBroadpathNotifications)
                                 ->rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked);
 
-                            $status = 0;
-                            //$status = 'UNTOUCHED FORM: FINAL REMINDER';
+                            //$status = 0;
+                            $status = 'UNTOUCHED FORM: FINAL REMINDER';
                         }
 
                     } else {

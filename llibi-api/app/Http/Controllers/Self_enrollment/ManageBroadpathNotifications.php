@@ -23,6 +23,7 @@ class ManageBroadpathNotifications extends Controller
     {
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
         $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
+        $dateFormLocked = date('F j', strtotime($this->getDates()['dateFormLocked']));
 
         $link = '<a href="https://portal.llibi.app/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
         //$link = '<a href="http://localhost:3000/self-enrollment/broadpath?id='.$info['hash'].'">Self-Enrolment Portal</a>';
@@ -38,7 +39,7 @@ class ManageBroadpathNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in BroadPath’s renewal. You are encouraged to complete this from '.$startDate.' to '.$dateFinalWarning.' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by '.date('F j', strtotime($dateFormLocked)).', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by '.$dateFormLocked.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         <b>This is an auto-generated Email, please do not share. Doesn’t support replies and calls.</b>';
 
@@ -125,7 +126,7 @@ class ManageBroadpathNotifications extends Controller
         
         Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and after that, changes will no longer be accepted.<br /><br />
 
-        If you do not respond to this notification by '.$startDate.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by '.date('F j', strtotime($dateFinalWarning)).', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
@@ -172,7 +173,7 @@ class ManageBroadpathNotifications extends Controller
 
         Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and will no longer accept enrollment and any changes.<br /><br />
 
-        If you do not respond to this notification by '.$startDate.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by '.date('F j', strtotime($dateFinalWarning)).', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         If you have already completed the form, you may disregard this message.<br /><br />
 
