@@ -272,16 +272,23 @@ class FeedbackCorporateController extends Controller
     //   $loa->getClientOriginalName()
     // );
 
-    $original_name = $loa->getClientOriginalName();
-    Log::info($original_name);
+    $path = [];
+    foreach ($loa as $key => $row) {
+      # code...
+      $original_name = $row->getClientOriginalName();
+      // Log::info($original_name);
 
-    $path = $loa->storeAs('client-portal/' . env('APP_ENV') . '/sent/loa/' . $request->email_format_type . '/' . $company_id . '/' . $employee_id, $original_name, 'llibiapp');
-    Log::info($path);
+      $save_path = $row->storeAs('client-portal/' . env('APP_ENV') . '/sent/loa/' . $request->email_format_type . '/' . $company_id . '/' . $employee_id, $original_name, 'llibiapp');
+      // Log::info($path);
+
+      array_push(
+        $path,
+        env('DO_LLIBI_URL') . '/' . $save_path
+      );
+    }
+
 
     $employee = Employees::where('id', $employee_id)->first();
-    // if (!$employee) {
-    //   return response()->json(['status' => false, 'message' => 'Employee Not Found.'], 404);
-    // }
 
     abort_if(!$employee, 404, 'Employee Not Found.');
 
@@ -289,10 +296,6 @@ class FeedbackCorporateController extends Controller
       ->where('empcode', $employee->code)
       ->whereDate('birth_date', $employee->birthdate)
       ->first();
-
-    // if (!$masterlist) {
-    //   return response()->json(['status' => false, 'message' => 'Member Not Found.'], 404);
-    // }
 
     abort_if(!$employee, 404, 'Member Not Found.');
 
@@ -358,7 +361,7 @@ class FeedbackCorporateController extends Controller
         email: 'glenilagan@llibi.com',
         body: $mailMsg,
         subject: 'LACSON & LACSON CLIENT CARE NOTIFICATION',
-        attachments: [env('DO_LLIBI_URL') . '/' . $path],
+        attachments: $path,
       );
       $emailer->send();
 
@@ -381,7 +384,7 @@ class FeedbackCorporateController extends Controller
         email: $email,
         body: $mailMsg,
         subject: 'LACSON & LACSON CLIENT CARE NOTIFICATION',
-        attachments: [env('DO_LLIBI_URL') . '/' . $path],
+        attachments: $path,
         cc: ['clientcare@llibi.com'],
       );
       $emailer->send();
@@ -393,7 +396,7 @@ class FeedbackCorporateController extends Controller
           email: $provider_email,
           body: $mailMsg,
           subject: 'LACSON & LACSON CLIENT CARE NOTIFICATION',
-          attachments: [env('DO_LLIBI_URL') . '/' . $path],
+          attachments: $path,
         );
         $emailer->send();
       }

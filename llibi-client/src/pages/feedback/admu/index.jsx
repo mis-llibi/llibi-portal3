@@ -41,7 +41,7 @@ export default function FeedBackManual() {
 
     try {
       const response = await axios.post(
-        `/api/feedbacks`,
+        `/api/admu/feedbacks`,
         {
           comment: comment,
           questionOne: questionOne,

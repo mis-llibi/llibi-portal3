@@ -32,10 +32,18 @@ class BenadEncryptor extends Controller
   {
     $email = $request->email;
     $password = $request->password;
+    $cc = $request->filled('cc') ? explode(',', $request->cc) : null;
+
+    $array_cc = [];
+    if ($request->filled('cc')) {
+      foreach ($cc as $key => $item) {
+        array_push($array_cc, $item);
+      }
+    }
 
     $body = view('ebd.encrypt-files', compact('password'));
 
-    $sending = new SendingEmail($email, $body, 'LLIBI PASSWORD');
+    $sending = new SendingEmail($email, $body, 'LLIBI PASSWORD', cc: $array_cc);
     $sending->sendLlibiBenAd();
 
     return response()->noContent();

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Feedback\FeedbackController;
 use App\Http\Controllers\Feedback\FeedbackCorporateController;
+use App\Http\Controllers\Feedback\AdmuFeedbackController;
 
 // feedback client portal
 Route::post('/feedbacks', [FeedbackController::class, 'store'])->middleware('throttle:3,1');
@@ -14,3 +15,6 @@ Route::get('/corporate/feedbacks', [FeedbackCorporateController::class, 'index']
 Route::post('/corporate/feedbacks', [FeedbackCorporateController::class, 'sendLoa']);
 Route::post('/corporate/feedbacks/save', [FeedbackCorporateController::class, 'store']);
 Route::get('/corporate/feedbacks/employee', [FeedbackCorporateController::class, 'showEmployee']);
+
+// feedback admu
+Route::post('/admu/feedbacks', [AdmuFeedbackController::class, 'store'])->middleware('throttle:3,1');

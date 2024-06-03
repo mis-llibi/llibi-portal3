@@ -84,7 +84,7 @@ export default function SendingFeedback() {
   const handleSendFeedback = async data => {
     const FORMDATA = new FormData()
 
-    FORMDATA.append('loa', data.file[0])
+    // FORMDATA.append('loa', data.file[0])
     FORMDATA.append('email', data.email)
     FORMDATA.append('provider_email', data.provider_email)
     FORMDATA.append('email_format_type', data.email_format_type)
@@ -92,6 +92,10 @@ export default function SendingFeedback() {
     FORMDATA.append('approval_code', approval_code)
     FORMDATA.append('company_id', company_id)
 
+    for (let i = 0; i < data.file.length; i++) {
+      FORMDATA.append('loa[]', data.file[i])
+    }
+    
     setOpen(true)
     try {
       const response = await axios.post(
@@ -195,6 +199,7 @@ export default function SendingFeedback() {
                 type="file"
                 name="upload_loa"
                 id="upload_loa"
+                multiple
                 {...register('file')}
               />
               <p className="text-red-600 text-xs">{errors?.file?.message}</p>
