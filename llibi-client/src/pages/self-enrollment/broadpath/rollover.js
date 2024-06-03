@@ -192,7 +192,7 @@ const rollover = () => {
       return s + a.nCom
     }, 0)
 
-    const monthly = annual / 12
+    const monthly = annual / 52
 
     const info = `<table style="background-color:#fafafa;width:100%;margin-bottom:10px;">
                     <thead>
@@ -273,7 +273,7 @@ const rollover = () => {
                   </tr>
                   <tr>
                     <td style="background-color:#F3F0C4;font-size:25px;">
-                      Monthly: 
+                      Weekly: 
                     </td>
                     <td colspan="4" style="background-color:#F3F0C4;font-size:25px;text-align:left;">₱ <b>${monthly?.toLocaleString(
                       'en',
