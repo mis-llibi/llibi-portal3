@@ -16,8 +16,13 @@ import Loader from '@/components/Loader'
 import axios from '@/lib/axios'
 import Label from '@/components/Label'
 import moment from 'moment'
+import { excludeClickableColumns } from '@/util/column-headers'
+import ModalControl from '@/components/ModalControl'
+import Modal from '@/components/Modal'
+import ViewDependentsDetails from '@/components/boradpath/hris/modals/hr/ViewDependentsDetails'
 
 export default function PendingForApproval({ create, ...props }) {
+  const { show, setShow, body, setBody, toggle } = ModalControl()
   const [selectionModel, setSelectionModel] = useState([])
   const { data, isLoading, error, mutate } = useManageHrMember({
     status: '1,3,5,8',
@@ -210,6 +215,23 @@ export default function PendingForApproval({ create, ...props }) {
     props?.toggle()
   }
 
+  const handleViewDetails = (params, event, details) => {
+    if (!excludeClickableColumns.includes(params.colDef.headerName)) {
+      setBody({
+        title: (
+          <span className="font-bold text-xl text-gray-800">
+            Personal Information
+          </span>
+        ),
+        content: <ViewDependentsDetails row={params?.row} />,
+        modalOuterContainer: 'font-[poppins]',
+        modalContainer: 'h-full rounded-md',
+        modalBody: 'h-full',
+      })
+      toggle()
+    }
+  }
+
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>
 
@@ -258,7 +280,8 @@ export default function PendingForApproval({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
-        // disableColumnFilter 
+        onCellClick={handleViewDetails}
+        // disableColumnFilter
         // disableColumnSelector
         disableColumnMenu
         // checkboxSelection
@@ -274,6 +297,7 @@ export default function PendingForApproval({ create, ...props }) {
       />
 
       <Loader loading={loader} />
+      <Modal show={show} body={body} toggle={toggle} />
     </>
   )
 }

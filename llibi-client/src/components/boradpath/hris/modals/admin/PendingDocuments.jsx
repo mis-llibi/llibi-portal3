@@ -125,7 +125,7 @@ export default function PendingDocuments({
               }
               type="submit"
               disabled={isSubmitting}>
-              {isSubmitting ? 'Loading...' : 'Approved'}
+              {isSubmitting ? 'Loading...' : 'Submit'}
             </button>
             <button
               type="button"

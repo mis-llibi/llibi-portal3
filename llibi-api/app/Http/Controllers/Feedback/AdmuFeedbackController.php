@@ -48,6 +48,7 @@ class AdmuFeedbackController extends Controller
       'question3' => $questionThree,
       'question4' => $questionFour,
       'comments' => $comment,
+      'ip' => $request->ip(),
     ]);
 
     return response()->json(['status' => true, 'message' => 'Thank you for sharing your feedback.', 'data' => $feedback]);

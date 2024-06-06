@@ -9,7 +9,7 @@ enum StatusEnum: int
     * # LEGENDS OF STATUS #
     * #####################
 
-    * 1 pending submission
+    * 1 pending member/submission
     * 3 Pending deletion
     * 5 pending correction
     * 8 pending change plan

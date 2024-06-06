@@ -7,8 +7,13 @@ import { BiLoader, BiPencil, BiSave, BiTrashAlt } from 'react-icons/bi'
 
 import { useForm } from 'react-hook-form'
 import axios from '@/lib/axios'
+import { useActiveMemberSelectedRowStore } from '@/store/useActiveMemberSelectedRowStore'
 
-export default function ChangeMemberPlan({ row, mutate, setShow }) {
+export default function ChangeMemberPlan({ mutate, setShow }) {
+  const selectedRow = useActiveMemberSelectedRowStore(
+    state => state.selectedRow,
+  )
+
   const {
     register,
     handleSubmit,
@@ -19,7 +24,7 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
   const onSubmit = async data => {
     try {
       const response = await axios.patch(
-        `/api/members-enrollment/change-plan/${row.id}`,
+        `/api/members-enrollment/change-plan/${selectedRow?.id}`,
         data,
       )
       setShow(false)
@@ -54,16 +59,16 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
             id="plan"
             className="w-full rounded-md"
             {...register('plan')}
-            defaultValue={row.plan}>
+            defaultValue={selectedRow?.plan}>
             <option value="">Select Plan</option>
-            {row.plan === 'SUPERVISOR' && (
+            {selectedRow?.plan === 'SUPERVISOR' && (
               <option value="RANK AND FILE">Rank and file</option>
             )}
-            {row.plan === 'RANK AND FILE' && (
+            {selectedRow?.plan === 'RANK AND FILE' && (
               <option value="SUPERVISOR">Supervisor</option>
             )}
 
-            {!row.plan && (
+            {!selectedRow?.plan && (
               <>
                 <option value="RANK AND FILE">Rank and file</option>
                 <option value="SUPERVISOR">Supervisor</option>
@@ -88,8 +93,8 @@ export default function ChangeMemberPlan({ row, mutate, setShow }) {
           <button
             disabled={isSubmitting}
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600 px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
-            {isSubmitting ? <BiLoader size={14} /> : <BiSave size={14} />}
+            className="bg-blue-500 hover:bg-blue-600 px-3 py-2 text-white rounded-md text-xs flex gap-1 items-center justify-center font-bold uppercase">
+            {isSubmitting ? 'Loading...' : 'Submit'}
             <span>Save</span>
           </button>
         </div>

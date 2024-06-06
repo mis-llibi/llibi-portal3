@@ -61,6 +61,7 @@ export default function FeedBackManual() {
         },
       )
       Swal.fire('Success', response.data.message, 'success')
+      setComment('')
       setLoading(false)
       window.close()
     } catch (error) {

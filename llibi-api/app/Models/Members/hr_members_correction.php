@@ -4,6 +4,8 @@ namespace App\Models\Members;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Members\hr_members;
 
 class hr_members_correction extends Model
 {
@@ -47,5 +49,12 @@ class hr_members_correction extends Model
     'deleted_remarks',
     'approved_deleted_member_at',
     'is_approved',
+    'pending_correction_at',
+    'approved_correction_at',
   ];
+
+  public function member(): BelongsTo
+  {
+    return $this->belongsTo(hr_members::class, 'id', 'member_link_id');
+  }
 }

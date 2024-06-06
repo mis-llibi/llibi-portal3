@@ -18,5 +18,6 @@ class AdmuFeedback extends Model
     'question3',
     'question4',
     'comments',
+    'ip',
   ];
 }

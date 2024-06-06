@@ -20,6 +20,7 @@ import { excludeClickableColumns } from '@/util/column-headers'
 import ViewDependentsDetails from '@/components/boradpath/hris/modals/hr/ViewDependentsDetails'
 import { useActionButtonDropdownStore } from '@/store/useActionButtonDropdownStore'
 import debounce from '@/lib/debounce'
+import EditInformation from '@/components/boradpath/hris/modals/EditInformation'
 
 export default function ActiveMembers({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
@@ -39,13 +40,11 @@ export default function ActiveMembers({ create, ...props }) {
     setPageSize(data)
   }
 
-  const handleDelete = row => {
+  const handleDelete = () => {
     setAnchorEl(null)
     setBody({
       title: 'Delete Members',
-      content: (
-        <DeleteMemberRemarks row={row} mutate={mutate} setShow={setShow} />
-      ),
+      content: <DeleteMemberRemarks mutate={mutate} setShow={setShow} />,
       modalOuterContainer: 'w-full md:w-96 max-h-screen font-[poppins]',
       modalContainer: 'h-full rounded-md',
       modalBody: 'h-full',
@@ -57,8 +56,24 @@ export default function ActiveMembers({ create, ...props }) {
     setAnchorEl(null)
     setBody({
       title: 'Change Members Plan',
-      content: <ChangeMemberPlan row={row} mutate={mutate} setShow={setShow} />,
+      content: <ChangeMemberPlan mutate={mutate} setShow={setShow} />,
       modalOuterContainer: 'w-full md:w-96 max-h-screen font-[poppins]',
+      modalContainer: 'h-full rounded-md',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
+  const handleEditInformation = () => {
+    setAnchorEl(null)
+    setBody({
+      title: (
+        <span className="font-bold text-xl text-gray-800">
+          Edit Information
+        </span>
+      ),
+      content: <EditInformation mutate={mutate} setShow={setShow} />,
+      modalOuterContainer: 'font-[poppins]',
       modalContainer: 'h-full rounded-md',
       modalBody: 'h-full',
     })
@@ -218,14 +233,13 @@ export default function ActiveMembers({ create, ...props }) {
               9 approvd change plan */}
 
             {[4, 6, 9].includes(row.status) && (
-              <div>
-                <ActionButton
-                  key={row.id}
-                  row={row}
-                  handleDelete={handleDelete}
-                  handleChangePlan={handleChangePlan}
-                />
-              </div>
+              <ActionButton
+                key={row.id}
+                row={row}
+                handleDelete={handleDelete}
+                handleChangePlan={handleChangePlan}
+                handleEditInformation={handleEditInformation}
+              />
             )}
 
             {[3, 5, 8].includes(row.status) && (

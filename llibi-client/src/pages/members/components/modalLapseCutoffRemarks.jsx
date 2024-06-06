@@ -15,7 +15,7 @@ export default function ModalLapseCutoffRemarks({
     setLoading(true)
 
     const payload = { ...data, lapseRemarks: lapseRemarks }
-    console.log(payload)
+    // console.log(payload)
     create({ ...payload, setLoading, setShow, reset })
   }
 

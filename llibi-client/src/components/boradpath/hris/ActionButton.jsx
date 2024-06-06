@@ -17,27 +17,25 @@ import {
 import ApproveChangeMemberPlan from './modals/admin/ApproveChangeMemberPlan'
 
 import { useActionButtonDropdownStore } from '@/store/useActionButtonDropdownStore'
+import { useActiveMemberSelectedRowStore } from '@/store/useActiveMemberSelectedRowStore'
 
-export default function ActionButton({ row, handleDelete, handleChangePlan }) {
+export default function ActionButton({
+  row,
+  handleDelete,
+  handleChangePlan,
+  handleEditInformation,
+}) {
   // const [anchorEl, setAnchorEl] = useState(null)
   const { anchorEl, setAnchorEl } = useActionButtonDropdownStore()
+  const { selectedRow, setSelectedRow } = useActiveMemberSelectedRowStore()
 
   const handleClick = event => {
     setAnchorEl(anchorEl ? null : event.currentTarget)
+    setSelectedRow(row)
   }
 
   const handleClose = () => {
     setAnchorEl(null)
-  }
-
-  // const handleChangePlanModal = () => {
-  //   console.log(row)
-  //   handleClose()
-  // }
-
-  const handleEditInfo = () => {
-    console.log(row)
-    handleClose()
   }
 
   const open = Boolean(anchorEl)
@@ -62,19 +60,19 @@ export default function ActionButton({ row, handleDelete, handleChangePlan }) {
           'aria-labelledby': 'basic-button',
         }}>
         <Paper sx={{ width: 220 }}>
-          <MenuItem onClick={() => handleDelete(row)}>
+          <MenuItem onClick={handleDelete}>
             <div className="flex gap-3 items-center font-[poppins] text-sm">
               <BiTrashAlt size={20} />
               <span>Delete</span>
             </div>
           </MenuItem>
-          <MenuItem onClick={() => handleChangePlan(row)}>
+          <MenuItem onClick={handleChangePlan}>
             <div className="flex gap-3 items-center font-[poppins] text-sm">
               <BiUpvote size={20} />
               <span>Change Plan</span>
             </div>
           </MenuItem>
-          <MenuItem onClick={handleEditInfo}>
+          <MenuItem onClick={handleEditInformation}>
             <div className="flex gap-3 items-center font-[poppins] text-sm">
               <BiPencil size={20} />
               <span>Edit Information</span>

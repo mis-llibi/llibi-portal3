@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Members;
 
+use App\Enums\Broadpath\Members\StatusEnum;
 use App\Exports\Members\LateEnrolledExport;
 use App\Exports\Members\PendingForSubmissionExport;
 use App\Exports\Members\PhilcareMemberExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Member\NewEnrollmentRequest;
+use App\Http\Requests\Member\UpdateInformationRequest;
 use Illuminate\Http\Request;
 
 use App\Imports\Members\MasterlistImport;
@@ -26,8 +28,8 @@ use App\Models\Self_enrollment\attachment;
 use App\Models\Self_enrollment\members;
 use App\Services\SendingEmail;
 
-use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -71,7 +73,7 @@ class ManageEnrolleeController extends Controller
       default => throw new Exception("Status not supported", 400),
     };
 
-    $members = $members->with(['changePlanPending:id,member_link_id,plan', 'contact']);
+    $members = $members->with(['changePlanPending:id,member_link_id,plan', 'contact', 'correction']);
 
     if ($search) {
       $members = $members->where(function ($query) use ($search) {
@@ -540,7 +542,6 @@ class ManageEnrolleeController extends Controller
           'effective_date' => Carbon::parse($request->effectivity_date)->format('Y-m-d'),
           'coverage_date' => Carbon::now()->addYear(),
           'status' => 1,
-          'changed_status_at' => Carbon::now(),
           'created_by' => auth()->id(),
           'pending_submission_created_at' => Carbon::now(),
           'nationality' => $request->nationality,
@@ -734,5 +735,24 @@ class ManageEnrolleeController extends Controller
     });
 
     return response()->json(['message' => 'Success changing plan.', 'data' => $member]);
+  }
+
+  public function updateInformation(UpdateInformationRequest $request)
+  {
+
+    $member = hr_members::query()->where('id', $request->id)->firstOrFail();
+    $member->pending_correction_at = Carbon::now();
+    $member->status = StatusEnum::PENDING_CORRECTION->value;
+    $member->save();
+
+    $data_for_save = [
+      ...$request->validated(),
+      'member_link_id' => $member->id,
+      'pending_correction_at' => Carbon::now()
+    ];
+
+    $correction_member = hr_members_correction::create($data_for_save);
+
+    return response()->json(['message' => 'Submit requesting for correction success.', 'data' => $correction_member]);
   }
 }

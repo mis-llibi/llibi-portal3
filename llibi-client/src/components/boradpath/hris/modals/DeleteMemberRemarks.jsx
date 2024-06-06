@@ -7,8 +7,13 @@ import { BiLoader, BiTrashAlt } from 'react-icons/bi'
 
 import { useForm } from 'react-hook-form'
 import axios from '@/lib/axios'
+import { useActiveMemberSelectedRowStore } from '@/store/useActiveMemberSelectedRowStore'
 
-export default function DeleteMemberRemarks({ row, mutate, setShow }) {
+export default function DeleteMemberRemarks({ mutate, setShow }) {
+  const selectedRow = useActiveMemberSelectedRowStore(
+    state => state.selectedRow,
+  )
+
   const {
     register,
     handleSubmit,
@@ -19,7 +24,7 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
   const onSubmit = async data => {
     const formData = new FormData()
 
-    formData.append('id', row.id)
+    formData.append('id', selectedRow?.id)
     formData.append('pending_deleted_at', data.pending_deleted_at)
     formData.append('death_document', data.death_document[0])
 
@@ -82,10 +87,10 @@ export default function DeleteMemberRemarks({ row, mutate, setShow }) {
         </div>
         <div className="mt-10">
           <button
+            disabled={isSubmitting}
             type="submit"
-            className="bg-fav-red-light hover:bg-fav-red-dark px-3 py-2 text-white rounded-md text-sm flex gap-1 items-center justify-center font-bold uppercase">
-            {isSubmitting ? <BiLoader size={14} /> : <BiTrashAlt size={14} />}
-            <span>Delete</span>
+            className="bg-fav-red-light hover:bg-fav-red-dark px-3 py-2 text-white rounded-md text-xs flex gap-1 items-center justify-center font-bold uppercase">
+            {isSubmitting ? 'Loading...' : 'Submit'}
           </button>
         </div>
       </form>

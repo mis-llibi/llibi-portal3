@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 use App\Enums\Broadpath\Members\StatusEnum;
+use Illuminate\Support\Facades\Log;
 
 class hr_members extends Model
 {
@@ -56,6 +57,8 @@ class hr_members extends Model
     'approved_change_plan_at',
     'nationality',
     'approved_deleted_member_at_original',
+    'pending_correction_at',
+    'approved_correction_at',
   ];
 
   // protected $guarded = [];
@@ -69,12 +72,12 @@ class hr_members extends Model
 
     * 1 pending submission
     * 3 Pending deletion
-    * 5 pending correction
+    * 5 pending correction/edit information
     * 8 pending change plan
 
     * all this status is considered as active
     * 4 approved/active members
-    * 6 approved correction
+    * 6 approved correction/edit information
     * 7 approved deletion
     * 9 approved change plan
     * 10 disapproved member
@@ -101,17 +104,17 @@ class hr_members extends Model
       get: function () {
         return match ($this->status) {
           // pending
-          StatusEnum::PENDING_MEMBER => 'Pending Member',
-          StatusEnum::PENDING_DELETION => 'Pending Deletion',
-          StatusEnum::PENDING_CORRECTION => 'Pending Correction',
-          StatusEnum::PENDING_CHANGE_PLAN => 'Pending Change Plan',
+          StatusEnum::PENDING_MEMBER->value => 'Pending Member',
+          StatusEnum::PENDING_DELETION->value => 'Pending Deletion',
+          StatusEnum::PENDING_CORRECTION->value => 'Pending Correction',
+          StatusEnum::PENDING_CHANGE_PLAN->value => 'Pending Change Plan',
 
           // approve or active
-          StatusEnum::ACTIVE_MEMBER => 'Approved Member',
-          StatusEnum::APPROVED_CORRECTION => 'Approved Correction',
-          StatusEnum::APPROVED_DELETION => 'Approved Deletion',
-          StatusEnum::APPROVED_CHANGE_PLAN => 'Approved Change Plan',
-          StatusEnum::DISAPPROVED_MEMBER => 'Disapproved Member',
+          StatusEnum::ACTIVE_MEMBER->value => 'Approved Member',
+          StatusEnum::APPROVED_CORRECTION->value => 'Approved Correction',
+          StatusEnum::APPROVED_DELETION->value => 'Approved Deletion',
+          StatusEnum::APPROVED_CHANGE_PLAN->value => 'Approved Change Plan',
+          StatusEnum::DISAPPROVED_MEMBER->value => 'Disapproved Member',
           default => '',
         };
       },
@@ -120,7 +123,7 @@ class hr_members extends Model
 
   public function scopePendingSubmission(Builder $query): void
   {
-    $query->where('status', StatusEnum::PENDING_MEMBER);
+    $query->where('status', StatusEnum::PENDING_MEMBER->value);
   }
 
   // public function scopeSumittedMembers(Builder $query): void
@@ -130,38 +133,38 @@ class hr_members extends Model
 
   public function scopePendingDeletion(Builder $query): void
   {
-    $query->where('status', StatusEnum::PENDING_DELETION);
+    $query->where('status', StatusEnum::PENDING_DELETION->value);
   }
 
   public function scopeApprovedMembers(Builder $query): void
   {
     // $query->where('status', 4);
-    $query->whereNotNull('approved_member_at')->where('status', '<>', StatusEnum::APPROVED_DELETION);
+    $query->whereNotNull('approved_member_at')->where('status', '<>', StatusEnum::APPROVED_DELETION->value);
   }
 
   public function scopePendingCorrection(Builder $query): void
   {
-    $query->where('status', StatusEnum::PENDING_CORRECTION);
+    $query->where('status', StatusEnum::PENDING_CORRECTION->value);
   }
 
   public function scopeApprovedCorrection(Builder $query): void
   {
-    $query->where('status', StatusEnum::APPROVED_CORRECTION);
+    $query->where('status', StatusEnum::APPROVED_CORRECTION->value);
   }
 
   public function scopeDeletedMember(Builder $query): void
   {
-    $query->where('status', StatusEnum::APPROVED_DELETION);
+    $query->where('status', StatusEnum::APPROVED_DELETION->value);
   }
 
   public function scopePendingChangePlan(Builder $query): void
   {
-    $query->where('status', StatusEnum::PENDING_CHANGE_PLAN);
+    $query->where('status', StatusEnum::PENDING_CHANGE_PLAN->value);
   }
 
   public function scopeApprovedChangePlan(Builder $query): void
   {
-    $query->where('status', StatusEnum::APPROVED_CHANGE_PLAN);
+    $query->where('status', StatusEnum::APPROVED_CHANGE_PLAN->value);
   }
 
   public function scopeActiveMembers(Builder $query): void
@@ -174,11 +177,11 @@ class hr_members extends Model
      * 10 disapproved member
      */
     $query->whereIn('status', [
-      StatusEnum::ACTIVE_MEMBER,
-      StatusEnum::APPROVED_CORRECTION,
-      StatusEnum::APPROVED_DELETION,
-      StatusEnum::APPROVED_CHANGE_PLAN,
-      StatusEnum::DISAPPROVED_MEMBER
+      StatusEnum::ACTIVE_MEMBER->value,
+      StatusEnum::APPROVED_CORRECTION->value,
+      StatusEnum::APPROVED_DELETION->value,
+      StatusEnum::APPROVED_CHANGE_PLAN->value,
+      StatusEnum::DISAPPROVED_MEMBER->value
     ]);
   }
 
@@ -191,10 +194,10 @@ class hr_members extends Model
      * 8 pending change plan
      */
     $query->whereIn('status', [
-      StatusEnum::PENDING_MEMBER,
-      StatusEnum::PENDING_DELETION,
-      StatusEnum::PENDING_CORRECTION,
-      StatusEnum::PENDING_CHANGE_PLAN
+      StatusEnum::PENDING_MEMBER->value,
+      StatusEnum::PENDING_DELETION->value,
+      StatusEnum::PENDING_CORRECTION->value,
+      StatusEnum::PENDING_CHANGE_PLAN->value
     ]);
   }
 
@@ -205,7 +208,7 @@ class hr_members extends Model
 
   public function scopeDisapprovedMember(Builder $query): void
   {
-    $query->where('status', StatusEnum::DISAPPROVED_MEMBER);
+    $query->where('status', StatusEnum::DISAPPROVED_MEMBER->value);
   }
 
 
@@ -218,5 +221,10 @@ class hr_members extends Model
   public function contact(): HasOne
   {
     return $this->hasOne(hr_contact::class, 'link_id', 'id');
+  }
+
+  public function correction(): HasOne
+  {
+    return $this->hasOne(hr_members_correction::class, 'member_link_id', 'id')->orderByDesc('id');
   }
 }

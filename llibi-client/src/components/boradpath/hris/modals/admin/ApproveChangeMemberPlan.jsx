@@ -88,7 +88,7 @@ export default function ApproveChangeMemberPlan({
               disabled={isSubmitting}
               type="submit"
               className="border px-3 py-2 text-xs uppercase bg-blue-500 hover:bg-blue-700 font-semibold text-white rounded-md">
-              {isSubmitting ? 'Loading...' : 'Approved'}
+              {isSubmitting ? 'Loading...' : 'Submit'}
             </button>
             <button
               className="border px-3 py-2 text-xs uppercase font-semibold rounded-md"

@@ -85,19 +85,19 @@ export default function ViewDependentsDetails({ row }) {
             <Label htmlFor="">
               Effectivity Date:{' '}
               <span className="font-thin">
-                {row?.effectivity_date &&
-                  moment(row?.effectivity_date).format('MMM DD, Y')}
+                {row?.effective_date &&
+                  moment(row?.effective_date).format('MMM DD, Y')}
               </span>
             </Label>
           </div>
           <div>
-            <Label htmlFor="">
+            <Label className='text-green-600' htmlFor="">
               Certificate No.:{' '}
               <span className="font-thin">{row?.certificate_no}</span>
             </Label>
           </div>
           <div>
-            <Label htmlFor="">
+            <Label className='text-green-600' htmlFor="">
               Date Approved:{' '}
               <span className="font-thin">
                 {row?.certificate_issued_at &&
