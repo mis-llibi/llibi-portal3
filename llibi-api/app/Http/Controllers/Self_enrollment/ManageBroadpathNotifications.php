@@ -56,12 +56,12 @@ class ManageBroadpathNotifications extends Controller
             (new NotificationController)
                 ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
-        /* $smsBody = 
+        $smsBody = 
         "From BroadPath & LLIBI:\n\nGood day!\n\nWe are delighted to welcome BroadPath employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if(!empty($info['mobile']))
             (new NotificationController)
-                ->SmsNotification($info['mobile'], $smsBody); */
+                ->SmsNotification($info['mobile'], $smsBody);
     }
 
     public function rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked)
@@ -75,9 +75,6 @@ class ManageBroadpathNotifications extends Controller
         <br /><br />
 
         If there are changes in the dependent enrollment, you may make changes until '.date('F j, Y', strtotime($dateFinalWarning)).'. Renewal Enrollment will officially close on '.date('F j, Y', strtotime($dateFormLocked)).' and after that, changes will no longer be accepted. If you have already completed the form, you may disregard this message.
-        <br /><br />
-
-        If you have already completed the form, you may disregard this message.
         <br /><br />
 
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
@@ -103,12 +100,12 @@ class ManageBroadpathNotifications extends Controller
             (new NotificationController)
                 ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
-        /* $smsBody = 
+        $smsBody = 
         "From BroadPath & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if(!empty($info['mobile']))
             (new NotificationController)
-                ->SmsNotification($info['mobile'], $smsBody); */
+                ->SmsNotification($info['mobile'], $smsBody);
     }
 
     public function rolloverWarningUntouchedForm($info, $dateFinalWarning, $dateFormLocked)
@@ -151,12 +148,12 @@ class ManageBroadpathNotifications extends Controller
             (new NotificationController)
                 ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
-        /* $smsBody = 
+        $smsBody = 
         "From BroadPath & LLIBI:\n\nThis is to inform you that today, ".date('F j, Y', strtotime($dateFinalWarning)).", is the last day of BroadPath’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if(!empty($info['mobile']))
             (new NotificationController)
-                ->SmsNotification($info['mobile'], $smsBody); */
+                ->SmsNotification($info['mobile'], $smsBody);
     }
 
     public function rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked)
@@ -200,12 +197,12 @@ class ManageBroadpathNotifications extends Controller
             (new NotificationController)
                 ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
-        /* $smsBody = 
+        $smsBody = 
         "From BroadPath & LLIBI:\n\nThis is to inform you that today, ".date('F j, Y', strtotime($dateFinalWarning)).", is the last day of BroadPath’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if(!empty($info['mobile']))
             (new NotificationController)
-                ->SmsNotification($info['mobile'], $smsBody); */
+                ->SmsNotification($info['mobile'], $smsBody);
     }
 
     public function rolloverReminderLock($info)
@@ -242,12 +239,12 @@ class ManageBroadpathNotifications extends Controller
             (new NotificationController)
                 ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
             
-        /* $smsBody = 
+        $smsBody = 
         "From BroadPath & LLIBI:\n\nThank you for your enrollment submission.\n\nEnrollment of your dependents has officially closed. All submission is final and no longer allowed to make any changes\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if(!empty($info['mobile']))
             (new NotificationController)
-                ->SmsNotification($info['mobile'], $smsBody); */
+                ->SmsNotification($info['mobile'], $smsBody);
     }
 
     public function invite($info)

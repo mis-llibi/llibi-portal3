@@ -300,9 +300,9 @@ class ManageBroadpathClients extends Controller
 
             $info = [
                 'name' => $principal[0]->last_name.', '.$principal[0]->first_name,
-                'email'  => 'markimperial@llibi.com',//$upContact[0]->email,
-                'email2' => 'mc_cimperial@yahoo.com',//$upContact[0]->email2,
-                'mobile' => '09989829829',//$upContact[0]->mobile_no,
+                'email'  => $upContact[0]->email,
+                'email2' => $upContact[0]->email2,
+                'mobile' => $upContact[0]->mobile_no,
                 'address' => $contact[0]->street.', '.$contact[0]->barangay.', '.$contact[0]->city.', '.$contact[0]->province.', '.$contact[0]->zip_code,
                 'depInfo' => $depInfo,
                 'succeeding' => $succeeding,
@@ -508,9 +508,9 @@ class ManageBroadpathClients extends Controller
 
         $info = [
             'name' => $upMember[0]->last_name.', '.$upMember[0]->first_name,
-            'email'  => 'markimperial@llibi.com',//$upContact[0]->email,
-            'email2' => 'mc_cimperial@yahoo.com',//$upContact[0]->email2,
-            'mobile' => '09989829829',//$upContact[0]->mobile_no,
+            'email'  => $upContact[0]->email,
+            'email2' => $upContact[0]->email2,
+            'mobile' => $upContact[0]->mobile_no,
             'address' => $upContact[0]->street.', '.$upContact[0]->barangay.', '.$upContact[0]->city.', '.$upContact[0]->province.', '.$upContact[0]->zip_code,
             'depInfo' => $depInfo,
             'succeeding' => $succeeding,
@@ -584,6 +584,7 @@ class ManageBroadpathClients extends Controller
                 $arr['birth_date'] = $request->birth_date[$i];
                 $arr['gender'] = strtoupper($request->gender[$i]);
                 $arr['civil_status'] = strtoupper($request->civil_status[$i]);
+                $arr['status'] = 2;
                 
                 //add or update dependent information
                 if(isset($request->id[$i]) && (string)$request->id[$i] != 'undefined') {
@@ -769,7 +770,7 @@ class ManageBroadpathClients extends Controller
                 't2.email2',
                 't2.mobile_no')
             ->whereIn('t1.status', [1, 2, 4])
-            ->whereIn('t1.member_id', ['LLIBI0025', 'LLIBI0026', 'LLIBI0027'])
+            ->whereIn('t1.member_id', ['LLIBI0027'])
             ->where('client_company', 'BROADPATH')
             ->where('t1.relation', 'PRINCIPAL')
             ->where('t1.form_locked', 1)
@@ -801,9 +802,9 @@ class ManageBroadpathClients extends Controller
                 $info = [
                     'hash'   => $row->hash,
                     'name'   => $row->last_name.', '.$row->first_name,
-                    'email'  => 'markimperial@llibi.com', //$row->email,
-                    'email2' => 'mc_cimperial@yahoo.com', //$row->email2,
-                    'mobile' => '09989829829', //$row->mobile_no
+                    'email'  => $row->email,
+                    'email2' => $row->email2,
+                    'mobile' => $row->mobile_no
                 ];
 
                 //check if there is notification set on that day
@@ -816,7 +817,7 @@ class ManageBroadpathClients extends Controller
                             $status = 0;
 
                             //first day of enrollment
-                            if($checkdate == '2024-06-13') {
+                            if($checkdate == '2024-06-07') {
                                 $notificationTitle = 'Reminder: Renewal Start';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
@@ -832,7 +833,7 @@ class ManageBroadpathClients extends Controller
 
                             //check if still not submitting their enrollment then send notification
                             //if($row->status == 1 || $row->status == 2) {
-                            if($row->status == 2) {
+                            if($row->status == 2) {                  
 
                                 $addedDay = 
                                 date('Y-m-d H:i:s', strtotime($checkdate));
@@ -906,12 +907,12 @@ class ManageBroadpathClients extends Controller
                         (new ManageBroadpathNotifications)
                             ->rolloverReminderLock($info);
                         
-                        $status = 0;
-                        //$status = 'UNTOUCHED FORM: LOCKED REMINDER';
+                        //$status = 0;
+                        $status = 'UNTOUCHED FORM: LOCKED REMINDER';
 
                         //set form to locked
-                        /* members::where('id', $row->id)
-                            ->update(['form_locked' => 2]); */
+                        members::where('id', $row->id)
+                            ->update(['form_locked' => 2]);
 
                     }
 

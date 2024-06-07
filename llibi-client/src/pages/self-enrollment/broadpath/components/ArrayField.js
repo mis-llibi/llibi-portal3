@@ -134,6 +134,9 @@ const ArrayField = ({ props }) => {
               <Input
                 label="Birth Date"
                 type="date"
+                onKeyDown={e => {
+                  e.preventDefault()
+                }}
                 disabled={!props?.watch(`deps.${i}.relation`)}
                 register={props?.register(`deps.${i}.birth_date`, {
                   required: true,
@@ -203,6 +206,7 @@ const ArrayField = ({ props }) => {
                         ''
                     }*/
                   type="file"
+                  disabled={item?.attachments}
                   /*disabled={
                         !options.falseRelation(
                             lName,
