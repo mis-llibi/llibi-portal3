@@ -72,6 +72,8 @@ class BroadpathExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize
             'EST_PREMIUM',
             'ADDRESS',
             'MOBILE',
+            'EMAIL',
+            'EMAIL PERSONAL',
             'CERTIFICATE #'
         ];
     }
@@ -134,7 +136,7 @@ class BroadpathExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize
                     }
                 }
 
-                $event->sheet->getStyle('A1:P'.$count)->applyFromArray([
+                $event->sheet->getStyle('A1:R'.$count)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -207,6 +209,8 @@ class BroadpathExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize
                 $premComp,
                 (!empty($this->address($row->id)) ? $this->address($row->id)['address'] : ''),
                 (!empty($this->address($row->id)) ? $this->address($row->id)['mobile'] : ''),
+                (!empty($this->address($row->id)) ? $this->address($row->id)['email'] : ''),
+                (!empty($this->address($row->id)) ? $this->address($row->id)['email2'] : ''),
                 $row->certificate_no
             );
 
@@ -235,8 +239,10 @@ class BroadpathExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize
             foreach ($address as $key => $row) {
                 $add = $row->street.", ".$row->barangay.", ".$row->city.", ".$row->province.", ".$row->zip_code;
                 $mobile = $row->mobile_no;
+                $email = $row->email;
+                $email2 = $row->email2;
             }
-            return array('address' => $add, 'mobile' => $mobile);
+            return array('address' => $add, 'mobile' => $mobile, 'email' => $email, 'email2' => $email2);
         }
         return;
     }

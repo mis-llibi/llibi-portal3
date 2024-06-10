@@ -65,7 +65,7 @@ class BroadpathUploadEnrollee implements ToCollection, WithHeadingRow, WithBatch
             ];
             contact::create($contact);
 
-            $info = [
+            /* $info = [
                 'hash' => $member->hash,
                 'name' => $member->last_name.', '.$member->first_name,
                 'email' => trim($row['email_1']),
@@ -74,7 +74,7 @@ class BroadpathUploadEnrollee implements ToCollection, WithHeadingRow, WithBatch
             ];
             
             (new ManageBroadpathNotifications)
-                ->invite($info);
+                ->invite($info); */
                        
         } else {
             return response()->json([

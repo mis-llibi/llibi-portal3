@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         $dateFormLocked = '2023-04-06';
 
         $reminder = (new ManageBroadpathEnrollee)->checkReminders($dateToday, $dateFinalWarning, $dateFormLocked);
-      })->dailyAt('12:24');
+      })->dailyAt('07:00');
 
       $schedule->command('command:automate-handling-time')->everyMinute();
       $schedule->command('send:pending-not-moving')->everyMinute();
