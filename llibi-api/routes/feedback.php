@@ -17,4 +17,5 @@ Route::post('/corporate/feedbacks/save', [FeedbackCorporateController::class, 's
 Route::get('/corporate/feedbacks/employee', [FeedbackCorporateController::class, 'showEmployee']);
 
 // feedback admu
+Route::get('/admu/feedbacks', [AdmuFeedbackController::class, 'index']);
 Route::post('/admu/feedbacks', [AdmuFeedbackController::class, 'store'])->middleware('throttle:3,1');
