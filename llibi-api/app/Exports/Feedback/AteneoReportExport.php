@@ -42,7 +42,7 @@ class AteneoReportExport implements FromCollection, WithMapping, ShouldAutoSize,
   public function map($feedbacks): array
   {
     return [
-      $feedbacks->company_name,
+      'ADMU',
       Str::upper($feedbacks->loa_type),
       $feedbacks->comments,
       $feedbacks->question1,
