@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Feedback;
 
+use App\Exports\Feedback\CorporateReportExport;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
@@ -464,5 +465,10 @@ class FeedbackCorporateController extends Controller
     abort_if(!$masterlist, 404, 'Member Not Found.');
 
     return response()->json($masterlist);
+  }
+
+  public function exportFeedbackReport(Request $request)
+  {
+    return (new CorporateReportExport)->download('feedback-corporate-report.csv');
   }
 }

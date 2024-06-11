@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Feedback;
 
+use App\Exports\Feedback\AteneoReportExport;
+use App\Exports\Feedback\ClientCareReportExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FeedbackRequest;
 use App\Http\Requests\ManualSendFeedbackRequest;
@@ -284,5 +286,10 @@ class AdmuFeedbackController extends Controller
   public function destroy($id)
   {
     //
+  }
+
+  public function exportFeedbackReport(Request $request)
+  {
+    return (new AteneoReportExport)->download('feedback-ateneo-report.csv');
   }
 }

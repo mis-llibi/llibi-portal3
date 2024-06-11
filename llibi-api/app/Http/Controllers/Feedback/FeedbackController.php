@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Feedback;
 
+use App\Exports\Feedback\ClientCareReportExport;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Http\Request;
@@ -278,5 +279,10 @@ class FeedbackController extends Controller
     $feedback = Client::where('id', $request_id)->first();
     // return $feedback;
     return $feedback ? Carbon::parse($feedback->created_at)->diffInDays(now()) >= 3 : null;
+  }
+
+  public function exportFeedbackReport(Request $request)
+  {
+    return (new ClientCareReportExport)->download('feedback-client-care-report.csv');
   }
 }

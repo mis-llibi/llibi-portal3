@@ -13,3 +13,25 @@ body.swal2-shown {
   white-space: normal !important;
   word-wrap: break-word !important;
 }
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #f7f4ed;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #CCC;
+    border-radius: 100vh;
+    border: 3px solid #f6f7ed;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #BBB;
+  }
+}

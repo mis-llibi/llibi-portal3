@@ -156,12 +156,12 @@ export default function ReportHomePage() {
             <img src="/logo.png" alt="LLIBI LOGO" width={200} />
           </div>
         </nav>
-        <div className="px-20 text-gray-800">
+        <div className="px-10 md:px-20 text-gray-800">
           <div className="mb-3 mt-3">
             <h1 className="uppercase text-3xl font-bold">Client Care Portal</h1>
-            <div className="flex justify-between mt-3">
+            <div className="flex justify-between mt-3 flex-col md:flex-row">
               <h1 className="uppercase font-bold mb-2">Questions:</h1>
-              <div className="flex gap-1">
+              <div className="flex flex-col md:flex-row gap-1">
                 <button
                   className="bg-blue-600 text-white p-3 rounded-md"
                   title="Switch to corporate"
@@ -244,47 +244,67 @@ export default function ReportHomePage() {
             </div>
           </div>
 
-          <table className="w-full text-sm border bg-white mb-3">
-            <thead>
-              <tr className="bg-blue-100">
-                <th className="w-48 p-5"></th>
-                <th className="w-24 p-5">Loa Type</th>
-                <th className="w-72 p-5">Comments</th>
-                <th className="w-24 p-5">Q1</th>
-                <th className="w-24 p-5">Q2</th>
-                <th className="w-24 p-5">Q3</th>
-                <th className="w-24 p-5">Q4</th>
-              </tr>
-            </thead>
-            <tbody>
-              {feedbacks &&
-                feedbacks?.result?.data.map(feedback => {
-                  return (
-                    <tr key={feedback.id} className="border even:bg-gray-100">
-                      <td className="p-5 font-bold">
-                        <small className="text-gray-500">
-                          {moment(feedback.created_at).format('MMM D, Y')}
-                        </small>
-                        <br />
-                        <span>{feedback.company_name}</span>
-                      </td>
-                      <td className="p-5 text-center">
-                        {feedback.loa_type.toUpperCase()}
-                      </td>
-                      <td className="p-5">{feedback.comments}</td>
-                      <td className="p-5 text-center">{feedback.question1}</td>
-                      <td className="p-5 text-center">{feedback.question2}</td>
-                      <td className="p-5 text-center">{feedback.question3}</td>
-                      <td className="p-5 text-center">{feedback.question4}</td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
+          <div className="flex justify-end mb-3">
+            <a
+              href={`${process.env.backEndUrl}/api/feedbacks-export`}
+              target="_blank">
+              <button className="bg-green-600 hover:bg-green-500 text-white text-xs px-3 py-2 rounded-md uppercase">
+                Export
+              </button>
+            </a>
+          </div>
+
+          <div className="overflow-x-scroll custom-scrollbar">
+            <table className="w-full text-sm border bg-white mb-3">
+              <thead>
+                <tr className="bg-blue-600 text-white uppercase text-xs">
+                  <th className="w-48 p-2"></th>
+                  <th className="w-24 p-2">Loa Type</th>
+                  <th className="w-72 p-2">Comments</th>
+                  <th className="w-24 p-2">Q1</th>
+                  <th className="w-24 p-2">Q2</th>
+                  <th className="w-24 p-2">Q3</th>
+                  <th className="w-24 p-2">Q4</th>
+                </tr>
+              </thead>
+              <tbody>
+                {feedbacks &&
+                  feedbacks?.result?.data.map(feedback => {
+                    return (
+                      <tr key={feedback.id} className="border even:bg-gray-100">
+                        <td className="p-2 font-bold text-xs whitespace-nowrap lg:whitespace-normal">
+                          <small className="text-gray-500">
+                            {moment(feedback.created_at).format('MMM D, Y')}
+                          </small>
+                          <br />
+                          <span>{feedback.company_name}</span>
+                        </td>
+                        <td className="p-2 text-center text-xs">
+                          {feedback.loa_type.toUpperCase()}
+                        </td>
+                        <td className="p-2 text-xs">{feedback.comments}</td>
+                        <td className="p-2 text-center text-xs whitespace-nowrap lg:whitespace-normal">
+                          {feedback.question1}
+                        </td>
+                        <td className="p-2 text-center text-xs whitespace-nowrap lg:whitespace-normal">
+                          {feedback.question2}
+                        </td>
+                        <td className="p-2 text-center text-xs whitespace-nowrap lg:whitespace-normal">
+                          {feedback.question3}
+                        </td>
+                        <td className="p-2 text-center text-xs whitespace-nowrap lg:whitespace-normal">
+                          {feedback.question4}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </table>
+          </div>
           <div className="flex justify-end">
             <div>
               <button
-                className={`w-28 border bg-blue-900 p-2 uppercase text-sm rounded-md text-white mb-3 ${
+                className={`w-28 border bg-blue-900 p-2 uppercase text-xs rounded-md text-white mb-3 ${
                   feedbacks?.result?.current_page === 1 && 'bg-gray-600'
                 }`}
                 onClick={() => setPage(page - 1)}
@@ -292,7 +312,7 @@ export default function ReportHomePage() {
                 Previous
               </button>
               <button
-                className={`w-28 border bg-blue-900 p-2 uppercase text-sm rounded-md text-white mb-3 ${
+                className={`w-28 border bg-blue-900 p-2 uppercase text-xs rounded-md text-white mb-3 ${
                   feedbacks?.result?.current_page ===
                     feedbacks?.result?.last_page && 'bg-gray-600'
                 }`}
