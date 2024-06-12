@@ -70,6 +70,16 @@ class ManageBroadpathClients extends Controller
         }
     }
 
+    public function checkIfExistingPrincipal($member_id, $birthDate)
+    {
+        $exist = 
+            members::where('member_id', $member_id)
+                ->where('birth_date', $birthDate)
+                ->exists();
+
+        return $exist;
+    }
+
     public function updateClientInfo(Request $request)
     {
         if(isset($request->rollover)) {

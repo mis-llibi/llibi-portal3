@@ -14,6 +14,7 @@ use App\Models\Self_enrollment\attachment;
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\Self_enrollment\ManageBroadpathNotifications;
+use App\Http\Controllers\Self_enrollment\ManageBroadpathClients;
 
 class BroadpathUploadEnrollee implements ToCollection, WithHeadingRow, WithBatchInserts
 {
@@ -37,45 +38,58 @@ class BroadpathUploadEnrollee implements ToCollection, WithHeadingRow, WithBatch
     {
         if(trim(!empty($row['employee_id']))) {
 
-            $members = [
-                'client_company' => $this->comp,
-                'upload_date' => date('Y-m-d'),
-                'member_id' => strtoupper($row['employee_id']),
-                'hash' => md5($row['employee_id'].date('YmdHis')),
-                'mbl' => $row['mbl'],
-                'room_and_board' => strtoupper($row['room_and_board']),
-                'relation' => 'PRINCIPAL',
-                'last_name' => strtoupper($row['last_name']),
-                'first_name' => strtoupper($row['first_name']),
-                'birth_date' => $this->changeDateFormat($row['birth_date']),
-                'gender' => strtoupper($row['gender']),
-                'civil_status' => strtoupper($row['civil_status']),
-                'hire_date' => $this->changeDateFormat($row['start_date']),
-                'coverage_date' => $this->changeDateFormat($row['start_date']),
-                'status' => 1,
-            ];
-
-            $member = members::create($members);
-
-            $contact = [
-                'link_id' => $member->id,
-                'email'  => trim($row['email_1']),
-                'email2' => trim($row['email_2']),
-                'mobile_no' => $this->clean($row['phone_number']),
-            ];
-            contact::create($contact);
-
-            /* $info = [
-                'hash' => $member->hash,
-                'name' => $member->last_name.', '.$member->first_name,
-                'email' => trim($row['email_1']),
-                'email2' => trim($row['email_2']),
-                'mobile' => $this->clean($row['phone_number'])
-            ];
+            $birthDate = $this->changeDateFormat($row['birth_date']);
+            $exist = (new ManageBroadpathClients)->checkIfExistingPrincipal($row['employee_id'], $birthDate);
             
-            (new ManageBroadpathNotifications)
-                ->invite($info); */
-                       
+            if(!$exist) {
+
+                $rel = strtoupper($row['relation']);
+
+                $members = [
+                    'client_company' => $this->comp,
+                    'upload_date' => ($rel == 'PRINCIPAL' ? date('Y-m-d') : NULL),
+                    'member_id' => strtoupper($row['employee_id']),
+                    'hash' => ($rel == 'PRINCIPAL' ? md5($row['employee_id'].date('YmdHis')) : NULL),
+                    'mbl' => ($rel == 'PRINCIPAL' ? $row['mbl'] : NULL),
+                    'room_and_board' => ($rel == 'PRINCIPAL' ? strtoupper($row['room_and_board']) : NULL),
+                    'relation' => $rel,
+                    'last_name' => strtoupper($row['last_name']),
+                    'first_name' => strtoupper($row['first_name']),
+                    'birth_date' => $this->changeDateFormat($row['birth_date']),
+                    'gender' => strtoupper($row['gender']),
+                    'civil_status' => strtoupper($row['civil_status']),
+                    'hire_date' => $this->changeDateFormat($row['start_date']),
+                    'coverage_date' => $this->changeDateFormat($row['start_date']),
+                    'certificate_no' => strtoupper($row['certificate_no']),
+                    'form_locked' => 1,
+                    'status' => 4,
+                ];
+
+                $member = members::create($members);
+
+                if($rel == 'PRINCIPAL') {
+                    $contact = [
+                        'link_id' => $member->id,
+                        'email'  => trim($row['email_1']),
+                        'email2' => trim($row['email_2']),
+                        'mobile_no' => $this->clean($row['phone_number']),
+                    ];
+                    contact::create($contact);
+                }
+
+                /* $info = [
+                    'hash' => $member->hash,
+                    'name' => $member->last_name.', '.$member->first_name,
+                    'email' => trim($row['email_1']),
+                    'email2' => trim($row['email_2']),
+                    'mobile' => $this->clean($row['phone_number'])
+                ];
+                
+                (new ManageBroadpathNotifications)
+                    ->invite($info); */
+
+            }
+                
         } else {
             return response()->json([
                 'message' => 'error'
