@@ -827,7 +827,7 @@ class ManageBroadpathClients extends Controller
                             $status = 0;
 
                             //first day of enrollment
-                            if($checkdate == '2024-06-07') {
+                            if($checkdate == '2024-06-13') {
                                 $notificationTitle = 'Reminder: Renewal Start';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',

@@ -73,6 +73,7 @@ class BroadpathUploadEnrollee implements ToCollection, WithHeadingRow, WithBatch
                         'email'  => trim($row['email_1']),
                         'email2' => trim($row['email_2']),
                         'mobile_no' => $this->clean($row['phone_number']),
+                        'street' => strtoupper($row['address']),
                     ];
                     contact::create($contact);
                 }

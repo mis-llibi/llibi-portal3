@@ -7,8 +7,7 @@ const NotFoundPage = () => (
         </div>
 
         <div className="ml-4 md:text-xl text-gray-700 uppercase tracking-wider">
-          BROADPATH Dependent Renewal Enrollment has already completed, Thank
-          you!!
+          Sorry open enrollment is not available at the moment.
         </div>
       </div>
     </div>

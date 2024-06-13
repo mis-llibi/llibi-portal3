@@ -50,7 +50,9 @@ const home = () => {
         if (client?.principal[0]?.status == 2) {
           window.location.pathname = `/self-enrollment/broadpath/dependents/`
         } else if (client?.principal[0]?.status == 4) {
-          window.location.pathname = `/self-enrollment/broadpath/rollover/`
+          //window.location.pathname = `/self-enrollment/broadpath/rollover/`
+
+          window.location.pathname = `/self-enrollment/broadpath/form-locked`
         } else {
           setPage(true)
         }
