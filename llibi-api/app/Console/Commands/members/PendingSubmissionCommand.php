@@ -43,6 +43,10 @@ class PendingSubmissionCommand extends Command
     $monthNow = Carbon::now()->format('M');
 
     $members = hr_members::query()
+      ->with([
+        'contact',
+        'changePlanPending:id,member_link_id,plan'
+      ])
       // ->where('pending_submission_created_at', '>=', Carbon::yesterday()->setTime(14, 1, 0))
       // ->where('pending_submission_created_at', '<=', Carbon::today()->setTime(13, 59, 0))
       // ->pendingApproval()
@@ -52,45 +56,45 @@ class PendingSubmissionCommand extends Command
       /**
        * Store the file first before make action in database
        */
-      $filename = "members/pending-for-submission/$yearNow/$monthNow/PENDING_FOR_SUBMISSION_$timestamp.xlsx";
+      $filename = env('APP_ENV') . "/members/pending-for-submission/$yearNow/$monthNow/PENDING_FOR_SUBMISSION_$timestamp.xlsx";
       $spacesFilename = env('DO_CDN_ENDPOINT') . '/' . $filename;
-      $storingSuccess = Excel::store(new PendingForSubmissionExport(['members' => $members]), $filename, 'public');
+      $storingSuccess = Excel::store(new PendingForSubmissionExport(['members' => $members]), $filename, 'broadpath');
 
       if (!$storingSuccess) {
         return response()->json(['message' => 'Uploading file failed.', $spacesFilename]);
       }
 
-      // $sending = new SendingEmail(
-      //   email: 'glenilagan@llibi.com',
-      //   body: view('send-pending-for-submission'),
-      //   subject: 'PENDING FOR SUBMISSION',
-      //   attachments: [$spacesFilename],
-      // );
-      // $success_sending = $sending->send();
+      $sending = new SendingEmail(
+        email: env('GLEN'),
+        body: view('send-pending-for-submission'),
+        subject: 'PENDING FOR SUBMISSION',
+        attachments: [$spacesFilename],
+      );
+      $sending->send();
 
-      $message = [
-        'body' => view('send-pending-for-submission')->render(),
-        'attachment' => ["public/" . $filename],
-      ];
+      // $message = [
+      //   'body' => view('send-pending-for-submission'),
+      //   'attachment' => [$spacesFilename],
+      // ];
 
-      $send = (new NotificationController)->NewMail('', 'glenilagan@llibi.com', $message);
+      // $send = (new NotificationController)->NewMail('', 'glenilagan@llibi.com', $message);
 
       // if ($success_sending) {
-      //   foreach ($members as $key => $row) {
-      //     hr_members::where('id', $row['id'])
-      //       ->update([
-      //         'status' => 2,
-      //         'changed_status_at' => Carbon::now(),
-      //         'excel_batch' => $timestamp,
-      //       ]);
-      //   }
-
-      //   DB::table('hr_excel_sent_to_philcare')
-      //     ->insert([
+      // foreach ($members as $key => $row) {
+      //   hr_members::where('id', $row['id'])
+      //     ->update([
+      //       'status' => 2,
+      //       'changed_status_at' => Carbon::now(),
       //       'excel_batch' => $timestamp,
-      //       'pending_submission_path' => $filename,
-      //       'created_at' => Carbon::now()
       //     ]);
+      // }
+
+      DB::table('hr_excel_sent_to_philcare')
+        ->insert([
+          'excel_batch' => $timestamp,
+          'pending_submission_path' => $filename,
+          'created_at' => Carbon::now()
+        ]);
       // }
     }
   }

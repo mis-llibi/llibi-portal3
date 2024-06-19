@@ -24,7 +24,7 @@ const FORM_SCHEMA = z.object({
   email: z.string().email(),
 })
 
-export default function EditInformation() {
+export default function EditInformation({ mutate, setShow }) {
   const selectedRow = useActiveMemberSelectedRowStore(
     state => state.selectedRow,
   )
@@ -56,7 +56,8 @@ export default function EditInformation() {
         '/api/members-enrollment/update-information',
         { ...data, birth_date: value.startDate, id: selectedRow?.id },
       )
-
+      mutate()
+      setShow(false)
       Swal.fire('Success', response.data?.message, 'success')
     } catch (error) {
       Swal.fire('Error', 'Something went wrong', 'error')
@@ -120,7 +121,7 @@ export default function EditInformation() {
               asSingle
               // showShortcuts={true}
               // showFooter={true}
-              // popoverDirection="up|down"
+              popoverDirection="down"
             />
             <p className="text-xs text-red-600">
               {!value.startDate && 'Birth Date is required'}

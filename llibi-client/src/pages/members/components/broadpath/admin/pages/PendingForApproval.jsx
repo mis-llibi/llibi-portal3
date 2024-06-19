@@ -13,8 +13,14 @@ import ApprovePendingMember from '@/components/boradpath/hris/modals/admin/Appro
 import ApproveDeleteMember from '@/components/boradpath/hris/modals/admin/ApproveDeleteMember'
 import DisapproveMember from '@/components/boradpath/hris/modals/admin/DisapproveMember'
 import PendingDocuments from '@/components/boradpath/hris/modals/admin/PendingDocuments'
+import ApproveEditInformation from '@/components/boradpath/hris/modals/admin/ApproveEditInformation'
+
+import ModalControl from '@/components/ModalControl'
+import Modal from '@/components/Modal'
 
 export default function PendingForApproval({ create, ...props }) {
+  const { show, setShow, body, setBody, toggle } = ModalControl()
+
   const [selectionModel, setSelectionModel] = useState([])
   const [filter, setFilter] = useState('1,3,5,8')
   const { data, isLoading, error, mutate } = useManageHrMember({
@@ -145,6 +151,32 @@ export default function PendingForApproval({ create, ...props }) {
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>
 
+  useEffect(() => {
+    if (showModal === 'approve-edit-information') {
+      setBody({
+        title: (
+          <span className="font-bold text-xl text-gray-800">
+            Approve Edit Information
+          </span>
+        ),
+        content: (
+          <ApproveEditInformation
+            showModal={Boolean(showModal)}
+            setShowModal={setShowModal}
+            mutate={mutate}
+            setShow={setShow}
+          />
+        ),
+        modalOuterContainer: 'font-[poppins]',
+        modalContainer: 'h-full rounded-md',
+        modalBody: 'h-full',
+      })
+      toggle()
+    }
+
+    return () => setShowModal(false)
+  }, [showModal, show])
+
   return (
     <>
       {/* PENDING ENROLLMENT BOX */}
@@ -251,7 +283,16 @@ export default function PendingForApproval({ create, ...props }) {
         />
       )}
 
+      {/* {showModal === 'approve-edit-information' && (
+        <ApproveEditInformation
+          showModal={Boolean(showModal)}
+          setShowModal={setShowModal}
+          mutate={mutate}
+        />
+      )} */}
+
       <Loader loading={loader} />
+      <Modal show={show} body={body} toggle={toggle} />
     </>
   )
 }

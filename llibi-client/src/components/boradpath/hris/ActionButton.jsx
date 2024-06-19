@@ -18,6 +18,7 @@ import ApproveChangeMemberPlan from './modals/admin/ApproveChangeMemberPlan'
 
 import { useActionButtonDropdownStore } from '@/store/useActionButtonDropdownStore'
 import { useActiveMemberSelectedRowStore } from '@/store/useActiveMemberSelectedRowStore'
+import { usePendingMemberSelectedRowStore } from '@/store/usePendingMemberSelectedRowStore'
 
 export default function ActionButton({
   row,
@@ -85,6 +86,11 @@ export default function ActionButton({
 }
 
 export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
+  const {
+    selectedRowState,
+    setSelectedRowState,
+  } = usePendingMemberSelectedRowStore()
+
   const [anchorEl, setAnchorEl] = useState(null)
   // const [showModal, setShowModal] = useState(false)
   // const [selectedRow, setSelectedRow] = useState(null)
@@ -124,6 +130,12 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
   const handlePendingDocumentsModal = () => {
     setSelectedRow(row)
     setShowModal('pending-documents')
+    handleClose()
+  }
+
+  const handleApproveInformationCorrection = data => {
+    setSelectedRowState(data)
+    setShowModal('approve-edit-information')
     handleClose()
   }
 
@@ -211,10 +223,10 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
             </MenuItem>
           )}
           {row.status === 5 && (
-            <MenuItem onClick={() => console.log(row)}>
+            <MenuItem onClick={() => handleApproveInformationCorrection(row)}>
               <div className="flex gap-3 items-center font-[poppins] text-sm">
                 <BiUserCheck size={20} />
-                <span>Approve Edit Information</span>
+                <span>Approve Correction</span>
               </div>
             </MenuItem>
           )}

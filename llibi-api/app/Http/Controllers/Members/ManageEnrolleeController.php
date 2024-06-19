@@ -73,7 +73,12 @@ class ManageEnrolleeController extends Controller
       default => throw new Exception("Status not supported", 400),
     };
 
-    $members = $members->with(['changePlanPending:id,member_link_id,plan', 'contact', 'correction']);
+    $members = $members->with([
+      'changePlanPending:id,member_link_id,plan',
+      'contact',
+      'correction',
+      'contactCorrection'
+    ]);
 
     if ($search) {
       $members = $members->where(function ($query) use ($search) {
@@ -739,11 +744,9 @@ class ManageEnrolleeController extends Controller
 
   public function updateInformation(UpdateInformationRequest $request)
   {
-
     $member = hr_members::query()->where('id', $request->id)->firstOrFail();
     $member->pending_correction_at = Carbon::now();
     $member->status = StatusEnum::PENDING_CORRECTION->value;
-    $member->save();
 
     $data_for_save = [
       ...$request->validated(),
@@ -752,6 +755,12 @@ class ManageEnrolleeController extends Controller
     ];
 
     $correction_member = hr_members_correction::create($data_for_save);
+    $correction_contact = hr_contact_correction::create([
+      'link_id' => $member->id,
+      'email' => $request->email,
+    ]);
+
+    $member->save();
 
     return response()->json(['message' => 'Submit requesting for correction success.', 'data' => $correction_member]);
   }

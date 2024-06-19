@@ -53,5 +53,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
       Route::patch('/approve-deletion/{id}', 'approveDeletion');
       Route::patch('/approve-change-plan/{id}', 'approveChangePlan');
       Route::patch('/disapprove-member/{id}', 'disapproveMember');
+      Route::patch('/approve-edit-information/{id}', 'approveEditInformation');
     });
 });

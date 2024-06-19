@@ -11,6 +11,7 @@ use App\Models\Members\hr_members;
 
 use App\Http\Requests\Member\ApproveMembeDeletionrRequest;
 use App\Http\Requests\Member\ApproveMemberRequest;
+use App\Enums\Broadpath\Members\StatusEnum;
 
 class AdminController extends Controller
 {
@@ -128,5 +129,24 @@ class AdminController extends Controller
     $member->save();
 
     return response()->json(['message' => 'Disapprove member success.', 'data' => $member]);
+  }
+
+  public function approveEditInformation(Request $request, $id)
+  {
+    $member = hr_members::find($id);
+    $member->first_name = $request->first_name;
+    $member->last_name = $request->last_name;
+    $member->middle_name = $request->filled('middle_name');
+    $member->birth_date = Carbon::parse($request->birth_date)->format('Y-m-d');
+    $member->status = StatusEnum::APPROVED_CORRECTION->value;
+    $member->approved_correction_at = Carbon::now();
+    $member->save();
+
+    $member->contact->update([
+      'email' => $request->email,
+      'approved_correction_at' => Carbon::now()
+    ]);
+
+    return response()->json(['message' => 'Success update information', 'data' => $member]);
   }
 }

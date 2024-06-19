@@ -227,4 +227,8 @@ class hr_members extends Model
   {
     return $this->hasOne(hr_members_correction::class, 'member_link_id', 'id')->orderByDesc('id');
   }
+  public function contactCorrection(): HasOne
+  {
+    return $this->hasOne(hr_contact_correction::class, 'link_id', 'id')->orderByDesc('id');
+  }
 }
