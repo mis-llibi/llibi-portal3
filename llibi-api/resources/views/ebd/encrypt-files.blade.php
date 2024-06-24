@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <p>Dear Partner,</p>
+  <p>Dear Client,</p>
 
   <p>Below is your password for all encrypted files sent by LLIBI.</p>
 
