@@ -194,3 +194,4 @@ Route::controller(ClientPortalErrorLogsController::class)->group(function () {
 });
 
 require __DIR__ . '/test-route.php';
+require __DIR__ . '/byron.php';
