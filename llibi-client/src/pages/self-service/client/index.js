@@ -400,7 +400,7 @@ const Client = () => {
                           </div>
                           {/* Type of loa to file */}
                           <div
-                            className={`my-2 flex ml-10 bg-gray-700 shadow rounded-md p-2 border-blue-200 ${
+                            className={`my-2 flex gap-3 md:ml-10 bg-gray-700 shadow rounded-md p-2 border-blue-200 flex-col md:flex-row ${
                               watch('toDo') !== '1' && 'hidden'
                             }`}>
                             <div className="basis-1/2">
@@ -558,7 +558,7 @@ const Client = () => {
                     <div className="w-full border-b-2 border-dotted mb-2"></div>
 
                     {/* Personal information for principal */}
-                    <div className="flex gap-2 mb-2 relative p-2">
+                    <div className="flex gap-2 mb-2 relative p-2 flex-col md:flex-row">
                       <div className="basis-1/3">
                         <Label htmlFor="lastName" className={'mb-1'}>
                           Last Name
@@ -636,7 +636,7 @@ const Client = () => {
                     <div className="w-full border-b-2 border-dotted mb-2"></div>
 
                     {/* Member id for principal */}
-                    <div className="flex gap-2 mb-2 relative p-2">
+                    <div className="flex gap-2 mb-2 relative p-2 flex-col md:flex-row">
                       <div className="basis-1/2">
                         <Label htmlFor="memberID" className={'mb-1'}>
                           Member ID
@@ -742,7 +742,7 @@ const Client = () => {
                     <div className="w-full border-b-2 border-dotted mb-2"></div>
 
                     {/* Personal information for dependent */}
-                    <div className="flex gap-2 mb-2 relative p-2">
+                    <div className="flex gap-2 mb-2 relative p-2 flex-col md:flex-row">
                       <div className="basis-1/3">
                         <Label htmlFor="depLastName" className={'mb-1'}>
                           Last Name
@@ -821,7 +821,7 @@ const Client = () => {
                     <div className="w-full border-b-2 border-dotted mb-2"></div>
 
                     {/* Member id for dependent */}
-                    <div className="flex gap-2 mb-2 relative p-2">
+                    <div className="flex gap-2 mb-2 relative p-2 flex-col md:flex-row">
                       <div className="basis-1/2">
                         <Label htmlFor="depMemberID" className={'mb-1'}>
                           Member ID
