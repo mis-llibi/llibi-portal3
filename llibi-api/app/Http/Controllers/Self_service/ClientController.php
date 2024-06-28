@@ -210,7 +210,7 @@ class ClientController extends Controller
         }
       }
     })
-      ->get();
+    ->get();
 
     return array('client' => $client, 'count' => count($client));
   }

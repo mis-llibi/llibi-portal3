@@ -778,9 +778,10 @@ class ManageBroadpathClients extends Controller
                 't1.form_locked',
                 't2.email', 
                 't2.email2',
-                't2.mobile_no')
+                't2.mobile_no'
+            )
             ->whereIn('t1.status', [1, 2, 4])
-            ->whereIn('t1.member_id', ['LLIBI0027'])
+            //->whereIn('t1.member_id', ['LLIBI0027'])
             ->where('client_company', 'BROADPATH')
             ->where('t1.relation', 'PRINCIPAL')
             ->where('t1.form_locked', 1)
@@ -827,7 +828,7 @@ class ManageBroadpathClients extends Controller
                             $status = 0;
 
                             //first day of enrollment
-                            if($checkdate == '2024-06-13') {
+                            if($checkdate == '2024-06-14') {
                                 $notificationTitle = 'Reminder: Renewal Start';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
@@ -922,7 +923,11 @@ class ManageBroadpathClients extends Controller
 
                         //set form to locked
                         members::where('id', $row->id)
-                            ->update(['form_locked' => 2]);
+                            ->update([
+                                'status' => 5,
+                                'form_locked' => 2,
+                                'kyc_timestamp' => date('Y-m-d H:i:s')
+                            ]);
 
                     }
 
