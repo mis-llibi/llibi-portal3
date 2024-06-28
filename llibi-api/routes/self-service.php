@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Self_service\ClientController;
 
+
 Route::post('/self-service/validate-client', [ClientController::class, 'ValidateClient']);
 Route::post('/self-service/track-reference-number', [ClientController::class, 'TrackReferenceNumber']);
 

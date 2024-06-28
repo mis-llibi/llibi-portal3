@@ -20,33 +20,53 @@ export const useClient = () => {
       .then(res => {
         const result = res.data
         //console.log(result.data)
+        console.log(result)
         if (!result?.response) {
           // Swal.fire({
           //   title: 'Validation Error',
           //   text: result?.message,
           //   icon: 'error',
           // })
-
-          Swal.fire({
-            title: 'Validation Error',
-            text: result?.message,
-            icon: 'error',
-            showDenyButton: true,
-            showCancelButton: false,
-            showConfirmButton: true,
-            confirmButtonText: 'Report',
-            denyButtonText: `Close`,
-          }).then(result => {
-            /* Read more about isConfirmed, isDenied below */
-            if (result.isDenied) {
-              // setLoading('send-complaint')
-              setLoading(false)
-              setErrorLogs(null)
-            } else {
-              setLoading(false)
-              setErrorLogs(res.data?.error_data)
-            }
-          })
+          if (result?.expired) {
+            Swal.fire({
+              title: 'Validation Error',
+              text: result?.message,
+              icon: 'error',
+              showConfirmButton: true,
+              confirmButtonText: 'Okay'
+            }).then(result => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isDenied) {
+                // setLoading('send-complaint')
+                setLoading(false)
+                setErrorLogs(null)
+              } else {
+                setLoading(false)
+                setErrorLogs(res.data?.error_data)
+              }
+            })
+          } else {
+            Swal.fire({
+              title: 'Validation Error',
+              text: result?.message,
+              icon: 'error',
+              showDenyButton: true,
+              showCancelButton: false,
+              showConfirmButton: true,
+              confirmButtonText: 'Report',
+              denyButtonText: `Close`,
+            }).then(result => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isDenied) {
+                // setLoading('send-complaint')
+                setLoading(false)
+                setErrorLogs(null)
+              } else {
+                setLoading(false)
+                setErrorLogs(res.data?.error_data)
+              }
+            })
+          }
         } else {
           router.push(result?.link)
           setLoading(false)

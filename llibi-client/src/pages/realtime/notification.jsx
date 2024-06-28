@@ -4,15 +4,20 @@ import { CustomPusher } from '@/lib/pusher'
 
 export default function RealtimeNotificationPage() {
   const [messages, setMessages] = useState([])
+  const channel = CustomPusher.subscribe('channel-realtime')
 
   useEffect(() => {
-    const channel = CustomPusher.subscribe('channel-realtime')
+    
     channel.bind('realtime-notification-event', data => {
       const { message, date_created } = data.data
 
       setMessages(prevMessages => [...prevMessages, { message, date_created }])
 
       console.log(message, date_created)
+    })
+    console.log('this is the count -------------')
+    channel.bind('pusher:subscription_count', data => {
+      console.log(`There are ${data.subscription_count} users in this channel`)
     })
 
     return () => {
