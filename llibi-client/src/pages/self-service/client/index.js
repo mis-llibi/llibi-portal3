@@ -261,7 +261,7 @@ const Client = () => {
     const data = removeUndefined({ obj })
     validate({ setLoading, ...data })
   }
-  console.log(errorLogs)
+  //console.log(errorLogs)
   useEffect(() => {
     if (errorLogs?.id) {
       setBody({

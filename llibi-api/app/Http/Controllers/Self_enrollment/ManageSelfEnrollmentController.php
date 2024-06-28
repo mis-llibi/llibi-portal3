@@ -184,7 +184,7 @@ class ManageSelfEnrollmentController extends Controller
   {
     $list = DB::table('self_enrollment_members')
       ->where('client_company', $company)
-      ->whereIn('status', [2, 4])
+      ->whereIn('status', [2, 4, 5])
       ->orderBy('member_id', 'ASC')
       ->orderBy('id', 'ASC')
       ->get();
