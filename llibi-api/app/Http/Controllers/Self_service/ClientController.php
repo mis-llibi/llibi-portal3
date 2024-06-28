@@ -31,6 +31,14 @@ use App\Events\RealtimeNotificationEvent;
 
 class ClientController extends Controller
 {
+
+  public function Test()
+  {
+    return response()->json([
+      'message' => 'Test',
+    ]);
+  }
+  
   public function ValidateClient(Request $request)
   {
     $result = true;
@@ -38,6 +46,7 @@ class ClientController extends Controller
     $client = '';
     $link = 'self-service/client/request?req=' . $request->toDo;
     $error = null;
+    $expired = false;
 
     $currentDateTime = Carbon::now();
     $isWeekends = $currentDateTime->isWeekend();
@@ -151,12 +160,26 @@ class ClientController extends Controller
         break;
     }
 
+    // check incepto of client if it the date is still valid
+    if($principal){
+      $incepto = $principal['client'][0]['incepto'];
+       $incepto = Carbon::parse($incepto);
+      $now = Carbon::now();
+       if($now->greaterThan($incepto)){
+         $result = false;
+         $response = 'Your membership is already expired.';
+         $expired = true;
+        
+       }
+    }
+
     return response()->json([
       'link' => $link,
       'client' => $client,
       'response' => $result,
       'message' => $response,
       'error_data' => $error,
+      'expired' => $expired
     ]);
   }
 
@@ -201,6 +224,7 @@ class ClientController extends Controller
       'first_name' => $principal['client'][0]['first_name'],
       'last_name' => $principal['client'][0]['last_name'],
       'dob' => $principal['client'][0]['birth_date'],
+      'incepto' => $principal['client'][0]['incepto'],
       'status' => 1,
       'platform' => $request->platform
     ];
