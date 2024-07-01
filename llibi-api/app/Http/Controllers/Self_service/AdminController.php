@@ -11,6 +11,7 @@ use App\Models\Self_service\Client;
 use App\Models\Self_service\ClientRequest;
 use App\Models\Self_service\Complaints;
 use App\Models\Self_service\Sync;
+use App\Models\Self_service\SyncCompanies;
 use App\Models\Self_service\Attachment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -655,4 +656,14 @@ class AdminController extends Controller
 
     return [count($request), $request];
   }
+
+  // Get Company from DB
+  public function getCompanies()
+  {
+    // put an alias for corporate_compcode as code
+    $company = SyncCompanies::select('name', 'corporate_compcode as code')->get();
+
+    return $company;
+  }
+
 }

@@ -19,6 +19,7 @@ import Form from '@/pages/self-service/admin/form'
 import Export from './export'
 import Settings from './settings'
 import Logs from './logs'
+import ViewPolicy from './viewPolicy'
 
 import Clock from 'react-live-clock'
 
@@ -150,6 +151,7 @@ const Admin = () => {
   const handleShowModalSetDate = () => setBody(modalExporting)
   const handleShowModalSetting = () => setBody(modalSetting)
   const handleShowLogs = () => setBody(modalLogs)
+  const handleShowModalViewPolicy = () => setBody(modalViewPolicy)
 
   const modalExporting = () => {
     setBody({
@@ -183,6 +185,17 @@ const Admin = () => {
     toggle()
   }
 
+  const modalViewPolicy = () => {
+    setBody({
+      title: <span className="font-bold text-lg">View Policy</span>,
+      content: <ViewPolicy />,
+      modalOuterContainer: 'w-1/2',
+      modalContainer: 'h-full',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
   const modalLogs = () => {
     setBody({
       title: <span className="font-bold text-lg">Logs</span>,
@@ -195,6 +208,8 @@ const Admin = () => {
     })
     toggle()
   }
+
+
 
   // https://championcr.com/topic/enable-auto-play/
   useEffect(() => {
@@ -327,10 +342,10 @@ const Admin = () => {
 
             {/* Action Form */}
             <form onChange={handleSubmit(searchForm)} className="w-full">
-              <div className="flex mb-5 gap-1 items-center">
-                {[2, 3].includes(user?.user_level) && (
-                  <>
-                    <div className="flex gap-1">
+              <div className="flex mb-5 gap-1 items-center justify-between">
+                <div className="flex gap-1">
+                  {[2, 3].includes(user?.user_level) && (
+                    <>
                       <Button
                         type="button"
                         className="text-[.55em]"
@@ -355,15 +370,18 @@ const Admin = () => {
                         target="_blank">
                         Search to masterlist
                       </a>
-                    </div>
-                  </>
-                )}
-                <a
-                  className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
-                  href="/complaint/error-logs"
-                  target="_blank">
-                  client portal error logs
-                </a>
+                    </>
+                  )}
+                  <a
+                    className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
+                    href="/complaint/error-logs"
+                    target="_blank">
+                    client portal error logs
+                  </a>
+                </div>
+                <Button type="button" className="text-[.55em]" onClick={handleShowModalViewPolicy}>
+                  View Policy
+                </Button>
               </div>
               <div className="flex gap-2">
                 <div className="basis-1/3 mb-2">

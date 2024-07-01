@@ -21,3 +21,4 @@ use App\Http\Controllers\Self_service\AdminController;
 
 Route::get('/self-service/admin-search-request/{search}/{id}', [AdminController::class, 'SearchRequest']);
 Route::post('/self-service/admin-update-request', [AdminController::class, 'UpdateRequest']);
+Route::get('/self-service/get-companies', [AdminController::class, 'GetCompanies']);
