@@ -32,15 +32,9 @@ use App\Events\RealtimeNotificationEvent;
 class ClientController extends Controller
 {
 
-  public function Test()
-  {
-    return response()->json([
-      'message' => 'Test',
-    ]);
-  }
   
   public function ValidateClient(Request $request)
-  {
+{
     $result = true;
     $response = '';
     $client = '';
@@ -57,163 +51,172 @@ class ClientController extends Controller
 
     $isHoliday = Holiday::where('holiday_date', $currentDateTime->format('Y-m-d'))->exists();
 
-    switch ((int)$request->toDo) {
+    try {
+        switch ((int)$request->toDo) {
 
-        //REQUEST FOR LOA
-      case 1:
-        $principal = $this->CheckClient($request, 'principal');
+            // REQUEST FOR LOA
+            case 1:
+                $principal = $this->CheckClient($request, 'principal');
 
-        $dependent = [];
-        if ($request->minorDependent)
-          $dependent = $this->CheckClient($request, 'dependent');
+                $dependent = [];
+                if ($request->minorDependent) {
+                    $dependent = $this->CheckClient($request, 'dependent');
+                }
 
-        if ($principal['count'] == 0) {
-          $result = false;
+                if ($principal['count'] == 0) {
+                    $result = false;
 
-          if ($isCutOff || $isWeekends || $isHoliday) {
-            $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
-          } else {
-            $response = 'We are unable to validate your information. Please check your input and try again.';
-          }
+                    if ($isCutOff || $isWeekends || $isHoliday) {
+                        $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
+                    } else {
+                        $response = 'We are unable to validate your information. Please check your input and try again.';
+                    }
+                }
+
+                if ($request->minorDependent && $dependent['count'] == 0) {
+                    $result = false;
+
+                    if ($isCutOff || $isWeekends || $isHoliday) {
+                        $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
+                    } else {
+                        $response = 'We are unable to validate your information. Please check your input and try again.';
+                    }
+                }
+
+                if ($result) {
+                    $client = $this->InsertClientData($request, $principal, $dependent);
+                    $clientRequest = $this->RequestForLoa($request, $client);
+                    $link .= '&loatype=' . $request->typeLOA . '&refno=' . $client['reference_number'];
+                } else {
+                    $error = ClientErrorLogService::saveLog(collect([
+                        'firstName' => $request->firstName,
+                        'lastName' => $request->lastName,
+                        'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
+                        'memberID' => isset($request->memberID) ? $request->memberID : null,
+                        'depDob' => $request->dependentType == 1 ? $request->depDob : $request->depDob2,
+                        'depFirstName' => $request->depFirstName,
+                        'depLastName' => $request->depLastName,
+                        'depMemberID' => isset($request->depMemberID) ? $request->depMemberID : null,
+                        'minorDependent' => $request->minorDependent,
+                        'requestType' => $request->toDo,
+                        'typeLOA' => $request->typeLOA,
+                    ]));
+                }
+                break;
+
+            case 2:
+                $principal = $this->CheckClient($request, 'principal');
+
+                if ($principal['count'] == 0) {
+                    $result = false;
+
+                    if ($isCutOff || $isWeekends || $isHoliday) {
+                        $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
+                    } else {
+                        $response = 'We are unable to validate your information. Please check your input and try again.';
+                    }
+                }
+
+                if ($result) {
+                    if (isset($principal['client'][0])) {
+                        $link = ('https://llibi.app/service-request?router=1&memberid=' . $principal['client'][0]['member_id'] . '&password=' . $principal['client'][0]['birth_date']);
+                    } else {
+                        $result = false;
+                        $response = 'Unexpected error: Client data is missing.';
+                    }
+                } else {
+                    $error = ClientErrorLogService::saveLog(collect([
+                        'firstName' => $request->firstName,
+                        'lastName' => $request->lastName,
+                        'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
+                        'memberID' => isset($request->memberID) ? $request->memberID : null,
+                        'depDob' => $request->dependentType == 1 ? $request->depDob : $request->depDob2,
+                        'depFirstName' => $request->depFirstName,
+                        'depLastName' => $request->depLastName,
+                        'depMemberID' => isset($request->depMemberID) ? $request->depMemberID : null,
+                        'minorDependent' => $request->minorDependent,
+                        'requestType' => $request->toDo,
+                        'typeLOA' => $request->typeLOA,
+                    ]));
+                }
+
+                break;
+            case 3:
+                $result = '';
+                // Code...
+                break;
+            case 4:
+                $result = '';
+                // Code...
+                break;
+            case 5:
+                $result = '';
+                // Code...
+                break;
         }
 
-        if ($request->minorDependent) {
-          if ($dependent['count'] == 0) {
-            $result = false;
-
-            if ($isCutOff || $isWeekends || $isHoliday) {
-              $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
-            } else {
-              $response = 'We are unable to validate your information. Please check your input and try again.';
+        // Check incepto of client if the date is still valid
+        if ($principal && isset($principal['client'][0])) {
+            $incepto = Carbon::parse($principal['client'][0]['incepto']);
+            $now = Carbon::now();
+            if ($now->greaterThan($incepto)) {
+                $result = false;
+                $response = 'Your membership is already expired.';
+                $expired = true;
             }
-          }
         }
 
-        if ($result) {
-          $client = $this->InsertClientData($request, $principal, $dependent);
-          $clientRequest = $this->RequestForLoa($request, $client);
-          $link .= '&loatype=' . $request->typeLOA . '&refno=' . $client['reference_number'];
-        } else {
-          $error = ClientErrorLogService::saveLog(collect([
-            'firstName' => $request->firstName,
-            'lastName' => $request->lastName,
-            'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
-            'memberID' => isset($request->memberID) ? $request->memberID : null,
-
-            'depDob' => $request->dependentType == 1 ? $request->depDob : $request->depDob2,
-            'depFirstName' => $request->depFirstName,
-            'depLastName' => $request->depLastName,
-            'depMemberID' => isset($request->depMemberID) ? $request->depMemberID : null,
-
-            'minorDependent' => $request->minorDependent,
-            'requestType' => $request->toDo,
-            'typeLOA' => $request->typeLOA,
-          ]));
-        }
-        break;
-
-      case 2:
-        $principal = $this->CheckClient($request, 'principal');
-
-        if ($principal['count'] == 0) {
-          $result = false;
-
-          if ($isCutOff || $isWeekends || $isHoliday) {
-            $response = 'Membership validation is not available as of this time. We will process your request on the next business day. Meanwhile you may contact our 24/7 Client Care Hotline for urgent assistance.';
-          } else {
-            $response = 'We are unable to validate your information. Please check your input and try again.';
-          }
-        }
-
-        if ($result) {
-          $link = ('https://llibi.app/service-request?router=1&memberid=' . $principal['client'][0]['member_id'] . '&password=' . $principal['client'][0]['birth_date']);
-        } else {
-          $error = ClientErrorLogService::saveLog(collect([
-            'firstName' => $request->firstName,
-            'lastName' => $request->lastName,
-            'dob' => $request->principalType == 1 ? $request->dob : $request->dob2,
-            'memberID' => isset($request->memberID) ? $request->memberID : null,
-
-            'depDob' => $request->dependentType == 1 ? $request->depDob : $request->depDob2,
-            'depFirstName' => $request->depFirstName,
-            'depLastName' => $request->depLastName,
-            'depMemberID' => isset($request->depMemberID) ? $request->depMemberID : null,
-
-            'minorDependent' => $request->minorDependent,
-            'requestType' => $request->toDo,
-            'typeLOA' => $request->typeLOA,
-          ]));
-        }
-
-        break;
-      case 3:
-        $result = '';
-        # code...
-        break;
-      case 4:
-        $result = '';
-        # code...
-        break;
-      case 5:
-        $result = '';
-        # code...
-        break;
+        return response()->json([
+            'link' => $link,
+            'client' => $client,
+            'response' => $result,
+            'message' => $response,
+            'error_data' => $error,
+            'expired' => $expired
+        ]);
+    } catch (\Illuminate\Database\QueryException $qe) {
+        return response()->json([
+            'message' => 'Database Query Error: ' . $qe->getMessage()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error: ' . $e->getMessage()
+        ]);
     }
+}
 
-    // check incepto of client if it the date is still valid
-    if($principal){
-      $incepto = $principal['client'][0]['incepto'];
-       $incepto = Carbon::parse($incepto);
-      $now = Carbon::now();
-       if($now->greaterThan($incepto)){
-         $result = false;
-         $response = 'Your membership is already expired.';
-         $expired = true;
-        
-       }
-    }
-
-    return response()->json([
-      'link' => $link,
-      'client' => $client,
-      'response' => $result,
-      'message' => $response,
-      'error_data' => $error,
-      'expired' => $expired
-    ]);
-  }
-
-  public function CheckClient($request, $type)
-  {
+public function CheckClient($request, $type)
+{
     $client = Sync::where(function ($query) use ($request, $type) {
-      if ($type == 'dependent') {
-        if ((int)$request->dependentType == 1) {
-          $query->where('first_name', 'like', '%' . strtoupper($request->depFirstName) . '%');
-          $query->where('last_name', 'like', '%' . strtoupper($request->depLastName) . '%');
-          $query->where('birth_date', date('Y-m-d', strtotime($request->depDob)));
-          $query->where('relation', '<>', 'EMPLOYEE');
+        if ($type == 'dependent') {
+            if ((int)$request->dependentType == 1) {
+                $query->where('first_name', 'like', '%' . strtoupper($request->depFirstName) . '%');
+                $query->where('last_name', 'like', '%' . strtoupper($request->depLastName) . '%');
+                $query->where('birth_date', date('Y-m-d', strtotime($request->depDob)));
+                $query->where('relation', '<>', 'EMPLOYEE');
+            } else {
+                $query->where('member_id', strtoupper($request->depMemberID));
+                $query->where('birth_date', $request->depDob2);
+                $query->where('relation', '<>', 'EMPLOYEE');
+            }
         } else {
-          $query->where('member_id', strtoupper($request->depMemberID));
-          $query->where('birth_date', $request->depDob2);
-          $query->where('relation', '<>', 'EMPLOYEE');
+            if ((int)$request->principalType == 1) {
+                $query->where('first_name', 'like', '%' . strtoupper($request->firstName) . '%');
+                $query->where('last_name', 'like', '%' . strtoupper($request->lastName) . '%');
+                $query->where('birth_date', date('Y-m-d', strtotime($request->dob)));
+                $query->where('relation', 'EMPLOYEE');
+            } else {
+                $query->where('member_id', strtoupper($request->memberID));
+                $query->where('birth_date', $request->dob2);
+                $query->where('relation', 'EMPLOYEE');
+            }
         }
-      } else {
-        if ((int)$request->principalType == 1) {
-          $query->where('first_name', 'like', '%' . strtoupper($request->firstName) . '%');
-          $query->where('last_name', 'like', '%' . strtoupper($request->lastName) . '%');
-          $query->where('birth_date', date('Y-m-d', strtotime($request->dob)));
-          $query->where('relation', 'EMPLOYEE');
-        } else {
-          $query->where('member_id', strtoupper($request->memberID));
-          $query->where('birth_date', $request->dob2);
-          $query->where('relation', 'EMPLOYEE');
-        }
-      }
-    })
-    ->get();
+    })->get();
+
 
     return array('client' => $client, 'count' => count($client));
-  }
+}
+
 
   public function InsertClientData($request, $principal, $dependent)
   {
