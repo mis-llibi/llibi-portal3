@@ -213,6 +213,7 @@ public function CheckClient($request, $type)
         }
     })->get();
 
+
     return array('client' => $client, 'count' => count($client));
 }
 

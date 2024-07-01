@@ -39,7 +39,7 @@ class ManageBroadpathNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in BroadPath’s renewal. You are encouraged to complete this from '.$startDate.' to '.$dateFinalWarning.' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by '.$dateFormLocked.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by '.$dateFinalWarning.', you and your existing dependents will be automatically enrolled in Broadpath’s healthcare plan renewal.<br /><br />
 
         <b>This is an auto-generated Email, please do not share. Doesn’t support replies and calls.</b>';
 
