@@ -135,7 +135,7 @@ class ManageSelfEnrollmentController extends Controller
       default:
         $list = members::where('client_company', $company)
           ->where('member_id', $memberid)
-          ->whereIn('status', [2, 4])
+          ->whereIn('status', [2, 4, 5])
           ->get(['id', 'first_name', 'last_name', 'relation', 'certificate_no', 'certificate_encode_datetime', 'birth_date', 'status']);
         break;
     }
