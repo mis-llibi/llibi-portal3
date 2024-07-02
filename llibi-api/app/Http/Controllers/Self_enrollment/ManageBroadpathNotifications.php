@@ -396,13 +396,11 @@ class ManageBroadpathNotifications extends Controller
             </tbody>
         </table>
         
-        If you enrolled your dependents and certificate numbers not yet available, please coordinate with your local HR team<br /><br />
+        For existing members, your Philcare membership card is reactivated and may be used for availment. Philcare will not issue new membership cards.<br /><br />
 
-        Your physical membership card will be delivered to your home address within 3-4 weeks upon you receiving this email notification.<br /><br />
+        For new members, if certificate number is not yet available you will receive another email notification once certificate number is active. In the meantime, if you need to make a claim, you may present the Notice to Provider (NTP) attached in this email, together with any valid ID to Philcare’s accredited provider. Philcare membership card will be delivered to your home address within 2-3 weeks upon receiving this notification.<br /><br />
 
-        Philcare cards are targeted to be released prior $date. However, it is dependent on the generation of the certificate/membership numbers, and residence of the employee. In the event you do not receive the cards yet, you may show your virtual or digital card in the HeyPhil app, or any valid IDs along with your cert/membership number as you await of your physical card, and enjoy the benefits starting $date.<br /><br />
-
-        To offer more convenient and accessible healthcare services and to view your <b>virtual or digital card</b>, you may download Philcare’s Hey Phil mobile application. Below is the process for further details. <br /><br />
+        To offer more convenient and accessible healthcare services and to view your <b>virtual or digital card</b>, you may download Philcare’s Hey Phil mobile application. Below is the process and infographics are attached for further details. <br /><br />
         
         1) <b>Download the App</b> <br />
             • Search ‘Hey Phil’ available in Google Play store or in App Store <br />
@@ -444,7 +442,8 @@ class ManageBroadpathNotifications extends Controller
         /* You may also refer to the pre-recorded <a href='https://philcare-my.sharepoint.com/:v:/g/personal/christine_magdaong_philcare_com_ph/EWVWPZ05NJBLnakk7bo2ArMBDUj2_k7J_E1liUuRjdKwnA?CT=1667963948353&OR=Outlook-Body&CID=62383CD0-0666-46B4-8095-11931B62BA6F&wdLOR=c2F07CFF3-4EEF-499E-AA0A-3079A551E6C0' target='_blank'>Benefits Orientation Video</a> for an in-depth presentation of your benefits, policy exclusion and availment process.<br /><br /> */
 
         $attachment = [
-            'public/Self_enrollment/Broadpath/001Welcome_pack/BROADPATH - WELCOME LETTER.pdf',
+            'public/Self_enrollment/Broadpath/001Welcome_pack/BROADPATH - WELCOME LETTER 2024.pdf',
+            'public/Self_enrollment/Broadpath/001Welcome_pack/Broadpath NTP.pdf',
             'public/Self_enrollment/Broadpath/001Welcome_pack/SOC_SME LUXE- BROADPATH.pdf',
         ];
 
@@ -462,7 +461,7 @@ class ManageBroadpathNotifications extends Controller
                 ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody = 
-        "From BroadPath & LLIBI:\n\nDear $name, \n\nGood day! \nWe are pleased to inform that your healthcare (HMO) plan membership under Philcare (and arranged through Lacson & Lacson Insurance Brokers, Inc.) is already active. \n\n$insSms \n\nYour physical membership card will be delivered to your home address within 3-4 weeks. In the meantime, you may present your virtual or digital card in the HeyPhil app or certificate number to Philcare’s accredited facilities, along with valid ID, in order to make claim a while awaiting for your physical card. \n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+        "From BroadPath & LLIBI:\n\nDear $name, \n\nGood day! \nWe are pleased to inform that your healthcare (HMO) plan membership under Philcare (and arranged through Lacson & Lacson Insurance Brokers, Inc.) is already active. \n\n$insSms \n\nYour physical membership card will be delivered to your home address within 2-3 weeks. In the meantime, you may present your virtual or digital card in the HeyPhil app or certificate number to Philcare’s accredited facilities, along with valid ID, in order to make claim a while awaiting for your physical card. \n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 
         if(!empty($info['mobile']))
             (new NotificationController)
