@@ -151,31 +151,32 @@ export default function PendingForApproval({ create, ...props }) {
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>
 
-  useEffect(() => {
-    if (showModal === 'approve-edit-information') {
-      setBody({
-        title: (
-          <span className="font-bold text-xl text-gray-800">
-            Approve Edit Information
-          </span>
-        ),
-        content: (
-          <ApproveEditInformation
-            showModal={Boolean(showModal)}
-            setShowModal={setShowModal}
-            mutate={mutate}
-            setShow={setShow}
-          />
-        ),
-        modalOuterContainer: 'font-[poppins]',
-        modalContainer: 'h-full rounded-md',
-        modalBody: 'h-full',
-      })
-      toggle()
-    }
+  // useEffect(() => {
+  //   if (showModal === 'approve-edit-information') {
+  //     setBody({
+  //       title: (
+  //         <span className="font-bold text-xl text-gray-800">
+  //           Approve Edit Information
+  //         </span>
+  //       ),
+  //       content: (
+  //         <ApproveEditInformation
+  //           showModal={Boolean(showModal)}
+  //           setShowModal={setShowModal}
+  //           mutate={mutate}
+  //           setShow={setShow}
+  //         />
+  //       ),
+  //       modalOuterContainer: 'font-[poppins]',
+  //       modalContainer: 'h-full rounded-md',
+  //       modalBody: 'h-full',
+  //     })
+  //     toggle()
+  //   }
 
-    return () => setShowModal(false)
-  }, [showModal, show])
+  //   // return () => setShowModal(false)
+  //   console.log(show)
+  // }, [show])
 
   return (
     <>
@@ -283,13 +284,13 @@ export default function PendingForApproval({ create, ...props }) {
         />
       )}
 
-      {/* {showModal === 'approve-edit-information' && (
+      {showModal === 'approve-edit-information' && (
         <ApproveEditInformation
           showModal={Boolean(showModal)}
           setShowModal={setShowModal}
           mutate={mutate}
         />
-      )} */}
+      )}
 
       <Loader loading={loader} />
       <Modal show={show} body={body} toggle={toggle} />

@@ -3,7 +3,7 @@ import Label from '@/components/Label'
 import { SendNotify } from '@/hooks/self-service/client-error-logs'
 import { useForm } from 'react-hook-form'
 
-import { Button } from '@radix-ui/themes'
+// import { Button } from '@radix-ui/themes'
 import { RocketIcon } from '@radix-ui/react-icons'
 
 export default function InputEmail({ row, notifyTo, setShow, mutate }) {
@@ -50,9 +50,12 @@ export default function InputEmail({ row, notifyTo, setShow, mutate }) {
           <p className="text-red-600">{errors?.remarks?.message}</p>
         </div>
 
-        <Button type="submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex gap-1 border px-3 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white">
           <RocketIcon /> Send
-        </Button>
+        </button>
       </form>
     </div>
   )

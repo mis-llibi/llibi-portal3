@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -21,17 +21,16 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 const FORM_SCHEMA = z.object({
-  last_name: z.string().min(1, { message: 'Last Name is required' }),
-  first_name: z.string().min(1, { message: 'First Name is required' }),
+  last_name: z.string(),
+  first_name: z.string(),
   middle_name: z.string(),
-  email: z.string().email(),
+  email: z.string(),
 })
 
 export default function ApproveEditInformation({
   showModal,
   mutate,
   setShowModal,
-  setShow,
 }) {
   const {
     selectedRowState,
@@ -74,101 +73,120 @@ export default function ApproveEditInformation({
 
   const handleClose = () => {
     setShowModal(false)
-    setShow(false)
   }
 
-  console.log(selectedRowState)
+  // console.log(selectedRowState)
 
   return (
     <>
-      <div className="font-[poppins] w-[90vw] md:w-[75vw] px-3">
-        <form onSubmit={handleSubmit(submitForm)}>
-          <div className="font-[poppins]">
-            <div className="mb-3">
-              <label htmlFor="" className="font-bold text-sm">
-                Last Name
-              </label>
-              <TextField.Root
-                readOnly
-                size="2"
-                defaultValue={selectedRowState?.last_name}
-                {...register('last_name')}
-              />
-              <p className="text-xs text-red-600">
-                {errors?.last_name?.message}
-              </p>
+      <Dialog fullWidth maxWidth="md" open={showModal}>
+        <DialogTitle>
+          <span className="font-[poppins] font-bold uppercase">
+            Approve Edit Information
+          </span>
+        </DialogTitle>
+        {/* <DialogContent> */}
+        <div className="font-[poppins] w-full px-3">
+          <form>
+            <div className="font-[poppins]">
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold text-sm">
+                  Last Name
+                </label>
+                <input
+                  className="border border-gray-400 p-1 focus:outline-none rounded-md w-full"
+                  readOnly
+                  size="2"
+                  defaultValue={selectedRowState?.last_name}
+                  {...register('last_name')}
+                />
+                <p className="text-xs text-red-600">
+                  {errors?.last_name?.message}
+                </p>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold text-sm">
+                  First Name
+                </label>
+                <input
+                  className="border border-gray-400 p-1 focus:outline-none rounded-md w-full"
+                  readOnly
+                  size="2"
+                  defaultValue={selectedRowState?.first_name}
+                  {...register('first_name')}
+                />
+                <p className="text-xs text-red-600">
+                  {errors?.first_name?.message}
+                </p>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold text-sm">
+                  Middle Name <span className="text-xs">(optional)</span>
+                </label>
+                <input
+                  className="border border-gray-400 p-1 focus:outline-none rounded-md w-full"
+                  readOnly
+                  size="2"
+                  defaultValue={selectedRowState?.middle_name}
+                  {...register('middle_name')}
+                />
+                <p className="text-xs text-red-600">
+                  {errors?.middle_name?.message}
+                </p>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold text-sm">
+                  Birth Date
+                </label>
+                <Datepicker
+                  useRange={false}
+                  readOnly
+                  inputClassName="w-full rounded-md border border-gray-400 text-xs text-fav-black"
+                  value={value}
+                  onChange={handleValueChange}
+                  asSingle
+                  // showShortcuts={true}
+                  // showFooter={true}
+                  disabled
+                  popoverDirection="down"
+                />
+                <p className="text-xs text-red-600">
+                  {!value.startDate && 'Birth Date is required'}
+                </p>
+              </div>
+              <div className="mb-3">
+                <label htmlFor="" className="font-bold text-sm">
+                  Email
+                </label>
+                <input
+                  className="border border-gray-400 p-1 focus:outline-none rounded-md w-full"
+                  readOnly
+                  size="2"
+                  defaultValue={selectedRowState?.contact_correction?.email}
+                  {...register('email')}
+                />
+                <p className="text-xs text-red-600">{errors?.email?.message}</p>
+              </div>
             </div>
-            <div className="mb-3">
-              <label htmlFor="" className="font-bold text-sm">
-                First Name
-              </label>
-              <TextField.Root
-                readOnly
-                size="2"
-                defaultValue={selectedRowState?.first_name}
-                {...register('first_name')}
-              />
-              <p className="text-xs text-red-600">
-                {errors?.first_name?.message}
-              </p>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="" className="font-bold text-sm">
-                Middle Name <span className="text-xs">(optional)</span>
-              </label>
-              <TextField.Root
-                readOnly
-                size="2"
-                defaultValue={selectedRowState?.middle_name}
-                {...register('middle_name')}
-              />
-              <p className="text-xs text-red-600">
-                {errors?.middle_name?.message}
-              </p>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="" className="font-bold text-sm">
-                Birth Date
-              </label>
-              <Datepicker
-                useRange={false}
-                readOnly
-                inputClassName="w-full rounded-md border border-gray-400 text-xs text-fav-black"
-                value={value}
-                onChange={handleValueChange}
-                asSingle
-                // showShortcuts={true}
-                // showFooter={true}
-                disabled
-                popoverDirection="down"
-              />
-              <p className="text-xs text-red-600">
-                {!value.startDate && 'Birth Date is required'}
-              </p>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="" className="font-bold text-sm">
-                Email
-              </label>
-              <TextField.Root
-                readOnly
-                size="2"
-                defaultValue={selectedRowState?.contact_correction?.email}
-                {...register('email')}
-              />
-              <p className="text-xs text-red-600">{errors?.email?.message}</p>
-            </div>
-          </div>
-          <div className="font-[poppins]">
+          </form>
+        </div>
+        {/* </DialogContent> */}
+        <DialogActions className="font-[poppins]">
+          <div className="font-[poppins] flex gap-1">
             <button
+              onClick={handleSubmit(data => submitForm(data))}
               disabled={isSubmitting}
-              className="border px-3 py-2 text-xs uppercase bg-blue-500 hover:bg-blue-700 font-semibold text-white rounded-md"
-              type="submit">
+              className="border px-3 py-2 text-xs uppercase bg-blue-500 hover:bg-blue-700 font-semibold text-white rounded-md">
               {isSubmitting ? 'Loading...' : 'Submit'}
             </button>
+            <button
+              onClick={handleClose}
+              className="border px-3 py-2 text-xs uppercase font-semibold text-gray-600 rounded-md">
+              Cancel
+            </button>
           </div>
-        </form>
-      </div>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
