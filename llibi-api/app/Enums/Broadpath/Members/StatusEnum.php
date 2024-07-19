@@ -33,4 +33,6 @@ enum StatusEnum: int
   case PENDING_DELETION = 3;
   case PENDING_CORRECTION = 5;
   case PENDING_CHANGE_PLAN = 8;
+
+  case PENDING_DOCUMENTS = 11;
 }

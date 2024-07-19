@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Members\ManageEnrolleeController;
 use App\Http\Controllers\Members\PrincipalController;
 use App\Http\Controllers\Members\MilestoneController;
+use App\Http\Controllers\Members\PendingDocumentController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
   Route::controller(ManageEnrolleeController::class)
@@ -43,6 +44,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
       Route::get('/dependents-for-inactive', 'getDependentsForInactive');
       Route::post('/dependents-for-inactive', 'submitDependentsForInactive');
     });
+
+  Route::controller(PendingDocumentController::class)
+    ->prefix('members-enrollment')
+    ->group(function () {
+      Route::get('/pending-documents/{member_id}', 'pendingDocuments');
+      Route::post('/upload-pending-documents', 'uploadPendingDocuments');
+    });
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -54,5 +62,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
       Route::patch('/approve-change-plan/{id}', 'approveChangePlan');
       Route::patch('/disapprove-member/{id}', 'disapproveMember');
       Route::patch('/approve-edit-information/{id}', 'approveEditInformation');
+
+      Route::post('/pending-documents', 'requestPendingDocuments');
     });
 });

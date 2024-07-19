@@ -17,12 +17,13 @@ import ApproveEditInformation from '@/components/boradpath/hris/modals/admin/App
 
 import ModalControl from '@/components/ModalControl'
 import Modal from '@/components/Modal'
+import ViewUploadedPendingDocuments from '@/components/boradpath/hris/modals/admin/ViewUploadedPendingDocuments'
 
 export default function PendingForApproval({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
 
   const [selectionModel, setSelectionModel] = useState([])
-  const [filter, setFilter] = useState('1,3,5,8')
+  const [filter, setFilter] = useState('all-pending')
   const { data, isLoading, error, mutate } = useManageHrMember({
     status: filter,
   })
@@ -198,13 +199,14 @@ export default function PendingForApproval({ create, ...props }) {
               name="filter"
               id="filter"
               className="w-full rounded-md text-xs border border-gray-300"
-              defaultValue="1,3,5,8"
+              defaultValue="all-pending"
               onChange={e => setFilter(e.target.value)}>
-              <option value="1,3,5,8">Select filter</option>
+              <option value="all-pending">All</option>
               <option value="1">Pending Members</option>
               <option value="3">Pending Deletion</option>
               <option value="5">Pending Correction</option>
               <option value="8">Pending Change Plan</option>
+              <option value="pending-documents">Pending Documents</option>
             </select>
           </div>
         </div>
@@ -277,6 +279,15 @@ export default function PendingForApproval({ create, ...props }) {
 
       {showModal === 'pending-documents' && (
         <PendingDocuments
+          showModal={Boolean(showModal)}
+          setShowModal={setShowModal}
+          row={selectedRow}
+          mutate={mutate}
+        />
+      )}
+
+      {showModal === 'view-uploaded-pending-documents' && (
+        <ViewUploadedPendingDocuments
           showModal={Boolean(showModal)}
           setShowModal={setShowModal}
           row={selectedRow}

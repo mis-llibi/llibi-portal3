@@ -27,7 +27,7 @@ export default function ActiveMembers({ create, ...props }) {
   const { anchorEl, setAnchorEl } = useActionButtonDropdownStore()
 
   const [selectionModel, setSelectionModel] = useState([])
-  const [filter, setFilter] = useState(4)
+  const [filter, setFilter] = useState('approved-members')
   const [search, setSearch] = useState('')
   const searchDebounce = debounce(search)
   const { data, isLoading, error, mutate } = useManageHrMember({
@@ -342,8 +342,8 @@ export default function ActiveMembers({ create, ...props }) {
               className="w-full rounded-md text-xs border border-gray-300"
               defaultValue={filter}
               onChange={e => setFilter(e.target.value)}>
-              <option value="4">Active</option>
-              <option value="3,5,8">With Pending</option>
+              <option value="approved-members">Active</option>
+              <option value="approved-members-with-pending">With Pending</option>
             </select>
           </div>
         </div>

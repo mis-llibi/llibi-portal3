@@ -61,15 +61,16 @@ class ManageEnrolleeController extends Controller
     $members = match ($status) {
       '1' => $members->pendingSubmission(),
       '3' => $members->pendingDeletion(),
-      '4' => $members->approvedMembers(),
       '5' => $members->pendingCorrection(),
       '6' => $members->approvedCorrection(),
       '7' => $members->deletedMember(),
       '8' => $members->pendingChangePlan(),
       '9' => $members->approvedChangePlan(),
       '10' => $members->disapprovedMember(),
-      '3,5,8' => $members->whereIn('status', [3, 5, 8]),
-      '1,3,5,8' => $members->whereIn('status', explode(",", $status)),
+      'approved-members' => $members->approvedMembers(),
+      'approved-members-with-pending' => $members->activeMembersWithPending(),
+      'all-pending' => $members->pendingApproval(),
+      'pending-documents' => $members->pendingDocuments(),
       default => throw new Exception("Status not supported", 400),
     };
 

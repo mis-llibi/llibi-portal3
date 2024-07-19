@@ -42,29 +42,24 @@ export default function PendingDocuments({
   const submitForm = async data => {
     const payload = {}
 
-    if (data.bc) {
-      payload['bc'] = data.bc
+    for (const [key, value] of Object.entries(DOCUMENT_LISTS)) {
+      if (data[key]) {
+        payload[key] = data[key]
+      }
+
+      if (data.oth) {
+        payload['other_document'] = data.other_document
+      }
     }
 
-    if (data.mc) {
-      payload['mc'] = data.mc
-    }
+    payload['member_id'] = row.id
 
-    for(var i in Object.keys(DOCUMENT_LISTS)) {
-      console.log(i)
-    }
-
-    console.log(payload)
-    return
     try {
-      const response = await axios.patch(
-        `/api/admin/pending-documents/${row.id}`,
-        data,
-      )
+      const response = await axios.post(`/api/admin/pending-documents`, payload)
       // console.log(response.data)
       mutate()
       handleClose()
-      Swal.fire('Success', response?.data?.message, 'success')
+      Swal.fire('Success', 'Pending documents successfully sent', 'success')
     } catch (error) {
       Swal.fire('Error', 'Something went wrong', 'error')
     }

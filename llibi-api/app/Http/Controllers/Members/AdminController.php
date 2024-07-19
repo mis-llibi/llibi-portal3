@@ -12,6 +12,8 @@ use App\Models\Members\hr_members;
 use App\Http\Requests\Member\ApproveMembeDeletionrRequest;
 use App\Http\Requests\Member\ApproveMemberRequest;
 use App\Enums\Broadpath\Members\StatusEnum;
+use App\Models\Members\PendingDocument;
+use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
@@ -148,5 +150,42 @@ class AdminController extends Controller
     ]);
 
     return response()->json(['message' => 'Success update information', 'data' => $member]);
+  }
+
+  public function requestPendingDocuments(Request $request): JsonResponse
+  {
+    $member_id = $request->member_id ?? null;
+    $bc = $request->bc ?? null;
+    $mc = $request->mc ?? null;
+    $ceno = $request->ceno ?? null;
+    $cocoha = $request->cocoha ?? null;
+    $dc = $request->dc ?? null;
+    $divo = $request->divo ?? null;
+    $coohic = $request->coohic ?? null;
+    $cowea = $request->cowea ?? null;
+    $oth = $request->oth ?? null;
+    $other_document = $request->other_document ?? null;
+
+    $payload = array_filter([
+      $bc ? ['link_id' => $member_id, 'file_required' => $bc] : null,
+      $mc ? ['link_id' => $member_id, 'file_required' => $mc] : null,
+      $ceno ? ['link_id' => $member_id, 'file_required' => $ceno] : null,
+      $cocoha ? ['link_id' => $member_id, 'file_required' => $cocoha] : null,
+      $dc ? ['link_id' => $member_id, 'file_required' => $dc] : null,
+      $divo ? ['link_id' => $member_id, 'file_required' => $divo] : null,
+      $coohic ? ['link_id' => $member_id, 'file_required' => $coohic] : null,
+      $cowea ? ['link_id' => $member_id, 'file_required' => $cowea] : null,
+      $oth ? ['link_id' => $member_id, 'file_required' => $other_document] : null,
+    ]);
+
+    foreach ($payload as $key => $item) {
+      PendingDocument::create($item);
+    }
+
+    hr_members::where('id', $member_id)->update(['status' => 11]);
+
+    $pendig_documents = PendingDocument::where('link_id', $member_id)->get();
+
+    return response()->json($pendig_documents);
   }
 }

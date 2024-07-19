@@ -133,6 +133,12 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
     handleClose()
   }
 
+  const handleViewUploadedPendingDocumentsModal = () => {
+    setSelectedRow(row)
+    setShowModal('view-uploaded-pending-documents')
+    handleClose()
+  }
+
   const handleApproveInformationCorrection = data => {
     setSelectedRowState(data)
     setShowModal('approve-edit-information')
@@ -237,6 +243,23 @@ export function ActionButtonAdmin({ row, setShowModal, setSelectedRow }) {
                 <span>Approve Change Plan</span>
               </div>
             </MenuItem>
+          )}
+
+          {row.status === 11 && (
+            <>
+              <MenuItem onClick={handlePendingDocumentsModal}>
+                <div className="flex gap-3 items-center font-[poppins] text-sm">
+                  <BiFile size={20} />
+                  <span>Send Pending Documents</span>
+                </div>
+              </MenuItem>
+              <MenuItem onClick={handleViewUploadedPendingDocumentsModal}>
+                <div className="flex gap-3 items-center font-[poppins] text-sm">
+                  <BiFile size={20} />
+                  <span>View Uploaded Documents</span>
+                </div>
+              </MenuItem>
+            </>
           )}
         </Paper>
       </Menu>

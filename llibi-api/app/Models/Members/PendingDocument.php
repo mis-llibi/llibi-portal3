@@ -10,11 +10,11 @@ class PendingDocument extends Model
 {
   use HasFactory;
 
-  protected $table = 'hr_member_attachments';
+  protected $table = 'pending_documents';
 
   protected $fillable = [
     'link_id',
-    'document_title',
+    'file_required',
     'file_name',
     'file_link',
   ];
@@ -22,7 +22,7 @@ class PendingDocument extends Model
   protected function fileLink(): Attribute
   {
     return Attribute::make(
-      get: fn (string $value) => env('DO_CDN_ENDPOINT') . "/" . $value,
+      get: fn (string | null $value) => $value ? env('DO_CDN_ENDPOINT') . "/" . $value : null,
     );
   }
 }
