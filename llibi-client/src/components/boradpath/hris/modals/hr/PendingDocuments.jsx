@@ -12,6 +12,7 @@ export default function PendingDocuments({ row }) {
     watch,
     setValue,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({ mode: 'onChange' })
   const { fields, append, remove } = useFieldArray({
@@ -53,6 +54,20 @@ export default function PendingDocuments({ row }) {
       )
       Swal.fire('Success', 'Submit documents success.', 'success')
     } catch (error) {
+      if (error.response.status === 422) {
+        const responseError = error.response.data.errors
+        Object.keys(responseError).map((item, index) => {
+          const errorMessage = responseError[item][0]
+          const errorIndex = item.split('.')
+          setError(`required_document.${errorIndex[1]}.file`, {
+            type: 'manual',
+            message: errorMessage,
+          })
+        })
+
+        return
+      }
+
       Swal.fire('Error', 'Something went wrong', 'error')
       throw new Error(
         `Something went wrong. ${error.response.status} ${error.response.statusText}`,
@@ -69,13 +84,11 @@ export default function PendingDocuments({ row }) {
       {fields?.map((field, index) => (
         <div key={index} className="grid grid-cols-2 mb-3">
           <div>
-            <h4 className="text-lg">
-              {index + 1}. {field.file_required}
-            </h4>
+            <h4 className="text-lg">{field.file_required}</h4>
           </div>
           <div>
             <input
-              className="file:text-sm"
+              className="file:text-sm file:border-0 file:bg-gray-100 file:py-1 hover:bg-gray-100 px-2 py-1 rounded-md border"
               type="file"
               {...register(`required_document.${index}.file`, {
                 required: 'Document is required',

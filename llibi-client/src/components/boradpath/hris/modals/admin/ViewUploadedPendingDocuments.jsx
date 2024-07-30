@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useFieldArray, useForm } from 'react-hook-form'
 import axios from '@/lib/axios'
 
-import { BiSend } from 'react-icons/bi'
+import { BiSend, BiFile } from 'react-icons/bi'
 import Swal from 'sweetalert2'
 
 import Dialog from '@mui/material/Dialog'
@@ -28,6 +29,8 @@ export default function ViewUploadedPendingDocuments({
     control,
     name: 'required_document',
   })
+
+  const [selectedFile, setSelectedFile] = useState(null)
 
   const getDocuments = async () => {
     try {
@@ -87,19 +90,30 @@ export default function ViewUploadedPendingDocuments({
           </span>
         </DialogTitle>
         <DialogContent>
-          <div className="font-[poppins]">
+          <div className="font-[poppins] grid grid-cols-2 md:grid-cols-3 gap-3">
             {fields?.map((field, index) => (
-              <div key={index} className="flex gap-3">
-                <div className="flex-1">
-                  <h4 className="text-lg">
-                    {index + 1}. {field.file_required}
-                  </h4>
+              <div key={index} className="bg-blue-600/80 rounded-md p-6">
+                <div className="text-center mb-3">
+                  <h4 className="text-xs text-white">{field.file_required}</h4>
                 </div>
-                <div className="w-48">
+                <div className="flex justify-center items-center">
                   {field.file_link ? (
-                    <a className="text-sm hover:underline" href="#">
-                      field.file_link
-                    </a>
+                    <div className="overflow-hidden rounded-md">
+                      <a href={field.file_link} target="_blank">
+                        {/* <img
+                          className="hover:scale-105 transition-transform duration-1000 ease-in-out rounded-md grayscale hover:grayscale-0 cursor-pointer"
+                          src={field.file_link}
+                          alt={field.file_name}
+                          width={150}
+                          height={150}
+                        /> */}
+
+                        <BiFile
+                          size={48}
+                          className="hover:scale-110 transition-transform duration-500 ease-in-out rounded-md cursor-pointer text-[#F8F8FF]"
+                        />
+                      </a>
+                    </div>
                   ) : (
                     <span className="text-sm">N/A</span>
                   )}

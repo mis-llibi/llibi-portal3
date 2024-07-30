@@ -42,6 +42,7 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'member_id',
       headerName: 'Name',
+      minWidth: 300,
       flex: 1,
       renderCell: ({ row }) => {
         return (

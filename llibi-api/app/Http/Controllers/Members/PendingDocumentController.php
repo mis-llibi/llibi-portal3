@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Members\PendingDocument;
+use App\Http\Requests\Member\UploadPendingDocumentRequest;
+use Illuminate\Support\Facades\Log;
 
 class PendingDocumentController extends Controller
 {
@@ -16,9 +18,28 @@ class PendingDocumentController extends Controller
     return response()->json($documents);
   }
 
-  public function uploadPendingDocuments(Request $request)
+  public function uploadPendingDocuments(UploadPendingDocumentRequest $request)
   {
+    $member_id = $request->member_id;
+    $document_id_array = $request->document_id;
+    $file = $request->file('file');
 
-    return response()->json($request->all());
+
+    foreach ($document_id_array as $key => $document_id) {
+      $filename = $file[$key]->getClientOriginalName();
+
+      // store to digitalspaces
+      $fileLink = $file[$key]->store(env('APP_ENV') . "/members/pending-attacment/$member_id", 'broadpath');
+
+      // save to db
+      PendingDocument::where('id', $document_id)
+        ->update([
+          'link_id' => $member_id,
+          'file_name' => $filename,
+          'file_link' => $fileLink,
+        ]);
+    }
+
+    return response()->noContent();
   }
 }

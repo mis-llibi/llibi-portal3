@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Members\hr_members;
 
-use App\Http\Requests\Member\ApproveMembeDeletionrRequest;
+use App\Http\Requests\Member\ApproveMemberDeletionRequest;
 use App\Http\Requests\Member\ApproveMemberRequest;
 use App\Enums\Broadpath\Members\StatusEnum;
 use App\Models\Members\PendingDocument;
@@ -95,7 +95,7 @@ class AdminController extends Controller
     return response()->json(['message' => 'Approve member success.', 'data' => $member]);
   }
 
-  public function approveDeletion(ApproveMembeDeletionrRequest $request, $id)
+  public function approveDeletion(ApproveMemberDeletionRequest $request, $id)
   {
     $member = hr_members::find($id);
     $member->status = 7;
@@ -120,7 +120,7 @@ class AdminController extends Controller
     return response()->json(['message' => 'Approve change plan success.', 'data' => $member]);
   }
 
-  public function disapproveMember(ApproveMembeDeletionrRequest $request, $id)
+  public function disapproveMember(ApproveMemberDeletionRequest $request, $id)
   {
     $member = hr_members::find($id);
     $member->status = 10;
