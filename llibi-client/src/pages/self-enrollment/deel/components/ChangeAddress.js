@@ -18,7 +18,7 @@ const ChangeAddress = props => {
 
   const { updateClientAddress } = ManageClientInfo({
     id: router.query.id,
-    company: 'BROADPATH',
+    company: 'DEEL',
   })
 
   const {

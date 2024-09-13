@@ -30,7 +30,7 @@ const Home = () => {
     handleSubmit,
     reset,
     setValue,
-    formState: { isDirty, errors },
+    formState: { errors },
   } = useForm()
 
   const [page, setPage] = useState(false)
@@ -43,7 +43,10 @@ const Home = () => {
     setValue('gender', client?.principal[0]?.gender)
     setValue('civil_status', client?.principal[0]?.civil_status)
 
-    if (client?.principal[0]?.form_locked == 2) {
+    if (
+      client?.principal[0]?.form_locked == 2 ||
+      client?.principal[0]?.form_locked == 3
+    ) {
       window.location.pathname = `/self-enrollment/deel/form-locked-submitted`
     } else {
       if (client?.principal.length > 0)

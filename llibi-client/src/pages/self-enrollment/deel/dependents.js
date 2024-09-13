@@ -17,6 +17,8 @@ import options from '@/hooks/self-enrollment/LlibiOptions'
 
 import { useRouter } from 'next/router'
 
+import useAge from './components/UseAge'
+
 import Swal from 'sweetalert2'
 
 const dependents = () => {
@@ -63,7 +65,6 @@ const dependents = () => {
     if (client?.dependent.length > 0) reset({ deps: client?.dependent })
   }, [client?.dependent])
 
-  const [bill, setBill] = useState(0)
   const [page, setPage] = useState(false)
 
   useEffect(() => {
@@ -74,15 +75,10 @@ const dependents = () => {
     setValue('hireDate', client?.principal[0]?.hire_date)
     setValue('coverageDate', client?.principal[0]?.coverage_date)
 
-    switch (client?.principal[0]?.mbl) {
-      case 200000:
-        setBill(19807.2)
-        break
-      case 150000:
-        setBill(19398.4)
-        break
-    }
-    if (client?.principal[0]?.form_locked == 2) {
+    if (
+      client?.principal[0]?.form_locked == 2 ||
+      client?.principal[0]?.form_locked == 3
+    ) {
       window.location.pathname = `/self-enrollment/deel/form-locked-submitted`
     } else {
       if (client?.principal.length > 0)
@@ -258,14 +254,14 @@ const dependents = () => {
                   {client?.principal[0]?.birth_date || 'N/A'}
                 </p>
               </div>
-              <div className="lg:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
-                <p>Hire Date</p>
+              <div className="md:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
+                <p>Age</p>
                 <p className="ml-2 font-bold">
-                  {client?.principal[0]?.hire_date || 'N/A'}
+                  {useAge(client?.principal[0]?.birth_date) || 'N/A'}
                 </p>
               </div>
               <div className="pr-2 flex md:flex-none lg:flex">
-                <p>OID</p>
+                <p>Member ID</p>
                 <p className="ml-2 font-bold">
                   {client?.principal[0]?.member_id || 'N/A'}
                 </p>

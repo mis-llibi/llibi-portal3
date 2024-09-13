@@ -22,7 +22,7 @@ import Modal from '@/components/Modal'
 import ModalControl from '@/components/ModalControl'
 
 import ChangeAddress from './components/ChangeAddress'
-const rollover = () => {
+const Rollover = () => {
   const router = useRouter()
 
   const { client, updateClientInfoRollover } = ManageClientInfo({
@@ -49,26 +49,21 @@ const rollover = () => {
   })
 
   const [page, setPage] = useState(false)
-  const [bill, setBill] = useState(0)
 
   useEffect(() => {
-    if (client?.principal[0]?.form_locked == 2) {
+    if (
+      client?.principal[0]?.form_locked == 2 ||
+      client?.principal[0]?.form_locked == 3
+    ) {
       window.location.pathname = `/self-enrollment/deel/form-locked-submitted`
     } else {
-      switch (client?.principal[0]?.mbl) {
-        case 200000:
-          setBill(19807.2)
-          break
-        case 150000:
-          setBill(19398.4)
-          break
-      }
-
       if (client?.principal.length > 0)
         if (client?.principal[0]?.status == 1) {
           window.location.pathname = `/self-enrollment/deel/`
         } else if (client?.principal[0]?.status == 2) {
           window.location.pathname = `/self-enrollment/deel/dependents/`
+        } else if (client?.principal[0]?.status == 0) {
+          window.location.pathname = `/self-enrollment/deel/form-locked-optout`
         } else {
           setPage(true)
         }
@@ -77,35 +72,9 @@ const rollover = () => {
 
   const [loading, setLoading] = useState(false)
 
-  const onStartOver = () => {
-    const ndata = {
-      id: client?.principal[0]?.id,
-      member_id: client?.principal[0]?.member_id,
-      rollover: 1,
-    }
-
-    Swal.fire({
-      title: 'Are you sure?',
-      text:
-        'Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Start Over',
-    }).then(result => {
-      if (result.isConfirmed) {
-        setLoading(true)
-        updateClientInfoRollover({ ...ndata, setLoading })
-      }
-    })
-  }
-
   const onRollover = () => {
     let tr = ''
     let num,
-      bil,
-      com,
       count = 0
 
     client?.dependent.map((item, i) => {
@@ -116,23 +85,15 @@ const rollover = () => {
       switch (count) {
         case 1:
           num = '1st'
-          bil = '20%'
-          com = bill * 0.2
           break
         case 2:
           num = '2nd'
-          bil = '20%'
-          com = bill * 0.2
           break
         case 3:
           num = '3rd'
-          bil = '100%'
-          com = bill * 1
           break
         default:
           num = count + 1 + 'th'
-          bil = '100%'
-          com = bill * 1
           break
       }
 
@@ -161,12 +122,7 @@ const rollover = () => {
       ${
         options.ageEval(useAge(item?.birth_date), item?.relation)
           ? `<tr>
-            <td colspan="5" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:14px;">
-            ${num} Dependent: ${bil} of ₱ ${bill?.toLocaleString(
-              'en',
-              2,
-            )} = ₱ ${com?.toLocaleString('en', 2)}
-            </td>
+            <td colspan="5" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:13px;color:#E7513C;"></td>
           </tr>`
           : `<tr>
           <td colspan="5" style="background-color:#eeeeee;padding:2px;text-align:left;font-size:13px;color:#E7513C;">
@@ -181,42 +137,6 @@ const rollover = () => {
         <td colspan="5" style="background-color:#fafafa;padding:2px;"></td>
       </tr>`)
     })
-
-    /* const computation = client?.dependent
-      ?.filter(item => {
-        // Make sure item, item.birth_date, and item.relation are defined
-        if (!item || !item.birth_date || !item.relation) {
-          return false
-        }
-        const age = useAge(item.birth_date) // Assuming useAge returns the age correctly
-        return options.ageEval(age, item.relation)
-      })
-      ?.map((item, i) => {
-        let nCom
-
-        switch (i) {
-          case 0:
-            nCom = bill * 0.2
-            break
-          case 1:
-            nCom = bill * 0.2
-            break
-          case 2:
-            nCom = bill * 1
-            break
-          default:
-            nCom = bill * 1
-            break
-        }
-
-        return { nCom }
-      })
-
-    const annual = computation.reduce(function (s, a) {
-      return s + a.nCom
-    }, 0)
-
-    const monthly = annual / 52 */
 
     const info = `<table style="background-color:#fafafa;width:100%;margin-bottom:10px;">
                     <thead>
@@ -254,18 +174,15 @@ const rollover = () => {
                               useAge(client?.principal[0]?.birth_date) || 'N/A'
                             }</b>
                           </td>
-                          <td style="text-align:left;">Hire Date: 
-                            <b>${client?.principal[0]?.hire_date || 'N/A'}</b>
+                          <td style="text-align:left;">Room & Board: 
+                            <b>${
+                              client?.principal[0]?.room_and_board || 'N/A'
+                            }</b>
                           </td>
                         </tr>
                         <tr>
                           <td style="text-align:left;">Member ID: 
                             <b>${client?.principal[0]?.member_id || 'N/A'}</b>
-                          </td>
-                          <td style="text-align:left;">Room & Board: 
-                            <b>${
-                              client?.principal[0]?.room_and_board || 'N/A'
-                            }</b>
                           </td>
                         </tr>
                     </tbody>
@@ -293,7 +210,7 @@ const rollover = () => {
     const ndata = {
       id: client?.principal[0]?.id,
       member_id: client?.principal[0]?.member_id,
-      rollover: 2,
+      rollover: 1,
     }
 
     Swal.fire({
@@ -317,7 +234,7 @@ const rollover = () => {
     const ndata = {
       id: client?.principal[0]?.id,
       member_id: client?.principal[0]?.member_id,
-      rollover: 3,
+      rollover: 2,
     }
 
     Swal.fire({
@@ -341,7 +258,7 @@ const rollover = () => {
     const ndata = {
       id: client?.principal[0]?.id,
       member_id: client?.principal[0]?.member_id,
-      rollover: 4,
+      rollover: 3,
     }
 
     Swal.fire({
@@ -456,12 +373,6 @@ const rollover = () => {
                   {useAge(client?.principal[0]?.birth_date) || 'N/A'}
                 </p>
               </div>
-              <div className="lg:border-r-2 border-gray-300 pr-2 flex md:flex-none lg:flex">
-                <p>Hire Date</p>
-                <p className="ml-2 font-bold">
-                  {client?.principal[0]?.hire_date || 'N/A'}
-                </p>
-              </div>
               <div className="pr-2 flex md:flex-none lg:flex">
                 <p>Member ID</p>
                 <p className="ml-2 font-bold">
@@ -500,7 +411,7 @@ const rollover = () => {
             <div className="mb-3">
               <h1 className="font-bold text-xl">Instructions</h1>
             </div>
-            <div
+            {/* <div
               onClick={handleSubmit(onStartOver)}
               className="mb-3 border-b hover:border-2 border-gray-400 hover:border-dotted py-2 hover:shadow-xs hover:pl-2 hover:rounded-md cursor-pointer hover:bg-cyan-50 transition duration-500 delay-200">
               <h1 className="font-bold mb-2 text-cyan-400">
@@ -510,7 +421,7 @@ const rollover = () => {
                 Allows you to enroll yourself and your dependents. You may be
                 required to submit supporting documents.
               </p>
-            </div>
+            </div> */}
             <div
               onClick={handleSubmit(onRollover)}
               className="mb-3 border-b hover:border-2 border-gray-400 hover:border-dotted py-2 hover:shadow-xs hover:pl-2 hover:rounded-md cursor-pointer hover:bg-green-50 transition duration-500 delay-200">
@@ -526,7 +437,7 @@ const rollover = () => {
               onClick={handleSubmit(onUpdateExisting)}
               className="mb-3 border-b hover:border-2 border-gray-400 hover:border-dotted py-2 hover:shadow-xs hover:pl-2 hover:rounded-md cursor-pointer hover:bg-blue-50 transition duration-500 delay-200">
               <h1 className="font-bold mb-2 text-blue-400">
-                Updating Existing (Add/Delete Dependent/s):
+                Update Existing (Add/Delete Dependent/s):
               </h1>
               <p className="text-sm">
                 Allows you to update civil status, add, delete and/or change
@@ -589,4 +500,4 @@ const rollover = () => {
   )
 }
 
-export default rollover
+export default Rollover
