@@ -91,10 +91,10 @@ export const ManageClientInfo = ({ id, company }) => {
       .finally(() => {
         setLoading(false)
         if (runfinally) {
-          swasuccess(
-            'Dependent Renewal Updated',
-            'You have successfully updated your dependent renewal form',
-          )
+          /* swasuccess(
+            'Successfully',
+            'You have successfully selected',
+          ) */
         }
       })
   }
@@ -154,8 +154,8 @@ export const ManageClientInfo = ({ id, company }) => {
       }
 
       //FOR LLIBI
-      if (company === 'LLIBI') {
-        formData.append(`skip_hierarchy[]`, item?.skip_hierarchy)
+      if (company === 'LLIBI' || company === 'DEEL') {
+        formData.append(`skip_hierarchy[]`, item?.skip_hierarchy ? 1 : 0)
         formData.append(`skip_reason[]`, item?.skip_reason)
 
         item?.skip_document &&
@@ -200,7 +200,7 @@ export const ManageClientInfo = ({ id, company }) => {
     formData.append(`hireDate`, props.hireDate)
     formData.append(`coverageDate`, props.coverageDate)
 
-    props?.deps.map((item, i) => {
+    props?.deps?.map((item, i) => {
       formData.append(`list[]`, i)
       formData.append(`id[]`, item?.mId)
       formData.append(`first_name[]`, item?.first_name)

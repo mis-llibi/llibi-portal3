@@ -36,6 +36,7 @@ use App\Http\Controllers\Self_enrollment\ManageLlibiNotifications;
 
 use App\Http\Controllers\Self_enrollment\ManageDeelClients;
 use App\Http\Controllers\Self_enrollment\ManageDeelNotifications;
+
 use App\Http\Controllers\Self_enrollment\PreqinController;
 use App\Imports\Self_enrollment\PreqinImportPrincipal;
 
@@ -163,6 +164,11 @@ class ManageSelfEnrollmentController extends Controller
         //$this->updateEnrolleeBroadPath($company, $request);
         (new ManageBroadpathClients)
           ->updateEnrollee($company, $request);
+        break;
+      case 'DEEL':
+        //$this->updateEnrolleeLlibi($company, $request);
+        (new ManageDeelClients)
+          ->updateEnrollee($request);
         break;
       case 'LLIBI':
         //$this->updateEnrolleeLlibi($company, $request);
@@ -324,6 +330,13 @@ class ManageSelfEnrollmentController extends Controller
         $principal = $list['principal'];
         $dependent = $list['dependent'];
         break;
+      case 'DEEL':
+        $list = (new ManageDeelClients)
+          ->checkClient($id);
+
+        $principal = $list['principal'];
+        $dependent = $list['dependent'];
+        break;
       case 'LLIBI':
         $list = (new ManageLlibiClients)
           ->checkClient($id);
@@ -360,6 +373,10 @@ class ManageSelfEnrollmentController extends Controller
         (new ManageBroadpathClients)
           ->updateClientInfo($request);
         break;
+      case 'DEEL':
+        (new ManageDeelClients)
+          ->updateClientInfo($request);
+        break;
       case 'LLIBI':
         (new ManageLlibiClients)
           ->updateClientInfo($request);
@@ -382,6 +399,10 @@ class ManageSelfEnrollmentController extends Controller
         (new ManageBroadpathClients)
           ->submitDependent($request);
         break;
+      case 'DEEL':
+        (new ManageDeelClients)
+          ->submitDependent($request);
+        break;
       case 'LLIBI':
         (new ManageLlibiClients)
           ->submitDependent($request);
@@ -401,6 +422,10 @@ class ManageSelfEnrollmentController extends Controller
     switch ($company) {
       case 'BROADPATH':
         (new ManageBroadpathClients)
+          ->submitWithoutDependent($request);
+        break;
+      case 'DEEL':
+        (new ManageDeelClients)
           ->submitWithoutDependent($request);
         break;
       case 'LLIBI':
@@ -443,6 +468,10 @@ class ManageSelfEnrollmentController extends Controller
     switch ($company) {
       case 'BROADPATH':
         (new ManageBroadpathClients)
+          ->checkReminders($checkdate, $dateFinalWarning, $dateFormLocked);
+        break;
+      case 'DEEL':
+        (new ManageDeelClients)
           ->checkReminders($checkdate, $dateFinalWarning, $dateFormLocked);
         break;
       case 'LLIBI':

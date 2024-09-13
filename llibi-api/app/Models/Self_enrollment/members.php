@@ -13,6 +13,7 @@ class members extends Model
 
   protected $fillable = [
     'client_company',
+    'vendor',
     'upload_date',
     'plan',
     'mbl',
@@ -44,6 +45,6 @@ class members extends Model
 
   public function contact()
   {
-      return $this->hasOne(Contact::class, 'link_id');
+    return $this->hasOne(contact::class, 'link_id');
   }
 }
