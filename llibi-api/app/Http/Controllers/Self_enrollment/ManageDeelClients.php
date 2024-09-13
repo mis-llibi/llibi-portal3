@@ -424,10 +424,10 @@ class ManageDeelClients extends Controller
             'status' => 5,
             'form_locked' => 2
         ];
-        $principal = members::where('id', $request->principalId)
+        members::where('id', $request->principalId)
             ->update($update);
 
-        $dependent = members::where('relation', '!=', 'PRINCIPAL')
+        members::where('relation', '!=', 'PRINCIPAL')
             ->where('client_company', 'DEEL')
             ->where('member_id', $request->memberId)
             ->where('status', 2)
@@ -443,7 +443,7 @@ class ManageDeelClients extends Controller
         $name = $upMember[0]->last_name . ', ' . $upMember[0]->first_name;
 
         $info = [
-            'name' => $upMember[0]->last_name . ', ' . $upMember[0]->first_name,
+            'name' => $name,
             'email' => $upContact[0]->email,
             'email2' => $upContact[0]->email2,
             'mobile' => $upContact[0]->mobile_no,

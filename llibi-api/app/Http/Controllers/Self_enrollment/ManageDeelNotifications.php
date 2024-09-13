@@ -38,7 +38,7 @@ class ManageDeelNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in Deel’s renewal. You are encouraged to complete this from ' . $startDate . ' to ' . $dateFinalWarning . ' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by ' . $dateFinalWarning . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by ' . $dateFormLocked . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
 
         <b>This is an auto-generated Email, please do not share. Does not support replies and calls.</b>';
 
@@ -78,7 +78,7 @@ class ManageDeelNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in Deel’s Maxicare transition. You are encouraged to complete this from ' . $startDate . ' to ' . $dateFinalWarning . ' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by ' . $dateFinalWarning . ', you and your existing dependents under Philcare will automatically be transitioned and enrolled in Deel’s Maxicare healthcare plan.<br /><br />
+        If you do not respond to this notification by ' . $dateFormLocked . ', you and your existing dependents under Philcare will automatically be transitioned and enrolled in Deel’s Maxicare healthcare plan.<br /><br />
 
         <b>This is an auto-generated Email, please do not share. Does not support replies.</b>';
 
@@ -335,9 +335,9 @@ class ManageDeelNotifications extends Controller
         );
 
         if (!empty($info['email'])) (new NotificationController)
-            ->MailNotification($info['name'], $info['email'], $mailMsg);
+            ->OldMailNotification($info['name'], $info['email'], $mailMsg);
         if (!empty($info['email2'])) (new NotificationController)
-            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
             "From Deel & LLIBI:\n\nThank you for submitting your enrollment, you can view your enrolled dependents in the confirmation email sent to you.\n\nThis is an auto-generated SMS. Does not support replies and calls";
