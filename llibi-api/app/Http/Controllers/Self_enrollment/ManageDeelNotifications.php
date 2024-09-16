@@ -38,13 +38,15 @@ class ManageDeelNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in Deel’s renewal. You are encouraged to complete this from ' . $startDate . ' to ' . $dateFinalWarning . ' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by ' . $dateFinalWarning . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by ' . $dateFormLocked . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
 
-        <b>This is an auto-generated Email, please do not share. Does not support replies and calls.</b>';
+        <b>This is an auto-generated Email, please do not share. Does not support replies.</b>';
 
         $mailMsg = array(
             'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
-            'body' => '<div style="font-weight:normal;">' . $body . '</div>'
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
         );
 
         if (!empty($info['email'])) (new NotificationController)
@@ -78,13 +80,15 @@ class ManageDeelNotifications extends Controller
         
         We will ask you to confirm information about yourself and your dependents. Please complete this so that you and/or your dependents may be enrolled in Deel’s Maxicare transition. You are encouraged to complete this from ' . $startDate . ' to ' . $dateFinalWarning . ' to avoid any coverage issues.<br /><br />
         
-        If you do not respond to this notification by ' . $dateFinalWarning . ', you and your existing dependents under Philcare will automatically be transitioned and enrolled in Deel’s Maxicare healthcare plan.<br /><br />
+        If you do not respond to this notification by ' . $dateFormLocked . ', you and your existing dependents under Philcare will automatically be transitioned and enrolled in Deel’s Maxicare healthcare plan.<br /><br />
 
         <b>This is an auto-generated Email, please do not share. Does not support replies.</b>';
 
         $mailMsg = array(
             'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
-            'body' => '<div style="font-weight:normal;">' . $body . '</div>'
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
         );
 
         if (!empty($info['email'])) (new NotificationController)
@@ -281,6 +285,133 @@ class ManageDeelNotifications extends Controller
             ->SmsNotification($info['mobile'], $smsBody);
     }
 
+    public function invitePhilCare($info)
+    {
+        $link = 'https://portal.llibi.app/self-enrollment/deel?id=' . $info['hash'];
+
+        $mailMsg = array(
+            'body' => view('self-enrollment/send-invite-philcare', [
+                'link' => $link
+            ]),
+            'subject' => 'PHILCARE - HMO ENROLLMENT',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+
+        /*  $mailMsg = array(
+            'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );*/
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+
+        $smsBody =
+            "From LLIBI:\n\nGood day!\n\nWe are delighted to welcome Deel employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Does not support replies and calls";
+
+        if (!empty($info['mobile'])) (new NotificationController)
+            ->SmsNotification($info['mobile'], $smsBody);
+    }
+
+    public function inviteMaxicare($info)
+    {
+
+        $link = 'https://portal.llibi.app/self-enrollment/deel?id=' . $info['hash'];
+
+        $mailMsg = array(
+            'body' => view('self-enrollment/send-invite-maxicare', [
+                'link' => $link
+            ]),
+            'subject' => 'MAXICARE - HMO ENROLLMENT',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+
+        /*  $mailMsg = array(
+            'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+        */
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+
+        $smsBody =
+            "From LLIBI:\n\nGood day!\n\nWe are delighted to welcome Deel employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Does not support replies and calls";
+
+        if (!empty($info['mobile'])) (new NotificationController)
+            ->SmsNotification($info['mobile'], $smsBody);
+    }
+
+    public function inviteWarning($info)
+    {
+
+        $link = 'https://portal.llibi.app/self-enrollment/deel?id=' . $info['hash'];
+
+        $mailMsg = array(
+            'body' => view('self-enrollment/send-warning-for-1-and-2', [
+                'link' => $link
+            ]),
+            'subject' => 'DEEL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+
+        /*  $mailMsg = array(
+            'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+        */
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+
+        /* $smsBody =
+            "From LLIBI:\n\nGood day!\n\nWe are delighted to welcome Deel employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Does not support replies and calls";
+
+        if (!empty($info['mobile'])) (new NotificationController)
+            ->SmsNotification($info['mobile'], $smsBody); */
+    }
+
+    public function inviteApology($info)
+    {
+        if ($info['vendor'] == 'PHILCARE' && $info['is_renewal'] == 0) {
+            $subject = 'PHILCARE - HMO ENROLLMENT';
+        } else if ($info['vendor'] == 'MAXICARE' && $info['is_renewal'] == 0) {
+            $subject = 'MAXICARE - HMO ENROLLMENT';
+        } else {
+            $subject = 'DEEL RENEWAL ENROLLMENT NOTIFICATION';
+        }
+
+        $mailMsg = array(
+            'body' => view('self-enrollment/send-apology-error-link', [
+                'subject' => $subject,
+            ]),
+            'subject' => 'DEEL: ERRONEOUS EMAIL LINK',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+    }
+
     public function invite($info)
     {
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
@@ -299,7 +430,9 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
-            'body' => '<div style="font-weight:normal;">' . $body . '</div>'
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
         );
 
         if (!empty($info['email'])) (new NotificationController)
@@ -310,6 +443,35 @@ class ManageDeelNotifications extends Controller
 
         $smsBody =
             "From LLIBI:\n\nGood day!\n\nWe are delighted to welcome Deel employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Does not support replies and calls";
+
+        if (!empty($info['mobile'])) (new NotificationController)
+            ->SmsNotification($info['mobile'], $smsBody);
+    }
+
+    public function submittedOptOut($info)
+    {
+        $body =
+            'Dear Member,<br /><br />
+
+        We have noted your instructions to opt out. You and your dependents will not be enrolled in the Deel healthcare program.
+        <br /><br />
+
+        <b>This is an auto-generated Email. Does not support replies.</b>';
+
+        $mailMsg = array(
+            'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+        if (!empty($info['email2'])) (new NotificationController)
+            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
+
+        $smsBody =
+            "From Deel & LLIBI:\n\nWe have noted your instructions to opt out. You and your dependents will not be enrolled in the Deel healthcare program.\n\nThis is an auto-generated SMS. Does not support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -331,13 +493,15 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
-            'body' => '<div style="font-weight:normal;">' . $body . '</div>'
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
         );
 
         if (!empty($info['email'])) (new NotificationController)
-            ->MailNotification($info['name'], $info['email'], $mailMsg);
+            ->OldMailNotification($info['name'], $info['email'], $mailMsg);
         if (!empty($info['email2'])) (new NotificationController)
-            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
             "From Deel & LLIBI:\n\nThank you for submitting your enrollment, you can view your enrolled dependents in the confirmation email sent to you.\n\nThis is an auto-generated SMS. Does not support replies and calls";
@@ -366,7 +530,9 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
-            'body' => '<div style="font-weight:normal;">' . $body . '</div>'
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
         );
 
         if (!empty($info['email'])) (new NotificationController)
@@ -385,7 +551,7 @@ class ManageDeelNotifications extends Controller
     public function submittedWithDepUpdateExisting($info)
     {
         $body =
-            'You have successfully updated your civil status and/or dependent/s’ enrollment and information. Submission is final and no longer allowed to make any changes.<br /><br />
+            'You have successfully updated your civil status and/or dependent/s’ enrollment and information. Submission is final and you are no longer allowed to make any changes.<br /><br />
             
             Below is the summary of your dependents:  <br /><br />
         
@@ -399,7 +565,9 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL DEPENDENT ENROLLMENT NOTIFICATION',
-            'body' => '<div style="font-weight:normal;">' . $body . '</div>'
+            'body' => '<div style="font-weight:normal;">' . $body . '</div>',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
         );
 
         if (!empty($info['email'])) (new NotificationController)

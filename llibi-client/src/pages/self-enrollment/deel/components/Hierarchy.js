@@ -90,7 +90,9 @@ const Hierarchy = ({ civilStatus }) => {
               </tr>
               <tr>
                 <td className="font-bold">Eligible Dependents</td>
-                <td className="pl-2">Domestic Partner / Same Gender Partner</td>
+                <td className="pl-2">
+                  <p>Domestic Partner / Same Gender Partner and Children</p>
+                </td>
               </tr>
               <tr>
                 <td className="font-bold">Age Eligibility</td>
@@ -99,6 +101,7 @@ const Hierarchy = ({ civilStatus }) => {
                     Domestic Partner / Same Gender Partner (not more than 65
                     years old)
                   </p>
+                  <p>Children (15 days to 23 years old)</p>
                 </td>
               </tr>
             </tbody>

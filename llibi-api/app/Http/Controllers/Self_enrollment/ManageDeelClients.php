@@ -131,6 +131,24 @@ class ManageDeelClients extends Controller
                         ->where('status', 4)
                         ->update(['status' => 0]);
 
+                    $principal =
+                        members::where('member_id', $request->member_id)
+                        ->where('relation', 'PRINCIPAL')
+                        ->get(['id', 'mbl', 'first_name', 'last_name']);
+
+                    $contact = contact::where('link_id', $principal[0]->id)
+                        ->get();
+
+                    $info = [
+                        'name' => $principal[0]->last_name . ', ' . $principal[0]->first_name,
+                        'email'  => $contact[0]->email,
+                        'email2' => $contact[0]->email2,
+                        'mobile' => $contact[0]->mobile_no,
+                    ];
+
+                    (new ManageDeelNotifications)
+                        ->submittedOptOut($info);
+
                     break;
                 case 4:
                     $member =
@@ -424,10 +442,10 @@ class ManageDeelClients extends Controller
             'status' => 5,
             'form_locked' => 2
         ];
-        $principal = members::where('id', $request->principalId)
+        members::where('id', $request->principalId)
             ->update($update);
 
-        $dependent = members::where('relation', '!=', 'PRINCIPAL')
+        members::where('relation', '!=', 'PRINCIPAL')
             ->where('client_company', 'DEEL')
             ->where('member_id', $request->memberId)
             ->where('status', 2)
@@ -443,7 +461,7 @@ class ManageDeelClients extends Controller
         $name = $upMember[0]->last_name . ', ' . $upMember[0]->first_name;
 
         $info = [
-            'name' => $upMember[0]->last_name . ', ' . $upMember[0]->first_name,
+            'name' => $name,
             'email' => $upContact[0]->email,
             'email2' => $upContact[0]->email2,
             'mobile' => $upContact[0]->mobile_no,
@@ -459,12 +477,13 @@ class ManageDeelClients extends Controller
     }
 
     //CHECKING OF NOTIFICATION
-    public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
+    public function checkRemindersxx($checkdate, $dateFinalWarning, $dateFormLocked)
     {
         $list = DB::table('self_enrollment_members as t1')
             ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
             ->select(
                 't1.id',
+                't1.is_renewal',
                 't1.vendor',
                 't1.last_name',
                 't1.first_name',
@@ -477,9 +496,10 @@ class ManageDeelClients extends Controller
                 't2.mobile_no'
             )
             ->whereIn('t1.status', [1, 2, 4])
-            //->whereIn('t1.member_id', ['LLIBI0027'])
+            //->whereIn('t1.member_id', ['LLIBI002063', 'LLIBI002062'])
             ->where('client_company', 'DEEL')
             ->where('t1.relation', 'PRINCIPAL')
+            ->where('t1.plan', 'x')
             ->where('t1.form_locked', 1)
             ->orderBy('t1.id', 'DESC')
             ->get();
@@ -532,12 +552,24 @@ class ManageDeelClients extends Controller
                                     'to' => $info
                                 ];
 
-                                if ($row->vendor == 'PHILCARE') (new ManageDeelNotifications)
+                                if ($row->vendor == 'PHILCARE' && $row->is_renewal == 1) (new ManageDeelNotifications)
                                     ->rolloverInvitePhilCare($info, $dateFinalWarning, $dateFormLocked);
 
-                                if ($row->vendor == 'MAXICARE') (new ManageDeelNotifications)
+                                if ($row->vendor == 'MAXICARE' && $row->is_renewal == 1) (new ManageDeelNotifications)
                                     ->rolloverInviteMaxiCare($info, $dateFinalWarning, $dateFormLocked);
+
+                                /* if ($row->vendor == 'PHILCARE' && $row->is_renewal == 0) (new ManageDeelNotifications)
+                                    ->invitePhilcare($info, $dateFinalWarning, $dateFormLocked);
+
+                                if ($row->vendor == 'MAXICARE' && $row->is_renewal == 0) (new ManageDeelNotifications)
+                                    ->inviteMaxicare($info, $dateFinalWarning, $dateFormLocked); */
+
+
+                                /* (new ManageDeelNotifications)
+                                    ->inviteWarning($info, $dateFinalWarning, $dateFormLocked);*/
+
                                 //$status = 0;
+
                                 $status = 'START RENEWAL: FIRST DAY ENROLLMENT';
                             }
 
@@ -626,6 +658,91 @@ class ManageDeelClients extends Controller
                                 'kyc_timestamp' => date('Y-m-d H:i:s')
                             ]);
                     }
+
+                    if ($status != 0)
+                        NotificationStatus::create([
+                            'app' => $app,
+                            'client_id' => $row->id,
+                            'client_company' => $clientCompany,
+                            'status' => $status,
+                            'date' => $checkdate
+                        ]);
+                }
+            }
+        }
+
+        dd([$notificationTitle => $notification]);
+    }
+
+    public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
+    {
+        $list = DB::table('self_enrollment_members as t1')
+            ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
+            ->select(
+                't1.id',
+                't1.is_renewal',
+                't1.vendor',
+                't1.last_name',
+                't1.first_name',
+                't1.hash',
+                't1.upload_date',
+                't1.status',
+                't1.form_locked',
+                't2.email',
+                't2.email2',
+                't2.mobile_no'
+            )
+            ->whereIn('t1.status', [1, 2, 4, 5])
+            //->whereIn('t1.member_id', ['LLIBI002063'])
+            ->where('client_company', 'DEEL')
+            ->where('t1.relation', 'PRINCIPAL')
+            ->orderBy('t1.id', 'DESC')
+            ->get();
+
+        $notificationTitle = 'No Reminders For Sending...';
+        $notification = [];
+
+        $app = 'SELF-ENROLLMENT';
+        $clientCompany = 'DEEL';
+        //check if there is still enrollee needs to be reminded
+        if (count($list) > 0) {
+
+            foreach ($list as $key => $row) {
+
+                $exist = NotificationStatus::where('app', $app)
+                    ->where('client_id', $row->id)
+                    ->where('client_company', $clientCompany)
+                    ->whereIn('status', [
+                        'SEND INVITE APOLOGY: ERROR LINK',
+                    ])
+                    ->where('date', $checkdate)
+                    ->exists();
+
+                $info = [
+                    'hash'   => $row->hash,
+                    'name'   => $row->last_name . ', ' . $row->first_name,
+                    'email'  => $row->email,
+                    'email2' => $row->email2,
+                    'mobile' => '0' . $row->mobile_no,
+                    'vendor' => $row->vendor,
+                    'is_renewal' => $row->is_renewal,
+                ];
+
+                if (!$exist) {
+
+                    $notificationTitle = 'Apology: Error Link';
+                    $notification[] = [
+                        'Message' => 'Notification Sent',
+                        'to' => $info
+                    ];
+
+                    //check if there is notification set on that day
+                    (new ManageDeelNotifications)
+                        ->inviteApology($info, $dateFinalWarning, $dateFormLocked);
+
+
+                    //$status = 0;
+                    $status = 'SEND INVITE APOLOGY: ERROR LINK';
 
                     if ($status != 0)
                         NotificationStatus::create([
