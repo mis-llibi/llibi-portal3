@@ -15,6 +15,7 @@ class members extends Model
     'client_company',
     'vendor',
     'upload_date',
+    'is_renewal',
     'plan',
     'mbl',
     'room_and_board',

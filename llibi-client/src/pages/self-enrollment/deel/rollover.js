@@ -240,7 +240,7 @@ const Rollover = () => {
     Swal.fire({
       title: 'Are you sure?',
       text:
-        'Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
+        'Once you click Yes, you will not be able to make any further changes.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -264,7 +264,7 @@ const Rollover = () => {
     Swal.fire({
       title: 'Are you sure?',
       text:
-        'Once you click Yes, you will not be able to make any further changes and your enrollment will be processed.',
+        'Once you click Yes, you will not be able to make any further changes.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

@@ -15,6 +15,8 @@ use App\Exports\Self_enrollment\BroadpathExportEnrollee;
 use App\Imports\Self_enrollment\LlibiUploadEnrollee;
 use App\Exports\Self_enrollment\LlibiExportEnrollee;
 
+use App\Imports\Self_enrollment\DeelUploadEnrollee;
+
 use App\Imports\Self_enrollment\EigthByEigthUploadEnrollee;
 use App\Exports\Self_enrollment\EigthByEigthExportEnrollee;
 use App\Models\Self_enrollment\members;
@@ -108,6 +110,9 @@ class ManageSelfEnrollmentController extends Controller
     switch ($company) {
       case 'BROADPATH':
         $excel = Excel::import(new BroadpathUploadEnrollee($company), $request->file);
+        break;
+      case 'DEEL':
+        $excel = Excel::import(new DeelUploadEnrollee($company), $request->file);
         break;
       case 'LLIBI':
         $excel = Excel::import(new LlibiUploadEnrollee($company), $request->file);
