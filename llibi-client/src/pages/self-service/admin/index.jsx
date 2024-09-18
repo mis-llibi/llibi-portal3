@@ -95,20 +95,8 @@ const Admin = () => {
     setLoading(false)
   }
 
-  /*
-        useEffect(() => {
-            const intervalId = setInterval(() => {
-                //assign interval to a variable to clear it.
-                console.log(name)
-            }, 10000)
-
-            return () => clearInterval(intervalId) //This is important
-        }, []) 
-    */
-
   useEffect(() => {
     setLoading(true)
-    //assign interval to a variable to clear it.
     searchRequest({
       setRequest,
       setLoading,
@@ -187,9 +175,9 @@ const Admin = () => {
 
   const modalViewPolicy = () => {
     setBody({
-      title: <span className="font-bold text-lg">View Policy</span>,
+      title: <span className="font-bold text-lg">View/Upload Policy</span>,
       content: <ViewPolicy />,
-      modalOuterContainer: 'w-1/2',
+      modalOuterContainer: 'w-3/4',
       modalContainer: 'h-full',
       modalBody: 'h-full',
     })
@@ -208,8 +196,6 @@ const Admin = () => {
     })
     toggle()
   }
-
-
 
   // https://championcr.com/topic/enable-auto-play/
   useEffect(() => {
@@ -379,8 +365,11 @@ const Admin = () => {
                     client portal error logs
                   </a>
                 </div>
-                <Button type="button" className="text-[.55em]" onClick={handleShowModalViewPolicy}>
-                  View Policy
+                <Button
+                  type="button"
+                  className="text-[.55em]"
+                  onClick={handleShowModalViewPolicy}>
+                  View/Upload Policy
                 </Button>
               </div>
               <div className="flex gap-2">
