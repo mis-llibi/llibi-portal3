@@ -17,6 +17,7 @@ use App\Models\Corporate\ProviderLink;
 use App\Models\Corporate\Doctors;
 use App\Models\Holiday;
 use App\Models\Self_service\Attachment;
+use App\Models\Self_service\ExpiredLogs;
 use App\Services\ClientErrorLogService;
 use App\Services\GetActiveEmailProvider;
 use Illuminate\Support\Facades\DB;
@@ -83,6 +84,47 @@ class ClientController extends Controller
                     }
                 }
 
+                // Check incepto of client if the date is still valid
+                if ($principal && isset($principal['client'][0])) {
+                    $incepto = Carbon::parse($principal['client'][0]['incepto']);
+                    $now = Carbon::now();
+                    if ($now->greaterThan($incepto)) {
+                      $result = false;
+                        // create expired logs
+                        ExpiredLogs::create([
+                            'member_id' => $principal['client'][0]['member_id'],
+                            'company_code' => $principal['client'][0]['company_code'],
+                            'first_name' => $principal['client'][0]['first_name'],
+                            'last_name' => $principal['client'][0]['last_name'],
+                            'incepfrom' => $principal['client'][0]['incepfrom'],
+                            'incepto' => $principal['client'][0]['incepto'],
+                            'birth_date' => $principal['client'][0]['birth_date'],
+                        ]);
+                      $response = 'We are unable to validate your information. Please check your input and try again.';
+                    }
+                    
+                }
+
+                // check if incepto of client's dependent is still valid
+                if ($dependent && isset($dependent['client'][0])) {
+                    $incepto = Carbon::parse($dependent['client'][0]['incepto']);
+                    $now = Carbon::now();
+                    if ($now->greaterThan($incepto)) {
+                      $result = false;
+                        // create expired logs
+                        ExpiredLogs::create([
+                            'member_id' => $dependent['client'][0]['member_id'],
+                            'company_code' => $dependent['client'][0]['company_code'],
+                            'first_name' => $dependent['client'][0]['first_name'],
+                            'last_name' => $dependent['client'][0]['last_name'],
+                            'incepfrom' => $dependent['client'][0]['incepfrom'],
+                            'incepto' => $dependent['client'][0]['incepto'],
+                            'birth_date' => $dependent['client'][0]['birth_date'],
+                        ]);
+                        $response = 'We are unable to validate your information. Please check your input and try again.';
+                    }
+                }
+
                 if ($result) {
                     $client = $this->InsertClientData($request, $principal, $dependent);
                     $clientRequest = $this->RequestForLoa($request, $client);
@@ -118,6 +160,7 @@ class ClientController extends Controller
                 }
 
                 if ($result) {
+                  
                     if (isset($principal['client'][0])) {
                         $link = ('https://llibi.app/service-request?router=1&memberid=' . $principal['client'][0]['member_id'] . '&password=' . $principal['client'][0]['birth_date']);
                     } else {
@@ -155,16 +198,7 @@ class ClientController extends Controller
                 break;
         }
 
-        // Check incepto of client if the date is still valid
-        if ($principal && isset($principal['client'][0])) {
-            $incepto = Carbon::parse($principal['client'][0]['incepto']);
-            $now = Carbon::now();
-            if ($now->greaterThan($incepto)) {
-                $result = false;
-                $response = 'Your membership is already expired.';
-                $expired = true;
-            }
-        }
+        
 
         return response()->json([
             'link' => $link,
@@ -175,9 +209,21 @@ class ClientController extends Controller
             'expired' => $expired
         ]);
     } catch (\Illuminate\Database\QueryException $qe) {
+      $errorCode = $qe->getCode();
+      $errorMessage = $qe->getMessage();
+
+      // Check if the error is from incorrect details
+      if ($errorCode == '42000') {
+        Log::error('Database Query Error: ' . $errorMessage);
+
+        return response()->json([
+          'message' => 'Database Query Error: ' . $qe->getMessage()
+        ]);
+      }else{
         return response()->json([
             'message' => 'Database Query Error: ' . $qe->getMessage()
         ]);
+      }
     } catch (\Exception $e) {
         return response()->json([
             'message' => 'Error: ' . $e->getMessage()
@@ -190,7 +236,7 @@ public function CheckClient($request, $type)
     $client = Sync::where(function ($query) use ($request, $type) {
         if ($type == 'dependent') {
             if ((int)$request->dependentType == 1) {
-                $query->where('first_name', 'like', '%' . strtoupper($request->depFirstName) . '%');
+                $query->whereRaw('UPPER(first_name) = ?', [strtoupper($request->depFirstName)]);
                 $query->where('last_name', 'like', '%' . strtoupper($request->depLastName) . '%');
                 $query->where('birth_date', date('Y-m-d', strtotime($request->depDob)));
                 $query->where('relation', '<>', 'EMPLOYEE');
@@ -201,7 +247,7 @@ public function CheckClient($request, $type)
             }
         } else {
             if ((int)$request->principalType == 1) {
-                $query->where('first_name', 'like', '%' . strtoupper($request->firstName) . '%');
+                $query->whereRaw('UPPER(first_name) = ?', [strtoupper($request->firstName)]);
                 $query->where('last_name', 'like', '%' . strtoupper($request->lastName) . '%');
                 $query->where('birth_date', date('Y-m-d', strtotime($request->dob)));
                 $query->where('relation', 'EMPLOYEE');

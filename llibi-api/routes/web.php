@@ -34,3 +34,5 @@ require __DIR__ . '/appcode.php';
 require __DIR__ . '/members.php';
 
 require __DIR__ . '/self-enrollment.php';
+
+require __DIR__ . '/company-policies.php';
