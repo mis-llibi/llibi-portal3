@@ -194,11 +194,11 @@ class ManageDeelNotifications extends Controller
         if (!empty($info['email2'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
-        $smsBody =
+        /* $smsBody =
             "From Deel & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Deel’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Does not support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
-            ->SmsNotification($info['mobile'], $smsBody);
+            ->SmsNotification($info['mobile'], $smsBody); */
     }
 
     public function rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked)
@@ -239,11 +239,11 @@ class ManageDeelNotifications extends Controller
         if (!empty($info['email2'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
-        $smsBody =
+        /* $smsBody =
             "From Deel & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Deel's open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Does not support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
-            ->SmsNotification($info['mobile'], $smsBody);
+            ->SmsNotification($info['mobile'], $smsBody); */
     }
 
     public function rolloverReminderLock($info)

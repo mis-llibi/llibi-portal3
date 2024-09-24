@@ -477,7 +477,7 @@ class ManageDeelClients extends Controller
     }
 
     //CHECKING OF NOTIFICATION
-    public function checkRemindersxx($checkdate, $dateFinalWarning, $dateFormLocked)
+    public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
     {
         $list = DB::table('self_enrollment_members as t1')
             ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
@@ -499,8 +499,7 @@ class ManageDeelClients extends Controller
             //->whereIn('t1.member_id', ['LLIBI002063', 'LLIBI002062'])
             ->where('client_company', 'DEEL')
             ->where('t1.relation', 'PRINCIPAL')
-            ->where('t1.plan', 'x')
-            ->where('t1.form_locked', 1)
+            //->where('t1.form_locked', 1)
             ->orderBy('t1.id', 'DESC')
             ->get();
 
@@ -609,7 +608,7 @@ class ManageDeelClients extends Controller
                             }
 
                             //SEND WARNING FOR NO INTERACTION ON JUNE 18, 2024
-                            if ($row->status == 4 && $checkdate == '2024-09-26') {
+                            if ($row->status == 4 && $checkdate == '2024-09-20') {
                                 $notificationTitle = 'Reminder: No Interaction';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
@@ -674,7 +673,7 @@ class ManageDeelClients extends Controller
         dd([$notificationTitle => $notification]);
     }
 
-    public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
+    public function checkRemindersxx($checkdate, $dateFinalWarning, $dateFormLocked)
     {
         $list = DB::table('self_enrollment_members as t1')
             ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
