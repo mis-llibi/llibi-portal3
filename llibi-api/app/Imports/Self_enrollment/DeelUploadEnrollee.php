@@ -67,6 +67,7 @@ class DeelUploadEnrollee implements ToCollection, WithHeadingRow, WithBatchInser
                     'hire_date' => $this->changeDateFormat($row['start_date']),
                     'coverage_date' => $this->changeDateFormat($row['start_date']),
                     'certificate_no' => strtoupper($row['certificate_no']),
+                    'is_renewal' => $row['is_renewal'],
                     'form_locked' => $row['is_renewal'] == 1 ? 1 : 0,
                     'status' => $row['is_renewal'] == 1 ? 4 : 1,
                 ];
