@@ -214,7 +214,7 @@ class ManageDeelNotifications extends Controller
 
         Enrollment will officially close on ' . date('F j, Y', strtotime($dateFormLocked)) . ' and will no longer accept enrollment and any changes.<br /><br />
 
-        If you do not respond to this notification by ' . date('F j', strtotime($dateFinalWarning)) . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by ' . date('F j', strtotime($dateFormLocked)) . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
 
         If you have already completed the form, you may disregard this message.<br /><br />
 

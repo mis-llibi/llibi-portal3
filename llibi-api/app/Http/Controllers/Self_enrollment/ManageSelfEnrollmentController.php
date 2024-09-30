@@ -16,6 +16,7 @@ use App\Imports\Self_enrollment\LlibiUploadEnrollee;
 use App\Exports\Self_enrollment\LlibiExportEnrollee;
 
 use App\Imports\Self_enrollment\DeelUploadEnrollee;
+use App\Exports\Self_enrollment\DeelExportEnrollee;
 
 use App\Imports\Self_enrollment\EigthByEigthUploadEnrollee;
 use App\Exports\Self_enrollment\EigthByEigthExportEnrollee;
@@ -205,6 +206,21 @@ class ManageSelfEnrollmentController extends Controller
     );
   }
 
+  public function getAllClientsDeel($status, $company)
+  {
+    $list = DB::table('self_enrollment_members')
+      ->where('client_company', $company)
+      ->whereIn('status', [0, 1, 2, 4, 5])
+      ->where('skip_hierarchy', '!=', 1)
+      ->orderBy('member_id', 'ASC')
+      ->orderBy('id', 'ASC')
+      ->get();
+
+    return array(
+      'list' => $list,
+    );
+  }
+
   public function exportClients($company)
   {
     $exists = members::where('status', 2)
@@ -218,6 +234,8 @@ class ManageSelfEnrollmentController extends Controller
       switch ($company) {
         case 'BROADPATH':
           return Excel::download(new BroadpathExportEnrollee($company), $fileName);
+        case 'DEEL':
+          return Excel::download(new DeelExportEnrollee($company), $fileName);
         case 'LLIBI':
           return Excel::download(new LlibiExportEnrollee($company), $fileName);
         case '8X8':
