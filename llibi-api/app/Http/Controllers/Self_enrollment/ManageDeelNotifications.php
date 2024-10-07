@@ -104,7 +104,7 @@ class ManageDeelNotifications extends Controller
             ->SmsNotification($info['mobile'], $smsBody);
     }
 
-    public function rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked)
+    /* public function rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked)
     {
 
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
@@ -154,6 +154,157 @@ class ManageDeelNotifications extends Controller
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
+    } */
+
+    public function rolloverLastDayRenewal($info, $dateFinalWarning, $dateFormLocked)
+    {
+        $startDate = date('F j', strtotime($this->getDates()['dateStart']));
+        $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
+        $dateFormLocked = date('F j', strtotime($this->getDates()['dateFormLocked']));
+
+        $link =
+            '<a href="https://portal.llibi.app/self-enrollment/deel?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+
+        $body =
+            'Dear Member, <br /><br />
+
+            We have noticed that you did not complete submission of your online enrollment forms for Deel’s healthcare plan renewal on November 1, 2024.   
+
+        <br /><br />
+        In order to complete your renewal enrollment as well as that of your dependents, please visit this link ' . $link . ' and complete submission of your form online.
+        <br /><br />
+
+        If you do not respond by Thursday, October 3, 11:59 PM, we will rollover your and your dependents’ existing information for Deel’s healthcare plan renewal.
+        <br /><br />
+
+        <b>This is an auto-generated Email. Does not support replies.</b>';
+
+        $mailMsg = array(
+            'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'body' =>
+            '<table style="font-weight:normal;width:600px;">
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:normal;">' . $body . '</td>
+                    </tr>
+                </table>'
+        );
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+
+        $smsBody =
+            "From Deel & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Does not support replies and calls";
+
+        if (!empty($info['mobile'])) (new NotificationController)
+            ->SmsNotification($info['mobile'], $smsBody);
+    }
+
+    public function rolloverForce($info, $dateFinalWarning, $dateFormLocked)
+    {
+
+        $startDate = date('F j', strtotime($this->getDates()['dateStart']));
+        $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
+        $dateFormLocked = date('F j', strtotime($this->getDates()['dateFormLocked']));
+
+        $link =
+            '<a href="https://portal.llibi.app/self-enrollment/deel?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+
+        $body =
+            'Dear Member, <br /><br />
+
+            In view of Deel’s renewal on November 1, 2024, this is to notify that we will rollover your and your dependents’ existing information for Deel’s healthcare plan renewal.    <br /><br />
+            Should you require additional assistance, you may also contact Lacson & Lacson Insurance Brokers, Inc. <br /><br />
+
+            <b>Beatrice Abesamis</b><br/>
+            Corporate Accounts Executive<br />
+            Email: beatriceabesamis@llibi.com<br />
+            Mobile: 0917-8795928<br /><br />
+
+            <b>Louie Jane Padua</b><br />
+            Asst. Manager - Corporate Account Executive<br />
+            Email: louiepadua@llibi.com<br />
+            Mobile: 0917-5017637<br /><br />
+
+
+        <b>This is an auto-generated Email. Does not support replies.</b>';
+
+        $mailMsg = array(
+            'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'body' =>
+            '<table style="font-weight:normal;width:600px;">
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:normal;">' . $body . '</td>
+                    </tr>
+                </table>'
+        );
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+
+        $smsBody =
+            "From Deel & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Does not support replies and calls";
+
+        if (!empty($info['mobile'])) (new NotificationController)
+            ->SmsNotification($info['mobile'], $smsBody);
+    }
+
+    public function rolloverLastDayEnrollment($info, $dateFinalWarning, $dateFormLocked)
+    {
+
+        $startDate = date('F j', strtotime($this->getDates()['dateStart']));
+        $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
+        $dateFormLocked = date('F j', strtotime($this->getDates()['dateFormLocked']));
+
+        $link =
+            '<a href="https://portal.llibi.app/self-enrollment/deel?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+
+        $body =
+            'Dear Member, <br /><br />
+
+            We have noticed that you did not complete submission of your online enrollment forms for Deel’s healthcare plan renewal on November 1, 2024.   
+
+        <br /><br />
+        In order to complete your renewal enrollment as well as that of your dependents, please visit this link ' . $link . ' and complete submission of your form online.
+        <br /><br />
+
+        If you do not respond by Thursday, October 3, 11:59 PM, you and your dependents will not be enrolled in Deel’s healthcare plan renewal.
+        <br /><br />
+
+        <b>This is an auto-generated Email. Does not support replies.</b>';
+
+        $mailMsg = array(
+            'subject' => 'DEEL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'body' =>
+            '<table style="font-weight:normal;width:600px;">
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight:normal;">' . $body . '</td>
+                    </tr>
+                </table>'
+        );
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
     }
 
     public function rolloverWarningUntouchedForm($info, $dateFinalWarning, $dateFormLocked)
@@ -177,6 +328,7 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'ecnanalis@llibi.com',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -189,10 +341,10 @@ class ManageDeelNotifications extends Controller
         );
 
         if (!empty($info['email'])) (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
 
         if (!empty($info['email2'])) (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
 
         /* $smsBody =
             "From Deel & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Deel’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Does not support replies and calls";
@@ -214,7 +366,7 @@ class ManageDeelNotifications extends Controller
 
         Enrollment will officially close on ' . date('F j, Y', strtotime($dateFormLocked)) . ' and will no longer accept enrollment and any changes.<br /><br />
 
-        If you do not respond to this notification by ' . date('F j', strtotime($dateFinalWarning)) . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
+        If you do not respond to this notification by ' . date('F j', strtotime($dateFormLocked)) . ', you and your existing dependents will be automatically enrolled in Deel’s healthcare plan renewal.<br /><br />
 
         If you have already completed the form, you may disregard this message.<br /><br />
 
@@ -222,6 +374,7 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'deelrenewal@llibi.com',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                 <tr>
@@ -234,10 +387,10 @@ class ManageDeelNotifications extends Controller
         );
 
         if (!empty($info['email'])) (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
 
         if (!empty($info['email2'])) (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
 
         /* $smsBody =
             "From Deel & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Deel's open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Does not support replies and calls";
@@ -261,6 +414,7 @@ class ManageDeelNotifications extends Controller
 
         $mailMsg = array(
             'subject' => 'DEEL RENEWAL ENROLLMENT NOTIFICATION',
+            'bcc' =>  'deelrenewal@llibi.com',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -273,10 +427,10 @@ class ManageDeelNotifications extends Controller
         );
 
         if (!empty($info['email'])) (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
 
         if (!empty($info['email2'])) (new NotificationController)
-            ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
             "From Deel & LLIBI:\n\nThank you for your enrollment submission.\n\nEnrollment of your dependents has officially closed. All submission is final and no longer allowed to make any changes\n\nThis is an auto-generated SMS. Does not support replies and calls";
