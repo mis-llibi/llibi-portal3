@@ -159,10 +159,105 @@ class DeelExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize, Wit
         $result = (new ManageSelfEnrollmentController)->getAllClientsDeel($arr, $this->comp);
 
         $rs = array();
+        $status = '';
+        $provider = '';
+        $renewal = '';
+
+        // Variables to hold PRINCIPAL's status, provider, and renewal
+        $principalStatus = '';
+        $principalProvider = '';
+        $principalRenewal = '';
+
+        foreach ($result['list'] as $row) {
+
+            if ($row->relation == 'PRINCIPAL') {
+
+                // Store principal's status, provider, and renewal
+                $principalStatus = $row->status;
+                $principalProvider = strtoupper($row->vendor);
+                $principalRenewal = $row->is_renewal == 1 ? 'YES' : 'NO';
+            }
+
+            // Use principal's values for non-principal records
+            $rowStatus = $row->relation == 'PRINCIPAL' ? $status : $principalStatus;
+            $rowProvider = $row->relation == 'PRINCIPAL' ? strtoupper($row->vendor) : $principalProvider;
+            $rowRenewal = $row->relation == 'PRINCIPAL' ? ($row->is_renewal == 1 ? 'YES' : 'NO') : $principalRenewal;
+
+            // Set the correct status based on row status
+            switch ($row->status) {
+                case 0:
+                    $status = 'OPT-OUT';
+                    break;
+                case 1:
+                    $status = 'DID NOT RESPOND - ENROLLMENT';
+                    break;
+                case 2:
+                    $status = 'RESPONDED BUT DID NOT COMPLETE';
+                    break;
+                case 3:
+                    $status = 'REMOVED';
+                    break;
+                case 4:
+                    $status = 'DID NOT RESPOND - RENEWAL';
+                    break;
+                case 5:
+                    $status = 'COMPLETED';
+                    break;
+                default:
+                    $status = '';
+                    break;
+            }
+
+
+            $rs[] = array(
+                $row->member_id,
+                (int)$row->attachments == 1 ? '* Attachment/s is in next row' : '',
+                $status,
+                strtoupper($row->client_company),
+                $rowProvider,
+                $rowRenewal,
+                str_replace('ñ', 'Ñ', strtoupper($row->last_name)),
+                str_replace('ñ', 'Ñ', strtoupper($row->first_name)),
+                str_replace('ñ', 'Ñ', strtoupper($row->middle_name)),
+                strtoupper($row->relation),
+                strtoupper($row->civil_status),
+                strtoupper($row->gender),
+                strtoupper($row->birth_date),
+                strtoupper($row->hire_date),
+                (!empty($this->address($row->id)) ? $this->address($row->id)['address'] : ''),
+                (!empty($this->address($row->id)) ? $this->address($row->id)['mobile'] : ''),
+                (!empty($this->address($row->id)) ? $this->address($row->id)['email'] : ''),
+                (!empty($this->address($row->id)) ? $this->address($row->id)['email2'] : ''),
+                $row->certificate_no
+            );
+
+            // Add attachments if present
+            $att = attachment::where('link_id', $row->id)->get(['file_link']);
+            if ((int)$row->attachments) {
+                $ps = ['', ''];
+                foreach ($att as $key1 => $row1) {
+                    $ps[] = $row1->file_link;
+                }
+                $rs[] = $ps;
+            }
+        }
+
+        return [$rs];
+    }
+    /* public function array(): array
+    {
+        $arr = '4, 5';
+        $result = (new ManageSelfEnrollmentController)->getAllClientsDeel($arr, $this->comp);
+
+        $rs = array();
         $memId = '';
         $mbl = '';
         $dep = 0;
         $rnb = '';
+
+        $status = '';
+        $provider = '';
+        $renewal = '';
         foreach ($result['list'] as $row) {
 
             if ($row->relation == 'PRINCIPAL') {
@@ -231,6 +326,8 @@ class DeelExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize, Wit
                     break;
             }
 
+            $status = $row->relation == 'PRINCIPAL' ? $row->relation : '';
+
             $rs[] = array(
                 $row->member_id,
                 (int)$row->attachments == 1 ?
@@ -268,7 +365,7 @@ class DeelExportEnrollee implements FromArray, WithHeadings, ShouldAutoSize, Wit
             }
         }
         return [$rs];
-    }
+    } */
 
     public function address($id)
     {

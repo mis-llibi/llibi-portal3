@@ -210,7 +210,8 @@ class ManageSelfEnrollmentController extends Controller
   {
     $list = DB::table('self_enrollment_members')
       ->where('client_company', $company)
-      ->whereIn('status', [0, 1, 2, 4, 5])
+      //->where('vendor', 'PHILCARE')
+      ->whereIn('status', [5])
       ->where('skip_hierarchy', '!=', 1)
       ->orderBy('member_id', 'ASC')
       ->orderBy('id', 'ASC')
@@ -223,7 +224,7 @@ class ManageSelfEnrollmentController extends Controller
 
   public function exportClients($company)
   {
-    $exists = members::where('status', 2)
+    $exists = members::where('status', 5)
       ->where('client_company', $company)
       ->exists();
 
