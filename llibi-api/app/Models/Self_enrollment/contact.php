@@ -23,7 +23,8 @@ class contact extends Model
         'mobile_no',
     ];
 
-    public function member() {
-        return $this->belongsTo(Member::class, 'link_id');
+    public function member()
+    {
+        return $this->belongsTo(members::class, 'link_id');
     }
 }

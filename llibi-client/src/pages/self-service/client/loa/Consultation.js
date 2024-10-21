@@ -75,7 +75,7 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
     { value: 10, label: 'Sore Throat' },
     { value: 11, label: 'Eye Conditions' },
     { value: 12, label: 'Skin Conditions' },
-    { value: 13, label: 'Menstral Pain' },
+    { value: 13, label: 'Menstrual Pain' },
     { value: 14, label: 'Abdominal Pain' },
     { value: 15, label: 'Joint Pain' },
     { value: 16, label: 'Mass / Lump' },

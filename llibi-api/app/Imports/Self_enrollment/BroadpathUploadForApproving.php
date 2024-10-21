@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Self_enrollment\ManageBroadpathNotifications;
 use App\Http\Controllers\Self_enrollment\ManageBroadpathClients;
 
+use DB;
+
 class BroadpathUploadForApproving implements ToCollection, WithHeadingRow, WithBatchInserts
 {
     /**
@@ -45,17 +47,30 @@ class BroadpathUploadForApproving implements ToCollection, WithHeadingRow, WithB
     {
         if(trim(!empty($row['employeeno']))) {
 
-            $members = [
+            // Logging the data for debugging
+            \Log::info('Updating member:', [
+                'member_id' => $row['employeeno'],
+                'birth_date' => $row['dateofbirth'],
+                'client_company' => $this->comp,
                 'certificate_no' => $row['certificateno'],
                 'certificate_encode_datetime' => date('Y-m-d H:i:s'),
-                'status' => 4,
+                'status' => 5,
+            ]);
+
+            $cmembers = [
+                'certificate_no' => $row['certificateno'],
+                'certificate_encode_datetime' => date('Y-m-d H:i:s'),
+                'status' => 5,
             ];
 
-            members::where('member_id', $row['employeeno'])
+            $updateResult = DB::table('self_enrollment_members')
+                ->where('member_id', $row['employeeno'])
                 ->where('birth_date', $this->changeDateFormat($row['dateofbirth']))
                 ->where('client_company', $this->comp)
-                ->update($members);
-            
+                ->update($cmembers);
+                
+            \Log::info('Update result:', ['result' => $updateResult]);
+
             if ($index === $lastIndex[$row['employeeno']])
                 (new ManageBroadpathClients)->getDetailsOfApprovedClient($row['employeeno']);
                     

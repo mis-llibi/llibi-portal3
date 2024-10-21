@@ -40,9 +40,11 @@ class Kernel extends ConsoleKernel
 
     /**
      * @see \App\Console\Commands\members\PendingSubmissionCommand
-     * Run everyday at 2PM
+     * should run everyday at 2PM change it.
      */
-    $schedule->command('pending-for-submission')->everyMinute();
+    // $schedule->command('pending-for-submission')->everyMinute();
+
+    // CHEKCING STATUS OF INFOBIP IF WORKING
     $schedule->command('checking-infobip-status')->everySixHours();
   }
 
