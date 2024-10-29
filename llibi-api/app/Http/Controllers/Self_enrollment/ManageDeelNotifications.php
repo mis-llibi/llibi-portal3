@@ -858,4 +858,31 @@ class ManageDeelNotifications extends Controller
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
     }
+
+    public function approvedWelcomeEmail($info)
+    {
+        if ($info['vendor'] == 'PHILCARE' && $info['is_renewal'] == 0) {
+            $subject = 'PHILCARE - HMO ENROLLMENT';
+        } else if ($info['vendor'] == 'MAXICARE' && $info['is_renewal'] == 0) {
+            $subject = 'MAXICARE - HMO ENROLLMENT';
+        } else {
+            $subject = 'DEEL RENEWAL ENROLLMENT NOTIFICATION';
+        }
+
+        $mailMsg = array(
+            'body' => view('self-enrollment/send-apology-error-link', [
+                'subject' => $subject,
+                'provider' => strtolower(ucwords($info['vendor'])),
+            ]),
+            'subject' => 'DEEL: ERRONEOUS EMAIL LINK',
+            'bcc' =>  'deelrenewal@llibi.com',
+            'name' => 'Deel Renewal',
+        );
+
+        if (!empty($info['email'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email'], $mailMsg);
+
+        if (!empty($info['email2'])) (new NotificationController)
+            ->MailNotification($info['name'], $info['email2'], $mailMsg);
+    }
 }

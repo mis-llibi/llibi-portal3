@@ -675,7 +675,7 @@ class ManageDeelClients extends Controller
         dd([$notificationTitle => $notification]);
     }
 
-    public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
+    public function checkRemindersx_1($checkdate, $dateFinalWarning, $dateFormLocked)
     {
 
         $arr = [
@@ -746,6 +746,91 @@ class ManageDeelClients extends Controller
         }
 
         dd([$notificationTitle => $result]);
+    }
+
+    public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
+    {
+        $list = DB::table('self_enrollment_members as t1')
+            ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
+            ->select(
+                't1.id',
+                't1.is_renewal',
+                't1.vendor',
+                't1.last_name',
+                't1.first_name',
+                't1.hash',
+                't1.upload_date',
+                't1.status',
+                't1.form_locked',
+                't2.email',
+                't2.email2',
+                't2.mobile_no'
+            )
+            ->whereIn('t1.status', [5])
+            //->whereIn('t1.member_id', ['LLIBI002063'])
+            ->where('client_company', 'DEEL')
+            ->where('t1.relation', 'PRINCIPAL')
+            ->limit(1)
+            ->orderBy('t1.id', 'DESC')
+            ->get();
+
+        $notificationTitle = 'No Reminders For Sending...';
+        $notification = [];
+
+        $app = 'SELF-ENROLLMENT';
+        $clientCompany = 'DEEL';
+        //check if there is still enrollee needs to be reminded
+        if (count($list) > 0) {
+
+            foreach ($list as $key => $row) {
+
+                $exist = NotificationStatus::where('app', $app)
+                    ->where('client_id', $row->id)
+                    ->where('client_company', $clientCompany)
+                    ->whereIn('status', [
+                        'SEND WELCOME EMAIL: APPROVED ENROLLMENT',
+                    ])
+                    ->where('date', $checkdate)
+                    ->exists();
+
+                $info = [
+                    'hash'   => $row->hash,
+                    'name'   => $row->last_name . ', ' . $row->first_name,
+                    'email'  => 'markimperial@llibi.com', //$row->email,
+                    'email2' => 'mc_cimperial@yahoo.com', //$row->email2,
+                    'mobile' => '0' . $row->mobile_no,
+                    'vendor' => $row->vendor,
+                    'is_renewal' => $row->is_renewal,
+                ];
+
+                if (!$exist) {
+
+                    $notificationTitle = 'Approved: Welcome Email';
+                    $notification[] = [
+                        'Message' => 'Notification Sent',
+                        'to' => $info
+                    ];
+
+                    //check if there is notification set on that day
+                    (new ManageDeelNotifications)
+                        ->inviteApology($info, $dateFinalWarning, $dateFormLocked);
+
+                    //$status = 0;
+                    $status = 'SEND WELCOME EMAIL: APPROVED ENROLLMENT';
+
+                    if ($status != 0)
+                        NotificationStatus::create([
+                            'app' => $app,
+                            'client_id' => $row->id,
+                            'client_company' => $clientCompany,
+                            'status' => $status,
+                            'date' => $checkdate
+                        ]);
+                }
+            }
+        }
+
+        dd([$notificationTitle => $notification]);
     }
 
     public function checkRemindersxx($checkdate, $dateFinalWarning, $dateFormLocked)
