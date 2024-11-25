@@ -231,15 +231,27 @@ const Form = ({ setRequest, row }) => {
     }
   }, [])
 
+  const linkChecker = Link => {
+    // Check if the link starts with http or https
+    if (!Link.match(/^(http|https):/)) {
+      console.log(`${basePath}/${Link}`)
+      return `${basePath}/${Link}`
+    }else{
+      return Link
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit(submitForm)}>
       <div className="flex">
         <div className="basis-3/5">
           <div className="flex flex-col h-screen">
-            {client?.loaAttachment && client?.status !== 4 ? (
+            {
+            
+            client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
-                data={`${basePath}/${client?.loaAttachment}`}
+                data={linkChecker(client?.loaAttachment)}
                 type="application/pdf"></object>
             ) : (
               <div className="flex flex-grow bg-black/30 justify-center place-items-center py-10">
@@ -384,10 +396,7 @@ const Form = ({ setRequest, row }) => {
                 <InputFile
                   id="attachLOA"
                   register={{
-                    ...register('attachLOA', {
-                      required:
-                        watch('status') === '3' && 'LOA Attachment is required',
-                    }),
+                    ...register('attachLOA'),
                   }}
                   disabled={watch('status') === '3' ? false : true}
                   type="file"
@@ -397,28 +406,19 @@ const Form = ({ setRequest, row }) => {
                   errors={errors?.attachLOA}
                 />
               </div>
-              {/* <div className="mb-3 border-b-2 border-dotted pb-1">
-                                <Label
-                                    htmlFor="loaNumber"
-                                    className="text-bold text-md">
-                                    LOA NUMBER:
-                                </Label>
-                                <Input
-                                    id="loaNumber"
-                                    register={{
-                                        ...register('loaNumber', {
-                                            required:
-                                                watch('status') === '3' &&
-                                                'LOA # is required',
-                                        }),
-                                    }}
-                                    disabled={
-                                        watch('status') === '3' ? false : true
-                                    }
-                                    placeholder="LOA Number"
-                                    errors={errors?.loaNumber}
-                                />
-                            </div> */}
+              <div className="mb-3 border-b-2 border-dotted pb-1">
+                <Label htmlFor="loaNumber" className="text-bold text-md">
+                  LOA NUMBER:
+                </Label>
+                <Input
+                  id="loaNumber"
+                  register={register('loaNumber')}
+                  disabled={watch('status') !== '3'}
+                  placeholder="LOA Number"
+                  errors={errors?.loaNumber}
+                />
+              </div>
+
               {/*
                                 <div className="mb-3 border-b-2 border-dotted pb-1">
                                     <Label className="text-bold text-md">

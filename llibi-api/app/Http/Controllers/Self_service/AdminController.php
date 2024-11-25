@@ -128,17 +128,35 @@ class AdminController extends Controller
 
     $update = [];
     $loa = [];
+
+    $directory = 'Self-service/LOA/' . $client[0]->memberID;
+
+    if(!Storage::disk('llibiapp')->exists($directory)){
+      Storage::disk('llibiapp')->makeDirectory($directory);
+    }
+
     if ((int)$request->status == 3) {
       $title = strtoupper($request->loaNumber);
       $this->validate($request, [
         'attachLOA' => 'required|mimes:pdf',
       ]);
 
-      $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
+      //Define the file name and directory path
+      $member_id = $client[0]->memberID;
+      $current_date = Carbon::now()->format('Ymd');
+      $created_at = Carbon::parse($client[0]->createdAt)->format('Ymd_His');
+      $fileName = $member_id . '_' . $current_date . '_' . $created_at . '.pdf';
+      $path = $directory . '/' . $fileName;
+
+      $uploadedPath = $request->file('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
+      $fileLink = env('DO_LLIBI_CDN_ENDPOINT') . '/' . $path;
+
+
+      // $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
 
       $update = [
-        'loa_attachment' => 'storage/' . $path,
-        'loa_number' => strtoupper($request->loaNumber),
+        'loa_attachment' => $fileLink,
+        'loa_number' => strtoupper($request->loaNumber), // Ensure LOA Number is stored
         'approval_code' => strtoupper($request->approvalCode)
       ];
 
