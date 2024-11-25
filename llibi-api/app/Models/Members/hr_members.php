@@ -115,6 +115,7 @@ class hr_members extends Model
           StatusEnum::APPROVED_DELETION->value => 'Approved Deletion',
           StatusEnum::APPROVED_CHANGE_PLAN->value => 'Approved Change Plan',
           StatusEnum::DISAPPROVED_MEMBER->value => 'Disapproved Member',
+          StatusEnum::PENDING_DOCUMENTS->value => 'Pending Documents',
           default => '',
         };
       },
@@ -192,12 +193,28 @@ class hr_members extends Model
      * 3 Pending deletion
      * 5 pending correction
      * 8 pending change plan
+     * 11 pending documents
      */
     $query->whereIn('status', [
       StatusEnum::PENDING_MEMBER->value,
       StatusEnum::PENDING_DELETION->value,
       StatusEnum::PENDING_CORRECTION->value,
-      StatusEnum::PENDING_CHANGE_PLAN->value
+      StatusEnum::PENDING_CHANGE_PLAN->value,
+      StatusEnum::PENDING_DOCUMENTS->value
+    ]);
+  }
+
+  public function scopeActiveMembersWithPending(Builder $query): void
+  {
+    /**
+     * 3 Pending deletion
+     * 5 pending correction
+     * 8 pending change plan
+     */
+    $query->whereIn('status', [
+      StatusEnum::PENDING_DELETION->value,
+      StatusEnum::PENDING_CORRECTION->value,
+      StatusEnum::PENDING_CHANGE_PLAN->value,
     ]);
   }
 
@@ -209,6 +226,11 @@ class hr_members extends Model
   public function scopeDisapprovedMember(Builder $query): void
   {
     $query->where('status', StatusEnum::DISAPPROVED_MEMBER->value);
+  }
+
+  public function scopePendingDocuments(Builder $query): void
+  {
+    $query->where('status', StatusEnum::PENDING_DOCUMENTS->value);
   }
 
 

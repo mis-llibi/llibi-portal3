@@ -477,7 +477,7 @@ class ManageDeelClients extends Controller
     }
 
     //CHECKING OF NOTIFICATION
-    public function checkRemindersxx($checkdate, $dateFinalWarning, $dateFormLocked)
+    public function checkReminders1($checkdate, $dateFinalWarning, $dateFormLocked)
     {
         $list = DB::table('self_enrollment_members as t1')
             ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
@@ -495,13 +495,14 @@ class ManageDeelClients extends Controller
                 't2.email2',
                 't2.mobile_no'
             )
-            ->whereIn('t1.status', [1, 2, 4])
+            //->whereIn('t1.status', [1, 2, 4])
+            ->whereIn('t1.status', [2])
             //->whereIn('t1.member_id', ['LLIBI002063', 'LLIBI002062'])
             ->where('client_company', 'DEEL')
             ->where('t1.relation', 'PRINCIPAL')
-            ->where('t1.plan', 'x')
-            ->where('t1.form_locked', 1)
-            ->orderBy('t1.id', 'DESC')
+            //->where('t1.form_locked', 1)
+            //->limit(1)
+            //->orderBy('t1.id', 'DESC')
             ->get();
 
         $notificationTitle = 'No Reminders For Sending...';
@@ -530,13 +531,13 @@ class ManageDeelClients extends Controller
                 $info = [
                     'hash'   => $row->hash,
                     'name'   => $row->last_name . ', ' . $row->first_name,
-                    'email'  => $row->email,
-                    'email2' => $row->email2,
+                    'email'  => 'markimperial@llibi.com', //$row->email,
+                    'email2' => '', //$row->email2,
                     'mobile' => $row->mobile_no
                 ];
 
                 //check if there is notification set on that day
-                if (!$exist) {
+                if ($exist) {
 
                     if ($dateFormLocked >= $checkdate && $dateFormLocked != $checkdate) {
 
@@ -609,7 +610,7 @@ class ManageDeelClients extends Controller
                             }
 
                             //SEND WARNING FOR NO INTERACTION ON JUNE 18, 2024
-                            if ($row->status == 4 && $checkdate == '2024-09-26') {
+                            if ($row->status == 4 && $checkdate == '2024-09-20') {
                                 $notificationTitle = 'Reminder: No Interaction';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
@@ -675,6 +676,79 @@ class ManageDeelClients extends Controller
     }
 
     public function checkReminders($checkdate, $dateFinalWarning, $dateFormLocked)
+    {
+
+        $arr = [
+            '39868rk',
+            'mxxjq7k',
+            'meq9k45',
+            'mjp528v',
+            'm4qg96g',
+            '3pzv2k6',
+            '3pzrgzy',
+            'mw4gnvx',
+            '3rgyvwn',
+            'm986vvd',
+            '3kpxk5n',
+            'm4qyxej',
+            '3vzjz48',
+            'meqy9dg',
+            '3z9w95q'
+        ];
+
+        $list = DB::table('self_enrollment_members as t1')
+            ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')
+            ->select(
+                't1.id',
+                't1.is_renewal',
+                't1.vendor',
+                't1.last_name',
+                't1.first_name',
+                't1.hash',
+                't1.upload_date',
+                't1.status',
+                't1.form_locked',
+                't2.email',
+                't2.email2',
+                't2.mobile_no'
+            )
+            //->whereIn('t1.status', [2])
+            //->where('t1.is_renewal', 0)
+            ->whereIn('t1.member_id', $arr)
+            ->where('client_company', 'DEEL')
+            ->where('t1.relation', 'PRINCIPAL')
+            ->orderBy('t1.id', 'DESC')
+            ->get();
+
+        $notificationTitle = 'No Reminders For Sending...';
+        $notification = [];
+
+        $app = 'SELF-ENROLLMENT';
+        $clientCompany = 'DEEL';
+        //check if there is still enrollee needs to be reminded
+        if (count($list) > 0) {
+
+            foreach ($list as $key => $row) {
+
+                $info = [
+                    'hash'   => $row->hash,
+                    'name'   => $row->last_name . ', ' . $row->first_name,
+                    'email'  => $row->email,
+                    //'email2' => $row->email2,
+                ];
+
+                $result = (new ManageDeelNotifications)->rolloverForce($info, $dateFinalWarning, $dateFormLocked);
+
+                //$result = (new ManageDeelNotifications)->rolloverLastDayRenewal($info, $dateFinalWarning, $dateFormLocked);
+
+                //$result = (new ManageDeelNotifications)->rolloverLastDayEnrollment($info, $dateFinalWarning, $dateFormLocked);
+            }
+        }
+
+        dd([$notificationTitle => $result]);
+    }
+
+    public function checkRemindersxx($checkdate, $dateFinalWarning, $dateFormLocked)
     {
         $list = DB::table('self_enrollment_members as t1')
             ->join('self_enrollment_contact as t2', 't1.id', '=', 't2.link_id')

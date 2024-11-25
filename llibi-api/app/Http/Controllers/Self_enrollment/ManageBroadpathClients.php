@@ -70,6 +70,16 @@ class ManageBroadpathClients extends Controller
         }
     }
 
+    public function checkIfExistingPrincipal($member_id, $birthDate)
+    {
+        $exist =
+            members::where('member_id', $member_id)
+            ->where('birth_date', $birthDate)
+            ->exists();
+
+        return $exist;
+    }
+
     public function updateClientInfo(Request $request)
     {
         if (isset($request->rollover)) {
@@ -309,9 +319,9 @@ class ManageBroadpathClients extends Controller
 
         $info = [
             'name' => $principal[0]->last_name . ', ' . $principal[0]->first_name,
-            'email'  => $upContact[0]->email,
-            'email2' => $upContact[0]->email2,
-            'mobile' => $upContact[0]->mobile_no,
+            'email'  => $contact[0]->email,
+            'email2' => $contact[0]->email2,
+            'mobile' => $contact[0]->mobile_no,
             'address' => $contact[0]->street . ', ' . $contact[0]->barangay . ', ' . $contact[0]->city . ', ' . $contact[0]->province . ', ' . $contact[0]->zip_code,
             'depInfo' => $depInfo,
             'succeeding' => $succeeding,
@@ -784,7 +794,7 @@ class ManageBroadpathClients extends Controller
                 't2.mobile_no'
             )
             ->whereIn('t1.status', [1, 2, 4])
-            //->whereIn('t1.member_id', ['301230'])
+            //->whereIn('t1.member_id', ['LLIBI0027'])
             ->where('client_company', 'BROADPATH')
             ->where('t1.relation', 'PRINCIPAL')
             ->where('t1.form_locked', 1)
@@ -841,9 +851,6 @@ class ManageBroadpathClients extends Controller
 
                                 (new ManageBroadpathNotifications)
                                     ->rolloverInvite($info, $dateFinalWarning, $dateFormLocked);
-
-                                /* (new ManageBroadpathNotifications)
-                                    ->reminderTomorrowStart($info, $dateFinalWarning, $dateFormLocked); */
 
                                 //$status = 0;
                                 $status = 'START RENEWAL: FIRST DAY ENROLLMENT';
@@ -928,8 +935,8 @@ class ManageBroadpathClients extends Controller
 
                         //set form to locked
                         members::where('id', $row->id)
-                            ->where('status', 4)
                             ->update([
+                                'status' => 5,
                                 'form_locked' => 2,
                                 'kyc_timestamp' => date('Y-m-d H:i:s')
                             ]);

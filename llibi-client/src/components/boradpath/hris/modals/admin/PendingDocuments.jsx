@@ -11,17 +11,17 @@ import { useForm } from 'react-hook-form'
 import axios from '@/lib/axios'
 import Swal from 'sweetalert2'
 
-const DOCUMENT_LISTS = [
-  { title: 'Birth certificate' },
-  { title: 'Marriage certificate' },
-  { title: 'CENOMAR' },
-  { title: 'Certificate of cohabitation (6 months)' },
-  { title: 'Death Certificate' },
-  { title: 'Legal Separation/ Annulment/ Divorce documents' },
-  { title: 'Certificate of other health insurance coverage ' },
-  { title: 'Work Visa/ Certificate of work employment abroad  ' },
-  { title: 'Others' },
-]
+const DOCUMENT_LISTS = {
+  bc: 'Birth certificate',
+  mc: 'Marriage Certificate',
+  ceno: 'CENOMAR',
+  cocoha: 'Certificate of cohabitation (6 months)',
+  dc: 'Death Certificate',
+  divo: 'Legal Separation/ Annulment/ Divorce documents',
+  coohic: 'Certificate of other health insurance coverage',
+  cowea: 'Work Visa/ Certificate of work employment abroad ',
+  oth: 'Others',
+}
 
 export default function PendingDocuments({
   row,
@@ -33,23 +33,33 @@ export default function PendingDocuments({
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({ mode: 'onChange' })
 
   const watchFields = watch()
 
   const submitForm = async data => {
-    console.log(data)
-    return
+    const payload = {}
+
+    for (const [key, value] of Object.entries(DOCUMENT_LISTS)) {
+      if (data[key]) {
+        payload[key] = data[key]
+      }
+
+      if (data.oth) {
+        payload['other_document'] = data.other_document
+      }
+    }
+
+    payload['member_id'] = row.id
+
     try {
-      const response = await axios.patch(
-        `/api/admin/pending-documents/${row.id}`,
-        data,
-      )
+      const response = await axios.post(`/api/admin/pending-documents`, payload)
       // console.log(response.data)
       mutate()
       handleClose()
-      Swal.fire('Success', response?.data?.message, 'success')
+      Swal.fire('Success', 'Pending documents successfully sent', 'success')
     } catch (error) {
       Swal.fire('Error', 'Something went wrong', 'error')
     }
@@ -58,6 +68,10 @@ export default function PendingDocuments({
   const handleClose = () => {
     setShowModal(false)
   }
+
+  useEffect(() => {
+    setValue('other_document', '')
+  }, [watch('oth')])
 
   return (
     <>
@@ -70,52 +84,132 @@ export default function PendingDocuments({
         <form onSubmit={handleSubmit(submitForm)}>
           <DialogContent>
             <Box className="font-[poppins]">
-              <div className="mb-3">
-                <Label>Document Requirement</Label>
-                {/* <input
-                  type="date"
-                  defaultValue={moment().format('Y-MM-DD')}
-                  className="w-full rounded-md"
-                  {...register('approved_deleted_member_at', {
-                    required: 'Deletion Date is required.',
-                  })}
-                /> */}
-                <select
-                  name="pending_documents"
-                  id="pending_documents"
-                  className="w-full rounded-md"
-                  {...register('pending_document', {
-                    required: 'Document is required please select',
-                  })}>
-                  {DOCUMENT_LISTS.map(item => (
-                    <option key={item.title} value={item.title.toUpperCase()}>
-                      {item.title}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-red-600 text-xs">
-                  {errors?.pending_document?.message}
-                </span>
-              </div>
-              {watchFields.pending_document === 'OTHERS' && (
-                <div className="mb-3">
-                  <Label>Remarks</Label>
-                  <textarea
-                    type="text"
-                    className="w-full rounded-md"
-                    rows={3}
-                    {...register('remarks', {
-                      required:
-                        watchFields.pending_document === 'OTHERS'
-                          ? 'Remarks is required.'
-                          : false,
-                    })}
-                  />
-                  <span className="text-red-600 text-xs">
-                    {errors?.remarks?.message}
-                  </span>
-                </div>
-              )}
+              <table className="w-full text-xs md:text-base">
+                <tbody>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.bc}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.bc}
+                        {...register('bc')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.mc}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.mc}
+                        {...register('mc')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.ceno}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.ceno}
+                        {...register('ceno')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.cocoha}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.cocoha}
+                        {...register('cocoha')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.coohic}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.coohic}
+                        {...register('coohic')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.cowea}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.cowea}
+                        {...register('cowea')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.dc}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.dc}
+                        {...register('dc')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.divo}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.divo}
+                        {...register('divo')}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 border border-gray-100 py-2">
+                      {DOCUMENT_LISTS.oth}
+                    </td>
+                    <td className="border w-14 md:w-48 text-center">
+                      <input
+                        type="checkbox"
+                        defaultValue={DOCUMENT_LISTS.oth}
+                        {...register('oth')}
+                      />
+                    </td>
+                  </tr>
+                  {watch('oth') && (
+                    <tr>
+                      <td className="px-3 border border-gray-100 py-2">
+                        Other Document
+                      </td>
+                      <td className="px-3 border border-gray-100 py-2">
+                        <textarea
+                          row={2}
+                          className="border-gray-300 text-xs"
+                          {...register('other_document')}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </Box>
           </DialogContent>
           <DialogActions className="font-[poppins]">

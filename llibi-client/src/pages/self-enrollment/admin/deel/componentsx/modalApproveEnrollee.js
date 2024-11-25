@@ -9,9 +9,7 @@ import { useForm } from 'react-hook-form'
 
 import { ManageClientsApproval } from '@/hooks/self-enrollment/ManageClientsApproval'
 
-import Swal from 'sweetalert2'
-
-const ModalUpdateEnrollee = ({
+const ModalApproveEnrollee = ({
     data,
     company,
     update,
@@ -26,27 +24,16 @@ const ModalUpdateEnrollee = ({
         formState: { errors },
     } = useForm()
 
-    const { clients } = ManageClientsApproval({
+    const { approvals } = ManageClientsApproval({
         memberId: data?.member_id,
         company: company,
     })
 
+    //console.log(approvals)
+
     const submitForm = data => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text:
-                'System will send email and sms notification to this client, do you want to continue?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, submit it!',
-        }).then(result => {
-            if (result.isConfirmed) {
-                setLoading(true)
-                update({ ...data, setLoading, setShow, reset })
-            }
-        })
+        setLoading(true)
+        update({ ...data, setLoading, setShow, reset })
     }
 
     return (
@@ -220,21 +207,6 @@ const ModalUpdateEnrollee = ({
                         />
                     </div>
                     <div className="mt-2">
-                        <Label htmlFor="altEmail">
-                            Alternate Email Address
-                        </Label>
-                        <Input
-                            id="altEmail"
-                            type="altEmail"
-                            className="block mt-1 w-full"
-                            register={register('altEmail', {
-                                required: 'Email address is required',
-                            })}
-                            defaultValue={data?.email2}
-                            errors={errors?.altEmail}
-                        />
-                    </div>
-                    <div className="mt-2">
                         <Label htmlFor="mobile">Mobile No.</Label>
                         <Input
                             id="mobile"
@@ -362,11 +334,11 @@ const ModalUpdateEnrollee = ({
                                 <th className="border">Name</th>
                                 <th className="border">Relation</th>
                                 <th className="border">Certificate #</th>
-                                <th className="border">Date/Time</th>
+                                <th className="border">Encode Date/Time</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {clients?.map((item, i) => (
+                            {approvals?.map((item, i) => (
                                 <tr key={i}>
                                     <td className="border p-2">
                                         {item.first_name} {item.last_name}
@@ -393,46 +365,17 @@ const ModalUpdateEnrollee = ({
                                 </tr>
                             ))}
                         </tbody>
-
-                        {/* <tbody>
-                            {clients &&
-                                clients?.map((item, i) => (
-                                    <tr key={i}>
-                                        <td className="border p-2">
-                                            {item.first_name} {item.last_name}
-                                        </td>
-                                        <td className="border p-2">
-                                            {item.relation}
-                                        </td>
-                                        <td className="border p-2">
-                                            {item.birth_date}
-                                        </td>
-                                        <td className="border p-2">
-                                            <InputCheckBox
-                                                type="checkbox"
-                                                label="Remove this member"
-                                                labelClass="text-red-800"
-                                                register={register(
-                                                    `cancelBox${item.id}`,
-                                                )}
-                                                className={'capitalize'}
-                                                errors={errors?.cancelBox}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody> */}
                     </table>
                 </div>
 
                 <Button
                     className="bg-blue-400 hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ring-blue-200 my-2"
                     loading={loading}>
-                    Update Member & Dependents
+                    Update Enrollee & Dependents
                 </Button>
             </form>
         </div>
     )
 }
 
-export default ModalUpdateEnrollee
+export default ModalApproveEnrollee

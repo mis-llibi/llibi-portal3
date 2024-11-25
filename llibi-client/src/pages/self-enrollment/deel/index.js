@@ -30,7 +30,7 @@ const Home = () => {
     handleSubmit,
     reset,
     setValue,
-    formState: { isDirty, errors },
+    formState: { errors },
   } = useForm()
 
   const [page, setPage] = useState(false)
@@ -43,12 +43,18 @@ const Home = () => {
     setValue('gender', client?.principal[0]?.gender)
     setValue('civil_status', client?.principal[0]?.civil_status)
 
-    if (client?.principal[0]?.form_locked == 1) {
-      window.location.pathname = `/self-enrollment/deel/form-locked`
+    if (
+      client?.principal[0]?.form_locked == 2 ||
+      client?.principal[0]?.form_locked == 3
+    ) {
+      window.location.pathname = `/self-enrollment/deel/form-locked-submitted`
     } else {
       if (client?.principal.length > 0)
         if (client?.principal[0]?.status == 2) {
           window.location.pathname = `/self-enrollment/deel/dependents/`
+        } else if (client?.principal[0]?.status == 4) {
+          window.location.pathname = `/self-enrollment/deel/rollover/`
+          //window.location.pathname = `/self-enrollment/broadpath/form-locked`
         } else {
           setPage(true)
         }
@@ -86,8 +92,8 @@ const Home = () => {
               <div>
                 {/* client logo */}
                 <img
-                  src={`${basePath}/self-enrollment/llibi/logo.png`}
-                  width={150}
+                  src={`${basePath}/self-enrollment/deel/logo.jpg`}
+                  width={100}
                 />
               </div>
               <div className="flex-grow flex place-items-center">
@@ -264,10 +270,10 @@ const Home = () => {
               </div>
 
               <div className="">
-                <Button onClick={handleSubmit(onSubmit)}>
+                <Button className="mr-2" onClick={handleSubmit(onSubmit)}>
                   Proceed to Enrollment
                 </Button>
-                <Button>I do not want to Enroll</Button>
+                <Button className="bg-red-400">I do not want to Enroll</Button>
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Self_enrollment;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+//use Illuminate\Http\Request;
 
 use App\Http\Controllers\NotificationController;
 
@@ -149,7 +149,6 @@ class ManageBroadpathNotifications extends Controller
 
     public function rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked)
     {
-
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
 
         $link = '<a href="https://portal.llibi.app/self-enrollment/broadpath?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
@@ -171,13 +170,13 @@ class ManageBroadpathNotifications extends Controller
             'subject' => 'BROADPATH RENEWAL ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight:normal;">' . $body . '</td>
-                    </tr>
-                </table>'
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="font-weight:normal;">' . $body . '</td>
+                </tr>
+            </table>'
         );
 
         if (!empty($info['email'])) (new NotificationController)
@@ -287,6 +286,7 @@ class ManageBroadpathNotifications extends Controller
 
         if (!empty($info['email'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+
         if (!empty($info['email2'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
@@ -330,6 +330,7 @@ class ManageBroadpathNotifications extends Controller
 
         if (!empty($info['email'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+
         if (!empty($info['email2'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
@@ -422,7 +423,7 @@ class ManageBroadpathNotifications extends Controller
         $attachment = [
             //'public/Self_enrollment/Broadpath/001Welcome_pack/BROADPATH - WELCOME LETTER 2024.pdf',
             //'public/Self_enrollment/Broadpath/001Welcome_pack/Broadpath NTP.pdf',
-            'public/Self_enrollment/Broadpath/001Welcome_pack/SOC_SME LUXE- BROADPATH.pdf',
+            'public/Self_enrollment/Broadpath/001Welcome_pack/SOC_SME LUXE - BROADPATH.pdf',
         ];
 
         $mailMsg = array(
@@ -433,6 +434,7 @@ class ManageBroadpathNotifications extends Controller
 
         if (!empty($info['email'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email'], $mailMsg);
+
         if (!empty($info['email2'])) (new NotificationController)
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
