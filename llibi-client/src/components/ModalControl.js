@@ -1,20 +1,20 @@
 import { useState } from 'react'
 
 const ModalControl = () => {
-    const [show, setShow] = useState(false)
-    const [body, setBody] = useState()
+  const [show, setShow] = useState(false)
+  const [body, setBody] = useState()
 
-    function toggle() {
-        setShow(!show)
-    }
+  function toggle() {
+    setShow(!show)
+  }
 
-    return {
-        show,
-        setShow,
-        body,
-        setBody,
-        toggle,
-    }
+  return {
+    show,
+    setShow,
+    body,
+    setBody,
+    toggle,
+  }
 }
 
 export default ModalControl

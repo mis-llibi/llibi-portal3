@@ -453,8 +453,11 @@ const Client = () => {
                             id="scheduleCall"
                             value="2"
                             className="w-3 h-3"
+                            disabled
                           />{' '}
-                          <Label htmlFor="scheduleCall">
+                          <Label
+                            htmlFor="scheduleCall"
+                            className={'!text-gray-400'}>
                             Request for Callback / Schedule a Call
                           </Label>
                         </li>
