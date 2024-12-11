@@ -12,8 +12,8 @@ const nextConfig = {
     PUSHER_APP_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
   },
   trailingSlash: true,
-  basePath: isProd ? 'https://portal.llibi.app/server' : 'http://localhost:8000',
-  //basePath: isProd ? '/portal' : '',
+//   basePath: isProd ? 'https://portal.llibi.app/server' : 'http://localhost:8000',
+  basePath: isProd ? '/portal' : '',
   // assetPrefix: isProd ? 'https://portal.llibi.app' : 'http://localhost:3000',
 }
 
