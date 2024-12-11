@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000'), 'http://localhost:5173', 'https://llibi-brgraph-frontend-test.vercel.app', 'https://llibi-portal3.onrender.com'],
+    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000'), 'http://localhost:5173', 'https://llibi-brgraph-frontend-test.vercel.app', 'https://llibi-portal3.onrender.com', 'http://localhost:3000'],
 
     'allowed_origins_patterns' => [],
 
