@@ -1,12 +1,14 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 // Components
 import ProviderLayout from '@/components/Layouts/Self-service/ProviderLayout';
 import Clock from 'react-live-clock';
 import Input from '@/components/Input';
 import InputSelect from '@/components/callback-request-components/InputSelect';
+import { PuffLoader } from 'react-spinners';
 
 // Logo
 import ApplicationLogo from '@/components/ApplicationLogo';
@@ -21,6 +23,10 @@ import Select from '@/components/Select';
 
 export default function CallbackRequest() {
   const [status, setStatus] = useState([]);
+  const [firstName, setFirstName] = useState("")
+  const [middleName, setMiddleName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [loading, setloading] = useState(false)
 
   const options = [
     { value: '', label: 'No options' },
@@ -39,6 +45,10 @@ export default function CallbackRequest() {
 
   const selectedOption = watch('selectOptions'); // Watch the selected value of Select
 
+  const router = useRouter()
+
+  const {emplid} = router.query
+
   const getHospitals = async () => {
     try {
       const response = await axios.get('/api/hospitals');
@@ -52,9 +62,30 @@ export default function CallbackRequest() {
     }
   };
 
+  const getMasterlist = async (emplid) => {
+    setloading(true)
+
+    try {
+        const response = await axios.get('/api/getMasterlist', {params: {
+            emplid:emplid
+        }})
+        // console.log(response.data)
+        setFirstName(response.data.first_name)
+        setLastName(response.data.last_name)
+        setMiddleName(response.data.middle_name)
+        setloading(false)
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
   useEffect(() => {
     getHospitals();
-  }, []);
+    // console.log(emplid)
+    if(emplid !== undefined){
+        getMasterlist(emplid)
+    }
+  }, [emplid]);
 
   useEffect(() => {
     if(selectedOption === '2'){
@@ -62,8 +93,22 @@ export default function CallbackRequest() {
     }
   }, [selectedOption, setValue])
 
-  const submitForms = (data) => {
-    console.log('Form Data:', data);
+  const submitForms = async(data) => {
+
+    const dataForm = {
+        data:data,
+        emplID:emplid,
+        callbackRequest:true,
+        first_name:firstName,
+        last_name:lastName
+    }
+
+    try {
+        const response = await axios.post('/api/submitCallback', dataForm)
+        console.log(response.data)
+    } catch (error) {
+        console.log(error)
+    }
   };
 
   return (
@@ -80,7 +125,16 @@ export default function CallbackRequest() {
                 <div className="flex flex-col justify-center items-center gap-5 font-bold text-xl text-gray-900 md:flex-row md:justify-between px-3 ">
                   <ApplicationLogo width={200} />
                   <div className="text-center">
-                    <h1 className="text-[#FD9727] md:text-right">Contact Us</h1>
+                    <h1 className="text-[#FD9727] md:text-right">Contact Us
+                        {/* {emplid} */}
+                    </h1>
+                    {loading ?
+                        <div className='flex justify-center items-center md:justify-end'>
+                            <PuffLoader />
+                        </div> :
+                        <p className='text-sm md:text-right'>Hello, <span className='text-[#FD9727] '>{lastName}, {firstName} {middleName}.</span></p>
+                    }
+
                     <p className="text-sm text-shadow-lg text-gray-700">
                       <Clock
                         format={'dddd, MMMM Do, YYYY, h:mm:ss A'}
@@ -120,9 +174,7 @@ export default function CallbackRequest() {
                             <Input
                             className="w-full"
                             placeholder="02"
-                            register={register('landline', {
-                                required: 'Landline is required',
-                            })}
+                            register={register('landline')}
                             errors={errors?.landline}
                             />
                         </div>
@@ -131,9 +183,7 @@ export default function CallbackRequest() {
                             <InputSelect
                             id="searchStatus"
                             label="Search Provider"
-                            register={register('hospital', {
-                                required: 'Hospital is required',
-                            })}
+                            register={register('hospital')}
                             errors={errors?.hospital}
                             option={status}
                             control={control}
@@ -148,21 +198,6 @@ export default function CallbackRequest() {
                                 required: 'Mobile number is required',
                             })}
                             errors={errors?.mobile}
-                            />
-                        </div>
-                        <div>
-                            <h1 className="text-[0.6rem] lg:text-[0.8rem] font-bold">Email:</h1>
-                            <Input
-                            className="w-full"
-                            placeholder="example@gmail.com"
-                            register={register('email', {
-                                required: 'Email is required',
-                                pattern: {
-                                value: /^\S+@\S+$/i,
-                                message: 'Invalid email format',
-                                },
-                            })}
-                            errors={errors?.email}
                             />
                         </div>
                         <div className="my-5 col-span-2 flex flex-col justify-center items-center ">
@@ -190,9 +225,7 @@ export default function CallbackRequest() {
                             <Input
                             className="w-full"
                             placeholder="02"
-                            register={register('landline', {
-                                required: 'Landline is required',
-                            })}
+                            register={register('landline')}
                             errors={errors?.landline}
                             />
                         </div>
@@ -205,21 +238,6 @@ export default function CallbackRequest() {
                                 required: 'Mobile number is required',
                             })}
                             errors={errors?.mobile}
-                            />
-                        </div>
-                        <div>
-                            <h1 className="text-[0.6rem] lg:text-[0.8rem] font-bold">Email:</h1>
-                            <Input
-                            className="w-full"
-                            placeholder="example@gmail.com"
-                            register={register('email', {
-                                required: 'Email is required',
-                                pattern: {
-                                value: /^\S+@\S+$/i,
-                                message: 'Invalid email format',
-                                },
-                            })}
-                            errors={errors?.email}
                             />
                         </div>
                         <div className="my-5 col-span-2 flex flex-col justify-center items-center ">

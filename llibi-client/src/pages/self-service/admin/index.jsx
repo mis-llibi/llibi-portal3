@@ -415,7 +415,7 @@ const Admin = () => {
                       Member ID
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
-                      COMPANY
+                      COMPANY/PROVIDER
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
                       Patient's Name

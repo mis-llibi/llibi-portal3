@@ -29,8 +29,7 @@ use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
-  public function SearchRequest($search, $id)
-  {
+  public function SearchRequest($search, $id){
     $request = DB::table('app_portal_clients as t1')
       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
       ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
@@ -100,11 +99,6 @@ class AdminController extends Controller
       ->limit(20)
       ->get();
 
-    // foreach ($request as $key => $row) {
-    //   $hospital = Hospitals::where('id', $row->providerID)->first();
-    //   $request[$key]->email1 = $this->emailIsValid($hospital->email1) ? $hospital->email1 : null;
-    //   $request[$key]->email2 = $this->emailIsValid($hospital->email2) ? $hospital->email2 : null;
-    // }
 
     return $request;
   }
@@ -222,13 +216,13 @@ class AdminController extends Controller
         }
 
         $userPassword = 'admin123456';
-  
+
         $result = $pdf->allow('AllFeatures')
             ->setPassword($password)
             ->setUserPassword($userPassword)
             ->passwordEncryption(128)
             ->saveAs($filePath);
-  
+
         if ($result === false) {
             $error = $pdf->getError();
         } */
@@ -281,7 +275,7 @@ class AdminController extends Controller
           We value your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
             Please click here
           </a>
-        </div> 
+        </div>
         <div>
           <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
           <img src="' . env('APP_URL', 'https://portal.llibi.app') . '/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
@@ -296,17 +290,17 @@ class AdminController extends Controller
         //     break;
         //   case 'laboratory':
         //     $statusRemarks = '
-        //     <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
+        //     <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>
         //     <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
         //     break;
         //   case '2n1-standalone':
         //     $statusRemarks = '
-        //     <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
+        //     <p>Please print a copy of LOA and present to the accredited provider upon availment.</p>
         //     <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
         //     break;
         //   case 'pre-approved-laboratory':
         //     $statusRemarks = '
-        //     <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p> 
+        //     <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>
         //     <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
         //     break;
 

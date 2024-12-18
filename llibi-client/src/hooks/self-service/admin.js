@@ -277,7 +277,7 @@ export const useAdmin = ({ name, status }) => {
                 .finally(() => {
                     setLoading(false)
                 })
-        } 
+        }
     */
 
   /*
@@ -322,7 +322,7 @@ export const useAdmin = ({ name, status }) => {
                 .finally(() => {
                     setLoading(false)
                 })
-        } 
+        }
     */
 
   return {
