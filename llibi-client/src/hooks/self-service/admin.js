@@ -6,31 +6,28 @@ import Swal from 'sweetalert2'
 import { env } from '@/../next.config'
 
 export const useAdmin = ({ name, status }) => {
-  const { data: clients, mutate } = useSWR(
-    `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
-      status || 2
-    }`,
-    () =>
-      axios
-        .get(
-          `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
-            status || 2
-          }`,
-        )
-        .then(res => res.data)
-        .catch(error => {
-          if (error.response.status !== 409) throw error
-          alert('error')
-        }),
-    {
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-      revalidateOnReconnect: false,
-      refreshWhenOffline: false,
-      refreshWhenHidden: true,
-      refreshInterval: 10000,
-    },
-  )
+    const { data: clients, mutate } = useSWR(
+        `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || '2,6'}`,
+        () =>
+          axios
+            .get(
+              `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || '2,6'}`,
+            )
+            .then(res => res.data)
+            .catch(error => {
+              if (error.response?.status !== 409) throw error;
+              alert('error');
+            }),
+        {
+          revalidateOnFocus: false,
+          revalidateOnMount: true,
+          revalidateOnReconnect: false,
+          refreshWhenOffline: false,
+          refreshWhenHidden: true,
+          refreshInterval: 10000,
+        },
+      );
+
 
   const csrf = () => axios.get(`sanctum/csrf-cookie`)
 

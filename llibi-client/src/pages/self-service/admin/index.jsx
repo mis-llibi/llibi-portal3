@@ -134,6 +134,7 @@ const Admin = () => {
     { value: 3, label: 'Approved' },
     { value: 4, label: 'Disapproved' },
     { value: 5, label: 'Downloaded' },
+    { value: 6, label: 'Not Viewed' }
   ]
 
   const handleShowModalSetDate = () => setBody(modalExporting)
@@ -437,52 +438,60 @@ const Admin = () => {
                 </thead>
                 <tbody>
                   {clients?.length > 0 ? (
-                    clients?.map((row, i) => (
-                      <tr
-                        key={i}
-                        className={`${
-                          (row.status === 2 && 'bg-orange-50') ||
-                          (row.status === 3 && 'bg-green-50') ||
-                          (row.status === 4 && 'bg-red-100') ||
-                          (row.status === 5 && 'bg-purple-100')
-                        }`}>
-                        <td className="border border-gray-300 p-2">
-                          {row.isDependent ? row.depMemberID : row.memberID}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.company_name}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.isDependent
-                            ? `${row.depLastName}, ${row.depFirstName}`
-                            : `${row.lastName}, ${row.firstName}`}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.loaType.toUpperCase() || 'N/A'}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.status === 2 && 'Pending'}
-                          {row.status === 3 && 'Approved'}
-                          {row.status === 4 && 'Disapproved'}
-                          {row.status === 5 && 'Downloaded'}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.createdAt}
-                        </td>
-                        <td className="border border-gray-300 p-2 text-center">
-                          {row.platform === 'viber' ? 'YES' : '-'}
-                        </td>
-                        <td className="border border-gray-300 p-2 text-center">
-                          <a
-                            className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
-                            onClick={() => {
-                              view(row)
-                            }}>
-                            VIEW
-                          </a>
-                        </td>
-                      </tr>
-                    ))
+                    clients?.map((row, i) =>{
+                        console.log(row)
+                        return (
+                            <tr
+                              key={i}
+                              className={`${
+                                (row.status === 2 && 'bg-orange-50') ||
+                                (row.status === 3 && 'bg-green-50') ||
+                                (row.status === 4 && 'bg-red-100') ||
+                                (row.status === 5 && 'bg-purple-100') ||
+                                (row.status === 6 && 'bg-yellow-100')
+                              }`}>
+                              <td className="border border-gray-300 p-2">
+                                {row.isDependent ? row.depMemberID : row.memberID}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {/* {row.company_name} */}
+                                {row.loaType === "callback" ? row.providerName : row.company_name}
+                                {row.loaType === "callback" && row.providerName === null ? row.company_name : null}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {row.isDependent
+                                  ? `${row.depLastName}, ${row.depFirstName}`
+                                  : `${row.lastName}, ${row.firstName}`}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {row.loaType.toUpperCase() || 'N/A'}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {row.status === 2 && 'Pending'}
+                                {row.status === 3 && 'Approved'}
+                                {row.status === 4 && 'Disapproved'}
+                                {row.status === 5 && 'Downloaded'}
+                                {row.status === 6 && 'Not Viewed'}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {row.createdAt}
+                              </td>
+                              <td className="border border-gray-300 p-2 text-center">
+                                {row.platform === 'viber' ? 'YES' : '-'}
+                              </td>
+                              <td className="border border-gray-300 p-2 text-center">
+                                <a
+                                  className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
+                                  onClick={() => {
+                                    // view(row)
+                                    row.loaType == "consultation" ? view(row) : console.log('callback')
+                                  }}>
+                                  VIEW
+                                </a>
+                              </td>
+                            </tr>
+                          )
+                    })
                   ) : (
                     <tr>
                       <td

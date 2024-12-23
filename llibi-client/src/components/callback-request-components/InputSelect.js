@@ -61,8 +61,8 @@ const InputSelect = ({
                                     ? `${props?.label} is required`
                                     : `${props?.label}`
                             }
-                            onChange={opt => onChange(opt?.value)}
-                            value={option.find(opt => opt?.value === value)}
+                            onChange={opt => onChange(opt)}
+                            value={option.find(opt => opt?.value === value?.value)}
                             isClearable={true}
                             classNamePrefix={`focus:ring focus:ring-0 focus:ring-opacity-50`}
                             className='w-full'

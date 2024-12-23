@@ -29,79 +29,160 @@ use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
-  public function SearchRequest($search, $id){
+    public function SearchRequest($search, $id)
+{
+    // Define default statuses
+    $defaultStatuses = [2, 6];
+
     $request = DB::table('app_portal_clients as t1')
-      ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-      ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
-      ->select(
-        't1.id',
-        't1.reference_number as refno',
-        't1.email as email',
-        't1.alt_email as altEmail',
-        't1.contact as contact',
-        't1.member_id as memberID',
-        't1.first_name as firstName',
-        't1.last_name as lastName',
-        't1.dob as dob',
-        't1.is_dependent as isDependent',
-        't1.dependent_member_id as depMemberID',
-        't1.dependent_first_name as depFirstName',
-        't1.dependent_last_name as depLastName',
-        't1.dependent_dob as depDob',
-        't1.remarks as remarks',
-        't1.status as status',
-        't2.loa_type as loaType',
-        't2.loa_number as loaNumber',
-        't2.approval_code as approvalCode',
-        't2.loa_attachment as loaAttachment',
-        't2.complaint as complaint',
-        't2.lab_attachment as labAttachment',
-        't2.assessment_q1 as ass1',
-        't2.assessment_q2 as ass2',
-        't2.assessment_q3 as ass3',
-        't1.created_at as createdAt',
-        't2.provider_id as providerID',
-        't2.provider as providerName',
-        't2.doctor_id as doctorID',
-        't2.doctor_name as doctorName',
-        't2.diagnosis as diagnosis',
-        't1.approved_date',
-        DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
-        DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
-        'mlist.company_name',
-        'mlist.company_code',
-        't1.provider_email2',
-        't1.is_send_to_provider',
-        't1.platform'
-      )
-      ->whereIn('t1.status', [2, 3, 4, 5])
-      ->where(function ($query) use ($search, $id) {
-        if ($search != 0) {
-          $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+        ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+        ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+        ->select(
+            't1.id',
+            't1.reference_number as refno',
+            't1.email as email',
+            't1.alt_email as altEmail',
+            't1.contact as contact',
+            't1.member_id as memberID',
+            't1.first_name as firstName',
+            't1.last_name as lastName',
+            't1.dob as dob',
+            't1.is_dependent as isDependent',
+            't1.dependent_member_id as depMemberID',
+            't1.dependent_first_name as depFirstName',
+            't1.dependent_last_name as depLastName',
+            't1.dependent_dob as depDob',
+            't1.remarks as remarks',
+            't1.status as status',
+            't1.opt_landline as opt_landline',
+            't1.callback_remarks as callback_remarks',
+            't2.loa_type as loaType',
+            't2.loa_number as loaNumber',
+            't2.approval_code as approvalCode',
+            't2.loa_attachment as loaAttachment',
+            't2.complaint as complaint',
+            't2.lab_attachment as labAttachment',
+            't2.assessment_q1 as ass1',
+            't2.assessment_q2 as ass2',
+            't2.assessment_q3 as ass3',
+            't1.created_at as createdAt',
+            't2.provider_id as providerID',
+            't2.provider as providerName',
+            't2.doctor_id as doctorID',
+            't2.doctor_name as doctorName',
+            't2.diagnosis as diagnosis',
+            't1.approved_date',
+            DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+            DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+            'mlist.company_name',
+            'mlist.company_code',
+            't1.provider_email2',
+            't1.is_send_to_provider',
+            't1.platform'
+        )
+        ->where(function ($query) use ($id, $defaultStatuses) {
+            if ($id) {
+                $query->whereIn('t1.status', $defaultStatuses); // Default statuses
+            } else {
+                $query->where('t1.status', $id);
+            }
+        })
+        ->where(function ($query) use ($search) {
+            if ($search != 0) {
+                $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
 
-          $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
-        }
-        if (is_array($id)) {
-          $query->where('t1.id', $id['val']);
-        } else {
-          if ($id != 0) {
-            $query->where('t1.status', $id);
-          }
-        }
-      })
-      ->whereDate('t1.created_at', now()->format('Y-m-d'))
-      ->orderBy('t1.id', 'DESC')
-      // ->offset(0)
-      ->limit(20)
-      ->get();
-
+                $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
+            }
+        })
+        ->whereDate('t1.created_at', now()->format('Y-m-d'))
+        ->orderBy('t1.id', 'DESC')
+        ->limit(20)
+        ->get();
 
     return $request;
-  }
+}
+
+
+
+
+
+//   public function SearchRequest($search, $id){
+//     $request = DB::table('app_portal_clients as t1')
+//       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+//       ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+//       ->select(
+//         't1.id',
+//         't1.reference_number as refno',
+//         't1.email as email',
+//         't1.alt_email as altEmail',
+//         't1.contact as contact',
+//         't1.member_id as memberID',
+//         't1.first_name as firstName',
+//         't1.last_name as lastName',
+//         't1.dob as dob',
+//         't1.is_dependent as isDependent',
+//         't1.dependent_member_id as depMemberID',
+//         't1.dependent_first_name as depFirstName',
+//         't1.dependent_last_name as depLastName',
+//         't1.dependent_dob as depDob',
+//         't1.remarks as remarks',
+//         't1.status as status',
+//         't2.loa_type as loaType',
+//         't2.loa_number as loaNumber',
+//         't2.approval_code as approvalCode',
+//         't2.loa_attachment as loaAttachment',
+//         't2.complaint as complaint',
+//         't2.lab_attachment as labAttachment',
+//         't2.assessment_q1 as ass1',
+//         't2.assessment_q2 as ass2',
+//         't2.assessment_q3 as ass3',
+//         't1.created_at as createdAt',
+//         't2.provider_id as providerID',
+//         't2.provider as providerName',
+//         't2.doctor_id as doctorID',
+//         't2.doctor_name as doctorName',
+//         't2.diagnosis as diagnosis',
+//         't1.approved_date',
+//         DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+//         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+//         'mlist.company_name',
+//         'mlist.company_code',
+//         't1.provider_email2',
+//         't1.is_send_to_provider',
+//         't1.platform'
+//       )
+//       ->whereIn('t1.status', [2, 3, 4, 5, 6])
+//       ->where(function ($query) use ($search, $id) {
+//         if ($search != 0) {
+//           $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+
+//           $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
+//         }
+//         if (is_array($id)) {
+//           $query->where('t1.id', $id['val']);
+//         } else {
+//           if ($id != 0) {
+//             $query->where('t1.status', $id);
+//           }
+//         }
+//       })
+//       ->whereDate('t1.created_at', now()->format('Y-m-d'))
+//       ->orderBy('t1.id', 'DESC')
+//       // ->offset(0)
+//       ->limit(20)
+//       ->get();
+
+
+//     return $request;
+//   }
 
   public function UpdateRequest(Request $request)
   {

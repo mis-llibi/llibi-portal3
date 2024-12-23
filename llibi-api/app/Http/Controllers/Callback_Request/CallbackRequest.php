@@ -41,7 +41,9 @@ class CallbackRequest extends Controller
             'member_id' => $request->emplID,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'status' => 2,
+            'status' => 6,
+            'opt_landline' => $request->data['landline'],
+            'callback_remarks' => $request->data['request'],
             'created_at' => now()
         ]);
 
@@ -52,13 +54,19 @@ class CallbackRequest extends Controller
             $resultRequests = ClientRequest::create([
                 'client_id' => $resultClients->id,
                 'member_id' => $resultClients->member_id,
-                'provider_id' => $request->data['hospital'],
+                'provider_id' => $request->data['hospital']['value'] ?? null,
+                'provider' => $request->data['hospital']['label'] ?? null,
                 'created_at' => now(),
                 'loa_type' => 'callback'
             ]);
 
             return $resultRequests;
         }
+
+        return $request;
+
+
+
 
 
     }

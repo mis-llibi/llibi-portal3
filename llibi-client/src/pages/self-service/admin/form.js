@@ -247,7 +247,7 @@ const Form = ({ setRequest, row }) => {
         <div className="basis-3/5">
           <div className="flex flex-col h-screen">
             {
-            
+
             client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
@@ -439,7 +439,7 @@ const Form = ({ setRequest, row }) => {
                                         placeholder="Approval Code"
                                         errors={errors?.approvalCode}
                                     />
-                                </div> 
+                                </div>
                             */}
 
               {/* Backdrop form */}
