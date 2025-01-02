@@ -39,6 +39,8 @@ import Link from 'next/link'
 
 import { CustomPusher } from '@/lib/pusher'
 
+import { FaXmark } from "react-icons/fa6";
+
 const Admin = () => {
   const router = useRouter()
   // const [play] = useSound('/thepurge.mp3')
@@ -63,6 +65,9 @@ const Admin = () => {
 
   const [name, setName] = useState()
   const [searchStatus, setSearchStatus] = useState()
+
+  const [isCallbackShow, setIsCallbackShow] = useState(false)
+  const [getCallbackDetails, setGetCallbackDetails] = useState({})
 
   const {
     clients,
@@ -131,7 +136,8 @@ const Admin = () => {
 
   const status = [
     { value: 2, label: 'Pending' },
-    { value: 3, label: 'Approved' },
+    { value: 3, label: 'Approved LOA' },
+    { value: 7, label: 'Approved Callback' },
     { value: 4, label: 'Disapproved' },
     { value: 5, label: 'Downloaded' },
     { value: 6, label: 'Not Viewed' }
@@ -266,6 +272,55 @@ const Admin = () => {
     }
   }, [])
 
+  const showCallbackModal = async(row) => {
+
+    // console.log(row)
+
+    try {
+        const response = await axios.post('/api/changeCallbackStatus', {
+            id: row.id
+        })
+        // console.log(response)
+
+        if(response.status == 200){
+            setIsCallbackShow(true)
+            setGetCallbackDetails({
+                callback_remarks: row.callback_remarks,
+                contact: row.contact,
+                opt_landline: row.opt_landline,
+                firstName: row.firstName,
+                lastName: row.lastName,
+                memberID: row.memberID,
+                createdAt: row.createdAt,
+                id: row.id
+              })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const handleDoneCallback = async(id) => {
+
+    try {
+        const response = await axios.post('/api/doneStatusCallback', {
+            id: id
+        })
+        // console.log(response)
+        if(response.status == 200){
+            Swal.fire({
+                title: "Success",
+                text: `Callback Request Completed at id ${id}`,
+                icon: 'success'
+            })
+            setIsCallbackShow(false)
+        }
+    } catch (error) {
+        console.log(error)
+    }
+
+  }
+
   return (
     <ProviderLayout>
       <Head>
@@ -393,7 +448,7 @@ const Admin = () => {
                   </Label>
                   <InputSelect
                     id="searchStatus"
-                    label="Default = Pending"
+                    label="Default = Pending & Not Viewed"
                     onChange={e => checkRequestStatus(e)}
                     required={false}
                     register={{
@@ -439,7 +494,7 @@ const Admin = () => {
                 <tbody>
                   {clients?.length > 0 ? (
                     clients?.map((row, i) =>{
-                        console.log(row)
+                        // console.log(row)
                         return (
                             <tr
                               key={i}
@@ -448,7 +503,8 @@ const Admin = () => {
                                 (row.status === 3 && 'bg-green-50') ||
                                 (row.status === 4 && 'bg-red-100') ||
                                 (row.status === 5 && 'bg-purple-100') ||
-                                (row.status === 6 && 'bg-yellow-100')
+                                (row.status === 6 && 'bg-yellow-100') ||
+                                (row.status === 7 && 'bg-blue-100')
                               }`}>
                               <td className="border border-gray-300 p-2">
                                 {row.isDependent ? row.depMemberID : row.memberID}
@@ -464,14 +520,16 @@ const Admin = () => {
                                   : `${row.lastName}, ${row.firstName}`}
                               </td>
                               <td className="border border-gray-300 p-2">
-                                {row.loaType.toUpperCase() || 'N/A'}
+                                {/* {row.loaType.toUpperCase() || 'N/A'} */}
+                                {row.loaType === "callback" && row.providerName ? (`${row.loaType} - Provider`).toUpperCase() : row.loaType === "callback" && row.providerName === null ? (`${row.loaType} - Member`).toUpperCase() : row.loaType.toUpperCase() || 'N/A'}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {row.status === 2 && 'Pending'}
-                                {row.status === 3 && 'Approved'}
+                                {row.status === 3 && 'Approved LOA'}
                                 {row.status === 4 && 'Disapproved'}
                                 {row.status === 5 && 'Downloaded'}
                                 {row.status === 6 && 'Not Viewed'}
+                                {row.status === 7 && 'Approved Callback'}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {row.createdAt}
@@ -484,7 +542,7 @@ const Admin = () => {
                                   className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                                   onClick={() => {
                                     // view(row)
-                                    row.loaType == "consultation" ? view(row) : console.log('callback')
+                                    row.loaType == "consultation" ? view(row) : showCallbackModal(row)
                                   }}>
                                   VIEW
                                 </a>
@@ -507,6 +565,48 @@ const Admin = () => {
             {/* End Table */}
           </div>
         </div>
+
+        {isCallbackShow && (
+          <div className='fixed inset-0 bg-white'>
+            <div className='border-b p-2 flex justify-between items-center'>
+                <h1 className='text-md text-black/70'>{getCallbackDetails.memberID} - {getCallbackDetails.lastName}, {getCallbackDetails.firstName} </h1>
+                <h1 className='cursor-pointer' onClick={() => setIsCallbackShow(false)}><FaXmark className='text-xl' /></h1>
+
+            </div>
+            <div className='flex'>
+                <div className='w-[50%] mt-10 px-5'>
+                    <h1 className='text-xl font-bold text-center text-gray-700 '>EMPLOYEE DETAILS</h1>
+                    <Label className="px-24 border-b mt-3 text-start ">
+                        DATE/TIME CREATED: {' '} <span className='text-blue-500 '>{getCallbackDetails.createdAt}</span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        FULL NAME: {' '} <span className='text-blue-500 '>{getCallbackDetails.lastName}, {getCallbackDetails.firstName} </span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        MEMBER ID: {' '} <span className='text-blue-500 '>{getCallbackDetails.memberID} </span>
+                    </Label>
+
+                    <h1 className='text-xl font-bold text-center text-gray-700 mt-5'>CALLBACK DETAILS</h1>
+                    <Label className="px-24 border-b mt-3 text-start ">
+                        REMARKS: {' '} <span className='text-blue-500 '>{getCallbackDetails.callback_remarks}</span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        LANDLINE (OPTIONAL): {' '} <span className='text-blue-500 '>{getCallbackDetails.opt_landline} </span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        CONTACT #: {' '} <span className='text-blue-500 '>{getCallbackDetails.contact} </span>
+                    </Label>
+                </div>
+                <div className='border'></div>
+                <div className='w-[50%] mt-10 px-5'>
+                    <h1 className='text-xl font-bold text-center text-gray-700'>SET STATUS:</h1>
+                    <div className='flex mt-5 flex-row justify-center items-center'>
+                        <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(getCallbackDetails.id)}>DONE</button>
+                    </div>
+                </div>
+            </div>
+          </div>
+        )}
 
         <Modal show={show} body={body} toggle={toggle} />
 

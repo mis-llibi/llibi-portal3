@@ -9,6 +9,7 @@ import Clock from 'react-live-clock';
 import Input from '@/components/Input';
 import InputSelect from '@/components/callback-request-components/InputSelect';
 import { PuffLoader } from 'react-spinners';
+import Swal from 'sweetalert2';
 
 // Logo
 import ApplicationLogo from '@/components/ApplicationLogo';
@@ -105,7 +106,15 @@ export default function CallbackRequest() {
 
     try {
         const response = await axios.post('/api/submitCallback', dataForm)
-        console.log(response.data)
+        // console.log(response)
+
+        if(response.status === 201){
+            Swal.fire({
+                title: "Success",
+                text: "Wait for the callback response",
+                icon: 'success'
+            })
+        }
     } catch (error) {
         console.log(error)
     }

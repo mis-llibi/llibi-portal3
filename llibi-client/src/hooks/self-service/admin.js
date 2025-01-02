@@ -7,11 +7,11 @@ import { env } from '@/../next.config'
 
 export const useAdmin = ({ name, status }) => {
     const { data: clients, mutate } = useSWR(
-        `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || '2,6'}`,
+        `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || 8}`,
         () =>
           axios
             .get(
-              `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || '2,6'}`,
+              `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || 8}`,
             )
             .then(res => res.data)
             .catch(error => {

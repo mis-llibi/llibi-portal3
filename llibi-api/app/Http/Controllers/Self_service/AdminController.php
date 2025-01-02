@@ -81,7 +81,7 @@ class AdminController extends Controller
             't1.platform'
         )
         ->where(function ($query) use ($id, $defaultStatuses) {
-            if ($id) {
+            if ($id == 8) {
                 $query->whereIn('t1.status', $defaultStatuses); // Default statuses
             } else {
                 $query->where('t1.status', $id);

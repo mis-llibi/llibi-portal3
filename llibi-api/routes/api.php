@@ -124,6 +124,9 @@ Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMe
 Route::get('/hospitals', [CallbackRequest::class, 'getHospitals']);
 Route::get('/getMasterlist', [CallbackRequest::class, 'getMasterlist']);
 Route::post('/submitCallback', [CallbackRequest::class, 'submitCallback']);
+Route::post('/changeCallbackStatus', [CallbackRequest::class, 'changeCallbackStatus']);
+Route::post('/doneStatusCallback', [CallbackRequest::class, 'doneStatusCallback']);
+
 
 //COMPANIES SYNC API
 require __DIR__ . '/ebd.php';

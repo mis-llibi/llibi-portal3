@@ -62,12 +62,34 @@ class CallbackRequest extends Controller
 
             return $resultRequests;
         }
+    }
 
-        return $request;
+    public function changeCallbackStatus(Request $request){
+        $id = $request->id;
 
+        $details = [
+            'status' => 2
+        ];
 
+        if($id !== null){
+            $result = Client::where('id', $id)->update($details);
+            return $result;
+        }
 
+    }
 
+    public function doneStatusCallback(Request $request){
+
+        $id = $request->id;
+
+        $details = [
+            'status' => 7
+        ];
+
+        if($id !== null){
+            $result = Client::where('id', $id)->update($details);
+            return $result;
+        }
 
     }
 }
