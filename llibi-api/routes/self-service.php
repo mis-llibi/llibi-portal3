@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Self_service\ClientController;
-
+use Illuminate\Support\Facades\Route;
 
 Route::post('/self-service/validate-client', [ClientController::class, 'ValidateClient']);
 Route::post('/self-service/track-reference-number', [ClientController::class, 'TrackReferenceNumber']);

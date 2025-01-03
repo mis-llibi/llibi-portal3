@@ -276,8 +276,8 @@ export default function CallbackRequest() {
                     You may include instructions, patient details*, and other related information in advance. Doing so will enable the Client Care Executive to look up patient/member information in advance to shorten up the transaction.
                   </p>
                   <p className="p-2 font-semibold">
-                    *NOTE: Before entering any personal and sensitive patient data, make sure to check our Privacy Notice at
-                    https://llibi.com/data-privacy/ to know more information regarding how we handle your data.
+                    *NOTE: Before entering any personal and sensitive patient data, make sure to check our Privacy Notice at {' '}
+                    <a href="https://llibi.com/data-privacy/" target='_blank' className='text-blue-200 underline'>https://llibi.com/data-privacy/</a> to know more information regarding how we handle your data.
                   </p>
                 </div>
               </div>

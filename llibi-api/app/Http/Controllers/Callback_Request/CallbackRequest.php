@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Self_service\Client;
 use App\Models\Self_service\ClientRequest;
+use App\Events\RealtimeNotificationEvent;
+use Illuminate\Support\Carbon;
 
 class CallbackRequest extends Controller
 {
@@ -59,6 +61,15 @@ class CallbackRequest extends Controller
                 'created_at' => now(),
                 'loa_type' => 'callback'
             ]);
+
+            $data = [
+
+                'message' => 'New claim request',
+
+                'date_created' => Carbon::now()->diffForHumans(),
+
+              ];
+            event(new RealtimeNotificationEvent($data));
 
             return $resultRequests;
         }

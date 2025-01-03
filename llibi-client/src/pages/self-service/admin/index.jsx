@@ -506,18 +506,19 @@ const Admin = () => {
                                 (row.status === 6 && 'bg-yellow-100') ||
                                 (row.status === 7 && 'bg-blue-100')
                               }`}>
-                              <td className="border border-gray-300 p-2">
+                              <td className="border border-gray-300 p-2 text-center">
                                 {row.isDependent ? row.depMemberID : row.memberID}
+                                {row.isDependent === null && row.memberID === null ? "-" : null}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {/* {row.company_name} */}
                                 {row.loaType === "callback" ? row.providerName : row.company_name}
                                 {row.loaType === "callback" && row.providerName === null ? row.company_name : null}
                               </td>
-                              <td className="border border-gray-300 p-2">
+                              <td className="border border-gray-300 p-2 text-center">
                                 {row.isDependent
                                   ? `${row.depLastName}, ${row.depFirstName}`
-                                  : `${row.lastName}, ${row.firstName}`}
+                                  : row.isDependent === null && row.lastName === null & row.firstName === null ? '-' : `${row.lastName}, ${row.firstName}`}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {/* {row.loaType.toUpperCase() || 'N/A'} */}
