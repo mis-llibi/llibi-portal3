@@ -698,7 +698,8 @@ const Admin = () => {
         {isCallbackforProviderShow && (
             <div className='fixed inset-0 bg-white'>
                 <div className='border-b p-2 grid grid-cols-3'>
-                    <h1 className='text-md text-black/70'>Provider ID: {getCallbackforProviderDetails.providerID}</h1>
+                    {/* <h1 className='text-md text-black/70'>Provider ID: {getCallbackforProviderDetails.providerID}</h1> */}
+                    <div></div>
                     <h1 className='font-bold text-center'>CALLBACK REQUEST - PROVIDER PORTAL</h1>
                     <div className='flex justify-end'>
                         <h1 className='cursor-pointer ' onClick={() => setIsCallbackforProviderShow(false)}><FaXmark className='text-xl' /></h1>
@@ -710,9 +711,9 @@ const Admin = () => {
                         <Label className="px-24 border-b mt-3 text-start ">
                         DATE/TIME CREATED: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.createdAt}</span>
                         </Label>
-                        <Label className='px-24 border-b mt-3 text-start'>
+                        {/* <Label className='px-24 border-b mt-3 text-start'>
                         PROVIDER ID: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.providerID} </span>
-                        </Label>
+                        </Label> */}
                         <Label className='px-24 border-b mt-3 text-start'>
                         PROVIDER: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.providerName?.toUpperCase()} </span>
                         </Label>

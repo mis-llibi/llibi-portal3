@@ -85,7 +85,9 @@ class AdminController extends Controller
         ->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
                 $query->whereIn('t1.status', $defaultStatuses); // Default statuses
-            } else {
+            } elseif(is_array($id)){
+                $query->where('t1.id', $id['val']);
+            }else {
                 $query->where('t1.status', $id);
             }
         })
@@ -186,102 +188,181 @@ class AdminController extends Controller
 //     return $request;
 //   }
 
-  public function UpdateRequest(Request $request)
-  {
-    $user_id = request()->user()->id;
-    $client = $this->SearchRequest(0, ['val' => $request->id]);
+//   public function UpdateRequest(Request $request)
+//   {
+//     $user_id = request()->user()->id;
+//     $client = $this->SearchRequest(0, ['val' => $request->id]);
 
-    $status = (int)$request->status;
+//     $status = (int)$request->status;
 
-    $arr = [
-      'status' => $status,
-      'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
-      'user_id' => $user_id,
-      'approved_date' => $status === 3 ? Carbon::now() : null,
+//     $arr = [
+//       'status' => $status,
+//       'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
+//       'user_id' => $user_id,
+//       'approved_date' => $status === 3 ? Carbon::now() : null,
+//     ];
+
+//     $updateClient = Client::where('id', $request->id)
+//       ->update($arr);
+
+//     $update = [];
+//     $loa = [];
+
+//     $directory = 'Self-service/LOA/' . $client[0]->memberID;
+
+//     if(!Storage::disk('llibiapp')->exists($directory)){
+//       Storage::disk('llibiapp')->makeDirectory($directory);
+//     }
+
+//     if ((int)$request->status == 3) {
+//       $title = strtoupper($request->loaNumber);
+//       $this->validate($request, [
+//         'attachLOA' => 'required|mimes:pdf',
+//       ]);
+
+//       //Define the file name and directory path
+//       $member_id = $client[0]->memberID;
+//       $current_date = Carbon::now()->format('Ymd');
+//       $created_at = Carbon::parse($client[0]->createdAt)->format('Ymd_His');
+//       $fileName = $member_id . '_' . $current_date . '_' . $created_at . '.pdf';
+//       $path = $directory . '/' . $fileName;
+
+//       $uploadedPath = $request->file('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
+//       $fileLink = env('DO_LLIBI_CDN_ENDPOINT') . '/' . $path;
+
+
+//       // $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
+
+//       $update = [
+//         'loa_attachment' => $fileLink,
+//         'loa_number' => strtoupper($request->loaNumber), // Ensure LOA Number is stored
+//         'approval_code' => strtoupper($request->approvalCode)
+//       ];
+
+//       $updateRequest = ClientRequest::where('client_id', $request->id)
+//         ->update($update);
+
+//       if ($client[0]->isDependent == 1) {
+//         $password = date('Ymd', strtotime($client[0]->depDob));
+//       } else {
+//         $password = date('Ymd', strtotime($client[0]->dob));
+//       }
+
+//       $encryptedPdfPath = $this->encryptPdf($path, $password);
+
+//       $loa = ['encryptedLOA' => $encryptedPdfPath];
+//     }
+
+//     $client = $this->SearchRequest(0, ['val' => $request->id]);
+//     $allClient = $this->SearchRequest(0, 2);
+
+//     $hospital_emails = [];
+//     // if ($request->hospital_email1 != 'null') {
+//     // array_push($hospital_emails, $request->hospital_email1);
+//     // array_push($hospital_emails, 'testllibi1@yopmail.com');
+//     // }
+//     // if ($request->hospital_email2 != 'null') {
+//     // array_push($hospital_emails, $request->hospital_email2);
+//     // array_push($hospital_emails, 'testllibi2@yopmail.com');
+//     // }
+
+//     //SendNotification
+//     $dataSend = [
+//       'refno' => $client[0]->refno,
+//       'remarks' => $request->disapproveRemarks,
+//       'status' => $status,
+//       'hospital_email' => $hospital_emails,
+//       'provider_email2' => $client[0]->provider_email2,
+//       'is_send_to_provider' => $client[0]->is_send_to_provider,
+//       'company_code' => $client[0]->company_code,
+//       'member_id' => $client[0]->memberID,
+//       'request_id' => $client[0]->id,
+//       'email_format_type' => $request->email_format_type
+//     ];
+
+//     $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+
+//     return array('client' => $client, 'all' => $allClient);
+//   }
+
+public function UpdateRequest(Request $request)
+{
+  $user_id = request()->user()->id;
+  $client = $this->SearchRequest(0, ['val' => $request->id]);
+
+  $status = (int)$request->status;
+
+  $arr = [
+    'status' => $status,
+    'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
+    'user_id' => $user_id,
+    'approved_date' => $status === 3 ? Carbon::now() : null,
+  ];
+
+  $updateClient = Client::where('id', $request->id)
+    ->update($arr);
+
+  $update = [];
+  $loa = [];
+  if ((int)$request->status == 3) {
+    $title = strtoupper($request->loaNumber);
+    $this->validate($request, [
+      'attachLOA' => 'required|mimes:pdf',
+    ]);
+
+    $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
+
+    $update = [
+      'loa_attachment' => 'storage/' . $path,
+      'loa_number' => strtoupper($request->loaNumber),
+      'approval_code' => strtoupper($request->approvalCode)
     ];
 
-    $updateClient = Client::where('id', $request->id)
-      ->update($arr);
+    $updateRequest = ClientRequest::where('client_id', $request->id)
+      ->update($update);
 
-    $update = [];
-    $loa = [];
-
-    $directory = 'Self-service/LOA/' . $client[0]->memberID;
-
-    if(!Storage::disk('llibiapp')->exists($directory)){
-      Storage::disk('llibiapp')->makeDirectory($directory);
+    if ($client[0]->isDependent == 1) {
+      $password = date('Ymd', strtotime($client[0]->depDob));
+    } else {
+      $password = date('Ymd', strtotime($client[0]->dob));
     }
 
-    if ((int)$request->status == 3) {
-      $title = strtoupper($request->loaNumber);
-      $this->validate($request, [
-        'attachLOA' => 'required|mimes:pdf',
-      ]);
+    $encryptedPdfPath = $this->encryptPdf($path, $password);
 
-      //Define the file name and directory path
-      $member_id = $client[0]->memberID;
-      $current_date = Carbon::now()->format('Ymd');
-      $created_at = Carbon::parse($client[0]->createdAt)->format('Ymd_His');
-      $fileName = $member_id . '_' . $current_date . '_' . $created_at . '.pdf';
-      $path = $directory . '/' . $fileName;
-
-      $uploadedPath = $request->file('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
-      $fileLink = env('DO_LLIBI_CDN_ENDPOINT') . '/' . $path;
-
-
-      // $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
-
-      $update = [
-        'loa_attachment' => $fileLink,
-        'loa_number' => strtoupper($request->loaNumber), // Ensure LOA Number is stored
-        'approval_code' => strtoupper($request->approvalCode)
-      ];
-
-      $updateRequest = ClientRequest::where('client_id', $request->id)
-        ->update($update);
-
-      if ($client[0]->isDependent == 1) {
-        $password = date('Ymd', strtotime($client[0]->depDob));
-      } else {
-        $password = date('Ymd', strtotime($client[0]->dob));
-      }
-
-      $encryptedPdfPath = $this->encryptPdf($path, $password);
-
-      $loa = ['encryptedLOA' => $encryptedPdfPath];
-    }
-
-    $client = $this->SearchRequest(0, ['val' => $request->id]);
-    $allClient = $this->SearchRequest(0, 2);
-
-    $hospital_emails = [];
-    // if ($request->hospital_email1 != 'null') {
-    // array_push($hospital_emails, $request->hospital_email1);
-    // array_push($hospital_emails, 'testllibi1@yopmail.com');
-    // }
-    // if ($request->hospital_email2 != 'null') {
-    // array_push($hospital_emails, $request->hospital_email2);
-    // array_push($hospital_emails, 'testllibi2@yopmail.com');
-    // }
-
-    //SendNotification
-    $dataSend = [
-      'refno' => $client[0]->refno,
-      'remarks' => $request->disapproveRemarks,
-      'status' => $status,
-      'hospital_email' => $hospital_emails,
-      'provider_email2' => $client[0]->provider_email2,
-      'is_send_to_provider' => $client[0]->is_send_to_provider,
-      'company_code' => $client[0]->company_code,
-      'member_id' => $client[0]->memberID,
-      'request_id' => $client[0]->id,
-      'email_format_type' => $request->email_format_type
-    ];
-
-    $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
-
-    return array('client' => $client, 'all' => $allClient);
+    $loa = ['encryptedLOA' => $encryptedPdfPath];
   }
+
+  $client = $this->SearchRequest(0, ['val' => $request->id]);
+  $allClient = $this->SearchRequest(0, 2);
+
+  $hospital_emails = [];
+  // if ($request->hospital_email1 != 'null') {
+  // array_push($hospital_emails, $request->hospital_email1);
+  // array_push($hospital_emails, 'testllibi1@yopmail.com');
+  // }
+  // if ($request->hospital_email2 != 'null') {
+  // array_push($hospital_emails, $request->hospital_email2);
+  // array_push($hospital_emails, 'testllibi2@yopmail.com');
+  // }
+
+  //SendNotification
+  $dataSend = [
+    'refno' => $client[0]->refno,
+    'remarks' => $request->disapproveRemarks,
+    'status' => $status,
+    'hospital_email' => $hospital_emails,
+    'provider_email2' => $client[0]->provider_email2,
+    'is_send_to_provider' => $client[0]->is_send_to_provider,
+    'company_code' => $client[0]->company_code,
+    'member_id' => $client[0]->memberID,
+    'request_id' => $client[0]->id,
+    'email_format_type' => $request->email_format_type
+  ];
+
+  $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+
+  return array('client' => $client, 'all' => $allClient);
+}
 
   private function encryptPdf($path, $password)
   {

@@ -110,7 +110,7 @@ export const useAdmin = ({ name, status }) => {
       .post(`/self-service/admin-update-request`, formData)
       .then(res => {
         mutate()
-
+        console.log(res)
         const result = res.data
         //console.log(result.data)
         Swal.fire({
