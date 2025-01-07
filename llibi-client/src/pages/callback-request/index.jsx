@@ -41,7 +41,8 @@ export default function CallbackRequest() {
     watch,
     setValue,
     formState: { errors },
-    control
+    control,
+    reset
   } = useForm();
 
   const selectedOption = watch('selectOptions'); // Watch the selected value of Select
@@ -114,6 +115,7 @@ export default function CallbackRequest() {
                 text: "Wait for the callback response",
                 icon: 'success'
             })
+            reset()
         }
     } catch (error) {
         console.log(error)

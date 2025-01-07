@@ -69,6 +69,9 @@ const Admin = () => {
   const [isCallbackShow, setIsCallbackShow] = useState(false)
   const [getCallbackDetails, setGetCallbackDetails] = useState({})
 
+  const [isCallbackforProviderShow, setIsCallbackforProviderShow] = useState(false)
+  const [getCallbackforProviderDetails, setGetCallbackforProviderDetails] = useState({})
+
   const {
     clients,
     searchRequest,
@@ -277,12 +280,26 @@ const Admin = () => {
     // console.log(row)
 
     try {
-        const response = await axios.post('/api/changeCallbackStatus', {
-            id: row.id
-        })
-        // console.log(response)
-
-        if(response.status == 200){
+        if(row.status === 6){
+            const response = await axios.post('/api/changeCallbackStatus', {
+                id: row.id
+            })
+            // console.log(response)
+            if(response.status == 200){
+                setIsCallbackShow(true)
+                setGetCallbackDetails({
+                    callback_remarks: row.callback_remarks,
+                    contact: row.contact,
+                    opt_landline: row.opt_landline,
+                    firstName: row.firstName,
+                    lastName: row.lastName,
+                    memberID: row.memberID,
+                    createdAt: row.createdAt,
+                    id: row.id,
+                    status: row.status
+                  })
+            }
+        }else{
             setIsCallbackShow(true)
             setGetCallbackDetails({
                 callback_remarks: row.callback_remarks,
@@ -292,9 +309,67 @@ const Admin = () => {
                 lastName: row.lastName,
                 memberID: row.memberID,
                 createdAt: row.createdAt,
-                id: row.id
+                id: row.id,
+                status: row.status
               })
         }
+
+
+
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const showCallbackModalProvider = async(row) => {
+    console.log(row)
+
+    try {
+
+        if(row.status === 6){
+            const response = await axios.post('/api/changeCallbackStatus', {
+                id: row.id
+            })
+            // console.log(response)
+
+            if(response.status === 200){
+                setIsCallbackforProviderShow(true)
+                console.log(row)
+                setGetCallbackforProviderDetails({
+                    callback_remarks: row.callback_remarks,
+                    contact: row.contact,
+                    email: row.email,
+                    landline: row.landline,
+                    providerName: row.providerName,
+                    providerID: row.providerID,
+                    altEmail: row.altEmail,
+                    opt_contact: row.opt_contact,
+                    opt_landline: row.opt_landline,
+                    createdAt: row.createdAt,
+                    id: row.id,
+                    status: row.status
+                })
+            }
+        }else{
+            setIsCallbackforProviderShow(true)
+            console.log(row)
+            setGetCallbackforProviderDetails({
+                callback_remarks: row.callback_remarks,
+                contact: row.contact,
+                email: row.email,
+                landline: row.landline,
+                providerName: row.providerName,
+                providerID: row.providerID,
+                altEmail: row.altEmail,
+                opt_contact: row.opt_contact,
+                opt_landline: row.opt_landline,
+                createdAt: row.createdAt,
+                id: row.id,
+                status: row.status
+            })
+        }
+
+
     } catch (error) {
         console.log(error)
     }
@@ -314,6 +389,7 @@ const Admin = () => {
                 icon: 'success'
             })
             setIsCallbackShow(false)
+            setIsCallbackforProviderShow(false)
         }
     } catch (error) {
         console.log(error)
@@ -508,7 +584,7 @@ const Admin = () => {
                               }`}>
                               <td className="border border-gray-300 p-2 text-center">
                                 {row.isDependent ? row.depMemberID : row.memberID}
-                                {row.isDependent === null && row.memberID === null ? "-" : null}
+                                {row.isDependent === null && row.memberID === null ? row.providerID : null}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {/* {row.company_name} */}
@@ -543,7 +619,7 @@ const Admin = () => {
                                   className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                                   onClick={() => {
                                     // view(row)
-                                    row.loaType == "consultation" ? view(row) : showCallbackModal(row)
+                                    row.loaType == "consultation" ? view(row) : row.isDependent === null && row.memberID === null ? showCallbackModalProvider(row) : showCallbackModal(row)
                                   }}>
                                   VIEW
                                 </a>
@@ -569,10 +645,12 @@ const Admin = () => {
 
         {isCallbackShow && (
           <div className='fixed inset-0 bg-white'>
-            <div className='border-b p-2 flex justify-between items-center'>
+            <div className='border-b p-2 grid grid-cols-3'>
                 <h1 className='text-md text-black/70'>{getCallbackDetails.memberID} - {getCallbackDetails.lastName}, {getCallbackDetails.firstName} </h1>
-                <h1 className='cursor-pointer' onClick={() => setIsCallbackShow(false)}><FaXmark className='text-xl' /></h1>
-
+                <h1 className='font-bold text-center '>CALLBACK REQUEST - MEMBER CLIENT PORTAL</h1>
+                <div className='flex justify-end'>
+                    <h1 className='cursor-pointer ' onClick={() => setIsCallbackShow(false)}><FaXmark className='text-xl' /></h1>
+                </div>
             </div>
             <div className='flex'>
                 <div className='w-[50%] mt-10 px-5'>
@@ -592,7 +670,7 @@ const Admin = () => {
                         REMARKS: {' '} <span className='text-blue-500 '>{getCallbackDetails.callback_remarks}</span>
                     </Label>
                     <Label className="px-24 border-b mt-3 text-start">
-                        LANDLINE (OPTIONAL): {' '} <span className='text-blue-500 '>{getCallbackDetails.opt_landline} </span>
+                        LANDLINE (OPTIONAL): {' '} <span className='text-blue-500 '>{getCallbackDetails?.opt_landline} </span>
                     </Label>
                     <Label className="px-24 border-b mt-3 text-start">
                         CONTACT #: {' '} <span className='text-blue-500 '>{getCallbackDetails.contact} </span>
@@ -600,13 +678,87 @@ const Admin = () => {
                 </div>
                 <div className='border'></div>
                 <div className='w-[50%] mt-10 px-5'>
-                    <h1 className='text-xl font-bold text-center text-gray-700'>SET STATUS:</h1>
-                    <div className='flex mt-5 flex-row justify-center items-center'>
+                    <h1 className='text-xl font-bold text-center text-gray-700'>{getCallbackDetails.status === 7 ? "" : "SET STATUS:"}</h1>
+                    <div className={`${getCallbackDetails.status === 7 ? "hidden" : "flex"} mt-5 flex-row justify-center items-center`}>
                         <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(getCallbackDetails.id)}>DONE</button>
+                    </div>
+                    <div className='text-center mt-2'>
+                        <Label className='px-24  mt-3 text-center'>
+                        CURRENT STATUS: {' '} <span className='text-blue-500'>{getCallbackDetails?.status === 2 && "PENDING"}
+                        {getCallbackDetails?.status === 6 && "NOT VIEWED"}
+                        {getCallbackDetails?.status === 7 && "APPROVED CALLBACK"}
+                        </span>
+                        </Label>
                     </div>
                 </div>
             </div>
           </div>
+        )}
+
+        {isCallbackforProviderShow && (
+            <div className='fixed inset-0 bg-white'>
+                <div className='border-b p-2 grid grid-cols-3'>
+                    <h1 className='text-md text-black/70'>Provider ID: {getCallbackforProviderDetails.providerID}</h1>
+                    <h1 className='font-bold text-center'>CALLBACK REQUEST - PROVIDER PORTAL</h1>
+                    <div className='flex justify-end'>
+                        <h1 className='cursor-pointer ' onClick={() => setIsCallbackforProviderShow(false)}><FaXmark className='text-xl' /></h1>
+                    </div>
+                </div>
+                <div className='flex'>
+                    <div className='w-[50%] mt-10 px-5'>
+                        <h1 className='text-xl font-bold text-center text-gray-700'>PROVIDER DETAILS</h1>
+                        <Label className="px-24 border-b mt-3 text-start ">
+                        DATE/TIME CREATED: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.createdAt}</span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        PROVIDER ID: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.providerID} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        PROVIDER: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.providerName?.toUpperCase()} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        EMAIL: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.email?.toUpperCase()} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        CONTACT: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.contact} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        LANDLINE: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.landline} </span>
+                        </Label>
+
+                        <h1 className='text-xl font-bold text-center text-gray-700 mt-5'>CALLBACK DETAILS</h1>
+                        <Label className="px-24 border-b mt-3 text-start ">
+                        REMARKS: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.callback_remarks}</span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        ALTERNATIVE CONTACT: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.opt_contact || "-"} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        ALTERNATIVE LANDLINE: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.opt_landline || "-"} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        ALTERNATIVE EMAIL: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails?.altEmail?.toUpperCase() || "-"} </span>
+                        </Label>
+
+
+                    </div>
+                    <div className='border'></div>
+                    <div className='w-[50%] mt-10 px-5'>
+                        <h1 className='text-xl font-bold text-center text-gray-700'>{getCallbackforProviderDetails.status === 7 ? "" : "SET STATUS:"}</h1>
+                        <div className={`${getCallbackforProviderDetails.status === 7 ? "hidden" : "flex"}  mt-3 flex-row justify-center items-center`}>
+                            <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(getCallbackforProviderDetails.id)}>DONE</button>
+                        </div>
+                    <div className='text-center mt-2'>
+                        <Label className='px-24  mt-3 text-center'>
+                        CURRENT STATUS: {' '} <span className='text-blue-500'>{getCallbackforProviderDetails?.status === 2 && "PENDING"}
+                        {getCallbackforProviderDetails?.status === 6 && "NOT VIEWED"}
+                        {getCallbackforProviderDetails?.status === 7 && "APPROVED CALLBACK"}
+                        </span>
+                        </Label>
+                    </div>
+                    </div>
+                </div>
+            </div>
         )}
 
         <Modal show={show} body={body} toggle={toggle} />

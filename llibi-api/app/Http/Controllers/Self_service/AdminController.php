@@ -56,6 +56,8 @@ class AdminController extends Controller
             't1.status as status',
             't1.opt_landline as opt_landline',
             't1.callback_remarks as callback_remarks',
+            't1.landline as landline',
+            't1.opt_contact as opt_contact',
             't2.loa_type as loaType',
             't2.loa_number as loaNumber',
             't2.approval_code as approvalCode',

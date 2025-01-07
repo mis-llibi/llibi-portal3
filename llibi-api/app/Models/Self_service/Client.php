@@ -46,7 +46,9 @@ class Client extends Model
     'handling_time',
     'platform',
     'opt_landline',
-    'callback_remarks'
+    'callback_remarks',
+    'landline',
+    'opt_contact'
   ];
 
   /**
