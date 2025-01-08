@@ -8,8 +8,10 @@ import ProviderLayout from '@/components/Layouts/Self-service/ProviderLayout';
 import Clock from 'react-live-clock';
 import Input from '@/components/Input';
 import InputSelect from '@/components/callback-request-components/InputSelect';
-import { PuffLoader } from 'react-spinners';
 import Swal from 'sweetalert2';
+
+// Loader
+import { PuffLoader } from 'react-spinners';
 
 // Logo
 import ApplicationLogo from '@/components/ApplicationLogo';
@@ -22,12 +24,15 @@ import axios from '@/lib/axios';
 import { useForm } from 'react-hook-form';
 import Select from '@/components/Select';
 
+
 export default function CallbackRequest() {
   const [status, setStatus] = useState([]);
   const [firstName, setFirstName] = useState("")
   const [middleName, setMiddleName] = useState("")
   const [lastName, setLastName] = useState("")
   const [loading, setloading] = useState(false)
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+
 
   const options = [
     { value: '', label: 'No options' },
@@ -97,6 +102,8 @@ export default function CallbackRequest() {
 
   const submitForms = async(data) => {
 
+    setLoadingSubmit(true)
+
     const dataForm = {
         data:data,
         emplID:emplid,
@@ -110,15 +117,20 @@ export default function CallbackRequest() {
         // console.log(response)
 
         if(response.status === 201){
+            setLoadingSubmit(false)
             Swal.fire({
                 title: "Success",
                 text: "Wait for the callback response",
                 icon: 'success'
             })
             reset()
+
         }
-    } catch (error) {
-        console.log(error)
+    }
+    catch (error) {
+        // console.log(error)
+        Swal.fire('Error', `${error}`, 'error')
+        setLoadingSubmit(false)
     }
 
   };
@@ -225,7 +237,8 @@ export default function CallbackRequest() {
                                 className="py-2 px-3 mt-4 text-white rounded-lg bg-[#FD9727]"
                                 type="submit"
                             >
-                                Submit
+                                {loadingSubmit ? <PuffLoader size={35} /> : "Submit"}
+                                {/* <PuffLoader size={40} /> */}
                             </button>
                             </div>
                         </>
@@ -265,7 +278,7 @@ export default function CallbackRequest() {
                                 className="py-2 px-3 mt-4 text-white rounded-lg bg-[#FD9727]"
                                 type="submit"
                             >
-                                Submit
+                                {loadingSubmit ? <PuffLoader size={35} /> : "Submit"}
                             </button>
                             </div>
                         </>
