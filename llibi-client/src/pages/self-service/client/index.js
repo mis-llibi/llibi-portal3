@@ -292,15 +292,15 @@ const Client = () => {
               Terms of Use
             </h1>
             <p className="text-justify">
-              You are using the <b>LLIBI Client Care Portal</b> created, owned,
-              and managed by Lacson and Lacson Insurance Brokers, Inc.
-              (“LLIBI”/us/our) to provide online-based services to facilitate
-              services to our MEMBERS for their transactions with us. Use of
-              this <i>portal</i> is optional. Use of this Portal and data herein
-              shall be in accordance with Philippine laws including Republic Act
-              No. 10173 (Data Privacy Act of 2012). <br />
-              <br />
-              This Portal allows you, the User, to do the following:
+              Please read these Terms of Use before using the <b>LLIBI Client Care Portal ("Portal").</b><br /><br />
+
+              By continuing to use this Portal, you hereby certify that you have read, reviewed, and agreed to comply with the terms indicated below. <br /><br />
+
+              Use of this <i>Portal</i> is optional. If you do not agree with the terms, you may discontinue use. <br /><br />
+
+              This <i>Portal</i>, created, owned, and managed by Lacson and Lacson Insurance Brokers, Inc. (“LLIBI”/us/our), aims to provide online-based services to facilitate requests and transactions of our MEMBERS. <br /><br />
+
+              This <i>Portal</i> allows you, the User, to do the following:
             </p>
             <ul>
               <li>
@@ -308,60 +308,43 @@ const Client = () => {
                 callback;
               </li>
               <li>
-                • Upload copies of your doctor’s request, medical certificate,
-                and other documents to facilitate your request;
+                • Upload copies of your doctor’s request, medical certificate, and other documents to facilitate your request;
               </li>
               <li>
                 • Confirm your active coverage by providing your membership
                 data; and
               </li>
               <li>
-                • Provide only relevant data in connection to your request.
+                • Provide relevant data in connection to your request.
               </li>
             </ul>
             <br />
             <p className="text-justify">
-              No enrolment is necessary for use of this <i>portal</i>. You are
-              responsible to protect the confidentiality of the information you
-              provide, including your date of birth, emergency card number, and
-              other information. This Portal will never ask for payment
-              information. Please do not provide any financial information such
-              as bank account numbers, credit card numbers, and the like. <br />
-              <br />
-              While LLIBI will implement appropriate security measures, you are
-              expected to use this <i>portal</i> only for the above purposes. No
-              personal data will be stored in this <i>portal</i>. Further, to
-              maintain the confidentiality of members’ data, and to provide you
-              with continuous services through this <i>portal</i> you are
-              expected to provide accurate information. Users are prohibited
-              from using data mining tools. LLIBI reserves the right to decline
-              access or services to this <i>portal</i> in case of suspected
-              fraud or to facilitate investigation of similar cases.
-              <br />
-              <br />
-              Your personal data will be shared only to those with a business
-              need to know. LLIBI will retain your data and transaction records
-              for a period of five (5) years from submission, or in accordance
-              to your consent, whichever is appropriate or in compliance with
-              applicable regulations.
-              <br />
-              <br />
-              For more information on how LLIBI handles your personal data,
-              please visit our Privacy Notice at{' '}
-              <a
-                className="text-blue-700"
-                href="https://llibi.com/data-privacy/"
-                target="_blank">
-                https://llibi.com/data-privacy/
-              </a>
-              <br />
-              <br />
-              If you have questions, or would like to report a personal data
-              breach, or if you believe your personal data have been
-              compromised, please email{' '}
-              <a className="text-blue-700" href="mailto:privacy@llibi.com">
-                privacy@llibi.com
-              </a>
+              No enrolment is necessary for use of this <i>Portal</i>.<br /><br />
+
+              While LLIBI implements appropriate security measures, you are expected to use this <i>Portal</i> only for the above purposes. At the same time, you are responsible for protecting the confidentiality of the information you provide including your date of birth, emergency card number, and other information required for the use of this <i>Portal</i>. <br /><br />
+
+              We will never ask for payment information such as bank account numbers, credit card numbers, and the likes via this <i>Portal</i>.<br /><br />
+
+              <span className='bg-[#FFFF00]'>By using this <i>Portal</i>, you also agree that any information provided will be shared with necessary LLIBI systems for processing your request.</span><br /><br />
+
+              <b>Privacy Policy</b><br />
+
+              The use of this <i>Portal</i> and any data collected herein are in accordance with Philippine laws, including the Rules and Regulations of the Republic Act No. 10173 or the Data Privacy Act of 2012.<br /><br />
+
+              No personal data will be stored in this <i>Portal</i>. Further, to maintain the confidentiality of members’ data, and to provide you with continuous services through this <i>Portal</i>, you are expected to provide accurate information. Users are prohibited from using data mining tools.<br /><br />
+
+              LLIBI reserves the right to decline access or services to this <i>Portal</i> in case of suspected fraud or to facilitate investigation of similar cases.<br /><br />
+
+              Your personal data will be shared only to those with a business need to know. LLIBI will retain your data and transaction records for a period of five (5) years from submission, or in accordance to your consent, whichever is appropriate or in compliance with applicable regulations.<br /><br />
+
+              For more information on how LLIBI handles your personal data, please visit our Privacy Notice at <a href='https://llibi.com/data-privacy/' target='_blank' className='text-blue-700'>https://llibi.com/data-privacy/</a>.<br /><br />
+
+              If you have questions, or would like to report a personal data breach, or if you believe your personal data have been compromised, please email <a className='text-blue-700' href='emailto:privacy@llibi.com'>privacy@llibi.com.</a><br /><br />
+
+              <b className='bg-[#FFFF00]'>Liability</b><br />
+              <span className='bg-[#FFFF00]'>LLIBI is not liable for damages that may happen as a result of your misuse of this Portal. </span>
+
             </p>
             <div className="text-center mt-4 gap-3 flex justify-center items-center">
               <Button
@@ -565,7 +548,7 @@ const Client = () => {
                           </div>
                         </li>
                         {/* scheduleCall */}
-                        <li className="flex gap-2 mb-2 items-center">
+                        {/* <li className="flex gap-2 mb-2 items-center">
                           <input
                             type="radio"
                             {...register('toDo', {
@@ -581,7 +564,7 @@ const Client = () => {
                             className={'!text-gray-400'}>
                             Request for Callback / Schedule a Call
                           </Label>
-                        </li>
+                        </li> */}
                         {/* requestCallback */}
                         {/* <li className="flex gap-2 mb-2 items-center">
                                                 <input
