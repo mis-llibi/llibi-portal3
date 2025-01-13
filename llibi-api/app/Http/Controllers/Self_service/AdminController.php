@@ -208,6 +208,8 @@ class AdminController extends Controller
 //     $update = [];
 //     $loa = [];
 
+
+
 //     $directory = 'Self-service/LOA/' . $client[0]->memberID;
 
 //     if(!Storage::disk('llibiapp')->exists($directory)){
@@ -227,8 +229,11 @@ class AdminController extends Controller
 //       $fileName = $member_id . '_' . $current_date . '_' . $created_at . '.pdf';
 //       $path = $directory . '/' . $fileName;
 
-//       $uploadedPath = $request->file('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
+
+
+//       $uploadedPath = request('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
 //       $fileLink = env('DO_LLIBI_CDN_ENDPOINT') . '/' . $path;
+
 
 
 //       // $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
@@ -280,7 +285,7 @@ class AdminController extends Controller
 //       'email_format_type' => $request->email_format_type
 //     ];
 
-//     $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+//    $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
 
 //     return array('client' => $client, 'all' => $allClient);
 //   }
@@ -310,10 +315,19 @@ public function UpdateRequest(Request $request)
       'attachLOA' => 'required|mimes:pdf',
     ]);
 
-    $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
+    $directory = 'Self-service/LOA/' . $client[0]->memberID;
+
+    // if(!Storage::disk('llibiapp')->exists($directory)){
+    //   Storage::disk('llibiapp')->makeDirectory($directory);
+    // }
+
+    $path = $request->attachLOA->storeAs($directory, $request->attachLOA->getClientOriginalName(), 'llibiapp');
+
+    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
 
     $update = [
-      'loa_attachment' => 'storage/' . $path,
+      'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
+    //   'loa_attachment' => 'storage/' . $path,
       'loa_number' => strtoupper($request->loaNumber),
       'approval_code' => strtoupper($request->approvalCode)
     ];
@@ -410,6 +424,7 @@ public function UpdateRequest(Request $request)
 
   private function sendNotification($data, $name, $email, $altEmail, $contact)
   {
+
     $name = ucwords(strtolower($name));
     $remarks = $data['remarks'];
     $ref = $data['refno'];

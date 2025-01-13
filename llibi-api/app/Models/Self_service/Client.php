@@ -45,6 +45,7 @@ class Client extends Model
     'is_send_to_provider',
     'handling_time',
     'platform',
+
     'opt_landline',
     'callback_remarks',
     'landline',

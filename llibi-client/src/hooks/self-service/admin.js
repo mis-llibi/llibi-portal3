@@ -87,7 +87,8 @@ export const useAdmin = ({ name, status }) => {
     setLoading,
     ...props
   }) => {
-    await csrf()
+
+
 
     const formData = new FormData()
 
@@ -106,36 +107,33 @@ export const useAdmin = ({ name, status }) => {
 
     let runfinally = true
 
-    axios
-      .post(`/self-service/admin-update-request`, formData)
-      .then(res => {
+    await csrf()
+
+    try {
+        const response = await axios.post(`/self-service/admin-update-request`, formData)
         mutate()
-        console.log(res)
-        const result = res.data
-        //console.log(result.data)
+        console.log(response)
+        const result = response.data
         Swal.fire({
-          title: 'Updated',
-          text: `Your have successfully updated the request for LOA`,
-          icon: 'success',
-        })
-        setRequest(result?.all)
-        setClient(result?.client[0])
-      })
-      .catch(error => {
-        const nerror = error?.response?.data?.message
-        swaerror('Update Failed', nerror)
+            title: 'Updated',
+            text: `Your have successfully updated the request for LOA`,
+            icon: 'success',
+          })
+          setRequest(result?.all)
+          setClient(result?.client[0])
+          setLoading(false)
+    } catch (error) {
+        // const nerror = error?.response?.data?.message
+        console.log(error)
+        // swaerror('Update Failed', error)
+        Swal.fire({
+            title: 'Update Failed',
+            text: `${error}`,
+            icon: 'error',
+          })
         runfinally = false
-      })
-      .finally(() => {
         setLoading(false)
-        if (runfinally) {
-          swasuccess(
-            'Updated',
-            'You have successfully updated the client request',
-          )
-          //setShow(false)
-        }
-      })
+    }
   }
 
   const exporting = async (from, to) => {

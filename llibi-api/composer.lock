@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bb9542c87986571ca82278eb9b554c9",
+    "content-hash": "80a7b151e14e3c8bdef860790c2bf2be",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -62,16 +62,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.334.2",
+            "version": "3.336.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "b19afc076bb1cc2617bdef76efd41587596109e7"
+                "reference": "dcb43c029ca74c52fa03a739341cc77086296a83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b19afc076bb1cc2617bdef76efd41587596109e7",
-                "reference": "b19afc076bb1cc2617bdef76efd41587596109e7",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/dcb43c029ca74c52fa03a739341cc77086296a83",
+                "reference": "dcb43c029ca74c52fa03a739341cc77086296a83",
                 "shasum": ""
             },
             "require": {
@@ -154,9 +154,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.334.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.336.13"
             },
-            "time": "2024-12-09T19:30:23+00:00"
+            "time": "2025-01-10T19:04:25+00:00"
         },
         {
             "name": "barryvdh/laravel-snappy",
@@ -6246,12 +6246,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
@@ -7359,8 +7359,8 @@
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {

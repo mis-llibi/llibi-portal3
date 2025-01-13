@@ -619,7 +619,7 @@ const Admin = () => {
                                   className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                                   onClick={() => {
                                     // view(row)
-                                    row.loaType == "consultation" ? view(row) : row.isDependent === null && row.memberID === null ? showCallbackModalProvider(row) : showCallbackModal(row)
+                                    row.loaType == "consultation" || row.loaType == "laboratory" ? view(row) : row.isDependent === null && row.memberID === null ? showCallbackModalProvider(row) : showCallbackModal(row)
                                   }}>
                                   VIEW
                                 </a>
