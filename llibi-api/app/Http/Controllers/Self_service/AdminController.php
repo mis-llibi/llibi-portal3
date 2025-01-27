@@ -292,6 +292,8 @@ class AdminController extends Controller
 
 public function UpdateRequest(Request $request)
 {
+
+
   $user_id = request()->user()->id;
   $client = $this->SearchRequest(0, ['val' => $request->id]);
 
@@ -304,11 +306,20 @@ public function UpdateRequest(Request $request)
     'approved_date' => $status === 3 ? Carbon::now() : null,
   ];
 
+
   $updateClient = Client::where('id', $request->id)
     ->update($arr);
 
   $update = [];
   $loa = [];
+
+  if((int)$request->status == 4){
+    $update = [
+        'loa_status' => $status === 4 ? "Denied" : null
+      ];
+    ClientRequest::where('client_id', $request->id)->update($update);
+  }
+
   if ((int)$request->status == 3) {
     $title = strtoupper($request->loaNumber);
     $this->validate($request, [
@@ -321,15 +332,15 @@ public function UpdateRequest(Request $request)
     //   Storage::disk('llibiapp')->makeDirectory($directory);
     // }
 
-    $path = $request->attachLOA->storeAs($directory, $request->attachLOA->getClientOriginalName(), 'llibiapp');
+    $path = $request->attachLOA->storeAs($directory, str_replace('#', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
 
-    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
+    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('#', '', $request->attachLOA->getClientOriginalName()), 'public');
 
     $update = [
       'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
-    //   'loa_attachment' => 'storage/' . $path,
-      'loa_number' => strtoupper($request->loaNumber),
-      'approval_code' => strtoupper($request->approvalCode)
+      'loa_number' => strtoupper(explode('#', $request->loaNumber)[0]),
+      'approval_code' => strtoupper($request->approvalCode),
+      'loa_status' => $status === 3 ? "Approved" : ""
     ];
 
     $updateRequest = ClientRequest::where('client_id', $request->id)
@@ -463,7 +474,8 @@ public function UpdateRequest(Request $request)
       <br /><br />';
 
       if ($data['status'] === 3) {
-        $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+        // $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+        $statusRemarks = 'Your LOA request is approved, and your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. 'Please print a copy of your LOA and present it to the accredited provider upon availment.';
         // switch ($data['email_format_type']) {
         //   case 'consultation':
         //     break;
@@ -547,8 +559,10 @@ public function UpdateRequest(Request $request)
     if (!empty($contact)) {
       if ($data['status'] === 3) {
         $sms =
-          "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
-        //\nLOA #: $loanumber\nAPP #: $approvalcode \n\n Thank you
+          'From Lacson & Lacson:\n\nHi '. $name . ',\n\nYour LOA request is approved and your LOA Number is ' . $data['loa_number'] . '. Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+        // $sms =
+        //   "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+
       } else {
         $sms =
           "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is disapproved with remarks: $remarks\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
