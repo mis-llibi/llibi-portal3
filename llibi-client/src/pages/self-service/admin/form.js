@@ -259,8 +259,8 @@ const Form = ({ setRequest, row }) => {
 
   const linkCheckers = (link) => {
     if(!link.match(/^(http|https):/)){
-        // return `http://localhost:8000/storage/${link}`
-        return `https://portal.llibi.app/storage/${link}`
+        return `http://localhost:8000/storage/${link}`
+        // return `https://portal.llibi.app/storage/${link}`
     }else{
         return link
     }

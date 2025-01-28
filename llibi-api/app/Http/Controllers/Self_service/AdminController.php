@@ -332,13 +332,13 @@ public function UpdateRequest(Request $request)
     //   Storage::disk('llibiapp')->makeDirectory($directory);
     // }
 
-    $path = $request->attachLOA->storeAs($directory, str_replace('#', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
+    $path = $request->attachLOA->storeAs($directory, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
 
-    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('#', '', $request->attachLOA->getClientOriginalName()), 'public');
+    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'public');
 
     $update = [
       'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
-      'loa_number' => strtoupper(explode('#', $request->loaNumber)[0]) . '#',
+      'loa_number' => strtoupper(explode('_', $request->loaNumber)[0]) . '*',
       'approval_code' => strtoupper($request->approvalCode),
       'loa_status' => $status === 3 ? "Approved" : ""
     ];
