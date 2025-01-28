@@ -748,7 +748,9 @@ public function CheckClient($request, $type)
 
         foreach ($request->file("attachment") as $key => $file) {
 
-          $path = $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'public');
+        //   $path = $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'public');
+
+          $path = $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'llibiapp');
 
           $name = $file->getClientOriginalName();
 
@@ -760,7 +762,7 @@ public function CheckClient($request, $type)
 
             'file_name' => $name,
 
-            'file_link' => $path
+            'file_link' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path
 
           ]);
 
