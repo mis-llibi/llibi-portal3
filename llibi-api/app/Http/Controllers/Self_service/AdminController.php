@@ -475,7 +475,7 @@ public function UpdateRequest(Request $request)
 
       if ($data['status'] === 3) {
         // $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
-        $statusRemarks = 'Your LOA request is approved, and your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. 'Please print a copy of your LOA and present it to the accredited provider upon availment.';
+        $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'Please print a copy of your LOA and present it to the accredited provider upon availment.';
         // switch ($data['email_format_type']) {
         //   case 'consultation':
         //     break;
@@ -559,7 +559,7 @@ public function UpdateRequest(Request $request)
     if (!empty($contact)) {
       if ($data['status'] === 3) {
         $sms =
-          'From Lacson & Lacson:\n\nHi '. $name . ',\n\nYour LOA request is approved and your LOA Number is ' . $data['loa_number'] . '. Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+          'From Lacson & Lacson:\n\nHi '. $name . ',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
         // $sms =
         //   "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 

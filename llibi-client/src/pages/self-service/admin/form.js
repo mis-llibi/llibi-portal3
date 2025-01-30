@@ -19,6 +19,7 @@ import { ManageUploadedFiles } from '@/hooks/self-service/ManageUploadedFiles'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
+
 const Form = ({ setRequest, row }) => {
   const { files } = ManageUploadedFiles({ id: row?.id })
 
@@ -39,6 +40,7 @@ const Form = ({ setRequest, row }) => {
   const [client, setClient] = useState(row)
 
   const attachLOA = watch("attachLOA");
+  const isProd = process.env.NODE_ENV === 'production'
 
   const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
 
@@ -259,8 +261,9 @@ const Form = ({ setRequest, row }) => {
 
   const linkCheckers = (link) => {
     if(!link.match(/^(http|https):/)){
-        return `http://localhost:8000/storage/${link}`
+        // return `http://localhost:8000/storage/${link}`
         // return `https://portal.llibi.app/storage/${link}`
+        return isProd ? `https://portal.llibi.app/storage/${link}` : `http://localhost:8000/storage/${link}`
     }else{
         return link
     }
