@@ -680,6 +680,8 @@ public function CheckClient($request, $type)
 
         'complaint' => $complaint,
 
+        // 'loa_status' => "Pending Approval",
+
         'assessment_q1' => $request->assessment1,
 
         'assessment_q2' => $request->assessment2,
@@ -748,8 +750,9 @@ public function CheckClient($request, $type)
 
         foreach ($request->file("attachment") as $key => $file) {
 
-        //   $path = $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'public');
+            // $path = $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'public');
 
+        //   $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'public');
           $path = $file->storeAs('Self-service/LAB/' . $request->refno, $file->getClientOriginalName(), 'llibiapp');
 
           $name = $file->getClientOriginalName();
@@ -763,6 +766,7 @@ public function CheckClient($request, $type)
             'file_name' => $name,
 
             'file_link' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path
+            // 'file_link' => $path
 
           ]);
 
@@ -818,8 +822,10 @@ public function CheckClient($request, $type)
 
       $setRequest['doctor_name'] = $doctor[1];
 
-    }
+      $setRequest['loa_status'] = "Pending Approval";
 
+    }
+// 'loa_status' => "Pending Approval",
 
 
     $updateRequest = ClientRequest::where('client_id', $client[0]->id)
