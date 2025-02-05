@@ -60,6 +60,8 @@ use Illuminate\Support\Facades\Log;
 
 use App\Events\RealtimeNotificationEvent;
 
+use App\Models\Self_service\Callback;
+
 
 
 class ClientController extends Controller
@@ -680,8 +682,6 @@ public function CheckClient($request, $type)
 
         'complaint' => $complaint,
 
-        // 'loa_status' => "Pending Approval",
-
         'assessment_q1' => $request->assessment1,
 
         'assessment_q2' => $request->assessment2,
@@ -825,8 +825,13 @@ public function CheckClient($request, $type)
       $setRequest['loa_status'] = "Pending Approval";
 
     }
-// 'loa_status' => "Pending Approval",
 
+    Callback::create([
+        'client_id' => $client[0]->id,
+        'failed_count' => 0,
+        'created_at' => now(),
+        'updated_at' => now()
+    ]);
 
     $updateRequest = ClientRequest::where('client_id', $client[0]->id)
 

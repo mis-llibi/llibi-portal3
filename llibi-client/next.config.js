@@ -27,8 +27,8 @@ const isProd = process.env.NODE_ENV === 'production'
 const nextConfig = {
   env: {
     backEndUrl: isProd
-    //   ? 'https://portal.llibi.app/server'
-      ? "https://test.backend.llibi.app"
+    //   ? 'https://test.backend.llibi.app'
+      ? "https://portal.backend.llibi.app"
       : 'http://localhost:8000',
     apiPath: '/api',
     llibiDigitalOceanSpaces: process.env.NEXT_PUBLIC_LLIBI_DIGITALOCEAN_SPACES,

@@ -326,7 +326,7 @@ const Client = () => {
 
               We will never ask for payment information such as bank account numbers, credit card numbers, and the likes via this <i>Portal</i>.<br /><br />
 
-              <span className='bg-[#FFFF00]'>By using this <i>Portal</i>, you also agree that any information provided will be shared with necessary LLIBI systems for processing your request.</span><br /><br />
+              <span>By using this <i>Portal</i>, you also agree that any information provided will be shared with necessary LLIBI systems for processing your request.</span><br /><br />
 
               <b>Privacy Policy</b><br />
 
@@ -342,8 +342,8 @@ const Client = () => {
 
               If you have questions, or would like to report a personal data breach, or if you believe your personal data have been compromised, please email <a className='text-blue-700' href='emailto:privacy@llibi.com'>privacy@llibi.com.</a><br /><br />
 
-              <b className='bg-[#FFFF00]'>Liability</b><br />
-              <span className='bg-[#FFFF00]'>LLIBI is not liable for damages that may happen as a result of your misuse of this Portal. </span>
+              <b>Liability</b><br />
+              <span>LLIBI is not liable for damages that may happen as a result of your misuse of this Portal. </span>
 
             </p>
             <div className="text-center mt-4 gap-3 flex justify-center items-center">

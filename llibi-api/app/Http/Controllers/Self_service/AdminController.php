@@ -32,11 +32,12 @@ class AdminController extends Controller
     public function SearchRequest($search, $id)
 {
     // Define default statuses
-    $defaultStatuses = [2, 6];
+    $defaultStatuses = [2, 6, 9];
 
     $request = DB::table('app_portal_clients as t1')
         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
         ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+        ->rightJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
         ->select(
             't1.id',
             't1.reference_number as refno',
@@ -80,7 +81,13 @@ class AdminController extends Controller
             'mlist.company_code',
             't1.provider_email2',
             't1.is_send_to_provider',
-            't1.platform'
+            't1.platform',
+            't3.failed_count',
+            't3.first_attempt_date',
+            't3.second_attempt_date',
+            't3.third_attempt_date',
+            't3.created_at as callback_created_at',
+            't3.updated_at as callback_updated_at'
         )
         ->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
