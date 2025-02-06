@@ -148,7 +148,7 @@ class CallbackRequest extends Controller
 
             return response()->json([
                 'success' => true,
-                'attempt' => '1st notification email was sent to the client',
+                'attempt' => '1st notification email was sent to the provider',
                 'data' => $data
             ]);
         }elseif($data->failed_count == 1 && $data->second_attempt_date === null){
@@ -163,7 +163,7 @@ class CallbackRequest extends Controller
             '<p style="font-weight:normal;">
                 Our Client Care is trying to contact your facility through the registered and/or alternative contact details, 2nd attempt at ' . '<b>' . $formatted_date . '</b>' .  '. <br /><br />
 
-                Please keep your line open as we try our 3rd attempt to contact your facility.
+                Please keep your line open as we try our last attempt to contact your facility.
             </p>';
 
             $emailer = new SendingEmail(email: "jeremiahquintano@llibi.com", body: $second_attempt_msg, subject: 'CLIENT CARE PORTAL - SECOND CALLBACK ATTEMPT');
@@ -172,7 +172,7 @@ class CallbackRequest extends Controller
 
             return response()->json([
                 'success' => true,
-                'attempt' => '2nd notification email was sent to the client',
+                'attempt' => '2nd notification email was sent to the provider',
                 'data' => $data
             ]);
         }elseif($data->failed_count == 2 && $data->third_attempt_date === null){
@@ -187,7 +187,7 @@ class CallbackRequest extends Controller
 
             $third_attempt_msg =
             '<p style="font-weight:normal;">
-                This is to inform you that our Client Care tried to contact your facility through the registered and/or alternative contact details, 1st attempt at ' .'<b>' .$formatted_date_1st_attempt . '</b>' . ' and 2nd attempt at ' . '<b>' . $formatted_date_2nd_attempt . '</b>' . ' and 3rd and last attempt at ' .'<b>' . $formatted_date_3rd_attempt . '</b>' . '.Unfortunately, your line remains uncontactable/unresponsive. <br /><br />If you still wish to contact Client Care, you may request for callback again through our Provider Portal. Thank you.
+                This is to inform you that our Client Care tried to contact your facility through the registered and/or alternative contact details, 1st attempt at ' .'<b>' .$formatted_date_1st_attempt . '</b>' . ' and 2nd attempt at ' . '<b>' . $formatted_date_2nd_attempt . '</b>' . ' and last attempt at ' .'<b>' . $formatted_date_3rd_attempt . '</b>' . '.Unfortunately, your line remains uncontactable/unresponsive. <br /><br />If you still wish to contact Client Care, you may request for callback again through our Provider Portal. Thank you.
             </p>';
 
             $emailer = new SendingEmail(email: "jeremiahquintano@llibi.com", body: $third_attempt_msg, subject: 'CLIENT CARE PORTAL - THIRD CALLBACK ATTEMPT');
@@ -204,7 +204,7 @@ class CallbackRequest extends Controller
 
             return response()->json([
                 'success' => true,
-                'attempt' => 'Final notification email was sent to the client. Callback request will be marked as failed',
+                'attempt' => 'Final notification email was sent to the provider. Callback request will be marked as failed',
                 'data' => $data,
                 'result' => $result
             ]);
