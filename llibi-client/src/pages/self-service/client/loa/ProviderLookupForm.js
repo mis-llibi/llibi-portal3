@@ -189,7 +189,8 @@ const ProviderLookupForm = ({
                         value={index}
                         className="w-3 h-3"
                       />{' '}
-                      <Label htmlFor={`hospital-${row.id}`}>{row.name}</Label>
+                      <Label htmlFor={`hospital-${row.id}`}>{row.name} {row.accept_eloa == 1 ? "⭐" : ""} </Label>
+                      {/* <h1 className='text-right w-1/2'>{row.accept_eloa == 1 ? "⭐" : ""}</h1> */}
                     </div>
                   ))}
                 </div>
