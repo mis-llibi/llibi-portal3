@@ -189,7 +189,8 @@ const ProviderLookupForm = ({
                         value={index}
                         className="w-3 h-3"
                       />{' '}
-                      <Label htmlFor={`hospital-${row.id}`}>{row.name}</Label>
+                      <Label htmlFor={`hospital-${row.id}`}>{row.name} {row.accept_eloa == 1 ? "⭐" : ""} </Label>
+                      {/* <h1 className='text-right w-1/2'>{row.accept_eloa == 1 ? "⭐" : ""}</h1> */}
                     </div>
                   ))}
                 </div>
@@ -259,6 +260,14 @@ const ProviderLookupForm = ({
           <ButtonText text="Submit Selected Provider" loading={loading} />
         </Button>
         <div className="clear-both"></div>
+      </div>
+      <div className='flex items-center justify-between p-2 border-t border-solid border-blueGray-200'>
+        <div className='w-full text-center'>
+            <h1 className='font-bold px-2 py-2  text-xs'>
+                LEGEND <br />
+                <span className='text-orange-900'>⭐ - <span className='uppercase'>This provider accepts LLIBI</span> e-LOA</span>
+            </h1>
+        </div>
       </div>
     </form>
   )

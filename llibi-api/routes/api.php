@@ -50,6 +50,10 @@ use MailerSend\Helpers\Builder\EmailParams;
 use MailerSend\Helpers\Builder\Recipient;
 use MailerSend\MailerSend;
 
+use App\Http\Controllers\Callback_Request;
+use App\Http\Controllers\Callback_Request\CallbackRequest;
+use Illuminate\Support\Facades\DB;
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
   Route::get('/user', function (Request $request) {
@@ -116,6 +120,15 @@ Route::get('/da-extract-members', [ManageDaMemberController::class, 'getMembers'
 //CORPORATE API
 Route::get('/corporate/employees/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetEmployees']);
 Route::get('/corporate/dependents/{status}/{lastname}/{firstname}', [CorporateMembers::class, 'GetDependents']);
+
+//HOSPITAL
+Route::get('/hospitals', [CallbackRequest::class, 'getHospitals']);
+Route::get('/getMasterlist', [CallbackRequest::class, 'getMasterlist']);
+Route::post('/submitCallback', [CallbackRequest::class, 'submitCallback']);
+Route::post('/changeCallbackStatus', [CallbackRequest::class, 'changeCallbackStatus']);
+Route::post('/doneStatusCallback', [CallbackRequest::class, 'doneStatusCallback']);
+Route::put('/unresponsiveCallback', [CallbackRequest::class, 'unresponsiveCallback']);
+
 
 //COMPANIES SYNC API
 require __DIR__ . '/ebd.php';

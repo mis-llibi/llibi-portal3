@@ -29,182 +29,372 @@ use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
-  public function SearchRequest($search, $id)
-  {
+    public function SearchRequest($search, $id)
+{
+    // Define default statuses
+    $defaultStatuses = [2, 6, 9];
+
     $request = DB::table('app_portal_clients as t1')
-      ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-      ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
-      ->select(
-        't1.id',
-        't1.reference_number as refno',
-        't1.email as email',
-        't1.alt_email as altEmail',
-        't1.contact as contact',
-        't1.member_id as memberID',
-        't1.first_name as firstName',
-        't1.last_name as lastName',
-        't1.dob as dob',
-        't1.is_dependent as isDependent',
-        't1.dependent_member_id as depMemberID',
-        't1.dependent_first_name as depFirstName',
-        't1.dependent_last_name as depLastName',
-        't1.dependent_dob as depDob',
-        't1.remarks as remarks',
-        't1.status as status',
-        't2.loa_type as loaType',
-        't2.loa_number as loaNumber',
-        't2.approval_code as approvalCode',
-        't2.loa_attachment as loaAttachment',
-        't2.complaint as complaint',
-        't2.lab_attachment as labAttachment',
-        't2.assessment_q1 as ass1',
-        't2.assessment_q2 as ass2',
-        't2.assessment_q3 as ass3',
-        't1.created_at as createdAt',
-        't2.provider_id as providerID',
-        't2.provider as providerName',
-        't2.doctor_id as doctorID',
-        't2.doctor_name as doctorName',
-        't2.diagnosis as diagnosis',
-        't1.approved_date',
-        DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
-        DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
-        'mlist.company_name',
-        'mlist.company_code',
-        't1.provider_email2',
-        't1.is_send_to_provider',
-        't1.platform'
-      )
-      ->whereIn('t1.status', [2, 3, 4, 5])
-      ->where(function ($query) use ($search, $id) {
-        if ($search != 0) {
-          $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+        ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+        ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+        ->rightJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
+        ->select(
+            't1.id',
+            't1.reference_number as refno',
+            't1.email as email',
+            't1.alt_email as altEmail',
+            't1.contact as contact',
+            't1.member_id as memberID',
+            't1.first_name as firstName',
+            't1.last_name as lastName',
+            't1.dob as dob',
+            't1.is_dependent as isDependent',
+            't1.dependent_member_id as depMemberID',
+            't1.dependent_first_name as depFirstName',
+            't1.dependent_last_name as depLastName',
+            't1.dependent_dob as depDob',
+            't1.remarks as remarks',
+            't1.status as status',
+            't1.opt_landline as opt_landline',
+            't1.callback_remarks as callback_remarks',
+            't1.landline as landline',
+            't1.opt_contact as opt_contact',
+            't2.loa_type as loaType',
+            't2.loa_number as loaNumber',
+            't2.approval_code as approvalCode',
+            't2.loa_attachment as loaAttachment',
+            't2.complaint as complaint',
+            't2.lab_attachment as labAttachment',
+            't2.assessment_q1 as ass1',
+            't2.assessment_q2 as ass2',
+            't2.assessment_q3 as ass3',
+            't1.created_at as createdAt',
+            't2.provider_id as providerID',
+            't2.provider as providerName',
+            't2.doctor_id as doctorID',
+            't2.doctor_name as doctorName',
+            't2.diagnosis as diagnosis',
+            't1.approved_date',
+            DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+            DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+            'mlist.company_name',
+            'mlist.company_code',
+            't1.provider_email2',
+            't1.is_send_to_provider',
+            't1.platform',
+            't3.failed_count',
+            't3.first_attempt_date',
+            't3.second_attempt_date',
+            't3.third_attempt_date',
+            't3.created_at as callback_created_at',
+            't3.updated_at as callback_updated_at'
+        )
+        ->where(function ($query) use ($id, $defaultStatuses) {
+            if ($id == 8) {
+                $query->whereIn('t1.status', $defaultStatuses); // Default statuses
+            } elseif(is_array($id)){
+                $query->where('t1.id', $id['val']);
+            }else {
+                $query->where('t1.status', $id);
+            }
+        })
+        ->where(function ($query) use ($search) {
+            if ($search != 0) {
+                $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
 
-          $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
-        }
-        if (is_array($id)) {
-          $query->where('t1.id', $id['val']);
-        } else {
-          if ($id != 0) {
-            $query->where('t1.status', $id);
-          }
-        }
-      })
-      ->whereDate('t1.created_at', now()->format('Y-m-d'))
-      ->orderBy('t1.id', 'DESC')
-      // ->offset(0)
-      ->limit(20)
-      ->get();
-
-    // foreach ($request as $key => $row) {
-    //   $hospital = Hospitals::where('id', $row->providerID)->first();
-    //   $request[$key]->email1 = $this->emailIsValid($hospital->email1) ? $hospital->email1 : null;
-    //   $request[$key]->email2 = $this->emailIsValid($hospital->email2) ? $hospital->email2 : null;
-    // }
+                $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+                $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
+            }
+        })
+        ->whereDate('t1.created_at', now()->format('Y-m-d'))
+        ->orderBy('t1.id', 'DESC')
+        ->limit(20)
+        ->get();
 
     return $request;
+}
+
+
+
+
+
+//   public function SearchRequest($search, $id){
+//     $request = DB::table('app_portal_clients as t1')
+//       ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+//       ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+//       ->select(
+//         't1.id',
+//         't1.reference_number as refno',
+//         't1.email as email',
+//         't1.alt_email as altEmail',
+//         't1.contact as contact',
+//         't1.member_id as memberID',
+//         't1.first_name as firstName',
+//         't1.last_name as lastName',
+//         't1.dob as dob',
+//         't1.is_dependent as isDependent',
+//         't1.dependent_member_id as depMemberID',
+//         't1.dependent_first_name as depFirstName',
+//         't1.dependent_last_name as depLastName',
+//         't1.dependent_dob as depDob',
+//         't1.remarks as remarks',
+//         't1.status as status',
+//         't2.loa_type as loaType',
+//         't2.loa_number as loaNumber',
+//         't2.approval_code as approvalCode',
+//         't2.loa_attachment as loaAttachment',
+//         't2.complaint as complaint',
+//         't2.lab_attachment as labAttachment',
+//         't2.assessment_q1 as ass1',
+//         't2.assessment_q2 as ass2',
+//         't2.assessment_q3 as ass3',
+//         't1.created_at as createdAt',
+//         't2.provider_id as providerID',
+//         't2.provider as providerName',
+//         't2.doctor_id as doctorID',
+//         't2.doctor_name as doctorName',
+//         't2.diagnosis as diagnosis',
+//         't1.approved_date',
+//         DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+//         DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+//         'mlist.company_name',
+//         'mlist.company_code',
+//         't1.provider_email2',
+//         't1.is_send_to_provider',
+//         't1.platform'
+//       )
+//       ->whereIn('t1.status', [2, 3, 4, 5, 6])
+//       ->where(function ($query) use ($search, $id) {
+//         if ($search != 0) {
+//           $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+
+//           $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+//           $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
+//         }
+//         if (is_array($id)) {
+//           $query->where('t1.id', $id['val']);
+//         } else {
+//           if ($id != 0) {
+//             $query->where('t1.status', $id);
+//           }
+//         }
+//       })
+//       ->whereDate('t1.created_at', now()->format('Y-m-d'))
+//       ->orderBy('t1.id', 'DESC')
+//       // ->offset(0)
+//       ->limit(20)
+//       ->get();
+
+
+//     return $request;
+//   }
+
+//   public function UpdateRequest(Request $request)
+//   {
+//     $user_id = request()->user()->id;
+//     $client = $this->SearchRequest(0, ['val' => $request->id]);
+
+//     $status = (int)$request->status;
+
+//     $arr = [
+//       'status' => $status,
+//       'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
+//       'user_id' => $user_id,
+//       'approved_date' => $status === 3 ? Carbon::now() : null,
+//     ];
+
+//     $updateClient = Client::where('id', $request->id)
+//       ->update($arr);
+
+//     $update = [];
+//     $loa = [];
+
+
+
+//     $directory = 'Self-service/LOA/' . $client[0]->memberID;
+
+//     if(!Storage::disk('llibiapp')->exists($directory)){
+//       Storage::disk('llibiapp')->makeDirectory($directory);
+//     }
+
+//     if ((int)$request->status == 3) {
+//       $title = strtoupper($request->loaNumber);
+//       $this->validate($request, [
+//         'attachLOA' => 'required|mimes:pdf',
+//       ]);
+
+//       //Define the file name and directory path
+//       $member_id = $client[0]->memberID;
+//       $current_date = Carbon::now()->format('Ymd');
+//       $created_at = Carbon::parse($client[0]->createdAt)->format('Ymd_His');
+//       $fileName = $member_id . '_' . $current_date . '_' . $created_at . '.pdf';
+//       $path = $directory . '/' . $fileName;
+
+
+
+//       $uploadedPath = request('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
+//       $fileLink = env('DO_LLIBI_CDN_ENDPOINT') . '/' . $path;
+
+
+
+//       // $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
+
+//       $update = [
+//         'loa_attachment' => $fileLink,
+//         'loa_number' => strtoupper($request->loaNumber), // Ensure LOA Number is stored
+//         'approval_code' => strtoupper($request->approvalCode)
+//       ];
+
+//       $updateRequest = ClientRequest::where('client_id', $request->id)
+//         ->update($update);
+
+//       if ($client[0]->isDependent == 1) {
+//         $password = date('Ymd', strtotime($client[0]->depDob));
+//       } else {
+//         $password = date('Ymd', strtotime($client[0]->dob));
+//       }
+
+//       $encryptedPdfPath = $this->encryptPdf($path, $password);
+
+//       $loa = ['encryptedLOA' => $encryptedPdfPath];
+//     }
+
+//     $client = $this->SearchRequest(0, ['val' => $request->id]);
+//     $allClient = $this->SearchRequest(0, 2);
+
+//     $hospital_emails = [];
+//     // if ($request->hospital_email1 != 'null') {
+//     // array_push($hospital_emails, $request->hospital_email1);
+//     // array_push($hospital_emails, 'testllibi1@yopmail.com');
+//     // }
+//     // if ($request->hospital_email2 != 'null') {
+//     // array_push($hospital_emails, $request->hospital_email2);
+//     // array_push($hospital_emails, 'testllibi2@yopmail.com');
+//     // }
+
+//     //SendNotification
+//     $dataSend = [
+//       'refno' => $client[0]->refno,
+//       'remarks' => $request->disapproveRemarks,
+//       'status' => $status,
+//       'hospital_email' => $hospital_emails,
+//       'provider_email2' => $client[0]->provider_email2,
+//       'is_send_to_provider' => $client[0]->is_send_to_provider,
+//       'company_code' => $client[0]->company_code,
+//       'member_id' => $client[0]->memberID,
+//       'request_id' => $client[0]->id,
+//       'email_format_type' => $request->email_format_type
+//     ];
+
+//    $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+
+//     return array('client' => $client, 'all' => $allClient);
+//   }
+
+public function UpdateRequest(Request $request)
+{
+
+
+  $user_id = request()->user()->id;
+  $client = $this->SearchRequest(0, ['val' => $request->id]);
+
+  $status = (int)$request->status;
+
+  $arr = [
+    'status' => $status,
+    'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
+    'user_id' => $user_id,
+    'approved_date' => $status === 3 ? Carbon::now() : null,
+  ];
+
+
+  $updateClient = Client::where('id', $request->id)
+    ->update($arr);
+
+  $update = [];
+  $loa = [];
+
+  if((int)$request->status == 4){
+    $update = [
+        'loa_status' => $status === 4 ? "Denied" : null
+      ];
+    ClientRequest::where('client_id', $request->id)->update($update);
   }
 
-  public function UpdateRequest(Request $request)
-  {
-    $user_id = request()->user()->id;
-    $client = $this->SearchRequest(0, ['val' => $request->id]);
-
-    $status = (int)$request->status;
-
-    $arr = [
-      'status' => $status,
-      'remarks' => (isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
-      'user_id' => $user_id,
-      'approved_date' => $status === 3 ? Carbon::now() : null,
-    ];
-
-    $updateClient = Client::where('id', $request->id)
-      ->update($arr);
-
-    $update = [];
-    $loa = [];
+  if ((int)$request->status == 3) {
+    $title = strtoupper($request->loaNumber);
+    $this->validate($request, [
+      'attachLOA' => 'required|mimes:pdf',
+    ]);
 
     $directory = 'Self-service/LOA/' . $client[0]->memberID;
 
-    if(!Storage::disk('llibiapp')->exists($directory)){
-      Storage::disk('llibiapp')->makeDirectory($directory);
-    }
-
-    if ((int)$request->status == 3) {
-      $title = strtoupper($request->loaNumber);
-      $this->validate($request, [
-        'attachLOA' => 'required|mimes:pdf',
-      ]);
-
-      //Define the file name and directory path
-      $member_id = $client[0]->memberID;
-      $current_date = Carbon::now()->format('Ymd');
-      $created_at = Carbon::parse($client[0]->createdAt)->format('Ymd_His');
-      $fileName = $member_id . '_' . $current_date . '_' . $created_at . '.pdf';
-      $path = $directory . '/' . $fileName;
-
-      $uploadedPath = $request->file('attachLOA')->storeAs($directory, $fileName, 'llibiapp');
-      $fileLink = env('DO_LLIBI_CDN_ENDPOINT') . '/' . $path;
-
-
-      // $path = request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, request('attachLOA')->getClientOriginalName(), 'public');
-
-      $update = [
-        'loa_attachment' => $fileLink,
-        'loa_number' => strtoupper($request->loaNumber), // Ensure LOA Number is stored
-        'approval_code' => strtoupper($request->approvalCode)
-      ];
-
-      $updateRequest = ClientRequest::where('client_id', $request->id)
-        ->update($update);
-
-      if ($client[0]->isDependent == 1) {
-        $password = date('Ymd', strtotime($client[0]->depDob));
-      } else {
-        $password = date('Ymd', strtotime($client[0]->dob));
-      }
-
-      $encryptedPdfPath = $this->encryptPdf($path, $password);
-
-      $loa = ['encryptedLOA' => $encryptedPdfPath];
-    }
-
-    $client = $this->SearchRequest(0, ['val' => $request->id]);
-    $allClient = $this->SearchRequest(0, 2);
-
-    $hospital_emails = [];
-    // if ($request->hospital_email1 != 'null') {
-    // array_push($hospital_emails, $request->hospital_email1);
-    // array_push($hospital_emails, 'testllibi1@yopmail.com');
-    // }
-    // if ($request->hospital_email2 != 'null') {
-    // array_push($hospital_emails, $request->hospital_email2);
-    // array_push($hospital_emails, 'testllibi2@yopmail.com');
+    // if(!Storage::disk('llibiapp')->exists($directory)){
+    //   Storage::disk('llibiapp')->makeDirectory($directory);
     // }
 
-    //SendNotification
-    $dataSend = [
-      'refno' => $client[0]->refno,
-      'remarks' => $request->disapproveRemarks,
-      'status' => $status,
-      'hospital_email' => $hospital_emails,
-      'provider_email2' => $client[0]->provider_email2,
-      'is_send_to_provider' => $client[0]->is_send_to_provider,
-      'company_code' => $client[0]->company_code,
-      'member_id' => $client[0]->memberID,
-      'request_id' => $client[0]->id,
-      'email_format_type' => $request->email_format_type
+    $path = $request->attachLOA->storeAs($directory, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
+
+    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'public');
+
+    $update = [
+      'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
+      'loa_number' => strtoupper(explode('_', $request->loaNumber)[0]) . '*',
+      'approval_code' => strtoupper($request->approvalCode),
+      'loa_status' => $status === 3 ? "Approved" : ""
     ];
 
-    $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+    $updateRequest = ClientRequest::where('client_id', $request->id)
+      ->update($update);
 
-    return array('client' => $client, 'all' => $allClient);
+    if ($client[0]->isDependent == 1) {
+      $password = date('Ymd', strtotime($client[0]->depDob));
+    } else {
+      $password = date('Ymd', strtotime($client[0]->dob));
+    }
+
+    $encryptedPdfPath = $this->encryptPdf($path, $password);
+
+    $loa = ['encryptedLOA' => $encryptedPdfPath];
   }
+
+  $client = $this->SearchRequest(0, ['val' => $request->id]);
+  $allClient = $this->SearchRequest(0, 2);
+
+  $hospital_emails = [];
+  // if ($request->hospital_email1 != 'null') {
+  // array_push($hospital_emails, $request->hospital_email1);
+  // array_push($hospital_emails, 'testllibi1@yopmail.com');
+  // }
+  // if ($request->hospital_email2 != 'null') {
+  // array_push($hospital_emails, $request->hospital_email2);
+  // array_push($hospital_emails, 'testllibi2@yopmail.com');
+  // }
+
+  //SendNotification
+  $dataSend = [
+    'refno' => $client[0]->refno,
+    'remarks' => $request->disapproveRemarks,
+    'status' => $status,
+    'hospital_email' => $hospital_emails,
+    'provider_email2' => $client[0]->provider_email2,
+    'is_send_to_provider' => $client[0]->is_send_to_provider,
+    'company_code' => $client[0]->company_code,
+    'member_id' => $client[0]->memberID,
+    'request_id' => $client[0]->id,
+    'email_format_type' => $request->email_format_type
+  ];
+
+  $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+
+  return array('client' => $client, 'all' => $allClient);
+}
 
   private function encryptPdf($path, $password)
   {
@@ -222,13 +412,13 @@ class AdminController extends Controller
         }
 
         $userPassword = 'admin123456';
-  
+
         $result = $pdf->allow('AllFeatures')
             ->setPassword($password)
             ->setUserPassword($userPassword)
             ->passwordEncryption(128)
             ->saveAs($filePath);
-  
+
         if ($result === false) {
             $error = $pdf->getError();
         } */
@@ -252,6 +442,7 @@ class AdminController extends Controller
 
   private function sendNotification($data, $name, $email, $altEmail, $contact)
   {
+
     $name = ucwords(strtolower($name));
     $remarks = $data['remarks'];
     $ref = $data['refno'];
@@ -281,7 +472,7 @@ class AdminController extends Controller
           We value your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
             Please click here
           </a>
-        </div> 
+        </div>
         <div>
           <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
           <img src="' . env('APP_URL', 'https://portal.llibi.app') . '/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
@@ -290,23 +481,24 @@ class AdminController extends Controller
       <br /><br />';
 
       if ($data['status'] === 3) {
-        $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+        // $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+        $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'Please print a copy of your LOA and present it to the accredited provider upon availment.';
         // switch ($data['email_format_type']) {
         //   case 'consultation':
         //     break;
         //   case 'laboratory':
         //     $statusRemarks = '
-        //     <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>  
+        //     <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>
         //     <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
         //     break;
         //   case '2n1-standalone':
         //     $statusRemarks = '
-        //     <p>Please print a copy of LOA and present to the accredited provider upon availment.</p> 
+        //     <p>Please print a copy of LOA and present to the accredited provider upon availment.</p>
         //     <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
         //     break;
         //   case 'pre-approved-laboratory':
         //     $statusRemarks = '
-        //     <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p> 
+        //     <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>
         //     <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
         //     break;
 
@@ -374,8 +566,10 @@ class AdminController extends Controller
     if (!empty($contact)) {
       if ($data['status'] === 3) {
         $sms =
-          "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
-        //\nLOA #: $loanumber\nAPP #: $approvalcode \n\n Thank you
+          'From Lacson & Lacson:\n\nHi '. $name . ',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+        // $sms =
+        //   "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+
       } else {
         $sms =
           "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is disapproved with remarks: $remarks\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";

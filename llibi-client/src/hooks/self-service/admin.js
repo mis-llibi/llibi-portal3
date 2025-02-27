@@ -6,31 +6,28 @@ import Swal from 'sweetalert2'
 import { env } from '@/../next.config'
 
 export const useAdmin = ({ name, status }) => {
-  const { data: clients, mutate } = useSWR(
-    `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
-      status || 2
-    }`,
-    () =>
-      axios
-        .get(
-          `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
-            status || 2
-          }`,
-        )
-        .then(res => res.data)
-        .catch(error => {
-          if (error.response.status !== 409) throw error
-          alert('error')
-        }),
-    {
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-      revalidateOnReconnect: false,
-      refreshWhenOffline: false,
-      refreshWhenHidden: true,
-      refreshInterval: 10000,
-    },
-  )
+    const { data: clients, mutate } = useSWR(
+        `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || 8}`,
+        () =>
+          axios
+            .get(
+              `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || 8}`,
+            )
+            .then(res => res.data)
+            .catch(error => {
+              if (error.response?.status !== 409) throw error;
+              alert('error');
+            }),
+        {
+          revalidateOnFocus: false,
+          revalidateOnMount: true,
+          revalidateOnReconnect: false,
+          refreshWhenOffline: false,
+          refreshWhenHidden: true,
+          refreshInterval: 10000,
+        },
+      );
+
 
   const csrf = () => axios.get(`sanctum/csrf-cookie`)
 
@@ -90,7 +87,8 @@ export const useAdmin = ({ name, status }) => {
     setLoading,
     ...props
   }) => {
-    await csrf()
+
+
 
     const formData = new FormData()
 
@@ -109,36 +107,33 @@ export const useAdmin = ({ name, status }) => {
 
     let runfinally = true
 
-    axios
-      .post(`/self-service/admin-update-request`, formData)
-      .then(res => {
-        mutate()
+    await csrf()
 
-        const result = res.data
-        //console.log(result.data)
+    try {
+        const response = await axios.post(`/self-service/admin-update-request`, formData)
+        mutate()
+        console.log(response)
+        const result = response.data
         Swal.fire({
-          title: 'Updated',
-          text: `Your have successfully updated the request for LOA`,
-          icon: 'success',
-        })
-        setRequest(result?.all)
-        setClient(result?.client[0])
-      })
-      .catch(error => {
-        const nerror = error?.response?.data?.message
-        swaerror('Update Failed', nerror)
+            title: 'Updated',
+            text: `Your have successfully updated the request for LOA`,
+            icon: 'success',
+          })
+          setRequest(result?.all)
+          setClient(result?.client[0])
+          setLoading(false)
+    } catch (error) {
+        // const nerror = error?.response?.data?.message
+        console.log(error)
+        // swaerror('Update Failed', error)
+        Swal.fire({
+            title: 'Update Failed',
+            text: `${error}`,
+            icon: 'error',
+          })
         runfinally = false
-      })
-      .finally(() => {
         setLoading(false)
-        if (runfinally) {
-          swasuccess(
-            'Updated',
-            'You have successfully updated the client request',
-          )
-          //setShow(false)
-        }
-      })
+    }
   }
 
   const exporting = async (from, to) => {
@@ -277,7 +272,7 @@ export const useAdmin = ({ name, status }) => {
                 .finally(() => {
                     setLoading(false)
                 })
-        } 
+        }
     */
 
   /*
@@ -322,7 +317,7 @@ export const useAdmin = ({ name, status }) => {
                 .finally(() => {
                     setLoading(false)
                 })
-        } 
+        }
     */
 
   return {

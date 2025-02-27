@@ -39,6 +39,8 @@ import Link from 'next/link'
 
 import { CustomPusher } from '@/lib/pusher'
 
+import { FaXmark } from "react-icons/fa6";
+
 const Admin = () => {
   const router = useRouter()
   // const [play] = useSound('/thepurge.mp3')
@@ -63,6 +65,16 @@ const Admin = () => {
 
   const [name, setName] = useState()
   const [searchStatus, setSearchStatus] = useState()
+
+  const [isCallbackShow, setIsCallbackShow] = useState(false)
+
+
+  const [isCallbackforProviderShow, setIsCallbackforProviderShow] = useState(false)
+
+
+  const [getIdPerCallback, setGetIdPerCallback] = useState(0)
+
+  const [loadingUnresponsive, setLoadingUnresponsive] = useState(false)
 
   const {
     clients,
@@ -131,9 +143,13 @@ const Admin = () => {
 
   const status = [
     { value: 2, label: 'Pending' },
-    { value: 3, label: 'Approved' },
+    { value: 3, label: 'Approved LOA' },
     { value: 4, label: 'Disapproved' },
     { value: 5, label: 'Downloaded' },
+    { value: 6, label: 'Not Viewed' },
+    { value: 7, label: 'Approved Callback' },
+    { value: 9, label: 'Pending Callback' },
+    { value: 10, label: 'Failed Callback' }
   ]
 
   const handleShowModalSetDate = () => setBody(modalExporting)
@@ -265,6 +281,107 @@ const Admin = () => {
     }
   }, [])
 
+  const showCallbackModal = async(row, i) => {
+
+    // console.log(clients[i])
+    setGetIdPerCallback(i)
+
+    try {
+        const response = await axios.post('/api/changeCallbackStatus', {
+            id: row.id
+        })
+        console.log(response)
+        if(response.status == 200){
+            setIsCallbackShow(true)
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const showCallbackModalProvider = async(row, i) => {
+
+    console.log(row)
+
+    setGetIdPerCallback(i)
+
+    try {
+        const response = await axios.post('/api/changeCallbackStatus', {
+            id: row.id
+        })
+        console.log(response)
+        if(response.status === 200){
+            setIsCallbackforProviderShow(true)
+        }
+
+
+
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const handleDoneCallback = async(id) => {
+
+    try {
+        const response = await axios.post('/api/doneStatusCallback', {
+            id: id
+        })
+        console.log(response)
+        if(response.status == 200){
+            Swal.fire({
+                title: "Success",
+                text: `Callback Request Completed at id ${id}`,
+                icon: 'success'
+            })
+            setIsCallbackShow(false)
+            setIsCallbackforProviderShow(false)
+        }
+    } catch (error) {
+        console.log(error)
+    }
+
+  }
+
+  const handleUnresponsive = async(id, failed_count, altEmail, email) => {
+
+    setLoadingUnresponsive(true)
+    try {
+        const response = await axios.put('/api/unresponsiveCallback', {
+            id: id,
+            failed_count: failed_count,
+            altEmail: altEmail,
+            email: email
+        })
+        console.log(response)
+
+        if(response.data.success){
+            Swal.fire({
+                title: "Callback Attempts",
+                text: `${response.data.attempt}`,
+                icon: 'info'
+            })
+
+            setIsCallbackforProviderShow(false)
+            setIsCallbackShow(false)
+            setLoadingUnresponsive(false)
+
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+  }
+
+  const disableUnresponsiveBtn = (date) => {
+    const updateTime = new Date(date);
+    const currentTime = new Date();
+
+    return currentTime - updateTime <= 30000;
+  }
+
+
   return (
     <ProviderLayout>
       <Head>
@@ -392,7 +509,7 @@ const Admin = () => {
                   </Label>
                   <InputSelect
                     id="searchStatus"
-                    label="Default = Pending"
+                    label="Default = Pending & Not Viewed"
                     onChange={e => checkRequestStatus(e)}
                     required={false}
                     register={{
@@ -415,7 +532,7 @@ const Admin = () => {
                       Member ID
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
-                      COMPANY
+                      COMPANY/PROVIDER
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
                       Patient's Name
@@ -437,52 +554,68 @@ const Admin = () => {
                 </thead>
                 <tbody>
                   {clients?.length > 0 ? (
-                    clients?.map((row, i) => (
-                      <tr
-                        key={i}
-                        className={`${
-                          (row.status === 2 && 'bg-orange-50') ||
-                          (row.status === 3 && 'bg-green-50') ||
-                          (row.status === 4 && 'bg-red-100') ||
-                          (row.status === 5 && 'bg-purple-100')
-                        }`}>
-                        <td className="border border-gray-300 p-2">
-                          {row.isDependent ? row.depMemberID : row.memberID}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.company_name}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.isDependent
-                            ? `${row.depLastName}, ${row.depFirstName}`
-                            : `${row.lastName}, ${row.firstName}`}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.loaType.toUpperCase() || 'N/A'}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.status === 2 && 'Pending'}
-                          {row.status === 3 && 'Approved'}
-                          {row.status === 4 && 'Disapproved'}
-                          {row.status === 5 && 'Downloaded'}
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {row.createdAt}
-                        </td>
-                        <td className="border border-gray-300 p-2 text-center">
-                          {row.platform === 'viber' ? 'YES' : '-'}
-                        </td>
-                        <td className="border border-gray-300 p-2 text-center">
-                          <a
-                            className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
-                            onClick={() => {
-                              view(row)
-                            }}>
-                            VIEW
-                          </a>
-                        </td>
-                      </tr>
-                    ))
+                    clients?.map((row, i) =>{
+                        // console.log(row)
+                        return (
+                            <tr
+                              key={i}
+                              className={`${
+                                (row.status === 2 && 'bg-orange-50') ||
+                                (row.status === 3 && 'bg-green-50') ||
+                                (row.status === 4 && 'bg-red-100') ||
+                                (row.status === 5 && 'bg-purple-100') ||
+                                (row.status === 6 && 'bg-yellow-100') ||
+                                (row.status === 7 && 'bg-blue-100') ||
+                                (row.status === 9 && 'bg-deep-orange-50') ||
+                                (row.status === 10 && 'bg-yellow-50')
+                              }`}>
+                              <td className="border border-gray-300 p-2 text-center">
+                                {row.isDependent ? row.depMemberID : row.memberID}
+                                {row.isDependent === null && row.memberID === null ? row.providerID : null}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {/* {row.company_name} */}
+                                {row.loaType === "callback" ? row.providerName : row.company_name}
+                                {row.loaType === "callback" && row.providerName === null ? row.company_name : null}
+                              </td>
+                              <td className="border border-gray-300 p-2 text-center">
+                                {row.isDependent
+                                  ? `${row.depLastName}, ${row.depFirstName}`
+                                  : row.isDependent === null && row.lastName === null & row.firstName === null ? '-' : `${row.lastName}, ${row.firstName}`}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {/* {row.loaType.toUpperCase() || 'N/A'} */}
+                                {row.loaType === "callback" && row.providerName ? (`${row.loaType} - Provider`).toUpperCase() : row.loaType === "callback" && row.providerName === null ? (`${row.loaType} - Member`).toUpperCase() : row.loaType.toUpperCase() || 'N/A'}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {row.status === 2 && 'Pending'}
+                                {row.status === 3 && 'Approved LOA'}
+                                {row.status === 4 && 'Disapproved'}
+                                {row.status === 5 && 'Downloaded'}
+                                {row.status === 6 && 'Not Viewed'}
+                                {row.status === 7 && 'Approved Callback'}
+                                {row.status === 9 && 'Pending Callback'}
+                                {row.status === 10 && 'Failed Callback'}
+                              </td>
+                              <td className="border border-gray-300 p-2">
+                                {row.createdAt}
+                              </td>
+                              <td className="border border-gray-300 p-2 text-center">
+                                {row.platform === 'viber' ? 'YES' : '-'}
+                              </td>
+                              <td className="border border-gray-300 p-2 text-center">
+                                <a
+                                  className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
+                                  onClick={() => {
+                                    // view(row)
+                                    row.loaType == "consultation" || row.loaType == "laboratory" ? view(row) : row.isDependent === null && row.memberID === null ? showCallbackModalProvider(row, i) : showCallbackModal(row, i)
+                                  }}>
+                                  VIEW
+                                </a>
+                              </td>
+                            </tr>
+                          )
+                    })
                   ) : (
                     <tr>
                       <td
@@ -498,6 +631,192 @@ const Admin = () => {
             {/* End Table */}
           </div>
         </div>
+
+        {isCallbackShow && (
+          <div className='fixed inset-0 bg-white'>
+            <div className='border-b p-2 grid grid-cols-3'>
+                <h1 className='text-md text-black/70'>{clients[getIdPerCallback]?.memberID} - {clients[getIdPerCallback]?.lastName}, {clients[getIdPerCallback]?.firstName} </h1>
+                <h1 className='font-bold text-center '>CALLBACK REQUEST - MEMBER CLIENT PORTAL</h1>
+                <div className='flex justify-end'>
+                    <h1 className='cursor-pointer ' onClick={() => setIsCallbackShow(false)}><FaXmark className='text-xl' /></h1>
+                </div>
+            </div>
+            <div className='flex'>
+                <div className='w-[50%] mt-10 px-5'>
+                    <h1 className='text-xl font-bold text-center text-gray-700 '>EMPLOYEE DETAILS</h1>
+                    <Label className="px-24 border-b mt-3 text-start ">
+                        DATE/TIME CREATED: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.createdAt}</span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        FULL NAME: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.lastName}, {clients[getIdPerCallback]?.firstName} </span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        MEMBER ID: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.memberID} </span>
+                    </Label>
+
+                    <h1 className='text-xl font-bold text-center text-gray-700 mt-5'>CALLBACK DETAILS</h1>
+                    <Label className="px-24 border-b mt-3 text-start ">
+                        REMARKS: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.callback_remarks}</span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        LANDLINE (OPTIONAL): {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.opt_landline} </span>
+                    </Label>
+                    <Label className="px-24 border-b mt-3 text-start">
+                        CONTACT #: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.contact} </span>
+                    </Label>
+                </div>
+                <div className='border'></div>
+                <div className='w-[50%] mt-10 px-5'>
+                    <h1 className='text-xl font-bold text-center text-gray-700'>{clients[getIdPerCallback]?.status === 7 || clients[getIdPerCallback]?.status === 10 ? "" : "SET STATUS:"}</h1>
+                    <div className={`${clients[getIdPerCallback]?.status === 7 || clients[getIdPerCallback]?.status === 10 ? "hidden" : "flex"} mt-5 flex-row justify-center items-center gap-3`}>
+                    {clients[getIdPerCallback]?.failed_count < 3 &&
+                            loadingUnresponsive
+                            ? <h1 className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900'>LOADING</h1>
+                            : clients[getIdPerCallback]?.third_attempt_date !== null ? (
+                                <>
+                                <div>
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.third_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : ""}
+                                </div>
+                                </>
+                            )
+                            : clients[getIdPerCallback]?.second_attempt_date !== null ? (
+                                <>
+                                <div>
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.second_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                </div>
+                                </>
+                            )
+                            : clients[getIdPerCallback]?.first_attempt_date !== null ? (
+                                <>
+                                <div>
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.first_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                </div>
+                                </>
+                            )
+                            : <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button>}
+                        <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(clients[getIdPerCallback]?.id)}>DONE</button>
+                    </div>
+                    <div className='text-center mt-2'>
+                    <Label className='px-24  mt-3 text-center'>
+                        CURRENT STATUS: {' '} <span className={`${clients[getIdPerCallback]?.status === 10 ? "text-red-500" : clients[getIdPerCallback]?.status === 7 ? "text-blue-500" : "text-green-500"}`}>{clients[getIdPerCallback]?.status === 9 && "PENDING CALLBACK"}
+                        {clients[getIdPerCallback]?.status === 6 && "NOT VIEWED"}
+                        {clients[getIdPerCallback]?.status === 7 && "APPROVED CALLBACK"}
+                        {clients[getIdPerCallback]?.status === 10 && "FAILED CALLBACK"}
+                        </span>
+                        </Label>
+                        <h1 className='font-bold text-sm text-gray-700 cursor-pointer'>FAILED COUNT: <span className='text-red-500'>{clients[getIdPerCallback]?.failed_count}</span></h1>
+                        <div>
+                            {clients[getIdPerCallback]?.first_attempt_date !== null && <Label>FIRST ATTEMPT: <span className='text-red-500'>{clients[getIdPerCallback]?.first_attempt_date}</span></Label>}
+                            {clients[getIdPerCallback]?.second_attempt_date !== null && <Label className='font-bold text-sm text-gray-700 cursor-pointer'>SECOND ATTEMPT: <span className='text-red-500'>{clients[getIdPerCallback]?.second_attempt_date}</span></Label>}
+                            {clients[getIdPerCallback]?.third_attempt_date !== null && <Label className='font-bold text-sm text-gray-700 cursor-pointer'>THIRD ATTEMPT: <span className='text-red-500'>{clients[getIdPerCallback]?.third_attempt_date}</span></Label>}
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        )}
+
+        {isCallbackforProviderShow && (
+            <div className='fixed inset-0 bg-white'>
+                <div className='border-b p-2 grid grid-cols-3'>
+                    {/* <h1 className='text-md text-black/70'>Provider ID: {getCallbackforProviderDetails.providerID}</h1> */}
+                    <div></div>
+                    <h1 className='font-bold text-center'>CALLBACK REQUEST - PROVIDER PORTAL</h1>
+                    <div className='flex justify-end'>
+                        <h1 className='cursor-pointer ' onClick={() => setIsCallbackforProviderShow(false)}><FaXmark className='text-xl' /></h1>
+                    </div>
+                </div>
+                <div className='flex'>
+                    <div className='w-[50%] mt-10 px-5'>
+                        <h1 className='text-xl font-bold text-center text-gray-700'>PROVIDER DETAILS</h1>
+                        <Label className="px-24 border-b mt-3 text-start ">
+                        DATE/TIME CREATED: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.createdAt}</span>
+                        </Label>
+                        {/* <Label className='px-24 border-b mt-3 text-start'>
+                        PROVIDER ID: {' '} <span className='text-blue-500 '>{getCallbackforProviderDetails.providerID} </span>
+                        </Label> */}
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        PROVIDER: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.providerName?.toUpperCase()} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        EMAIL: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.email?.toUpperCase()} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        CONTACT: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.contact} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        LANDLINE: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.landline} </span>
+                        </Label>
+
+                        <h1 className='text-xl font-bold text-center text-gray-700 mt-5'>CALLBACK DETAILS</h1>
+                        <Label className="px-24 border-b mt-3 text-start ">
+                        REMARKS: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.callback_remarks}</span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        ALTERNATIVE CONTACT: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.opt_contact || "-"} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        ALTERNATIVE LANDLINE: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.opt_landline || "-"} </span>
+                        </Label>
+                        <Label className='px-24 border-b mt-3 text-start'>
+                        ALTERNATIVE EMAIL: {' '} <span className='text-blue-500 '>{clients[getIdPerCallback]?.altEmail?.toUpperCase() || "-"} </span>
+                        </Label>
+
+
+                    </div>
+                    <div className='border'></div>
+                    <div className='w-[50%] mt-10 px-5'>
+                        <h1 className='text-xl font-bold text-center text-gray-700'>{clients[getIdPerCallback]?.status === 7 || clients[getIdPerCallback]?.status === 10 ? "" : "SET STATUS:"}</h1>
+                        <div className={`${clients[getIdPerCallback]?.status === 7 || clients[getIdPerCallback]?.status === 10 ? "hidden" : "flex"}  mt-3 flex-row justify-center items-center gap-3`}>
+
+                            {clients[getIdPerCallback]?.failed_count < 3 &&
+                            loadingUnresponsive
+                            ? <h1 className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900'>LOADING</h1>
+                            : clients[getIdPerCallback]?.third_attempt_date !== null ? (
+                                <>
+                                <div>
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.third_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : ""}
+                                </div>
+                                </>
+                            )
+                            : clients[getIdPerCallback]?.second_attempt_date !== null ? (
+                                <>
+                                <div>
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.second_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                </div>
+                                </>
+                            )
+                            : clients[getIdPerCallback]?.first_attempt_date !== null ? (
+                                <>
+                                <div>
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.first_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                </div>
+                                </>
+                            )
+                            : <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button>}
+
+
+                            {clients[getIdPerCallback]?.failed_count !== 3 && <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(clients[getIdPerCallback]?.id)}>DONE</button>}
+                        </div>
+                    <div className='text-center mt-2'>
+                        <Label className='px-24  mt-3 text-center'>
+                        CURRENT STATUS: {' '} <span className={`${clients[getIdPerCallback]?.status === 10 ? "text-red-500" : clients[getIdPerCallback]?.status === 7 ? "text-blue-500" : "text-green-500"}`}>{clients[getIdPerCallback]?.status === 9 && "PENDING CALLBACK"}
+                        {clients[getIdPerCallback]?.status === 6 && "NOT VIEWED"}
+                        {clients[getIdPerCallback]?.status === 7 && "APPROVED CALLBACK"}
+                        {clients[getIdPerCallback]?.status === 10 && "FAILED CALLBACK"}
+                        </span>
+                        </Label>
+                        <h1 className='font-bold text-sm text-gray-700 cursor-pointer'>FAILED COUNT: <span className='text-red-500'>{clients[getIdPerCallback]?.failed_count}</span></h1>
+                        <div>
+                            {clients[getIdPerCallback]?.first_attempt_date !== null && <Label>FIRST ATTEMPT: <span className='text-red-500'>{clients[getIdPerCallback]?.first_attempt_date}</span></Label>}
+                            {clients[getIdPerCallback]?.second_attempt_date !== null && <Label className='font-bold text-sm text-gray-700 cursor-pointer'>SECOND ATTEMPT: <span className='text-red-500'>{clients[getIdPerCallback]?.second_attempt_date}</span></Label>}
+                            {clients[getIdPerCallback]?.third_attempt_date !== null && <Label className='font-bold text-sm text-gray-700 cursor-pointer'>THIRD ATTEMPT: <span className='text-red-500'>{clients[getIdPerCallback]?.third_attempt_date}</span></Label>}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        )}
 
         <Modal show={show} body={body} toggle={toggle} />
 

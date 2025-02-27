@@ -12,7 +12,7 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
-        "league/flysystem-aws-s3-v3": "*",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "maatwebsite/excel": "^3.1",
         "mailersend/laravel-driver": "^2.4",
         "mikehaertl/php-pdftk": "^0.13.0",

@@ -1,6 +1,6 @@
 import { RiCloseFill } from 'react-icons/ri'
 
-const Modal = ({ show, body, toggle }) => {
+const TermsOfUse = ({ show, body, toggle }) => {
     if (typeof window !== 'undefined')
         if (show) {
             document.body.style.overflow = 'hidden'
@@ -23,14 +23,14 @@ const Modal = ({ show, body, toggle }) => {
                                     <p className="absolute left-0 ml-4">
                                         {body?.title}
                                     </p>
-                                    <button
+                                    {/* <button
                                         className={`px-2 py-1 text-2xl hover:text-red-500 ${
                                             body?.noClose && 'hidden'
                                         }`}
                                         type="button"
                                         onClick={toggle}>
                                         <RiCloseFill />
-                                    </button>
+                                    </button> */}
                                 </div>
                                 {/*body*/}
                                 <div
@@ -38,23 +38,15 @@ const Modal = ({ show, body, toggle }) => {
                                     {body?.content}
                                 </div>
                                 {/*footer*/}
-                                <div className="flex items-center justify-between p-2 border-t border-solid border-blueGray-200">
-                                    {/* <div className='w-full text-center'>
-                                        <h1 className='font-bold px-2 py-2  text-xs'>
-                                            LEGEND <br />
-                                            <span className='text-orange-900'>⭐ - <span className='uppercase'>This provider accepts LLIBI</span> e-LOA</span>
-                                        </h1>
-
-
-                                    </div> */}
-                                    <button
+                                <div className="flex items-center justify-end p-2 border-t border-solid border-blueGray-200">
+                                    {/* <button
                                         className={`hover:text-red-500 font-bold uppercase px-2 py-2 text-xs ${
                                             body?.noClose && 'hidden'
                                         }`}
                                         type="button"
                                         onClick={toggle}>
                                         Close
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
                         </div>
@@ -66,4 +58,4 @@ const Modal = ({ show, body, toggle }) => {
     )
 }
 
-export default Modal
+export default TermsOfUse

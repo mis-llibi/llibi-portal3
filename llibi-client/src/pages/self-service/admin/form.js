@@ -19,6 +19,7 @@ import { ManageUploadedFiles } from '@/hooks/self-service/ManageUploadedFiles'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
+
 const Form = ({ setRequest, row }) => {
   const { files } = ManageUploadedFiles({ id: row?.id })
 
@@ -37,6 +38,9 @@ const Form = ({ setRequest, row }) => {
 
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(row)
+
+  const attachLOA = watch("attachLOA");
+  const isProd = process.env.NODE_ENV === 'production'
 
   const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
 
@@ -62,6 +66,20 @@ const Form = ({ setRequest, row }) => {
       }
     })
   }
+
+  useEffect(() => {
+    if (attachLOA && attachLOA.length > 0) {
+      // Get the file name without the extension
+      const fileNameWithoutExtension = attachLOA[0].name.replace(/\.[^/.]+$/, "");
+
+      console.log("File Name Without Extension:", fileNameWithoutExtension);
+
+      // Set the value without the extension in the form
+      setValue("loaNumber", fileNameWithoutExtension);
+    } else {
+      console.log("No file selected");
+    }
+  }, [attachLOA, setValue]);
 
   useEffect(() => {
     resetField('attachLOA')
@@ -241,13 +259,23 @@ const Form = ({ setRequest, row }) => {
     }
   }
 
+  const linkCheckers = (link) => {
+    if(!link.match(/^(http|https):/)){
+        // return `http://localhost:8000/storage/${link}`
+        // return `https://portal.llibi.app/storage/${link}`
+        return isProd ? `https://portal.llibi.app/storage/${link}` : `http://localhost:8000/storage/${link}`
+    }else{
+        return link
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit(submitForm)}>
       <div className="flex">
         <div className="basis-3/5">
           <div className="flex flex-col h-screen">
             {
-            
+
             client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
@@ -413,7 +441,7 @@ const Form = ({ setRequest, row }) => {
                 <Input
                   id="loaNumber"
                   register={register('loaNumber')}
-                  disabled={watch('status') !== '3'}
+                  disabled
                   placeholder="LOA Number"
                   errors={errors?.loaNumber}
                 />
@@ -439,7 +467,7 @@ const Form = ({ setRequest, row }) => {
                                         placeholder="Approval Code"
                                         errors={errors?.approvalCode}
                                     />
-                                </div> 
+                                </div>
                             */}
 
               {/* Backdrop form */}
@@ -654,7 +682,8 @@ const Form = ({ setRequest, row }) => {
                         key={i}
                         className="bg-blue-50 p-2 rounded-md shadow-sm">
                         <a
-                          href={`${basePath}/storage/${item?.file_link}`}
+                        //   href={`${basePath}/storage/${item?.file_link}`}
+                          href={linkCheckers(item?.file_link)}
                           target="_blank"
                           key={i}
                           className="bg-gray-200 w-full h-32 flex place-items-center cursor-pointer hover:shadow-md transition-all duration-200 ease-in truncate touch-pan-right grayscale hover:grayscale-0 scale-95 hover:scale-100 hover:origin-top">
