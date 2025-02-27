@@ -261,6 +261,14 @@ const ProviderLookupForm = ({
         </Button>
         <div className="clear-both"></div>
       </div>
+      <div className='flex items-center justify-between p-2 border-t border-solid border-blueGray-200'>
+        <div className='w-full text-center'>
+            <h1 className='font-bold px-2 py-2  text-xs'>
+                LEGEND <br />
+                <span className='text-orange-900'>⭐ - <span className='uppercase'>This provider accepts LLIBI</span> e-LOA</span>
+            </h1>
+        </div>
+      </div>
     </form>
   )
 }

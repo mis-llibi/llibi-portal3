@@ -120,6 +120,8 @@ class CallbackRequest extends Controller
     public function unresponsiveCallback(Request $request){
         $failed_count = $request->failed_count;
         $id = $request->id;
+        $altEmail = $request->altEmail;
+        $email = $request->email;
 
         $data = Callback::where('client_id', $id)->first();
 
@@ -142,7 +144,12 @@ class CallbackRequest extends Controller
                 Please keep your line open as we try our 2nd attempt to contact your facility.
             </p>';
 
-            $emailer = new SendingEmail(email: "jeremiahquintano@llibi.com", body: $first_attempt_msg, subject: 'CLIENT CARE PORTAL - FIRST CALLBACK ATTEMPT');
+            $emailer = new SendingEmail(email: $email, body: $first_attempt_msg, subject: 'CLIENT CARE PORTAL - FIRST CALLBACK ATTEMPT');
+
+            if($altEmail !== null){
+                $altEmailer = new SendingEmail(email: $altEmail, body: $first_attempt_msg, subject: 'CLIENT CARE PORTAL - FIRST CALLBACK ATTEMPT');
+                $altEmailer->send();
+            }
 
             $emailer->send();
 
@@ -166,7 +173,12 @@ class CallbackRequest extends Controller
                 Please keep your line open as we try our last attempt to contact your facility.
             </p>';
 
-            $emailer = new SendingEmail(email: "jeremiahquintano@llibi.com", body: $second_attempt_msg, subject: 'CLIENT CARE PORTAL - SECOND CALLBACK ATTEMPT');
+            $emailer = new SendingEmail(email: $email, body: $second_attempt_msg, subject: 'CLIENT CARE PORTAL - SECOND CALLBACK ATTEMPT');
+
+            if($altEmail !== null){
+                $altEmailer = new SendingEmail(email: $altEmail, body: $second_attempt_msg, subject: 'CLIENT CARE PORTAL - SECOND CALLBACK ATTEMPT');
+                $altEmailer->send();
+            }
 
             $emailer->send();
 
@@ -190,7 +202,12 @@ class CallbackRequest extends Controller
                 This is to inform you that our Client Care tried to contact your facility through the registered and/or alternative contact details, 1st attempt at ' .'<b>' .$formatted_date_1st_attempt . '</b>' . ' and 2nd attempt at ' . '<b>' . $formatted_date_2nd_attempt . '</b>' . ' and last attempt at ' .'<b>' . $formatted_date_3rd_attempt . '</b>' . '.Unfortunately, your line remains uncontactable/unresponsive. <br /><br />If you still wish to contact Client Care, you may request for callback again through our Provider Portal. Thank you.
             </p>';
 
-            $emailer = new SendingEmail(email: "jeremiahquintano@llibi.com", body: $third_attempt_msg, subject: 'CLIENT CARE PORTAL - THIRD CALLBACK ATTEMPT');
+            $emailer = new SendingEmail(email: $email, body: $third_attempt_msg, subject: 'CLIENT CARE PORTAL - THIRD CALLBACK ATTEMPT');
+
+            if($altEmail !== null){
+                $altEmailer = new SendingEmail(email: $altEmail, body: $third_attempt_msg, subject: 'CLIENT CARE PORTAL - THIRD CALLBACK ATTEMPT');
+                $altEmailer->send();
+            }
 
             $emailer->send();
 

@@ -344,13 +344,15 @@ const Admin = () => {
 
   }
 
-  const handleUnresponsive = async(id, failed_count) => {
+  const handleUnresponsive = async(id, failed_count, altEmail, email) => {
 
     setLoadingUnresponsive(true)
     try {
         const response = await axios.put('/api/unresponsiveCallback', {
             id: id,
-            failed_count: failed_count
+            failed_count: failed_count,
+            altEmail: altEmail,
+            email: email
         })
         console.log(response)
 
@@ -673,25 +675,25 @@ const Admin = () => {
                             : clients[getIdPerCallback]?.third_attempt_date !== null ? (
                                 <>
                                 <div>
-                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.third_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button> : ""}
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.third_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : ""}
                                 </div>
                                 </>
                             )
                             : clients[getIdPerCallback]?.second_attempt_date !== null ? (
                                 <>
                                 <div>
-                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.second_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.second_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
                                 </div>
                                 </>
                             )
                             : clients[getIdPerCallback]?.first_attempt_date !== null ? (
                                 <>
                                 <div>
-                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.first_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.first_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
                                 </div>
                                 </>
                             )
-                            : <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button>}
+                            : <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button>}
                         <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(clients[getIdPerCallback]?.id)}>DONE</button>
                     </div>
                     <div className='text-center mt-2'>
@@ -773,25 +775,25 @@ const Admin = () => {
                             : clients[getIdPerCallback]?.third_attempt_date !== null ? (
                                 <>
                                 <div>
-                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.third_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button> : ""}
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.third_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : ""}
                                 </div>
                                 </>
                             )
                             : clients[getIdPerCallback]?.second_attempt_date !== null ? (
                                 <>
                                 <div>
-                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.second_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.second_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
                                 </div>
                                 </>
                             )
                             : clients[getIdPerCallback]?.first_attempt_date !== null ? (
                                 <>
                                 <div>
-                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.first_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
+                                    {disableUnresponsiveBtn(clients[getIdPerCallback]?.first_attempt_date) == false ? <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button> : <button className='py-2 px-6 bg-gray-800 rounded-full text-white hover:bg-gray-900 cursor-not-allowed' >UNRESPONSIVE</button>}
                                 </div>
                                 </>
                             )
-                            : <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count)} >UNRESPONSIVE</button>}
+                            : <button className='py-2 px-6 bg-red-800 rounded-full text-white hover:bg-red-900' onClick={() => handleUnresponsive(clients[getIdPerCallback]?.id, clients[getIdPerCallback]?.failed_count, clients[getIdPerCallback]?.altEmail, clients[getIdPerCallback]?.email)} >UNRESPONSIVE</button>}
 
 
                             {clients[getIdPerCallback]?.failed_count !== 3 && <button className='py-2 px-6 bg-green-800 rounded-full text-white hover:bg-green-900' onClick={() => handleDoneCallback(clients[getIdPerCallback]?.id)}>DONE</button>}
