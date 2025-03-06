@@ -1017,7 +1017,7 @@ public function CheckClient($request, $type)
 
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
 
-                ' . $dependent . '
+
 
             </p>';
 
