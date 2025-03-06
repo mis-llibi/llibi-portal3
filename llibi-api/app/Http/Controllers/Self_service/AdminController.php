@@ -391,7 +391,13 @@ public function UpdateRequest(Request $request)
     'email_format_type' => $request->email_format_type
   ];
 
-  $this->sendNotification(array_merge($dataSend, $update, $loa), $client[0]->firstName . ' ' . $client[0]->lastName, $client[0]->email, $client[0]->altEmail, $client[0]->contact);
+  $this->sendNotification(
+    array_merge($dataSend, $update, $loa),
+    $client[0]->firstName . ' ' . $client[0]->lastName,
+    $client[0]->email,
+    $client[0]->altEmail,
+    $client[0]->contact,
+    $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName);
 
   return array('client' => $client, 'all' => $allClient);
 }
@@ -440,10 +446,11 @@ public function UpdateRequest(Request $request)
     return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
   }
 
-  private function sendNotification($data, $name, $email, $altEmail, $contact)
+  private function sendNotification($data, $name, $email, $altEmail, $contact, $dependent)
   {
 
     $name = ucwords(strtolower($name));
+    $dependent = $dependent === null ? null : ucwords(strtolower($dependent));
     $remarks = $data['remarks'];
     $ref = $data['refno'];
     // $provider_email2 = $data['provider_email2'];
@@ -533,6 +540,7 @@ public function UpdateRequest(Request $request)
       $body = array(
         'body' => view('send-request-loa', [
           'name' => $name,
+          'dependent' => $dependent,
           'statusRemarks' => $statusRemarks,
           'ref' => $ref,
           'feedbackLink' => $feedbackLink,
@@ -566,13 +574,13 @@ public function UpdateRequest(Request $request)
     if (!empty($contact)) {
       if ($data['status'] === 3) {
         $sms =
-          'From Lacson & Lacson:\n\nHi '. $name . ',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+          'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
         // $sms =
         //   "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 
       } else {
         $sms =
-          "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is disapproved with remarks: $remarks\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+          "From Lacson & Lacson:\n\nHi $name" . ($dependent !== null ? " and $dependent" : "") .",\n\nYour LOA request is disapproved with remarks: $remarks\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
       }
       $sms = (new NotificationController)->SmsNotification($contact, $sms);
     }

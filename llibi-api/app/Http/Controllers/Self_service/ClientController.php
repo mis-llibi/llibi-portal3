@@ -839,9 +839,16 @@ public function CheckClient($request, $type)
 
 
 
-    $this->sendNotification($request->refno, $client[0]->firstName . ' ' . $client[0]->lastName, $request->email, $request->altEmail, $contact, $request->loaType);
+    $this->sendNotification(
+        $request->refno,
+        $client[0]->firstName . ' ' . $client[0]->lastName,
+        $request->email,
+        $request->altEmail,
+        $contact,
+        $request->loaType,
+        $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName);
 
-
+        // $client[0]->depFirstName . ' ' . $client[0]->depLastName
 
     $data = [
 
@@ -979,11 +986,12 @@ public function CheckClient($request, $type)
 
 
 
-  private function sendNotification($ref, $name, $email, $altEmail, $contact, $loaType)
+  private function sendNotification($ref, $name, $email, $altEmail, $contact, $loaType, $dependent)
 
   {
 
     $name = ucwords(strtolower($name));
+    $dependent = $dependent === null ? null : ucwords(strtolower($dependent));
 
     // $request->loaType == 'consultation'
 
@@ -999,7 +1007,7 @@ public function CheckClient($request, $type)
 
         '<p style="font-weight:normal;">
 
-                Hi <b>' . $name . ',</b><br /><br />
+                Hi <b>' . $name . '</b>' . ($dependent !== null ? ' and <b>' . $dependent . '</b>' : '') . ',<br /><br />
 
                 You have successfully submitted your request for LOA.<br /><br />
 
@@ -1008,6 +1016,8 @@ public function CheckClient($request, $type)
                 Your reference number is <b>' . $ref . '</b><br /><br />
 
                 <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
+
+                ' . $dependent . '
 
             </p>';
 
@@ -1061,9 +1071,8 @@ public function CheckClient($request, $type)
 
     if (!empty($contact)) {
 
-      $sms =
-
-        "From Lacson & Lacson:\n\nHi $name,\n\nYou have successfully submitted your request for LOA.\n\nOur Client Care will respond to your request within $within minutes.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+        $sms =
+        "From Lacson & Lacson:\n\nHi $name" . ($dependent !== null ? " and $dependent" : "") . ",\n\nYou have successfully submitted your request for LOA.\n\nOur Client Care will respond to your request within $within minutes.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 
 
 

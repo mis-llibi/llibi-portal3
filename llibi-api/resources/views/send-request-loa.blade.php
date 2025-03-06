@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  Hi <b>{{ $name }},</b>
+  Hi <b>{{ $name }}</b>{{ $dependent !== null ? " and " : ""}}<b>{{ $dependent !== null ? " $dependent" : ""}}</b>,
   <br /><br />
 
   {!! $statusRemarks !!}
