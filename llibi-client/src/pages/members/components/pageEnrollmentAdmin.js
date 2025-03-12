@@ -13,7 +13,7 @@ import Button from '@/components/Button'
 
 import DataGrid from '@/components/DataGrid'
 import ActiveMembers from './broadpath/admin/pages/ActiveMembers'
-import PendingForApproval from './broadpath/admin/pages/PendingForApproval'
+import PendingForApproval from './broadpath/admin/pages/PendingForApproval.jsx'
 import DeletedMembers from './broadpath/admin/pages/DeletedMembers'
 
 const pageEnrollmentAdmin = ({ props }) => {

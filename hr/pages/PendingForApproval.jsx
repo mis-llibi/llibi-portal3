@@ -20,12 +20,22 @@ import { excludeClickableColumns } from '@/util/column-headers'
 import ModalControl from '@/components/ModalControl'
 import Modal from '@/components/Modal'
 import ViewDependentsDetails from '@/components/boradpath/hris/modals/hr/ViewDependentsDetails'
+<<<<<<< Updated upstream
+=======
+import PendingDocuments from '@/components/boradpath/hris/modals/hr/PendingDocuments'
+>>>>>>> Stashed changes
 
 export default function PendingForApproval({ create, ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
   const [selectionModel, setSelectionModel] = useState([])
+<<<<<<< Updated upstream
   const { data, isLoading, error, mutate } = useManageHrMember({
     status: '1,3,5,8',
+=======
+  const [filter, setFilter] = useState('all-pending')
+  const { data, isLoading, error, mutate } = useManageHrMember({
+    status: filter,
+>>>>>>> Stashed changes
   })
   const [loader, setLoader] = useState(false)
   const [pageSize, setPageSize] = useState(10)
@@ -121,11 +131,16 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'status_name',
       headerName: 'Status',
+<<<<<<< Updated upstream
       width: 150,
+=======
+      width: 170,
+>>>>>>> Stashed changes
       renderCell: ({ row }) => {
         return (
           <>
             <div className="font-[poppins] text-[9px]">
+<<<<<<< Updated upstream
               <span
                 className={`${
                   row.status === 3
@@ -134,6 +149,24 @@ export default function PendingForApproval({ create, ...props }) {
                 } font-bold px-2 py-1 rounded-md uppercase`}>
                 {row.status_name}
               </span>
+=======
+              {row.status === 11 ? (
+                <button
+                  className="font-bold px-2 py-1 rounded-md uppercase text-center w-full underline hover:bg-blue-100 hover:text-blue-600"
+                  onClick={() => handleViewPendingDocuments(row)}>
+                  View {row.status_name}
+                </button>
+              ) : (
+                <span
+                  className={`${
+                    row.status === 3
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-blue-100 text-blue-600'
+                  } font-bold px-2 py-1 rounded-md uppercase`}>
+                  {row.status_name}
+                </span>
+              )}
+>>>>>>> Stashed changes
             </div>
           </>
         )
@@ -216,7 +249,13 @@ export default function PendingForApproval({ create, ...props }) {
   }
 
   const handleViewDetails = (params, event, details) => {
+<<<<<<< Updated upstream
     if (!excludeClickableColumns.includes(params.colDef.headerName)) {
+=======
+    if (
+      ![...excludeClickableColumns, 'Status'].includes(params.colDef.headerName)
+    ) {
+>>>>>>> Stashed changes
       setBody({
         title: (
           <span className="font-bold text-xl text-gray-800">
@@ -232,6 +271,24 @@ export default function PendingForApproval({ create, ...props }) {
     }
   }
 
+<<<<<<< Updated upstream
+=======
+  const handleViewPendingDocuments = async row => {
+    setBody({
+      title: (
+        <span className="font-bold text-xl text-gray-800">
+          Pending Documents
+        </span>
+      ),
+      content: <PendingDocuments row={row} />,
+      modalOuterContainer: 'font-[poppins]',
+      modalContainer: 'h-full rounded-md',
+      modalBody: 'h-full',
+    })
+    toggle()
+  }
+
+>>>>>>> Stashed changes
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>
 
@@ -240,6 +297,7 @@ export default function PendingForApproval({ create, ...props }) {
       {/* PENDING ENROLLMENT BOX */}
       <div className="mb-3 font-[poppins]">
         <div className="flex justify-between items-center">
+<<<<<<< Updated upstream
           <div className="w-56">
             <Label htmlFor="search">Seach</Label>
             <input
@@ -249,6 +307,33 @@ export default function PendingForApproval({ create, ...props }) {
               placeholder="Seach (ex. first name, last name)"
             />
           </div>
+=======
+          <div className="flex gap-1">
+            <div className="w-56">
+              <Label htmlFor="search">Seach</Label>
+              <input
+                type="text"
+                id="search"
+                className="w-full rounded-md text-xs border border-gray-300"
+                placeholder="Seach (ex. first name, last name)"
+              />
+            </div>
+
+            <div className="w-48">
+              <Label htmlFor="search">Filter</Label>
+              <select
+                name="filter"
+                id="filter"
+                className="w-full rounded-md text-xs border border-gray-300"
+                defaultValue={filter}
+                onChange={e => setFilter(e.target.value)}>
+                <option value="all-pending">All</option>
+                <option value="pending-documents">Pending Documents</option>
+              </select>
+            </div>
+          </div>
+
+>>>>>>> Stashed changes
           <Button
             onClick={insertEnrollee}
             className="bg-blue-400 hover:bg-blue-700 h-8 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"

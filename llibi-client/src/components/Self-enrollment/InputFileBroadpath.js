@@ -73,11 +73,11 @@ const Input = ({ register, disabled = false, errors, className, ...props }) => {
                 <span className="text-orange-900 italic text-xs">Optional</span>
               )}
             </p>{' '}
-            <a
+            {/* <a
               className="text-xs transition-all text-blue-800 hover:text-blue-900 hover:italic hover:underline cursor-pointer"
               onClick={() => checkRequiredDoc()}>
               Click to view the required docs
-            </a>
+            </a> */}
             {props?.tooltip && (
               <HtmlTooltip
                 title={

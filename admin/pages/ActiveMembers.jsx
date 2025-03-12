@@ -3,34 +3,25 @@ import React, { useEffect, useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid'
 
 import { useManageHrMember } from '@/hooks/members/ManageHrMember'
+
 import Loader from '@/components/Loader'
 import Label from '@/components/Label'
-import moment from 'moment'
-
-import { ActionButtonAdmin } from '@/components/boradpath/hris/ActionButton'
-import ApproveChangeMemberPlan from '@/components/boradpath/hris/modals/admin/ApproveChangeMemberPlan'
-import ApprovePendingMember from '@/components/boradpath/hris/modals/admin/ApprovePendingMember'
-import ApproveDeleteMember from '@/components/boradpath/hris/modals/admin/ApproveDeleteMember'
-import DisapproveMember from '@/components/boradpath/hris/modals/admin/DisapproveMember'
-import PendingDocuments from '@/components/boradpath/hris/modals/admin/PendingDocuments'
-import ApproveEditInformation from '@/components/boradpath/hris/modals/admin/ApproveEditInformation'
-
 import ModalControl from '@/components/ModalControl'
 import Modal from '@/components/Modal'
+import moment from 'moment'
 
-export default function PendingForApproval({ create, ...props }) {
+export default function ActiveMembers({ ...props }) {
   const { show, setShow, body, setBody, toggle } = ModalControl()
-
   const [selectionModel, setSelectionModel] = useState([])
-  const [filter, setFilter] = useState('1,3,5,8')
+<<<<<<< Updated upstream
+  const [filter, setFilter] = useState(4)
+=======
+  const [filter, setFilter] = useState('approved-members')
+>>>>>>> Stashed changes
   const { data, isLoading, error, mutate } = useManageHrMember({
     status: filter,
   })
   const [loader, setLoader] = useState(false)
-
-  const [showModal, setShowModal] = useState(false)
-  const [selectedRow, setSelectedRow] = useState(null)
-
   const [pageSize, setPageSize] = useState(10)
   const handlePageSizeChange = data => {
     setPageSize(data)
@@ -41,14 +32,13 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'member_id',
       headerName: 'Name',
-      flex: 1,
+      width: 300,
+      // flex: 1,
       renderCell: ({ row }) => {
         return (
           <>
             <div className="font-[poppins]">
-              <span className="text-green-600 text-[.75rem]">
-                {row.member_id}
-              </span>
+              <span className="text-green-600 text-xs">{row.member_id}</span>
               <br />
               <span>{`${row.last_name}, ${row.first_name} ${row.middle_name}`}</span>
             </div>
@@ -64,6 +54,7 @@ export default function PendingForApproval({ create, ...props }) {
         return (
           <>
             <div className="font-[poppins]">
+              {' '}
               {row.birth_date ? moment(row.birth_date).format('MMM DD, Y') : ''}
             </div>
           </>
@@ -73,7 +64,7 @@ export default function PendingForApproval({ create, ...props }) {
     {
       field: 'gender',
       headerName: 'Gender',
-      width: 100,
+      width: 150,
       renderCell: ({ row }) => {
         return (
           <>
@@ -107,22 +98,37 @@ export default function PendingForApproval({ create, ...props }) {
       },
     },
     {
-      field: 'status_name',
-      headerName: 'Status',
+      field: 'certificate_no',
+      headerName: 'Certificate',
       width: 150,
       renderCell: ({ row }) => {
         return (
           <>
-            <div className="font-[poppins] text-[9px]">
-              <span
-                className={`${
-                  row.status === 3
-                    ? 'bg-red-100 text-red-600'
-                    : 'bg-blue-100 text-blue-600'
-                } font-bold px-2 py-1 rounded-md uppercase`}>
-                {row.status_name}
-              </span>
+            <div className="font-[poppins]">
+              <p className="text-xs text-green-600">
+                {row.certificate_issued_at &&
+                  moment(row.certificate_issued_at).format('MMM DD, Y')}
+              </p>
+              <p>{row.certificate_no}</p>
             </div>
+          </>
+        )
+      },
+    },
+    {
+      field: 'plan',
+      headerName: 'Plan',
+      width: 150,
+      renderCell: ({ row }) => {
+        return (
+          <>
+            {row.plan && (
+              <div className="font-[poppins] text-[9px]">
+                <span className="bg-blue-100 text-blue-600 font-bold px-2 py-1 rounded-md">
+                  {row.plan}
+                </span>
+              </div>
+            )}
           </>
         )
       },
@@ -131,18 +137,24 @@ export default function PendingForApproval({ create, ...props }) {
       field: 'action',
       headerName: '',
       sortable: false,
-      width: 100,
+      width: 150,
       align: 'center',
       renderCell: ({ row }) => {
         return (
-          <div className="flex gap-1">
-            <ActionButtonAdmin
-              key={row.id}
-              row={row}
-              setShowModal={setShowModal}
-              setSelectedRow={setSelectedRow}
-            />
-          </div>
+          <>
+            {![4, 6, 9].includes(row.status) && (
+              <div className="font-[poppins] text-[9px]">
+                <span
+                  className={`${
+                    row.status === 3
+                      ? 'bg-red-100 text-red-600'
+                      : 'bg-blue-100 text-blue-600'
+                  } font-bold px-2 py-1 rounded-md uppercase`}>
+                  {row.status_name}
+                </span>
+              </div>
+            )}
+          </>
         )
       },
     },
@@ -151,37 +163,39 @@ export default function PendingForApproval({ create, ...props }) {
   if (error) return <h1>Something went wrong.</h1>
   if (isLoading) return <h1>Loading...</h1>
 
-  useEffect(() => {
-    if (showModal === 'approve-edit-information') {
-      setBody({
-        title: (
-          <span className="font-bold text-xl text-gray-800">
-            Approve Edit Information
-          </span>
-        ),
-        content: (
-          <ApproveEditInformation
-            showModal={Boolean(showModal)}
-            setShowModal={setShowModal}
-            mutate={mutate}
-            setShow={setShow}
-          />
-        ),
-        modalOuterContainer: 'font-[poppins]',
-        modalContainer: 'h-full rounded-md',
-        modalBody: 'h-full',
-      })
-      toggle()
-    }
-
-    return () => setShowModal(false)
-  }, [showModal, show])
-
   return (
     <>
       {/* PENDING ENROLLMENT BOX */}
       <div className="mb-3 font-[poppins]">
         <div className="flex gap-1">
+          {/* <Button
+            onClick={insertEnrollee}
+            className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
+            disabled={props?.loading}>
+            <BiPlus size={16} />
+            <span>New Transaction</span>
+          </Button> */}
+          {/* <Button
+            onClick={handleSubmitForDeletion}
+            className="bg-blue-400 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-700 ring-blue-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
+            disabled={selectionModel.length <= 0 || selectionModel.length > 1}>
+            <BiUpvote size={16} />
+            <span>Upgrade plan</span>
+          </Button>
+          <Button
+            onClick={handleSubmitForDeletion}
+            className="bg-indigo-400 hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-700 ring-indigo-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
+            disabled={selectionModel.length <= 0 || selectionModel.length > 1}>
+            <BiPencil size={16} />
+            <span>Update information</span>
+          </Button>
+          <Button
+            onClick={handleSubmitForDeletion}
+            className="bg-red-400 hover:bg-red-700 focus:bg-red-700 active:bg-red-700 ring-red-200 mb-2 md:mb-0 w-full md:w-auto flex gap-1"
+            disabled={selectionModel.length <= 0}>
+            <BiTrashAlt size={16} />
+            <span>Submit for deletion</span>
+          </Button> */}
           <div className="w-56">
             <Label htmlFor="search">Seach</Label>
             <input
@@ -197,13 +211,15 @@ export default function PendingForApproval({ create, ...props }) {
               name="filter"
               id="filter"
               className="w-full rounded-md text-xs border border-gray-300"
-              defaultValue="1,3,5,8"
+              defaultValue={filter}
               onChange={e => setFilter(e.target.value)}>
-              <option value="1,3,5,8">Select filter</option>
-              <option value="1">Pending Members</option>
-              <option value="3">Pending Deletion</option>
-              <option value="5">Pending Correction</option>
-              <option value="8">Pending Change Plan</option>
+<<<<<<< Updated upstream
+              <option value="4">Active</option>
+              <option value="3,5,8">With Pending</option>
+=======
+              <option value="approved-members">Active</option>
+              <option value="approved-members-with-pending">With Pending</option>
+>>>>>>> Stashed changes
             </select>
           </div>
         </div>
@@ -223,7 +239,7 @@ export default function PendingForApproval({ create, ...props }) {
         rowsPerPageOptions={[10, 25, 50, 100]}
         disableSelectionOnClick
         autoHeight
-        // disableColumnFilter
+        // disableColumnFilter 
         // disableColumnSelector
         disableColumnMenu
         // checkboxSelection
@@ -237,59 +253,6 @@ export default function PendingForApproval({ create, ...props }) {
           ),
         }}
       />
-
-      {showModal === 'change-plan' && (
-        <ApproveChangeMemberPlan
-          showModal={Boolean(showModal)}
-          setShowModal={setShowModal}
-          row={selectedRow}
-          mutate={mutate}
-        />
-      )}
-
-      {showModal === 'approve-member' && (
-        <ApprovePendingMember
-          showModal={Boolean(showModal)}
-          setShowModal={setShowModal}
-          row={selectedRow}
-          mutate={mutate}
-        />
-      )}
-
-      {showModal === 'approve-deletion' && (
-        <ApproveDeleteMember
-          showModal={Boolean(showModal)}
-          setShowModal={setShowModal}
-          row={selectedRow}
-          mutate={mutate}
-        />
-      )}
-
-      {showModal === 'disapprove-member' && (
-        <DisapproveMember
-          showModal={Boolean(showModal)}
-          setShowModal={setShowModal}
-          row={selectedRow}
-          mutate={mutate}
-        />
-      )}
-
-      {showModal === 'pending-documents' && (
-        <PendingDocuments
-          showModal={Boolean(showModal)}
-          setShowModal={setShowModal}
-          row={selectedRow}
-          mutate={mutate}
-        />
-      )}
-
-      {/* {showModal === 'approve-edit-information' && (
-        <ApproveEditInformation
-          showModal={Boolean(showModal)}
-          setShowModal={setShowModal}
-          mutate={mutate}
-        />
-      )} */}
 
       <Loader loading={loader} />
       <Modal show={show} body={body} toggle={toggle} />
