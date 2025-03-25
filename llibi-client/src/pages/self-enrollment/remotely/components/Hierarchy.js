@@ -33,7 +33,8 @@ const hierarchy = ({ civilStatus }) => {
               <tr>
                 <td className="font-bold">Eligible Dependents</td>
                 <td className="pl-2">
-                  Parents, Siblings, Domestic Partner / Same Gender Partner
+                  (1) Parents, (2) Siblings, (3) Domestic Partner / Same Gender
+                  Partner
                 </td>
               </tr>
               <tr>
@@ -124,8 +125,8 @@ const hierarchy = ({ civilStatus }) => {
               <tr>
                 <td className="font-bold">Eligible Dependents</td>
                 <td className="pl-2">
-                  Children, Parents, Siblings, Domestic Partner / Same Gender
-                  Partner
+                  (1) Children, (2) Parents, (3) Siblings, (4) Domestic Partner
+                  / Same Gender Partner
                 </td>
               </tr>
               <tr>
@@ -177,7 +178,7 @@ const hierarchy = ({ civilStatus }) => {
                 <td className="pl-2">
                   {/* Spouse then children, from eldest to
                                     youngest */}
-                  Spouse and Children
+                  (1) Spouse and (2) Children
                 </td>
               </tr>
               <tr>

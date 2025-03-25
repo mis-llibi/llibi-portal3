@@ -15,11 +15,11 @@ use App\Models\Self_enrollment\attachment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-use App\Http\Controllers\Self_enrollment\ManageBroadpathNotifications;
+use App\Http\Controllers\Self_enrollment\ManageRemotelyNotifications;
 
 use Carbon\Carbon;  // Carbon is used for date manipulation in Laravel
 
-class ManageBroadpathClients extends Controller
+class ManageRemotelyClient extends Controller
 {
 
     //CLIENT
@@ -328,7 +328,7 @@ class ManageBroadpathClients extends Controller
             'premiumComputation' => $premiumComputation
         ];
 
-        (new ManageBroadpathNotifications)
+        (new ManageRemotelyNotifications)
             ->submittedWithDep($info);
     }
 
@@ -538,7 +538,7 @@ class ManageBroadpathClients extends Controller
             'premiumComputation' => $premiumComputation
         ];
 
-        (new ManageBroadpathNotifications)
+        (new ManageRemotelyNotifications)
             ->submittedWithDep($info);
     }
 
@@ -673,7 +673,7 @@ class ManageBroadpathClients extends Controller
             'mobile' => $upContact[0]->mobile_no,
         ];
 
-        (new ManageBroadpathNotifications)
+        (new ManageRemotelyNotifications)
             ->submittedWithoutDep($info);
     }
     */
@@ -741,7 +741,7 @@ class ManageBroadpathClients extends Controller
             ];
         }
 
-        (new ManageBroadpathNotifications)
+        (new ManageRemotelyNotifications)
             ->approvedWithCertificateNo($info);
     }
 
@@ -772,7 +772,7 @@ class ManageBroadpathClients extends Controller
             'insMail' => $body['mail']
         ];
 
-        (new ManageBroadpathNotifications)
+        (new ManageRemotelyNotifications)
             ->approvedWithCertificateNo($info);
     }
 
@@ -797,7 +797,7 @@ class ManageBroadpathClients extends Controller
             //->whereIn('t1.member_id', ['LLIBI0027'])
             ->where('client_company', 'REMOTELY')
             ->where('t1.relation', 'PRINCIPAL')
-            ->where('t1.form_locked', 1)
+            ->where('t1.form_locked', 0)
             ->orderBy('t1.id', 'DESC')
             ->get();
 
@@ -815,7 +815,7 @@ class ManageBroadpathClients extends Controller
                     ->where('client_id', $row->id)
                     ->where('client_company', $clientCompany)
                     ->whereIn('status', [
-                        'START RENEWAL: FIRST DAY ENROLLMENT',
+                        'START 1: FIRST DAY ENROLLMENT',
                         'UNTOUCHED FORM: EVERY THREE DAYS REMINDER',
                         'UNTOUCHED FORM: WARNING NO INTERACTION',
                         'UNTOUCHED FORM: FINAL REMINDER',
@@ -842,18 +842,18 @@ class ManageBroadpathClients extends Controller
                             $status = 0;
 
                             //first day of enrollment
-                            if ($checkdate == '2024-06-14') {
+                            if ($checkdate == '2025-03-12') {
                                 $notificationTitle = 'Reminder: Renewal Start';
                                 $notification[] = [
                                     'Message' => 'Notification Sent',
                                     'to' => $info
                                 ];
 
-                                (new ManageBroadpathNotifications)
-                                    ->rolloverInvite($info, $dateFinalWarning, $dateFormLocked);
+                                (new ManageRemotelyNotifications)
+                                    ->invite($info, $dateFinalWarning, $dateFormLocked);
 
                                 //$status = 0;
-                                $status = 'START RENEWAL: FIRST DAY ENROLLMENT';
+                                $status = 'START 1: FIRST DAY ENROLLMENT';
                             }
 
                             //check if still not submitting their enrollment then send notification
@@ -883,7 +883,7 @@ class ManageBroadpathClients extends Controller
                                 ];
 
                                 if ($modulo == 0) {
-                                    (new ManageBroadpathNotifications)
+                                    (new ManageRemotelyNotifications)
                                         ->rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked);
 
                                     //$status = 0;
@@ -899,7 +899,7 @@ class ManageBroadpathClients extends Controller
                                     'to' => $info
                                 ];
 
-                                (new ManageBroadpathNotifications)
+                                (new ManageRemotelyNotifications)
                                     ->rolloverWarningUntouchedForm($info, $dateFinalWarning, $dateFormLocked);
 
                                 //$status = 0;
@@ -913,7 +913,7 @@ class ManageBroadpathClients extends Controller
                                 'to' => $info
                             ];
 
-                            (new ManageBroadpathNotifications)
+                            (new ManageRemotelyNotifications)
                                 ->rolloverWarningLastDay($info, $dateFinalWarning, $dateFormLocked);
 
                             //$status = 0;
@@ -927,7 +927,7 @@ class ManageBroadpathClients extends Controller
                             'to' => $info
                         ];
 
-                        (new ManageBroadpathNotifications)
+                        (new ManageRemotelyNotifications)
                             ->rolloverReminderLock($info);
 
                         //$status = 0;

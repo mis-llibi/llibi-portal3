@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Self_enrollment\ManageBroadpathClients;
 use App\Http\Controllers\Self_enrollment\ManageBroadpathNotifications;
 
+use App\Http\Controllers\Self_enrollment\ManageRemotelyClient;
+
 use App\Http\Controllers\Self_enrollment\ManageEigthByEigthClients;
 use App\Http\Controllers\Self_enrollment\ManageEigthByEigthNotifications;
 
@@ -124,6 +126,9 @@ class ManageSelfEnrollmentController extends Controller
       case 'PREQIN':
         $excel = Excel::import(new PreqinImportPrincipal, $request->file);
         break;
+      case 'REMOTELY':
+        $excel = Excel::import(new PreqinImportPrincipal, $request->file);
+        break;
     }
 
     return response()->noContent();
@@ -189,6 +194,10 @@ class ManageSelfEnrollmentController extends Controller
         (new PreqinController)
           ->updateEnrollee($company, $request);
         break;
+      case 'REMOTELY':
+        (new ManageRemotelyClient)
+          ->updateEnrollee($company, $request);
+        break;
     }
   }
 
@@ -241,6 +250,8 @@ class ManageSelfEnrollmentController extends Controller
           return Excel::download(new LlibiExportEnrollee($company), $fileName);
         case '8X8':
           return Excel::download(new EigthByEigthExportEnrollee($company), $fileName);
+        case 'REMOTELY':
+          return Excel::download(new EigthByEigthExportEnrollee($company), $fileName);
       }
     }
   }
@@ -256,6 +267,9 @@ class ManageSelfEnrollmentController extends Controller
         $excel = Excel::import(new LlibiUploadEnrollee($company), $request->file);
         break;
       case '8X8':
+        $excel = Excel::import(new EigthByEigthUploadEnrollee($company), $request->file);
+        break;
+      case 'REMOTELY':
         $excel = Excel::import(new EigthByEigthUploadEnrollee($company), $request->file);
         break;
     }
@@ -382,6 +396,13 @@ class ManageSelfEnrollmentController extends Controller
         $principal = $list['principal'];
         $dependent = $list['dependent'];
         break;
+      case 'REMOTELY':
+        $list = (new ManageRemotelyClient)
+          ->checkClient($id);
+
+        $principal = $list['principal'];
+        $dependent = $list['dependent'];
+        break;
     }
 
     return array(
@@ -413,6 +434,10 @@ class ManageSelfEnrollmentController extends Controller
         (new PreqinController)
           ->updateClientInfo($request);
         break;
+      case 'REMOTELY':
+        (new ManageRemotelyClient)
+          ->updateClientInfo($request);
+        break;
     }
   }
 
@@ -438,6 +463,10 @@ class ManageSelfEnrollmentController extends Controller
       case 'PREQIN':
         return (new PreqinController)->submitDependent($request);
         break;
+      case 'REMOTELY':
+        (new ManageRemotelyClient)
+          ->submitDependent($request);
+        break;
     }
   }
 
@@ -462,6 +491,10 @@ class ManageSelfEnrollmentController extends Controller
         break;
       case 'PREQIN':
         (new PreqinController)
+          ->submitWithoutDependent($request);
+        break;
+      case 'REMOTELY':
+        (new ManageRemotelyClient)
           ->submitWithoutDependent($request);
         break;
     }
@@ -504,6 +537,10 @@ class ManageSelfEnrollmentController extends Controller
         break;
       case '8X8':
         (new ManageEigthByEigthClients)
+          ->checkReminders($checkdate, $dateFinalWarning, $dateFormLocked);
+        break;
+      case 'REMOTELY':
+        (new ManageRemotelyClient)
           ->checkReminders($checkdate, $dateFinalWarning, $dateFormLocked);
         break;
     }

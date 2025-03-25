@@ -25,13 +25,13 @@ class ManageremotelyNotifications extends Controller
         $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
         $dateFormLocked = date('F j', strtotime($this->getDates()['dateFormLocked']));
 
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
         //$link = '<a href="http://localhost:3000/self-enrollment/remotely?id='.$info['hash'].'">Self-Enrolment Portal</a>';
 
         $body =
             'Dear Member,<br /><br />
 
-        Your Philcare healthcare (HMO) plan under your employer, Remotely Global Services Inc., is for renewal on July 1, 2024.<br /><br />
+        Your Philcare healthcare (HMO) plan under your employer, Remote Philippines Inc. Global Services Inc., is for renewal on July 1, 2024.<br /><br />
 
         We are pleased to inform you that the current coverage and premiums have been retained.<br /><br />
 
@@ -44,7 +44,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email, please do not share. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'REMOTELY RENEWAL ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. RENEWAL ENROLLMENT NOTIFICATION',
             'body' => '<div style="font-weight:normal;">' . $body . '</div>'
         );
 
@@ -55,7 +55,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nGood day!\n\nWe are delighted to welcome Remotely employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nGood day!\n\nWe are delighted to welcome Remote Philippines Inc. employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -64,7 +64,7 @@ class ManageremotelyNotifications extends Controller
     public function rolloverEveryThreeDays($info, $dateFinalWarning, $dateFormLocked)
     {
         $link =
-            '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+            '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'Dear Member, <br /><br />
@@ -77,7 +77,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'REMOTELY RENEWAL ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. RENEWAL ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -96,7 +96,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -106,7 +106,7 @@ class ManageremotelyNotifications extends Controller
     {
         $startDate = date('F j, Y', strtotime($this->getDates()['dateStart']));
 
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'Dear Member, <br /><br />
@@ -122,7 +122,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'REMOTELY RENEWAL ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. RENEWAL ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -141,7 +141,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Remotely’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Remotely’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -151,7 +151,7 @@ class ManageremotelyNotifications extends Controller
     {
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
 
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'This is to inform you that today, ' . date('F j, Y', strtotime($dateFinalWarning)) . ', is the last day of Remotely’s open enrollment. Please visit this link ' . $link . ' to complete your submission.<br /><br />
@@ -167,7 +167,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'REMOTELY RENEWAL ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. RENEWAL ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                 <tr>
@@ -186,7 +186,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Remotely’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Remotely’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -194,7 +194,7 @@ class ManageremotelyNotifications extends Controller
 
     public function rolloverReminderLock($info)
     {
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'Thank you for your enrollment submission. 
@@ -206,7 +206,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'REMOTELY RENEWAL ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. RENEWAL ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:600px;">
                     <tr>
@@ -225,7 +225,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThank you for your enrollment submission.\n\nEnrollment of your dependents has officially closed. All submission is final and no longer allowed to make any changes\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThank you for your enrollment submission.\n\nEnrollment of your dependents has officially closed. All submission is final and no longer allowed to make any changes\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -236,7 +236,7 @@ class ManageremotelyNotifications extends Controller
         $startDate = date('F j', strtotime($this->getDates()['dateStart']));
         $dateFinalWarning = date('F j, Y', strtotime($this->getDates()['dateFinalWarning']));
 
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'Good day!
@@ -247,7 +247,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email, please do not share. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' => '<div style="font-weight:normal;">' . $body . '</div>'
         );
 
@@ -258,7 +258,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nGood day!\n\nWe are delighted to welcome Remotely employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nGood day!\n\nWe are delighted to welcome Remote Philippines Inc. employees as our valued client.\n\nPlease follow enrollment procedure mentioned in the Welcome Email sent over to your personal and company email.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -279,7 +279,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' => '<div style="font-weight:normal;">' . $body . '</div>'
         );
 
@@ -290,7 +290,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThank you for submitting your enrollment, you can view your enrolled dependents in the confirmation email sent to you.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThank you for submitting your enrollment, you can view your enrolled dependents in the confirmation email sent to you.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -323,7 +323,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' => '<div style="font-weight:normal;">' . $body . '</div>'
         );
 
@@ -334,7 +334,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThank you for submitting your enrollment, you can view your enrolled dependents in the confirmation email sent to you.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThank you for submitting your enrollment, you can view your enrolled dependents in the confirmation email sent to you.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -426,7 +426,7 @@ class ManageremotelyNotifications extends Controller
         ];
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' => '<div style="font-weight:normal;">' . $body . '</div>',
             'attachment' => $attachment
         );
@@ -438,7 +438,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nDear $name, \n\nGood day! \nWe are pleased to inform that your healthcare (HMO) plan membership under Philcare (and arranged through Lacson & Lacson Insurance Brokers, Inc.) is already active. \n\n$insSms \n\nYour physical membership card will be delivered to your home address within 2-3 weeks. In the meantime, you may present your virtual or digital card in the HeyPhil app or certificate number to Philcare’s accredited facilities, along with valid ID, in order to make claim a while awaiting for your physical card. \n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+            "From Remote Philippines Inc. & LLIBI:\n\nDear $name, \n\nGood day! \nWe are pleased to inform that your healthcare (HMO) plan membership under Philcare (and arranged through Lacson & Lacson Insurance Brokers, Inc.) is already active. \n\n$insSms \n\nYour physical membership card will be delivered to your home address within 2-3 weeks. In the meantime, you may present your virtual or digital card in the HeyPhil app or certificate number to Philcare’s accredited facilities, along with valid ID, in order to make claim a while awaiting for your physical card. \n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -447,7 +447,7 @@ class ManageremotelyNotifications extends Controller
     public function everyThreeDays($info, $dateFinalWarning, $dateFormLocked)
     {
         $link =
-            '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+            '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'We have noticed that you haven’t completed the online enrollment forms. Please visit this link ' . $link . ' to complete this now. You are encouraged to complete this until ' . date('F j, Y', strtotime($dateFinalWarning)) . ' to avoid any coverage issues.
@@ -462,7 +462,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:500px;">
                     <tr>
@@ -481,7 +481,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nWe have noticed that you haven’t completed the online enrollment forms.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -489,7 +489,7 @@ class ManageremotelyNotifications extends Controller
 
     public function warningLastDay($info, $dateFinalWarning, $dateFormLocked)
     {
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'This is to inform you that today, ' . date('F j, Y', strtotime($dateFinalWarning)) . ', is the last day of Remotely’s open enrollment. Please visit this link ' . $link . ' to complete your submission.<br /><br />
@@ -502,7 +502,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:500px;">
                     <tr>
@@ -521,7 +521,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Remotely’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThis is to inform you that today, " . date('F j, Y', strtotime($dateFinalWarning)) . ", is the last day of Remotely’s open enrollment.\n\nPlease visit the link provided in the welcome email to proceed with the enrollment.\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);
@@ -529,7 +529,7 @@ class ManageremotelyNotifications extends Controller
 
     public function reminderLock($info)
     {
-        $link = '<a href="https://portal.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
+        $link = '<a href="https://self-enrollment.llibi.app/self-enrollment/remotely?id=' . $info['hash'] . '">Self-Enrolment Portal</a>';
 
         $body =
             'Thank you for your enrollment submission. 
@@ -541,7 +541,7 @@ class ManageremotelyNotifications extends Controller
         <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>';
 
         $mailMsg = array(
-            'subject' => 'remotely DEPENDENT ENROLLMENT NOTIFICATION',
+            'subject' => 'REMOTE PHILIPPINES INC. DEPENDENT ENROLLMENT NOTIFICATION',
             'body' =>
             '<table style="font-weight:normal;width:500px;">
                     <tr>
@@ -560,7 +560,7 @@ class ManageremotelyNotifications extends Controller
             ->OldMailNotification($info['name'], $info['email2'], $mailMsg);
 
         $smsBody =
-            "From Remotely & LLIBI:\n\nThank you for your enrollment submission.\n\nEnrollment of your dependents has officially closed. All submission is final and no longer allowed to make any changes\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
+            "From Remote Philippines Inc. & LLIBI:\n\nThank you for your enrollment submission.\n\nEnrollment of your dependents has officially closed. All submission is final and no longer allowed to make any changes\n\nThis is an auto-generated SMS. Doesn’t support replies and calls";
 
         if (!empty($info['mobile'])) (new NotificationController)
             ->SmsNotification($info['mobile'], $smsBody);

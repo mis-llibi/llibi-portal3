@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form'
 
 import useAge from './components/UseAge'
 
-import options from '@/hooks/self-enrollment/BroadpathOptions'
+import options from '@/hooks/self-enrollment/RemotelyOptions'
 
 import Modal from '@/components/Modal'
 
@@ -27,7 +27,7 @@ const SubmittedPage = () => {
 
   const { client } = ManageClientInfo({
     id: router.query.id,
-    company: 'BROADPATH',
+    company: 'REMOTELY',
   })
 
   const { handleSubmit } = useForm()
@@ -45,9 +45,9 @@ const SubmittedPage = () => {
         client?.principal[0]?.status == 1 ||
         client?.principal[0]?.status == 4
       ) {
-        window.location.pathname = `/self-enrollment/broadpath/`
+        window.location.pathname = `/self-enrollment/remotely/`
       } else if (client?.principal[0]?.status == 2) {
-        window.location.pathname = `/self-enrollment/broadpath/dependents/`
+        window.location.pathname = `/self-enrollment/remotely/dependents/`
       }
 
       const newAdd = client?.principal[0]?.contact
@@ -180,20 +180,21 @@ const SubmittedPage = () => {
 
   return (
     <>
-      <GuestLayout title="Broadpath Self-Enrollment Portal">
+      <GuestLayout title="Remote Philippines Inc. Self-Enrollment Portal">
         <div className="pb-2 lg:pb-0 lg:pr-2">
           {/* header */}
           <div className="flex gap-2">
             <div>
               {/* client logo */}
               <img
-                src={`${basePath}/self-enrollment/broadpath/logo.png`}
-                width={150}
+                src={`${basePath}/self-enrollment/remotely/logo.jpeg`}
+                width={50}
               />
             </div>
             <div className="flex-grow flex place-items-center">
               <h1 className="text-xl font-bold text-gray-800">
-                <span className="text-blue-500">Dependent</span> Renewal Portal
+                <span className="text-blue-500">Dependent</span> Self-Enrollment
+                Portal
               </h1>
             </div>
           </div>

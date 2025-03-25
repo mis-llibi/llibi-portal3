@@ -22,7 +22,7 @@ const home = () => {
 
   const { client, updateClientInfo } = ManageClientInfo({
     id: router.query.id,
-    company: 'BROADPATH',
+    company: 'REMOTELY',
   })
 
   const {
@@ -78,7 +78,7 @@ const home = () => {
 
   return (
     <>
-      <GuestLayout title="Remotely Self-Enrollment Portal">
+      <GuestLayout title="Remote Philippines Inc. Self-Enrollment Portal">
         <div className="lg:flex">
           <input type="hidden" {...register('id')} />
 
@@ -89,8 +89,8 @@ const home = () => {
               <div>
                 {/* client logo */}
                 <img
-                  src={`${basePath}/self-enrollment/remotely/remotely.png`}
-                  width={150}
+                  src={`${basePath}/self-enrollment/remotely/logo.jpeg`}
+                  width={50}
                 />
               </div>
               <div className="flex-grow flex place-items-center">

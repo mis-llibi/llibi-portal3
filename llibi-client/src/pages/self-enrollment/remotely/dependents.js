@@ -29,7 +29,7 @@ const Dependents = () => {
 
   const { client, submitDependent, submitWithoutDependent } = ManageClientInfo({
     id: router.query.id,
-    company: 'BROADPATH',
+    company: 'REMOTELY',
   })
 
   const depsForm = {
@@ -161,7 +161,7 @@ const Dependents = () => {
     }
 
     Swal.fire({
-      title: 'Submitting Renewal',
+      title: 'Submitting Enrollment',
       html: html,
       icon: 'warning',
       showCancelButton: true,
@@ -241,7 +241,7 @@ const Dependents = () => {
 
   return (
     <>
-      <GuestLayout title="Remotely Dependent Self-Enrollment Portal">
+      <GuestLayout title="Remote Philippines Inc. Dependent Self-Enrollment Portal">
         {/* premium computation widget */}
         <PremiumComputation fields={fields} bill={bill} />
 
@@ -257,8 +257,8 @@ const Dependents = () => {
             <div>
               {/* client logo */}
               <img
-                src={`${basePath}/self-enrollment/remotely/remotely.png`}
-                width={150}
+                src={`${basePath}/self-enrollment/remotely/logo.jpeg`}
+                width={50}
               />
             </div>
             <div className="flex place-items-center">
