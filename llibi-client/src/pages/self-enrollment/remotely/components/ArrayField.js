@@ -25,12 +25,12 @@ const ArrayField = ({ props }) => {
 
   const renderFields = useRef(true)
   useEffect(() => {
-    if (props?.fields.length == 3 && renderFields.current && props?.isDirty)
+    /* if (props?.fields.length == 3 && renderFields.current && props?.isDirty)
       Swal.fire(
         'Succeeding Dependent',
         'By enrolling your 3rd and succeeding dependents, you are agreeing to 100% premium dependent contribution.',
         'warning',
-      )
+      ) */
     if (props?.fields.length >= 3) renderFields.current = false
     else renderFields.current = true
   }, [props?.fields])

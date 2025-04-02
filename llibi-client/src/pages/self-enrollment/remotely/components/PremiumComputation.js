@@ -12,12 +12,12 @@ const PremiumComputation = ({ fields = [], bill = 0 }) => {
         case 0:
           num = i + 1 + 'st'
           bil = '20%'
-          com = bill * 0.2
+          com = bill * 1
           break
         case 1:
           num = i + 1 + 'nd'
           bil = '20%'
-          com = bill * 0.2
+          com = bill * 1
           break
         case 2:
           num = i + 1 + 'rd'
@@ -42,7 +42,7 @@ const PremiumComputation = ({ fields = [], bill = 0 }) => {
       return s + a.com
     }, 0)
 
-    const monthly = annual / 12
+    const monthly = annual // / 12
 
     return { breakdown: computation, annual: annual, monthly: monthly }
   }
@@ -65,12 +65,12 @@ const PremiumComputation = ({ fields = [], bill = 0 }) => {
         <div className="mt-2">
           <table className="w-full">
             <tbody>
-              <tr>
+              {/* <tr>
                 <td>Annual:</td>
                 <td className="font-bold">
                   ₱ {computation()?.annual?.toLocaleString('en', opt)}
                 </td>
-              </tr>
+              </tr> */}
               <tr>
                 <td>Monthly:</td>
                 <td className="font-bold">
@@ -81,7 +81,7 @@ const PremiumComputation = ({ fields = [], bill = 0 }) => {
           </table>
         </div>
         <div className="mt-2 bg-gray-50 p-2 overflow-auto max-h-48 shadow-sm">
-          <p className="font-semibold">Breakdown (Annual)</p>
+          <p className="font-semibold">Breakdown (Monthly)</p>
           <table className="w-full text-xs">
             <tbody>
               {computation()?.breakdown?.map((row, i) => {

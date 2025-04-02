@@ -85,27 +85,128 @@ function civilStatus(relation) {
 function relation(civilStatus, rel, prevRelation, arrRelation, i, row) {
   switch (civilStatus) {
     case 'SINGLE':
-      return [
-        {
-          value: 'PARENT',
-          label: 'Parent',
-        },
-        {
-          value: 'SIBLING',
-          label: 'Sibling',
-        },
-        {
-          value: 'DOMESTIC PARTNER',
-          label: 'Domestic Partner / Same Gender Partner',
-        },
-      ]
-    case 'SINGLE WITH DOMESTIC PARTNER':
-      return [
-        {
-          value: 'DOMESTIC PARTNER',
-          label: 'Domestic Partner / Same Gender Partner',
-        },
-      ]
+      const elementCountsx = arrRelation.reduce(
+        (count, item) => ((count[item] = count[item] + 1 || 1), count),
+        {},
+      )
+
+      if (i === 0)
+        return [
+          {
+            value: 'PARENT',
+            label: 'Parent',
+          },
+          {
+            value: 'SIBLING',
+            label: 'Sibling',
+          },
+          {
+            value: 'DOMESTIC PARTNER',
+            label: 'Domestic Partner / Same Gender Partner',
+          },
+        ]
+
+      if (i + 1 === row.length) {
+        switch (prevRelation) {
+          case 'PARENT':
+            if (elementCountsx['PARENT'] === 2 && rel !== 'PARENT') {
+              return [
+                {
+                  value: 'SIBLING',
+                  label: 'Sibling',
+                },
+                {
+                  value: 'DOMESTIC PARTNER',
+                  label: 'Domestic Partner / Same Gender Partner',
+                },
+              ]
+            } else {
+              return [
+                {
+                  value: 'PARENT',
+                  label: 'Parent',
+                },
+                {
+                  value: 'SIBLING',
+                  label: 'Sibling',
+                },
+                {
+                  value: 'DOMESTIC PARTNER',
+                  label: 'Domestic Partner / Same Gender Partner',
+                },
+              ]
+            }
+          case 'SIBLING':
+            return [
+              {
+                value: 'SIBLING',
+                label: 'Sibling',
+              },
+              {
+                value: 'DOMESTIC PARTNER',
+                label: 'Domestic Partner / Same Gender Partner',
+              },
+            ]
+
+          case 'DOMESTIC PARTNER':
+            return []
+        }
+      } else {
+        if (arrRelation.includes('PARENT')) {
+          if (elementCountsx['PARENT'] === 2 && rel !== 'PARENT') {
+            return [
+              {
+                value: 'SIBLING',
+                label: 'Sibling',
+              },
+            ]
+          } else {
+            return [
+              {
+                value: 'PARENT',
+                label: 'Parent',
+              },
+              {
+                value: 'SIBLING',
+                label: 'Sibling',
+              },
+            ]
+          }
+        } else if (arrRelation.includes('SIBLING')) {
+          return [
+            {
+              value: 'SIBLING',
+              label: 'Sibling',
+            },
+            {
+              value: 'DOMESTIC PARTNER',
+              label: 'Domestic Partner / Same Gender Partner',
+            },
+          ]
+        } else if (arrRelation.includes('DOMESTIC PARTNER')) {
+          if (
+            elementCountsx['DOMESTIC PARTNER'] === 1 &&
+            rel !== 'DOMESTIC PARTNER'
+          ) {
+            return []
+          }
+        } else {
+          return [
+            {
+              value: 'PARENT',
+              label: 'Parent',
+            },
+            {
+              value: 'SIBLING',
+              label: 'Sibling',
+            },
+            {
+              value: 'DOMESTIC PARTNER',
+              label: 'Domestic Partner / Same Gender Partner',
+            },
+          ]
+        }
+      }
     case 'SINGLE PARENT':
       const elementCounts = arrRelation.reduce(
         (count, item) => ((count[item] = count[item] + 1 || 1), count),
@@ -132,47 +233,31 @@ function relation(civilStatus, rel, prevRelation, arrRelation, i, row) {
           },
         ]
 
-      if (
-        i + 1 === row.length &&
-        (prevRelation === 'PARENT' || prevRelation === 'DOMESTIC PARTNER')
-      ) {
+      if (i + 1 === row.length) {
+        console.log(prevRelation)
+
         switch (prevRelation) {
           case 'PARENT':
             if (elementCounts['PARENT'] === 2 && rel !== 'PARENT') {
               return [
                 {
-                  value: 'CHILD',
-                  label: 'Child',
+                  value: 'SIBLING',
+                  label: 'Sibling',
+                },
+                {
+                  value: 'DOMESTIC PARTNER',
+                  label: 'Domestic Partner / Same Gender Partner',
                 },
               ]
             } else {
               return [
-                {
-                  value: 'CHILD',
-                  label: 'Child',
-                },
                 {
                   value: 'PARENT',
                   label: 'Parent',
                 },
-              ]
-            }
-          case 'DOMESTIC PARTNER':
-            if (
-              elementCounts['DOMESTIC PARTNER'] === 1 &&
-              rel !== 'DOMESTIC PARTNER'
-            ) {
-              return [
                 {
-                  value: 'CHILD',
-                  label: 'Child',
-                },
-              ]
-            } else {
-              return [
-                {
-                  value: 'CHILD',
-                  label: 'Child',
+                  value: 'SIBLING',
+                  label: 'Sibling',
                 },
                 {
                   value: 'DOMESTIC PARTNER',
@@ -180,17 +265,7 @@ function relation(civilStatus, rel, prevRelation, arrRelation, i, row) {
                 },
               ]
             }
-        }
-      } else {
-        if (arrRelation.includes('PARENT')) {
-          if (elementCounts['PARENT'] === 2 && rel !== 'PARENT') {
-            return [
-              {
-                value: 'CHILD',
-                label: 'Child',
-              },
-            ]
-          } else {
+          case 'CHILD':
             return [
               {
                 value: 'CHILD',
@@ -200,24 +275,66 @@ function relation(civilStatus, rel, prevRelation, arrRelation, i, row) {
                 value: 'PARENT',
                 label: 'Parent',
               },
-            ]
-          }
-        } else if (arrRelation.includes('DOMESTIC PARTNER')) {
-          if (
-            elementCounts['DOMESTIC PARTNER'] === 1 &&
-            rel !== 'DOMESTIC PARTNER'
-          ) {
-            return [
               {
-                value: 'CHILD',
-                label: 'Child',
+                value: 'SIBLING',
+                label: 'Sibling',
+              },
+              {
+                value: 'DOMESTIC PARTNER',
+                label: 'Domestic Partner / Same Gender Partner',
               },
             ]
+          case 'SIBLING':
+            return [
+              {
+                value: 'SIBLING',
+                label: 'Sibling',
+              },
+              {
+                value: 'DOMESTIC PARTNER',
+                label: 'Domestic Partner / Same Gender Partner',
+              },
+            ]
+          case 'DOMESTIC PARTNER':
+            return []
+        }
+      } else {
+        if (arrRelation.includes('PARENT')) {
+          if (elementCounts['PARENT'] === 2 && rel !== 'PARENT') {
+            return arrRelation.includes('PARENT')
+              ? [
+                  {
+                    value: 'PARENT',
+                    label: 'Parent',
+                  },
+                  {
+                    value: 'SIBLING',
+                    label: 'Sibling',
+                  },
+                  {
+                    value: 'DOMESTIC PARTNER',
+                    label: 'Domestic Partner / Same Gender Partner',
+                  },
+                ]
+              : [
+                  {
+                    value: 'SIBLING',
+                    label: 'Sibling',
+                  },
+                  {
+                    value: 'DOMESTIC PARTNER',
+                    label: 'Domestic Partner / Same Gender Partner',
+                  },
+                ]
           } else {
             return [
               {
-                value: 'CHILD',
-                label: 'Child',
+                value: 'PARENT',
+                label: 'Parent',
+              },
+              {
+                value: 'SIBLING',
+                label: 'Sibling',
               },
               {
                 value: 'DOMESTIC PARTNER',
@@ -225,6 +342,38 @@ function relation(civilStatus, rel, prevRelation, arrRelation, i, row) {
               },
             ]
           }
+        } else if (arrRelation.includes('CHILD')) {
+          return [
+            {
+              value: 'CHILD',
+              label: 'Child',
+            },
+            {
+              value: 'PARENT',
+              label: 'Parent',
+            },
+            {
+              value: 'SIBLING',
+              label: 'Sibling',
+            },
+            {
+              value: 'DOMESTIC PARTNER',
+              label: 'Domestic Partner / Same Gender Partner',
+            },
+          ]
+        } else if (arrRelation.includes('SIBLING')) {
+          return [
+            {
+              value: 'SIBLING',
+              label: 'Sibling',
+            },
+            {
+              value: 'DOMESTIC PARTNER',
+              label: 'Domestic Partner / Same Gender Partner',
+            },
+          ]
+        } else if (arrRelation.includes('DOMESTIC PARTNER')) {
+          return []
         } else {
           return [
             {

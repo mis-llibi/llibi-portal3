@@ -57,12 +57,14 @@ const SubmittedPage = () => {
 
       let bill
       switch (client?.principal[0]?.mbl) {
-        case 200000:
-          bill = 19807.2
+        case 300000:
+          bill = 3246.25
           break
         case 150000:
           bill = 19398.4
           break
+        default:
+          bill = 0
       }
 
       let num,
@@ -80,12 +82,12 @@ const SubmittedPage = () => {
             case 1:
               num = '1st'
               bil = '20%'
-              com = bill * 0.2
+              com = bill * 1 //0.2
               break
             case 2:
               num = '2nd'
               bil = '20%'
-              com = bill * 0.2
+              com = bill * 1 //0.2
               break
             case 3:
               num = '3rd'
@@ -116,8 +118,7 @@ const SubmittedPage = () => {
                 computation.
               </td>
               <td className={`border pl-2 ${item?.status === 3 && 'hidden'}`}>
-                {num} Dependent: {bil} of ₱ {bill?.toLocaleString('en', 2)} = ₱{' '}
-                {com?.toLocaleString('en', 2)}
+                {num} Dependent: {bill?.toLocaleString('en', 2)}
               </td>
             </tr>
           )
@@ -138,10 +139,10 @@ const SubmittedPage = () => {
 
           switch (i) {
             case 0:
-              nCom = bill * 0.2
+              nCom = bill * 1 //0.2
               break
             case 1:
-              nCom = bill * 0.2
+              nCom = bill * 1 //0.2
               break
             case 2:
               nCom = bill * 1
@@ -273,8 +274,8 @@ const SubmittedPage = () => {
               <div className="pr-2 flex md:flex-none lg:flex">
                 <p>MBL</p>
                 <p className="ml-2 font-bold text-red-400">
-                  ₱{' '}
-                  {client?.principal[0]?.mbl?.toLocaleString('en-US') || 'N/A'}
+                  ₱ 300,000.00
+                  {/* {client?.principal[0]?.mbl?.toLocaleString('en-US') || 'N/A'} */}
                 </p>
               </div>
             </div>
@@ -306,8 +307,8 @@ const SubmittedPage = () => {
                 {dependent}
                 <tr>
                   <td className="p-3" colSpan={4}>
-                    <b>Annual: ₱</b> {annual?.toLocaleString('en', 2)},{' '}
-                    <b>Weekly: ₱</b> {monthly?.toLocaleString('en', 2)}
+                    <b>Monthly: ₱</b> {annual?.toLocaleString('en', 2)}
+                    {/* <b>Weekly: ₱</b> {monthly?.toLocaleString('en', 2)} */}
                   </td>
                 </tr>
               </tbody>

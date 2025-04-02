@@ -77,12 +77,14 @@ const Dependents = () => {
     setValue('coverageDate', client?.principal[0]?.coverage_date)
 
     switch (client?.principal[0]?.mbl) {
-      case 200000:
-        setBill(19807.2)
+      case 300000:
+        setBill(3246.25)
         break
       case 150000:
         setBill(19398.4)
         break
+      default:
+        setBill(0)
     }
     if (client?.principal[0]?.form_locked == 2) {
       window.location.pathname = `/self-enrollment/remotely/form-locked-submitted`
@@ -345,8 +347,8 @@ const Dependents = () => {
               <div className="pr-2 flex md:flex-none lg:flex">
                 <p>MBL</p>
                 <p className="ml-2 font-bold text-red-400">
-                  ₱{' '}
-                  {client?.principal[0]?.mbl?.toLocaleString('en-US') || 'N/A'}
+                  ₱ 300,000.00
+                  {/* {client?.principal[0]?.mbl?.toLocaleString('en-US') || 'N/A'} */}
                 </p>
               </div>
             </div>
