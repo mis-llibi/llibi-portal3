@@ -28,6 +28,11 @@ export const useMasterlist = ({ search = '' }) => {
   return { masterlist }
 }
 export const useBirthdateSearch = async (search, setErrors) => {
+  const csrf = () => axios.get('/sanctum/csrf-cookie')
+
+  setErrors([])
+  await csrf()
+
   try {
     const response = await axios.post('/api/search-birthdate-by-name', search)
     return response.data
