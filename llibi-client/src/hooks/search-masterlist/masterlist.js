@@ -27,3 +27,17 @@ export const useMasterlist = ({ search = '' }) => {
 
   return { masterlist }
 }
+export const useBirthdateSearch = async (search, setErrors) => {
+  try {
+    const response = await axios.post('/api/search-birthdate-by-name', search)
+    return response.data
+  } catch (error) {
+    if (error.response?.data?.errors) {
+      setErrors(Object.values(error.response.data.errors).flat())
+    } else {
+      setErrors(['An unexpected error occurred.'])
+    }
+
+    return null
+  }
+}
