@@ -87,6 +87,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
   Route::get('/self-enrollment/get-clients-for-life-insurance/{status}', [SelfEnrollmentController::class, 'getClientsForLifeInsurance']);
 });
 
+// Search Masterlist for Birthdate by Name
+Route::post('/search-birthdate-by-name', [MasterlistController::class, 'SearchBirthdateByName']);
+
 Route::get('/self-enrollment/testing', [SelfEnrollmentController::class, 'testing']);
 
 //SELF ENROLLMENT CLIENTS
