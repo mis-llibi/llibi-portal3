@@ -28,8 +28,8 @@ class MasterlistController extends Controller
   }
   public function SearchBirthdateByName(Request $request){
 
-    $lastName = $request->input('last_name');
-    $firstName = $request->input('first_name');
+    $lastName = strtoupper($request->input('last_name'));
+    $firstName = strtoupper($request->input('first_name'));
     $offset = $request->input('offset', 0);
     $limit = $request->input('limit', 50);
     $clients = Sync::query()
