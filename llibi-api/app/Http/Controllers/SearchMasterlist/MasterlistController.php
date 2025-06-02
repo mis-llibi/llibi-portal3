@@ -52,7 +52,7 @@ class MasterlistController extends Controller
                 ->orWhereRaw('UPPER(last_name) LIKE ?', ["%$term%"]);
           }
       })
-      ->select('member_id', 'first_name', 'last_name','company_name','birth_date')
+      ->select('member_id', 'first_name', 'last_name','company_name','birth_date', 'relation')
       ->offset($offset)
       ->limit($limit)
       ->get();

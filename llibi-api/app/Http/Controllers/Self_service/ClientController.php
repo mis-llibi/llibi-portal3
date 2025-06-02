@@ -920,7 +920,7 @@ public function CheckClient($request, $type)
 
       ->limit(100)
 
-      ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1', 'email2', 'accept_eloa']);
+      ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1', 'email2', 'accept_eloa', 'hosp_code']);
 
 
 

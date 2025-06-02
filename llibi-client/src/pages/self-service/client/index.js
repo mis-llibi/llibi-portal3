@@ -134,127 +134,6 @@ const Client = () => {
   const submitForm = obj => {
     obj['platform'] = router.query?.platform ?? ''
     if (watch('toDo') != 5) {
-      /* setFire(true)
-            Swal.fire({
-                title: '<strong>Terms Of Use</strong>',
-                width: '100%',
-                allowOutsideClick: false,
-                html:
-                    '<div style="line-height: 1.6;">' +
-                    '<p style="text-align:left;">You are using the <b>LLIBI Client Care Portal</b> created, owned, and managed by Lacson and Lacson Insurance Brokers, Inc. (“LLIBI”/us/our) to provide online-based services to facilitate services to our MEMBERS for their transactions with us. Use of this <i>portal</i> is optional. Use of this Portal and data herein shall be in accordance with Philippine laws including Republic Act No. 10173 (Data Privacy Act of 2012). <br /><br />This Portal allows you, the User, to do the following:</p>' +
-                    '<ul style="text-align:left;"><li>• Submit an online request for a letter of authorization, callback;</li><li>•	Upload copies of your doctor’s request, medical certificate, and other documents to facilitate your request;</li><li>• Confirm your active coverage by providing your membership data; and</li><li>• Provide only relevant data in connection to your request.</li></ul><br />' +
-                    '<p style="text-align:left;">No enrolment is necessary for use of this <i>portal</i>. You are responsible to protect the confidentiality of the information you provide, including your date of birth, emergency card number, and other information. This Portal will never ask for payment information. Please do not provide any financial information such as bank account numbers, credit card numbers, and the like. <br /><br />While LLIBI will implement appropriate security measures, you are expected to use this <i>portal</i> only for the above purposes. No personal data will be stored in this <i>portal</i>. Further, to maintain the confidentiality of members’ data, and to provide you with continuous services through this <i>portal</i> you are expected to provide accurate information. Users are prohibited from using data mining tools. LLIBI reserves the right to decline access or services to this <i>portal</i> in case of suspected fraud or to facilitate investigation of similar cases.<br /><br />Your personal data will be shared only to those with a business need to know. LLIBI will retain your data and transaction records for a period of five (5) years from submission, or in accordance to your consent, whichever is appropriate or in compliance with applicable regulations.<br /><br />For more information on how LLIBI handles your personal data, please visit our Privacy Notice at <a style="color:blue;" href="https://llibi.com/data-privacy/" target="_blank">https://llibi.com/data-privacy/</a><br/><br />If you have questions, or would like to report a personal data breach, or if you believe your personal data have been compromised, please email <a style="color:blue;" href="mailto:privacy@llibi.com">privacy@llibi.com</a></p>' +
-                    '</div>',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, accept it',
-                cancelButtonText: 'No, cancel',
-            }).then(result => {
-                //Read more about isConfirmed, isDenied below
-                if (result.isConfirmed) {
-                    //Swal.fire('You accepted, terms of use', '', 'success')
-                    setLoading(true)
-                    const data = removeUndefined({ obj })
-                    validate({ setLoading, ...data })
-                }
-            }) */
-    //   setBody({
-    //     title: '',
-    //     content: (
-    //       <div className="p-6">
-    //         <h1 className="font-bold text-center text-2xl mb-4 border-b-2 border-blue-800 pb-2">
-    //           Terms of Use
-    //         </h1>
-    //         <p className="text-justify">
-    //           You are using the <b>LLIBI Client Care Portal</b> created, owned,
-    //           and managed by Lacson and Lacson Insurance Brokers, Inc.
-    //           (“LLIBI”/us/our) to provide online-based services to facilitate
-    //           services to our MEMBERS for their transactions with us. Use of
-    //           this <i>portal</i> is optional. Use of this Portal and data herein
-    //           shall be in accordance with Philippine laws including Republic Act
-    //           No. 10173 (Data Privacy Act of 2012). <br />
-    //           <br />
-    //           This Portal allows you, the User, to do the following:
-    //         </p>
-    //         <ul>
-    //           <li>
-    //             • Submit an online request for a letter of authorization,
-    //             callback;
-    //           </li>
-    //           <li>
-    //             • Upload copies of your doctor’s request, medical certificate,
-    //             and other documents to facilitate your request;
-    //           </li>
-    //           <li>
-    //             • Confirm your active coverage by providing your membership
-    //             data; and
-    //           </li>
-    //           <li>
-    //             • Provide only relevant data in connection to your request.
-    //           </li>
-    //         </ul>
-    //         <br />
-    //         <p className="text-justify">
-    //           No enrolment is necessary for use of this <i>portal</i>. You are
-    //           responsible to protect the confidentiality of the information you
-    //           provide, including your date of birth, emergency card number, and
-    //           other information. This Portal will never ask for payment
-    //           information. Please do not provide any financial information such
-    //           as bank account numbers, credit card numbers, and the like. <br />
-    //           <br />
-    //           While LLIBI will implement appropriate security measures, you are
-    //           expected to use this <i>portal</i> only for the above purposes. No
-    //           personal data will be stored in this <i>portal</i>. Further, to
-    //           maintain the confidentiality of members’ data, and to provide you
-    //           with continuous services through this <i>portal</i> you are
-    //           expected to provide accurate information. Users are prohibited
-    //           from using data mining tools. LLIBI reserves the right to decline
-    //           access or services to this <i>portal</i> in case of suspected
-    //           fraud or to facilitate investigation of similar cases.
-    //           <br />
-    //           <br />
-    //           Your personal data will be shared only to those with a business
-    //           need to know. LLIBI will retain your data and transaction records
-    //           for a period of five (5) years from submission, or in accordance
-    //           to your consent, whichever is appropriate or in compliance with
-    //           applicable regulations.
-    //           <br />
-    //           <br />
-    //           For more information on how LLIBI handles your personal data,
-    //           please visit our Privacy Notice at{' '}
-    //           <a
-    //             className="text-blue-700"
-    //             href="https://llibi.com/data-privacy/"
-    //             target="_blank">
-    //             https://llibi.com/data-privacy/
-    //           </a>
-    //           <br />
-    //           <br />
-    //           If you have questions, or would like to report a personal data
-    //           breach, or if you believe your personal data have been
-    //           compromised, please email{' '}
-    //           <a className="text-blue-700" href="mailto:privacy@llibi.com">
-    //             privacy@llibi.com
-    //           </a>
-    //         </p>
-    //         <div className="text-center mt-4">
-    //           <Button
-    //             loading={loading}
-    //             className="bg-green-500 hover:bg-green-400 active:bg-green-600 focus:outline-none focus:border-green-600"
-    //             autoFocus={true}
-    //             onClick={() => acceptTermsOfUse(obj)}>
-    //             <ButtonText
-    //               text="Yes, I Accept the Terms of Use"
-    //               loading={loading}
-    //             />
-    //           </Button>
-    //         </div>
-    //       </div>
-    //     ),
-    //     modalOuterContainer: 'w-11/12 md:w-4/6 py-4 h-screen',
-    //     modalContainer: 'h-full rounded-md',
-    //     modalBody: 'h-full overflow-y-scroll',
-    //   })
-    //   toggle()
     setLoading(true)
     const data = removeUndefined({ obj })
     validate({ setLoading, ...data })
@@ -438,12 +317,6 @@ const Client = () => {
             </div>
             <hr className="my-2 mb-3 border-b-4 shadow border-blue-900 rounded-lg"></hr>
 
-            {/* Bread Crumb */}
-            {/* <BreadCrumb
-                            breadActive={0}
-                            breadCrumb={BreadList?.clientForm}
-                        /> */}
-
             {/* Action Form */}
             <form onSubmit={handleSubmit(submitForm)}>
               <div className="lg:grid grid-cols-7 gap-4">
@@ -456,12 +329,6 @@ const Client = () => {
                     boxShadow: '0px 0px 3px 1px rgba(0,0,0,0.15)',
                     borderRadius: 8,
                   }}>
-                  {/* <img
-                                        classN
-                                        ame="overflow-hidden h-full w-full shadow-lg rounded-lg place-items-center"
-                                        src={`${basePath}/self-service/portal_bg.webp`}
-                                    /> */}
-
                   <div className="relative h-full w-full pt-5">
                     <img
                       className="sticky rounded-2xl left-0 right-0 top-20 w-full"
@@ -476,7 +343,6 @@ const Client = () => {
                     <p className="bg-blue-900 text-white shadow rounded-t-lg p-2 mb-3 text-bold text-center">
                       {greeTingTime}, what can we do for you?
                     </p>
-                    {/* <div className="w-full border-b-2 border-dotted mb-2"></div> */}
 
                     {/* Error handler for any transactions */}
                     {errors?.toDo && (
@@ -547,55 +413,6 @@ const Client = () => {
                             </div>
                           </div>
                         </li>
-                        {/* scheduleCall */}
-                        {/* <li className="flex gap-2 mb-2 items-center">
-                          <input
-                            type="radio"
-                            {...register('toDo', {
-                              required: true,
-                            })}
-                            id="scheduleCall"
-                            value="2"
-                            className="w-3 h-3"
-                            disabled
-                          />{' '}
-                          <Label
-                            htmlFor="scheduleCall"
-                            className={'!text-gray-400'}>
-                            Request for Callback / Schedule a Call
-                          </Label>
-                        </li> */}
-                        {/* requestCallback */}
-                        {/* <li className="flex gap-2 mb-2 items-center">
-                                                <input
-                                                    type="radio"
-                                                    {...register('toDo', {
-                                                        required: true,
-                                                    })}
-                                                    id="requestCallback"
-                                                    value="3"
-                                                    className="w-3 h-3"
-                                                />{' '}
-                                                <Label htmlFor="requestCallback">
-                                                    Request for a Callback
-                                                </Label>
-                                            </li> */}
-                        {/* fileReimbursement */}
-                        {/* <li className="flex gap-2 mb-2 items-center">
-                                                <input
-                                                    type="radio"
-                                                    {...register('toDo', {
-                                                        required: true,
-                                                    })}
-                                                    id="fileReimbursement"
-                                                    value="4"
-                                                    className="w-3 h-3"
-                                                />{' '}
-                                                <Label htmlFor="fileReimbursement">
-                                                    File for a Reimbursement
-                                                </Label>
-                                            </li> */}
-                        {/* trackRefNumber */}
                         <li>
                           <div className="flex gap-2 items-center">
                             <input

@@ -127,6 +127,7 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
 
   useEffect(() => {
     setValue('sendLoaToProvider', sendLoaToProvider)
+    console.log(sendLoaToProvider)
   }, [sendLoaToProvider])
 
   return (
@@ -234,22 +235,6 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
                       {selectedHospital?.state}
                     </span>
                   </p>
-                  {/* <p className="font-bold mb-1">
-                    Email:{' '}
-                    <span className="font-normal">
-                      {selectedHospital?.email2}
-                    </span>
-                  </p> */}
-                  {/* <p className="font-bold mb-1">
-                    Send loa to provider:{' '}
-                    <input
-                      type="checkbox"
-                      checked={sendLoaToProvider}
-                      onChange={() =>
-                        setSendLoadToProvider(sendLoaToProvider == 0 ? 1 : 0)
-                      }
-                    />
-                  </p> */}
                 </div>
                 <div
                   className={`basis-1/2 text-sm border-l-2 pl-2 flex items-center ${
