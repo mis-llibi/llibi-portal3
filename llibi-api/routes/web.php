@@ -25,6 +25,8 @@ require __DIR__ . '/auth.php';
 
 require __DIR__ . '/self-service.php';
 
+require __DIR__ . '/upload-loa.php';
+
 require __DIR__ . '/self-service-mobile.php';
 
 require __DIR__ . '/dental-insurance.php';

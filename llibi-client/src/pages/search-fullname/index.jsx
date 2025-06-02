@@ -4,6 +4,7 @@ import { Button, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { set } from 'react-hook-form'
 import { SyncLoader } from 'react-spinners'
+import LoaTypeModal from './components/LoaTypeModal'
 
 export default function SearchBirthdateByName() {
   const [search, setSearch] = useState({
@@ -63,7 +64,21 @@ export default function SearchBirthdateByName() {
 
     setPage(newPage)
   }
+
+
+  //   Uploading LOA
+  const [loaTypeModal, setLoaTypeModal] = useState(false)
+  const [selectUser, setSelectUser] = useState()
+
+  const handleClickUpload = (user) => {
+    setLoaTypeModal(true)
+    setSelectUser(user)
+  }
+
+
   return (
+    <>
+
     <div className="bg-gray-50 min-h-screen py-10 flex justify-center items-center">
       <div className="mx-auto p-5 sm:p-10 bg-white w-full max-w-4xl">
         <div className="flex items-center w-full"></div>
@@ -116,6 +131,7 @@ export default function SearchBirthdateByName() {
               <th>Member ID</th>
               <th>Company</th>
               <th>Birthdate</th>
+              <th>Upload LOA</th>
             </tr>
           </thead>
           <tbody className="text-sm">
@@ -142,6 +158,9 @@ export default function SearchBirthdateByName() {
                   <td className="p-3 text-center">{row.member_id}</td>
                   <td className="p-3 text-center">{row.company_name}</td>
                   <td className="p-3 text-center">{row.birth_date}</td>
+                  <td className='p-3 text-center' onClick={() => handleClickUpload(row)}>
+                    <h1 className='bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 cursor-pointer '>Upload</h1>
+                  </td>
                 </tr>
               ))
             )}
@@ -171,5 +190,10 @@ export default function SearchBirthdateByName() {
         </div>
       </div>
     </div>
+
+    {loaTypeModal && <LoaTypeModal setLoaTypeModal={setLoaTypeModal} selectUser={selectUser} /> }
+
+
+    </>
   )
 }

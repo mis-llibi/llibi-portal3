@@ -209,5 +209,9 @@ Route::controller(ClientPortalErrorLogsController::class)->group(function () {
   Route::post('/error-logs-send-notify', 'sendNotify');
 });
 
+// Show LOA
+use App\Http\Controllers\TryApi\TryApiController;
+Route::get('show-all-loa', [TryApiController::class, 'index']);
+
 require __DIR__ . '/test-route.php';
 require __DIR__ . '/byron.php';
