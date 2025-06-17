@@ -211,7 +211,9 @@ Route::controller(ClientPortalErrorLogsController::class)->group(function () {
 
 // Show LOA
 use App\Http\Controllers\TryApi\TryApiController;
-Route::get('show-all-loa', [TryApiController::class, 'index']);
+Route::get('show-all-loa-client', [TryApiController::class, 'showLoaClient']);
+Route::post('show-loa-client', [TryApiController::class, 'showNoLoaClient']);
+Route::get('show-all-hospitals', [TryApiController::class, 'hospitals']);
 
 require __DIR__ . '/test-route.php';
 require __DIR__ . '/byron.php';
