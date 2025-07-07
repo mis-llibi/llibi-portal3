@@ -26,7 +26,7 @@ use App\Models\Self_service\Sync;
 
 
 
-use App\Models\Corporate\Hospitals;
+use App\Models\Self_service\Hospitals;
 
 use App\Models\Corporate\ProviderLink;
 

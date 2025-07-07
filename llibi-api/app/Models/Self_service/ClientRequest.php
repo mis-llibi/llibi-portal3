@@ -20,18 +20,19 @@ class ClientRequest extends Model
         'provider_updated_email',
         'doctor_id',
         'doctor_name',
-        
+
         'loa_type',
         'complaint',
         'assessment_q1',
         'assessment_q2',
         'assessment_q3',
         'diagnosis',
-        
+
         'lab_attachment',
         'loa_number',
         'approval_code',
 
         'status',
+        'updated_at'
     ];
 }

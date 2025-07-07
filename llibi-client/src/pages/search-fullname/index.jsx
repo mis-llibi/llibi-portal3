@@ -6,6 +6,8 @@ import { set } from 'react-hook-form'
 import { SyncLoader } from 'react-spinners'
 import LoaTypeModal from './components/LoaTypeModal'
 
+import Head from 'next/head'
+
 export default function SearchBirthdateByName() {
   const [search, setSearch] = useState({
     first_name: '',
@@ -78,6 +80,10 @@ export default function SearchBirthdateByName() {
 
   return (
     <>
+
+    <Head>
+        <title>CCE - MANUAL UPLOAD</title>
+    </Head>
 
     <div className="bg-gray-50 min-h-screen py-10 flex justify-center items-center">
       <div className="mx-auto p-5 sm:p-10 bg-white w-full max-w-4xl">
