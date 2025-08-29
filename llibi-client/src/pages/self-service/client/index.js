@@ -131,7 +131,9 @@ const Client = () => {
     }
   }, [CURRENT_HOUR])
 
+
   const submitForm = obj => {
+    // console.log(obj)
     obj['platform'] = router.query?.platform ?? ''
     if (watch('toDo') != 5) {
     setLoading(true)
@@ -294,6 +296,59 @@ const Client = () => {
 
   // console.log(isDependent)
 
+    const handleFormError = (errors) => {
+        // console.log(errors)
+        if (errors?.typeLOA) {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Type of LOA is required',
+            text: 'Please select either Consultation or Laboratory before submitting.',
+            })
+        } else if (errors?.toDo) {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Action Required',
+            text: 'Please select a request you want to proceed.',
+            })
+        } else if(errors?.principalType){
+            Swal.fire({
+                icon: "warning",
+                title: 'Membership Verification',
+                text: "Provide any information to verify your membership"
+            })
+        } else if(errors?.memberID || errors?.dob2){
+            Swal.fire({
+                icon: "warning",
+                title: "Input fields are required",
+                text: "Member ID and Date of Birth are required"
+            })
+        } else if(errors?.lastName || errors?.firstName || errors?.dob){
+            Swal.fire({
+                icon: "warning",
+                title: "Input fields are required",
+                text: "First Name, Last Name and Date of Birth are required"
+            })
+        } else if(errors?.dependentType){
+            Swal.fire({
+                icon: "warning",
+                title: 'Dependent Verification',
+                text: "Provide any information to verify your dependent"
+            })
+        } else if(errors?.depDob || errors?.depFirstName || errors?.depLastName){
+            Swal.fire({
+                icon: "warning",
+                title: "Dependent Input fields are required",
+                text: "Dependent First Name, Dependent Last Name and Dependent Date of Birth are required"
+            })
+        }else{
+            Swal.fire({
+                icon: "warning",
+                title: "Dependent Input fields are required",
+                text: "Dependent Member ID and Dependent Date of Birth are required"
+            })
+        }
+    }
+
   return (
     <ClientLayout>
       <Head>
@@ -326,7 +381,7 @@ const Client = () => {
             <hr className="my-2 mb-3 border-b-4 shadow border-blue-900 rounded-lg"></hr>
 
             {/* Action Form */}
-            <form onSubmit={handleSubmit(submitForm)}>
+            <form onSubmit={handleSubmit(submitForm, handleFormError)}>
               <div className="lg:grid grid-cols-7 gap-4">
                 {/* Image */}
                 <div
