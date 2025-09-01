@@ -912,15 +912,29 @@ public function CheckClient($request, $type)
 
   {
 
-    $request = Hospitals::where('status', 1)
+    $accepteloa = $request->accepteloa;
 
-      ->where('name', 'like', '%' . $request->search . '%')
 
-      ->orderBy('name', 'ASC')
+    if($accepteloa == "true"){
+        $request = Hospitals::where('status', 1)
+                    ->where('name', 'like', '%' . $request->search . '%')
+                    ->where('accept_eloa', 1)
+                    ->orderBy('name', 'ASC')
+                    ->limit(100)
+                    ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1', 'email2', 'accept_eloa', 'hosp_code']);
+    }else{
+        $request = Hospitals::where('status', 1)
 
-      ->limit(100)
+        ->where('name', 'like', '%' . $request->search . '%')
 
-      ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1', 'email2', 'accept_eloa', 'hosp_code']);
+        ->orderBy('name', 'ASC')
+
+        ->limit(100)
+
+        ->get(['id', 'name', 'add1 as address', 'city', 'state', 'email1', 'email2', 'accept_eloa', 'hosp_code']);
+    }
+
+
 
 
 

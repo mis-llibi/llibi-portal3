@@ -37,9 +37,13 @@ const ProviderLookupForm = ({
   const [loading, setLoading] = useState(false)
   const [timer, setTimer] = useState(null)
 
+  const [isAcceptEloa, setIsAcceptEloa] = useState()
+  const [search, setSearch] = useState('')
+
   const [hosploading, setHosploading] = useState(false)
   const [hospital, setHospital] = useState()
   const onSearchHospital = search => {
+    setSearch(search)
     setHosploading(true)
     if (timer) {
       clearTimeout(timer)
@@ -48,7 +52,7 @@ const ProviderLookupForm = ({
     setTimer(
       setTimeout(() => {
         resetField('hospital')
-        if (search) searcHospital({ search, setHospital, setHosploading })
+        if (search) searcHospital({ search, accepteloa:isAcceptEloa, setHospital, setHosploading })
       }, 1000),
     )
   }
@@ -141,6 +145,33 @@ const ProviderLookupForm = ({
       }
     })
   }
+
+  const handleEloaCheckbox = (e) => {
+    setIsAcceptEloa(e.target.checked)
+  }
+
+  useEffect(() => {
+    if(isAcceptEloa){
+        clearTimeout(timer)
+        setTimer(null)
+    }
+
+    setTimer(
+        setTimeout(() => {
+            resetField('hospital')
+            if(isAcceptEloa == true || isAcceptEloa == false){
+                setHosploading(true)
+                searcHospital({
+                    search: search,
+                    accepteloa: isAcceptEloa,
+                    setHospital,
+                    setHosploading
+                }, 1000)
+            }
+        })
+    )
+
+  },[isAcceptEloa])
 
   return (
     <form onSubmit={handleSubmit(onChooseProvider)} className="px-2">
@@ -251,7 +282,29 @@ const ProviderLookupForm = ({
           </div>
         </div>
       </div>
-      <div className="absolute bottom-2 right-4">
+      <div className='flex flex-col items-center justify-between p-2 border-t border-solid border-blueGray-200 my-10'>
+        <div className='w-full text-center'>
+            <h1 className='font-bold px-2 py-2  text-xs'>
+                LEGEND <br />
+                <span className='text-orange-900'>⭐ - <span className='uppercase'>This provider accepts LLIBI</span> e-LOA</span>
+            </h1>
+        </div>
+        <div className='lg:absolute left-5'>
+            <div className='flex items-center gap-2 '>
+                <input
+                    type='checkbox'
+                    id="accepting_eloa"
+                    // value="accepting_eloa"
+                    checked={isAcceptEloa}
+                    className='cursor-pointer'
+                    onChange={(e) => handleEloaCheckbox(e)}
+                />
+                <label for="accepting_eloa" className='font-bold px-2 py-2 text-xs cursor-pointer'>SHOW ONLY PROVIDERS ACCEPTING E-LOA</label>
+            </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-0 right-4">
         <Button
           loading={loading}
           className={`float-right bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 ${
@@ -261,14 +314,7 @@ const ProviderLookupForm = ({
         </Button>
         <div className="clear-both"></div>
       </div>
-      <div className='flex items-center justify-between p-2 border-t border-solid border-blueGray-200'>
-        <div className='w-full text-center'>
-            <h1 className='font-bold px-2 py-2  text-xs'>
-                LEGEND <br />
-                <span className='text-orange-900'>⭐ - <span className='uppercase'>This provider accepts LLIBI</span> e-LOA</span>
-            </h1>
-        </div>
-      </div>
+
     </form>
   )
 }

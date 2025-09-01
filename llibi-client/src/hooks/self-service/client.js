@@ -154,14 +154,12 @@ export const useClient = () => {
       })
   }
 
-  const searcHospital = async ({ search, setHospital, setHosploading }) => {
+  const searcHospital = async ({ search, accepteloa, setHospital, setHosploading }) => {
     await csrf()
 
     axios
       .get(
-        `/self-service/client-search-hospital?search=${
-          search || 'DONT SEARCH'
-        }`,
+        `/self-service/client-search-hospital?search=${search}&accepteloa=${accepteloa}`,
       )
       .then(res => {
         const result = res.data
