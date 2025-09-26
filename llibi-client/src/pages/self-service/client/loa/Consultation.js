@@ -92,22 +92,33 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
   const [sendLoaToProvider, setSendLoadToProvider] = useState(0)
 
   const findProvider = () => {
-    setBody({
-      title:
-        'Find your preferred accredited provider (Hospital / Clinic / Doctor)',
-      content: (
-        <ProviderLookupForm
-          setShow={setShow}
-          setSelectedHospital={setSelectedHospital}
-          setSelectedDoctor={setSelectedDoctor}
-          setSendLoadToProvider={setSendLoadToProvider}
-        />
-      ),
-      modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
-      modalContainer: 'h-full rounded-md',
-      modalBody: 'h-full',
+
+    Swal.fire({
+        html: '<img src="/self-service/infographics-eloa.jpg" alt="e-LOA" style="max-width:100%; border-radius:10px;" />',
+        width: "900px",
+        allowOutsideClick: false
     })
-    toggle()
+    .then((e) => {
+        if(e.isConfirmed == true){
+            setBody({
+            title:
+                'Find your preferred accredited provider (Hospital / Clinic / Doctor)',
+            content: (
+                <ProviderLookupForm
+                setShow={setShow}
+                setSelectedHospital={setSelectedHospital}
+                setSelectedDoctor={setSelectedDoctor}
+                setSendLoadToProvider={setSendLoadToProvider}
+                />
+            ),
+            modalOuterContainer: 'w-full md:w-4/6 max-h-screen',
+            modalContainer: 'h-full rounded-md',
+            modalBody: 'h-full',
+            })
+            toggle()
+        }
+    })
+
   }
 
   useEffect(() => {
