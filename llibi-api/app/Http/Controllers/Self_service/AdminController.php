@@ -14,6 +14,7 @@ use App\Models\Self_service\Sync;
 use App\Models\Self_service\SyncCompanies;
 use App\Models\Self_service\Attachment;
 use App\Models\Self_service\Hospitals;
+use App\Models\Self_service\Procedure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -78,6 +79,7 @@ class AdminController extends Controller
             't2.doctor_id as doctorID',
             't2.doctor_name as doctorName',
             't2.diagnosis as diagnosis',
+            't2.provider_procedure_type as procedure_type',
             't1.approved_date',
             DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
             DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
@@ -626,6 +628,19 @@ public function UpdateRequest(Request $request)
     $client_request = Client::query()->with('clientRequest:id,client_id,loa_type')->where('id', $id)->first();
 
     return ['attachment' => $attachment, 'client_request' => $client_request];
+  }
+
+  public function getProcedure($id){
+    $procedures = Procedure::where('request_id', $id)
+                ->select('*')
+                ->get();
+
+    $client_request = Client::query()->with('clientRequest:id,client_id,loa_type')->where('id', $id)->first();
+
+    return response()->json([
+        'procedures' => $procedures,
+        'client_request' => $client_request
+    ], 200);
   }
 
   public function export(Request $request)
