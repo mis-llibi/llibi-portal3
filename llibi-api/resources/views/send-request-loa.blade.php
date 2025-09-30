@@ -15,6 +15,22 @@
   {!! $statusRemarks !!}
   <br /><br />
 
+  {{-- <img src="https://llibi-storage.sgp1.cdn.digitaloceanspaces.com/Self-service/Images/infographics-eloa.jpg" alt="Infographic" width="400"> --}}
+  {{-- <img src="{{ config('app.storage_cdn') }}/Self-service/Images/infographics-eloa.jpg" alt="Infographic" width="400"> --}}
+
+  @if($is_accept_eloa)
+    <img src="{{ config('app.storage_cdn') }}/Self-service/Images/infographics-eloa.jpg" alt="Infographic" width="400">
+    <br /><br />
+  @endif
+
+
+
+
+
+
+
+
+
   For further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.<br /><br />
   <b>LACSON AND LACSON INSURANCE BROKERS, INC.</b><br />
   Manila Line: (02) 8236-6492<br />

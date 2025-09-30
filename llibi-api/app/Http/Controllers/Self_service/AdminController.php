@@ -13,6 +13,8 @@ use App\Models\Self_service\Complaints;
 use App\Models\Self_service\Sync;
 use App\Models\Self_service\SyncCompanies;
 use App\Models\Self_service\Attachment;
+use App\Models\Self_service\Hospitals;
+use App\Models\Self_service\Procedure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -20,7 +22,7 @@ use Carbon\Carbon;
 use mikehaertl\pdftk\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SelfService\AdminExport;
-use App\Models\Corporate\Hospitals;
+// use App\Models\Corporate\Hospitals;
 use App\Services\GetActiveEmailProvider;
 use App\Services\SendingEmail;
 use Exception;
@@ -36,7 +38,10 @@ class AdminController extends Controller
 
     $request = DB::table('app_portal_clients as t1')
         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-        ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+        ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
+            $join->on('mlist.member_id', '=', 't1.member_id')
+                ->orOn('mlist.member_id', '=', 't1.dependent_member_id');
+        })
         ->rightJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
         ->select(
             't1.id',
@@ -74,6 +79,7 @@ class AdminController extends Controller
             't2.doctor_id as doctorID',
             't2.doctor_name as doctorName',
             't2.diagnosis as diagnosis',
+            't2.provider_procedure_type as procedure_type',
             't1.approved_date',
             DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
             DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
@@ -397,7 +403,10 @@ public function UpdateRequest(Request $request)
     $client[0]->email,
     $client[0]->altEmail,
     $client[0]->contact,
-    $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName);
+    $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+    $client[0]->providerID
+
+    );
 
   return array('client' => $client, 'all' => $allClient);
 }
@@ -446,8 +455,16 @@ public function UpdateRequest(Request $request)
     return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
   }
 
-  private function sendNotification($data, $name, $email, $altEmail, $contact, $dependent)
+  private function sendNotification($data, $name, $email, $altEmail, $contact, $dependent, $providerID)
   {
+
+
+    $hospital = Hospitals::where('id', $providerID)->first();
+    $accept_eloa = $hospital->accept_eloa;
+
+    // Log::info($hospital->accept_eloa);
+    // Log::info(asset('images/infographics-eloa.jpg'));
+
 
     $name = ucwords(strtolower($name));
     $dependent = $dependent === null ? null : ucwords(strtolower($dependent));
@@ -489,7 +506,16 @@ public function UpdateRequest(Request $request)
 
       if ($data['status'] === 3) {
         // $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
-        $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'Please print a copy of your LOA and present it to the accredited provider upon availment.';
+
+
+
+
+        if($accept_eloa){
+            $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA';
+        }else{
+            $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'Please print a copy of your LOA and present it to the accredited provider upon availment.';
+        }
+
         // switch ($data['email_format_type']) {
         //   case 'consultation':
         //     break;
@@ -542,6 +568,7 @@ public function UpdateRequest(Request $request)
           'name' => $name,
           'dependent' => $dependent,
           'statusRemarks' => $statusRemarks,
+          'is_accept_eloa' => $accept_eloa,
           'ref' => $ref,
           'feedbackLink' => $feedbackLink,
         ]),
@@ -573,8 +600,13 @@ public function UpdateRequest(Request $request)
 
     if (!empty($contact)) {
       if ($data['status'] === 3) {
-        $sms =
-          'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+        if($accept_eloa){
+            $sms =
+            'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+        }else{
+            $sms =
+            'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+        }
         // $sms =
         //   "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
 
@@ -596,6 +628,19 @@ public function UpdateRequest(Request $request)
     $client_request = Client::query()->with('clientRequest:id,client_id,loa_type')->where('id', $id)->first();
 
     return ['attachment' => $attachment, 'client_request' => $client_request];
+  }
+
+  public function getProcedure($id){
+    $procedures = Procedure::where('request_id', $id)
+                ->select('*')
+                ->get();
+
+    $client_request = Client::query()->with('clientRequest:id,client_id,loa_type')->where('id', $id)->first();
+
+    return response()->json([
+        'procedures' => $procedures,
+        'client_request' => $client_request
+    ], 200);
   }
 
   public function export(Request $request)

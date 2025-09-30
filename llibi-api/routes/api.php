@@ -100,6 +100,7 @@ Route::get('/self-enrollment/check-reminders/{company}/{date}/{finalWarning}/{lo
 //SELF-SERVICE
 Route::get('/self-service/download-pdf', [SelfService::class, 'encryptPdf']);
 Route::get('/self-service/get-uploaded-files/{id}', [SelfService::class, 'getFiles']);
+Route::get('/self-service/get-procedure/{id}', [SelfService::class, 'getProcedure']);
 Route::get('/self-service/admin-search-request/{search}/{id}', [SelfService::class, 'SearchRequest']);
 Route::get('/self-service/admin-search-request/pending-counter', [SelfService::class, 'pendingCounter']);
 Route::post('/self-service/admin/export', [SelfService::class, 'export']);
