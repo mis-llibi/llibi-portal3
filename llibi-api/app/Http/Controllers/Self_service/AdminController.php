@@ -38,9 +38,18 @@ class AdminController extends Controller
 
     $request = DB::table('app_portal_clients as t1')
         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+        // ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+        // ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
+        //     $join->on('mlist.member_id', '=', 't1.member_id')
+        //         ->orOn('mlist.member_id', '=', 't1.dependent_member_id');
+        // })
         ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
-            $join->on('mlist.member_id', '=', 't1.member_id')
-                ->orOn('mlist.member_id', '=', 't1.dependent_member_id');
+            $join->on('mlist.member_id', '=', DB::raw("
+                CASE
+                    WHEN t1.is_dependent = 1 THEN t1.dependent_member_id
+                    ELSE t1.member_id
+                END
+            "));
         })
         ->rightJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
         ->select(
