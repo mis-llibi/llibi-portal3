@@ -16,6 +16,7 @@ import { useAdmin } from '@/hooks/self-service/admin'
 import { SyncLoader } from 'react-spinners'
 
 import Form from '@/pages/self-service/admin/form'
+import ProcedureForm from '@/pages/self-service/admin/procedureForm'
 import Export from './export'
 import Settings from './settings'
 import Logs from './logs'
@@ -381,6 +382,29 @@ const Admin = () => {
     return currentTime - updateTime <= 30000;
   }
 
+  const viewProviderLaboratory = async(row) => {
+    try {
+      const reponse = await viewBy(row, 'view')
+      // console.log(reponse);
+      // return;
+
+      if (!reponse.status) return
+
+      setBody({
+        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        content: <ProcedureForm setRequest={setRequest} row={row} />,
+        //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+        modalOuterContainer: 'w-full h-full',
+        //modalContainer: '',
+        modalContainer: 'h-full',
+        modalBody: 'h-full overflow-y-scroll',
+      })
+      toggle()
+    } catch (error) {
+      throw error
+    }
+  }
+
 
   return (
     <ProviderLayout>
@@ -603,7 +627,8 @@ const Admin = () => {
                               <td className="border border-gray-300 p-2 text-center">
                                 {row.platform === 'viber' ? "VIBER"
                                 : row.platform === "qr" ? "QR"
-                                : '-'
+                                : row.platform === "provider" ? "PROVIDER"
+                                : "-"
                                 }
                               </td>
                               <td className="border border-gray-300 p-2 text-center">
@@ -611,7 +636,22 @@ const Admin = () => {
                                   className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                                   onClick={() => {
                                     // view(row)
-                                    row.loaType == "consultation" || row.loaType == "laboratory" ? view(row) : row.isDependent === null && row.memberID === null ? showCallbackModalProvider(row, i) : showCallbackModal(row, i)
+
+                                    // row.loaType == "consultation" || row.loaType == "laboratory"
+                                    // ? view(row)
+                                    // : row.isDependent === null && row.memberID === null
+                                    // ? showCallbackModalProvider(row, i)
+                                    // : row.loaType === "laboratory" && row.procedure_type === "Enumerate"
+                                    // ? console.log(row)
+                                    // : showCallbackModal(row, i)
+
+                                    row.loaType === "laboratory" && row.procedure_type === "Enumerate"
+                                    ? viewProviderLaboratory(row)
+                                    : row.loaType === "consultation" || row.loaType === "laboratory"
+                                    ? view(row)
+                                    : row.isDependent === null && row.memberID === null
+                                    ? showCallbackModalProvider(row, i)
+                                    : showCallbackModal(row, i)
                                   }}>
                                   VIEW
                                 </a>
