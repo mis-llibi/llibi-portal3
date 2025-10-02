@@ -29,6 +29,8 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+use App\Models\ProviderPortal;
+
 class AdminController extends Controller
 {
     public function SearchRequest($search, $id)
@@ -406,16 +408,34 @@ public function UpdateRequest(Request $request)
     'email_format_type' => $request->email_format_type
   ];
 
-  $this->sendNotification(
-    array_merge($dataSend, $update, $loa),
-    $client[0]->firstName . ' ' . $client[0]->lastName,
-    $client[0]->email,
-    $client[0]->altEmail,
-    $client[0]->contact,
-    $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
-    $client[0]->providerID
 
-    );
+
+    if($client[0]->platform == 'qr' && $status === 3){
+
+        // Send Email Provider
+
+        $this->sendNotificationProvider(
+            array_merge($dataSend, $update, $loa),
+            $client[0]->firstName . ' ' . $client[0]->lastName,
+            $client[0]->email,
+            $client[0]->altEmail,
+            $client[0]->contact,
+            $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+            $client[0]->providerID
+        );
+
+    }else{
+        $this->sendNotification(
+            array_merge($dataSend, $update, $loa),
+            $client[0]->firstName . ' ' . $client[0]->lastName,
+            $client[0]->email,
+            $client[0]->altEmail,
+            $client[0]->contact,
+            $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+            $client[0]->providerID
+
+            );
+    }
 
   return array('client' => $client, 'all' => $allClient);
 }
@@ -462,6 +482,207 @@ public function UpdateRequest(Request $request)
   {
     $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
     return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+  }
+
+  private function sendNotificationProvider($data, $name, $email, $altEmail, $contact, $dependent, $providerID){
+    $hospital = Hospitals::where('id', $providerID)->first();
+    $accept_eloa = $hospital->accept_eloa;
+
+    $provider_portal = ProviderPortal::where('provider_id', $providerID)
+                                    ->where('user_type', 'Hospital')
+                                    ->first();
+
+    // Log::info($hospital->accept_eloa);
+    // Log::info(asset('images/infographics-eloa.jpg'));
+
+
+    $name = ucwords(strtolower($name));
+    $dependent = $dependent === null ? null : ucwords(strtolower($dependent));
+    $remarks = $data['remarks'];
+    $ref = $data['refno'];
+    // $provider_email2 = $data['provider_email2'];
+    $provider_email2 = 'testllibi1@yopmail.com';
+    $is_send_to_provider = $data['is_send_to_provider'];
+    $company_code = $data['company_code'];
+    $member_id = $data['member_id'];
+    $request_id = $data['request_id'];
+
+    $loanumber = (!empty($data['loa_number']) ? $data['loa_number'] : '');
+    $approvalcode = (!empty($data['approval_code']) ? $data['approval_code'] : '');
+
+    if (!empty($email)) {
+
+      $attachment = [];
+      if ($data['status'] == 3) {
+        $attach = $data['encryptedLOA'];
+        $attachment = [$attach];
+      }
+
+      //$numbers = $data['status'] === 3 ? "LOA #: <b>$loanumber</b> <br /> Approval Code: <b>$approvalcode</b>" : ''; <br /><br /> Password to LOA is requestor birth date: <b style="color:red;">YYYYMMDD i.e., 19500312</b>
+
+      $homepage = env('FRONTEND_URL');
+      $feedbackLink = '
+        <div>
+          We value your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+            Please click here
+          </a>
+        </div>
+        <div>
+          <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+          <img src="' . env('APP_URL', 'https://portal.llibi.app') . '/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
+          </a>
+        </div>
+      <br /><br />';
+
+      if ($data['status'] === 3) {
+        // $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';
+
+
+
+        $statusRemarksProvider = 'LOA Request for ' . '<b>' . $name . '</b>' . ' is <b>approved</b>. You may print LOA and issue to the patient.';
+
+        if($accept_eloa){
+            // $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA';
+
+            $statusRemarks = 'Your LOA request has been approved. You may now notify the ' . '<b>' . $hospital->name . '</b>' . ' that it was already sent to their email. Alternatively, we also sent you a copy and you may forward it to the clinic/hospital email. ' . '<br /><br />' . 'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA';
+
+
+        }else{
+            // $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'Please print a copy of your LOA and present it to the accredited provider upon availment.';
+
+            $statusRemarks = 'Your LOA request has been approved. You may now notify the ' . '<b>' . $hospital->name . '</b>' . ' that it was already sent to their email. Alternatively, we also sent you a copy and you may forward it to the clinic/hospital email.';
+        }
+
+        // switch ($data['email_format_type']) {
+        //   case 'consultation':
+        //     break;
+        //   case 'laboratory':
+        //     $statusRemarks = '
+        //     <p>Your LOA request is <b>approved</b>. Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>
+        //     <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        //     break;
+        //   case '2n1-standalone':
+        //     $statusRemarks = '
+        //     <p>Please print a copy of LOA and present to the accredited provider upon availment.</p>
+        //     <p>Consultation LOA is pre-approved. Outpatient Procedure LOA is subject for Client Care’s approval based on doctor’s laboratory referral and evaluation of the diagnosis.</p>';
+        //     break;
+        //   case 'pre-approved-laboratory':
+        //     $statusRemarks = '
+        //     <p>Please print a copy of LOA and present to the accredited provider upon availment with doctor’s laboratory referral.</p>
+        //     <p>This is a pre-approved Outpatient Procedure LOA with approval code for guaranteed amount indicated. If the guaranteed amount is less than the actual laboratory cost or there are additional laboratory procedures as advised by the doctor, please contact our Client Care Hotline for re-approval.</p>';
+        //     break;
+
+        //   default:
+        //     throw new Exception("Email format is not supported", 1);
+        //     break;
+        // }
+      } else {
+        $statusRemarks = 'Your LOA request is <b>disapproved</b> with remarks: ' . $remarks;
+        $feedbackLink = '';
+      }
+
+
+      // $mailMsg =
+      //   '<p style="font-weight:normal;">
+      //           Hi <b>' . $name . ',</b><br /><br />
+      //           ' . $statusRemarks . '<br /><br />
+      //           For further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.<br /><br />
+      //           Manila Line: (02) 8236-6492<br/>
+      //           Mobile number for Calls Only:<br />
+      //           0917-8055424<br />
+      //           0917-8855424<br />
+      //           0919-0749433<br />
+
+      //           Email: clientcare@llibi.com<br /><br />
+
+      //           Your reference number is <b>' . $ref . '</b>.<br />
+      //           ' . $feedbackLink . '
+      //           <b>This is an auto-generated Email. Doesn’t support replies and calls.</b>
+      //       </p>';
+
+      $bodyProvider = array(
+        'body' => view('send-request-loa-hospital', [
+          'hospital_name' => $hospital->name,
+          'statusRemarks' => $statusRemarksProvider,
+          'is_accept_eloa' => $accept_eloa,
+          'ref' => $ref,
+          'feedbackLink' => $feedbackLink,
+        ]),
+        'attachment' => $attachment
+      );
+
+      $bodyPatient = array(
+        'body' => view('send-request-loa-patient', [
+          'name' => $name,
+          'dependent' => $dependent,
+          'statusRemarks' => $statusRemarks,
+          'is_accept_eloa' => $accept_eloa,
+          'ref' => $ref,
+          'feedbackLink' => $feedbackLink,
+        ]),
+        'attachment' => $attachment
+      );
+
+      switch (GetActiveEmailProvider::getProvider()) {
+        case 'infobip':
+          $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $bodyProvider);
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $bodyPatient);
+          }
+          break;
+
+        default:
+          $mail = (new NotificationController)->NewMail($name, $email, $bodyProvider);
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->NewMail($name, $altEmail, $bodyPatient);
+          }
+          break;
+      }
+
+      // if ($is_send_to_provider == 1 && !empty($provider_email2)) {
+      // $emailer = new SendingEmail(email: $provider_email2, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
+      // $emailer->send();
+      // $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $provider_email2, $body);
+      // }
+    }
+
+    if (!empty($contact)) {
+      if ($data['status'] === 3) {
+
+        if(isset($provider_portal->notification_sms) || $provider_portal->notification_sms != 'undefined'){
+            $smsProvider = 'Hi ' . $hospital->name . '\n\n' . 'LOA request for ' . ($dependent == null ? $name : $dependent) . ' is approved. You may now print LOA and issue to the patient. \n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.'   ;
+            $smsProvider = (new NotificationController)->SmsNotification($provider_portal->notification_sms, $smsProvider);
+
+        }
+
+
+
+        if($accept_eloa){
+            // $sms =
+            // 'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference
+            // number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+
+            $sms =
+            'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request is approved. You may now notify the ' . $hospital->name . ' that it was already sent to their email. Alternatively, we also sent you a copy and you may forward it to the clinic/hospital email.' . '\n\n' .'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+        }else{
+            $sms =
+            // 'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request has been approved. Your LOA Number is ' . $data['loa_number'] . '. \n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+
+            $sms =
+            'From Lacson & Lacson:\n\nHi '. $name . ''. ($dependent !== null ? " and $dependent" : "") .',\n\nYour LOA request is approved. You may now notify the ' . $hospital->name . ' that it was already sent to their email. Alternatively, we also sent you a copy and you may forward it to the clinic/hospital email.' . '\n\n' .'Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: ' . $ref . '\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.' ;
+
+        }
+        // $sms =
+        //   "From Lacson & Lacson:\n\nHi $name,\n\nYour LOA request is approved, Please print a copy LOA and present to the accredited provider upon availment.\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number: $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+
+      } else {
+        $sms =
+          "From Lacson & Lacson:\n\nHi $name" . ($dependent !== null ? " and $dependent" : "") .",\n\nYour LOA request is disapproved with remarks: $remarks\n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.\n\nYour reference number is $ref\n\nThis is an auto-generated SMS. Doesn’t support replies and calls.";
+      }
+      $sms = (new NotificationController)->SmsNotification($contact, $sms);
+
+
+    }
   }
 
   private function sendNotification($data, $name, $email, $altEmail, $contact, $dependent, $providerID)
