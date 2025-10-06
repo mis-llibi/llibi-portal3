@@ -410,13 +410,10 @@ const RequestForLoaLaboratory = ({ refno, loatype }) => {
             </li>
 
             {/* Mobile Number */}
-            <li>
+            {/* <li>
               <Label htmlFor="contact" className="text-blue-500 text-bold mb-2">
                 We can also notify you thru SMS (Approval / Disapproval, LOA
                 Number, Approval code){' '}
-                {/* <span className="text-orange-800">
-                                    *Optional
-                                </span> */}
               </Label>
               <div className="w-full border-b-2 border-dotted mb-2"></div>
               <div className="mb-3 md:w-3/6">
@@ -429,7 +426,7 @@ const RequestForLoaLaboratory = ({ refno, loatype }) => {
                   errors={errors?.contact}
                 />
               </div>
-            </li>
+            </li> */}
           </ol>
 
           <div className="w-full text-center grid gap-2 grid-cols-2">
