@@ -18,10 +18,12 @@ class NotificationController extends Controller
 
     $parameters = array(
       'auth' => array('username' => "root", 'password' => "LACSONSMS"), //Your API KEY
-      'provider' => "SIMNETWORK2",
+      'provider' => "SIMNETWORK",
       'number' => $mobile,
       'content' => $message,
     );
+    Log::info($mobile);
+    Log::info($message);
 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     //Send the parameters set above with the request
@@ -30,6 +32,8 @@ class NotificationController extends Controller
     // Receive response from server
     $output = curl_exec($ch);
     curl_close($ch);
+
+    Log::info($output);
 
     //print_r(json_decode($output));
     //Show the server response

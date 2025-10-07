@@ -324,7 +324,7 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
             </li>
 
             {/* Mobile Number */}
-            {/* <li>
+            <li>
               <Label htmlFor="contact" className="text-blue-500 text-bold mb-2">
                 We can also notify you thru SMS (Approval / Disapproval, LOA
                 Number, Approval code){' '}
@@ -340,7 +340,7 @@ const RequestForLoaConsultation = ({ refno, loatype }) => {
                   errors={errors?.contact}
                 />
               </div>
-            </li> */}
+            </li>
           </ol>
 
           <div className="w-full text-center grid gap-2 grid-cols-2">
