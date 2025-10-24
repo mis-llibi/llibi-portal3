@@ -7,6 +7,7 @@ const Modal = ({ show, body, toggle }) => {
         } else {
             document.body.style.overflow = 'unset'
         }
+    // console.log(body)
 
     return (
         <>

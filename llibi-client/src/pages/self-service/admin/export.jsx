@@ -27,7 +27,7 @@ export default function Export({ exporting, previewExport, setLoading }) {
     setLoading(true)
     const previewData = await previewExport(dateFrom, dateTo)
     setBody({
-      title: 'Preview Export',
+      title: 'Preview Export (Use ctrl + F to search keywords)',
       content: <PreviewTable previewData={previewData} />,
       //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
       modalOuterContainer: 'w-[90%] h-2/3',

@@ -41,6 +41,7 @@ import Link from 'next/link'
 import { CustomPusher } from '@/lib/pusher'
 
 import { FaXmark } from "react-icons/fa6";
+import ApprovalForm from './approvalForm'
 
 const Admin = () => {
   const router = useRouter()
@@ -215,40 +216,40 @@ const Admin = () => {
   }
 
   // https://championcr.com/topic/enable-auto-play/
-  useEffect(() => {
-    const playVideo = async () => {
-      try {
-        if (videoRef.current) {
-          if (clients?.length > 0) {
-            if (searchStatus === 2 || searchStatus === undefined) {
-              Swal.fire({
-                title: 'NEW CLAIMS REQUEST',
-                text: '',
-                icon: 'warning',
-                showCancelButton: false,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'OKAY',
-              }).then(result => {
-                if (result.isConfirmed) {
-                  videoRef.current.muted = true
-                  videoRef.current.pause()
-                }
-              })
-              videoRef.current.muted = false // Unmute
-              videoRef.current.autoPlay = true
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Autoplay was prevented:', err)
-      }
-    }
+//   useEffect(() => {
+//     const playVideo = async () => {
+//       try {
+//         if (videoRef.current) {
+//           if (clients?.length > 0) {
+//             if (searchStatus === 2 || searchStatus === undefined) {
+//               Swal.fire({
+//                 title: 'NEW CLAIMS REQUEST',
+//                 text: '',
+//                 icon: 'warning',
+//                 showCancelButton: false,
+//                 confirmButtonColor: '#3085d6',
+//                 cancelButtonColor: '#d33',
+//                 confirmButtonText: 'OKAY',
+//               }).then(result => {
+//                 if (result.isConfirmed) {
+//                   videoRef.current.muted = true
+//                   videoRef.current.pause()
+//                 }
+//               })
+//               videoRef.current.muted = false // Unmute
+//               videoRef.current.autoPlay = true
+//             }
+//           }
+//         }
+//       } catch (err) {
+//         console.error('Autoplay was prevented:', err)
+//       }
+//     }
 
-    if (process.env.NODE_ENV === 'production') {
-      playVideo()
-    }
-  }, [clients])
+//     if (process.env.NODE_ENV === 'production') {
+//       playVideo()
+//     }
+//   }, [clients])
 
   useEffect(() => {
     if (user && user?.email === 'mailynramos@llibi.com') {
@@ -261,26 +262,26 @@ const Admin = () => {
     }
   }, [user?.email])
 
-  useEffect(() => {
-    const channel = CustomPusher.subscribe('channel-realtime')
-    channel.bind('realtime-notification-event', data => {
-      const { message, date_created } = data.data
+//   useEffect(() => {
+//     const channel = CustomPusher.subscribe('channel-realtime')
+//     channel.bind('realtime-notification-event', data => {
+//       const { message, date_created } = data.data
 
-      // setMessages(prevMessages => [...prevMessages, { message, date_created }])
+//       // setMessages(prevMessages => [...prevMessages, { message, date_created }])
 
-      Swal.fire({
-        title: 'Good day!',
-        text: message,
-        icon: 'info',
-      })
-      console.log(message, date_created)
-    })
+//       Swal.fire({
+//         title: 'Good day!',
+//         text: message,
+//         icon: 'info',
+//       })
+//       console.log(message, date_created)
+//     })
 
-    return () => {
-      channel.unbind_all()
-      channel.unsubscribe()
-    }
-  }, [])
+//     return () => {
+//       channel.unbind_all()
+//       channel.unsubscribe()
+//     }
+//   }, [])
 
   const showCallbackModal = async(row, i) => {
 
@@ -405,15 +406,38 @@ const Admin = () => {
     }
   }
 
+  const viewProviderApproval = async(row) => {
+    try {
+      const reponse = await viewBy(row, 'view')
+      // console.log(reponse);
+      // return;
+
+      if (!reponse.status) return
+
+      setBody({
+        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        content: <ApprovalForm setRequest={setRequest} row={row} />,
+        //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
+        modalOuterContainer: 'w-full h-full',
+        //modalContainer: '',
+        modalContainer: 'h-full',
+        modalBody: 'h-full overflow-y-scroll',
+      })
+      toggle()
+    } catch (error) {
+      throw error
+    }
+  }
+
 
   return (
     <ProviderLayout>
       <Head>
         <title>LLIBI PORTAL - ADMIN</title>
       </Head>
-      <video ref={videoRef} controls autoPlay muted className="hidden">
+      {/* <video ref={videoRef} controls autoPlay muted className="hidden">
         <source src="/thepurge.mp3" type="audio/mpeg" />
-      </video>
+      </video> */}
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
           {/* Main form white background */}
@@ -651,6 +675,8 @@ const Admin = () => {
                                     ? view(row)
                                     : row.isDependent === null && row.memberID === null
                                     ? showCallbackModalProvider(row, i)
+                                    : row.loaType === "approval" && row.platform == "provider"
+                                    ? viewProviderApproval(row)
                                     : showCallbackModal(row, i)
                                   }}>
                                   VIEW

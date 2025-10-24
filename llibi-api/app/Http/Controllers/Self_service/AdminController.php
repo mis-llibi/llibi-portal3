@@ -18,7 +18,7 @@ use App\Models\Self_service\Procedure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-
+use App\Models\ApprovalCodeGenerator;
 use mikehaertl\pdftk\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SelfService\AdminExport;
@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 use App\Models\ProviderPortal;
+use App\Models\Self_service\EnumerateProcedure;
 
 class AdminController extends Controller
 {
@@ -70,6 +71,7 @@ class AdminController extends Controller
             't1.dependent_last_name as depLastName',
             't1.dependent_dob as depDob',
             't1.remarks as remarks',
+            't1.provider_remarks as provider_remarks',
             't1.status as status',
             't1.opt_landline as opt_landline',
             't1.callback_remarks as callback_remarks',
@@ -104,7 +106,9 @@ class AdminController extends Controller
             't3.second_attempt_date',
             't3.third_attempt_date',
             't3.created_at as callback_created_at',
-            't3.updated_at as callback_updated_at'
+            't3.updated_at as callback_updated_at',
+            't2.type_approval_code',
+            't2.approval_code_loanumber',
         )
         ->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
@@ -385,14 +389,6 @@ public function UpdateRequest(Request $request)
   $allClient = $this->SearchRequest(0, 2);
 
   $hospital_emails = [];
-  // if ($request->hospital_email1 != 'null') {
-  // array_push($hospital_emails, $request->hospital_email1);
-  // array_push($hospital_emails, 'testllibi1@yopmail.com');
-  // }
-  // if ($request->hospital_email2 != 'null') {
-  // array_push($hospital_emails, $request->hospital_email2);
-  // array_push($hospital_emails, 'testllibi2@yopmail.com');
-  // }
 
   //SendNotification
   $dataSend = [
@@ -439,6 +435,139 @@ public function UpdateRequest(Request $request)
 
   return array('client' => $client, 'all' => $allClient);
 }
+
+public function UpdateRequestApproval(Request $request){
+
+    $updatedProcedures = $request->updatedProcedures;
+    $user_id = request()->user()->id;
+
+    $status = (int)$request->status;
+
+    $arr = [
+        'status' => $status,
+        'remarks' => ($status === 4 && isset($request->disapproveRemarks) ? strtoupper($request->disapproveRemarks) : ''),
+        'user_id' => $user_id,
+        'approved_date' => $status === 3 ? Carbon::now() : null
+    ];
+
+    $client = Client::where('id', $request->id)->update($arr);
+
+    $update = [];
+
+    if((int)$request->status == 4){
+        $update = [
+            'loa_status' => $status === 4 ? "Denied" : null
+        ];
+        ClientRequest::where('client_id', $request->id)->update($update);
+
+        if(count($updatedProcedures) > 0){
+
+            foreach($updatedProcedures as $procedures){
+
+                $updateEnumerate = [
+                    'cost' => 0,
+                    'status' => "DENIED"
+                ];
+                EnumerateProcedure::where('request_id', $request->id)
+                                    ->where('id', $procedures['id'])
+                                    ->update($updateEnumerate);
+            }
+
+        }else{
+            return response()->json([
+                'message' => 'Procedures must be updated'
+            ], 422);
+        }
+    }
+
+    if((int) $request->status == 3){
+
+        $findProviderIdClientRequest = ClientRequest::where('client_id', $request->id)->first();
+        $findProvider = Hospitals::find($findProviderIdClientRequest->provider_id);
+        $generatedApprovalCode = $this->generate($findProvider->hosp_code);
+        $update = [
+            // 'loa_attachment' => "APPROVAL CODE",
+            'approval_code' => $generatedApprovalCode,
+            'loa_status' => $status === 3 ? "Approved" : null,
+        ];
+
+        ClientRequest::where('client_id', $request->id)->update($update);
+
+        if(count($updatedProcedures) > 0){
+
+            foreach($updatedProcedures as $procedures){
+
+                $updateEnumerate = [
+                    'cost' => $procedures['status'] == 'DENIED' ? 0 : (float)$procedures['cost'],
+                    'status' => $procedures['status']
+                ];
+                EnumerateProcedure::where('request_id', $request->id)
+                                    ->where('id', $procedures['id'])
+                                    ->update($updateEnumerate);
+            }
+
+        }else{
+            return response()->json([
+                'message' => 'Procedures must be updated'
+            ], 422);
+        }
+    }
+
+    $client = $this->SearchRequest(0, ['val' => $request->id]);
+    $allClient = $this->SearchRequest(0, 2);
+
+    $hospital_emails = [];
+
+    $dataSend = [
+        'refno' => $client[0]->refno,
+        'remarks' => $request->disapproveRemarks,
+        'status' => $status,
+        'hospital_email' => $hospital_emails,
+        'provider_email2' => $client[0]->provider_email2,
+        'is_send_to_provider' => $client[0]->is_send_to_provider,
+        'company_code' => $client[0]->company_code,
+        'member_id' => $client[0]->memberID,
+        'request_id' => $client[0]->id,
+        'email_format_type' => $request->email_format_type
+    ];
+
+
+    $this->sendNotificationApprovalCode(
+            array_merge($dataSend, $update),
+            $client[0]->firstName . ' ' . $client[0]->lastName,
+            $client[0]->email,
+            $client[0]->altEmail,
+            $client[0]->contact,
+            $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+            $client[0]->providerID
+    );
+
+  return array('client' => $client, 'all' => $allClient);
+
+}
+
+    public function generate(string $hospitalCode): string
+    {
+        $date = now()->format('mdy'); // mmddyy format
+        return DB::transaction(function () use ($hospitalCode, $date) {
+            // Get or create record for today + hospital
+            $record = ApprovalCodeGenerator::firstOrCreate(
+                [
+                    'hospital_code' => $hospitalCode,
+                    'date' => $date,
+                ],
+                ['count' => 0]
+            );
+            // Increment counter
+            $record->increment('count');
+            // Pad count (example: 01, 02, 03...)
+            $sequence = str_pad($record->count, 2, '0', STR_PAD_LEFT);
+            // Log for debugging
+            Log::info("Generated Approval Code: LLIBI{$hospitalCode}{$date}{$sequence}");
+            // Return code
+            return "LLIBI{$hospitalCode}{$date}{$sequence}";
+        });
+    }
 
   private function encryptPdf($path, $password)
   {
@@ -685,7 +814,112 @@ public function UpdateRequest(Request $request)
     }
   }
 
+  private function sendNotificationApprovalCode($data, $name, $email, $altEmail, $contact, $dependent, $providerID){
+    $hospital = Hospitals::where('id', $providerID)->first();
+    $accept_eloa = $hospital->accept_eloa;
+
+    $provider_portal = ProviderPortal::where('provider_id', $providerID)
+                                    ->where('user_type', 'Hospital')
+                                    ->first();
+
+
+    // Log::info($hospital->accept_eloa);
+    // Log::info(asset('images/infographics-eloa.jpg'));
+
+
+    $name = ucwords(strtolower($name));
+    $dependent = $dependent === null ? null : ucwords(strtolower($dependent));
+    $remarks = $data['remarks'];
+    $ref = $data['refno'];
+    // $provider_email2 = $data['provider_email2'];
+    $provider_email2 = 'testllibi1@yopmail.com';
+    $is_send_to_provider = $data['is_send_to_provider'];
+    $company_code = $data['company_code'];
+    $member_id = $data['member_id'];
+    $request_id = $data['request_id'];
+
+    $loanumber = (!empty($data['loa_number']) ? $data['loa_number'] : '');
+    $approvalcode = (!empty($data['approval_code']) ? $data['approval_code'] : '');
+
+    if (!empty($email)) {
+
+      //$numbers = $data['status'] === 3 ? "LOA #: <b>$loanumber</b> <br /> Approval Code: <b>$approvalcode</b>" : ''; <br /><br /> Password to LOA is requestor birth date: <b style="color:red;">YYYYMMDD i.e., 19500312</b>
+
+      $homepage = env('FRONTEND_URL');
+      $feedbackLink = '
+        <div>
+          We value your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+            Please click here
+          </a>
+        </div>
+        <div>
+          <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
+          <img src="' . env('APP_URL', 'https://portal.llibi.app') . '/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
+          </a>
+        </div>
+      <br /><br />';
+
+      if ($data['status'] === 3) {
+
+        $statusRemarks = 'Your Approval Code request has been approved.';
+
+
+        // if($accept_eloa){
+        //     $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'You may print a copy of your LOA and present it to the accredited provider upon availment or you may present your (1) ER card or (2) LOA number together with any valid government ID as this provider now accepts e-LOA';
+        // }else{
+        //     $statusRemarks = 'Your LOA request has been approved. Your LOA Number is ' . '<b>'. $data['loa_number'] . '</b>' . '. '. '<br /><br />' .'Please print a copy of your LOA and present it to the accredited provider upon availment.';
+        // }
+
+
+      } else {
+        $statusRemarks = 'Your Approval Code request is <b>disapproved</b> with remarks: ' . $remarks;
+        $feedbackLink = '';
+      }
+
+
+      $body = array(
+        'body' => view('send-request-loa', [
+          'name' => $name,
+          'dependent' => $dependent,
+          'statusRemarks' => $statusRemarks,
+          'is_accept_eloa' => $accept_eloa,
+          'ref' => $ref,
+          'feedbackLink' => $feedbackLink,
+        ]),
+      );
+
+      switch (GetActiveEmailProvider::getProvider()) {
+        case 'infobip':
+          $mail = (new NotificationController)->EncryptedPDFMailNotification($name, $email, $body);
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $altEmail, $body);
+          }
+          break;
+
+        default:
+          $mail = (new NotificationController)->NewMail($name, $email, $body);
+          if (!empty($altEmail)) {
+            $altMail = (new NotificationController)->NewMail($name, $altEmail, $body);
+          }
+          break;
+      }
+
+      // if ($is_send_to_provider == 1 && !empty($provider_email2)) {
+      // $emailer = new SendingEmail(email: $provider_email2, body: $mailMsg, subject: 'CLIENT CARE PORTAL - NOTIFICATION', attachments: $attachment);
+      // $emailer->send();
+      // $altMail = (new NotificationController)->EncryptedPDFMailNotification($name, $provider_email2, $body);
+      // }
+    }
+
+    if(isset($provider_portal->notification_sms) || $provider_portal->notification_sms != 'undefined'){
+        $smsProvider = 'Hi ' . $hospital->name . '\n\n' . 'Approval Code Request for ' . ($dependent == null ? $name : $dependent) . ' is approved. You may now print LOA and issue to the patient. \n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.'   ;
+        $smsProvider = (new NotificationController)->SmsNotification($provider_portal->notification_sms, $smsProvider);
+    }
+  }
+
   private function sendNotification($data, $name, $email, $altEmail, $contact, $dependent, $providerID)
+
+
   {
 
 

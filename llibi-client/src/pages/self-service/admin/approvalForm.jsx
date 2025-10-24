@@ -3,7 +3,6 @@ import React from 'react'
 import Label from '@/components/Label'
 import Input from '@/components/Input'
 import Select from '@/components/Select'
-import InputFile from '@/components/InputFile'
 import Button from '@/components/Button'
 import ButtonText from '@/components/ButtonText'
 
@@ -16,14 +15,15 @@ import Swal from 'sweetalert2'
 import { basePath } from '@/../next.config'
 
 import { ManageEnumerateLaboratory } from '@/hooks/self-service/ManageEnumerateLaboratory'
+import EditableProcedureRow from './editableProcedureRow'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
 
-export default function ProcedureForm ({ setRequest, row }) {
-  const { procedure } = ManageEnumerateLaboratory({ id: row?.id })
+export default function ApprovalForm ({ setRequest, row }){
+  const { procedure, mutate } = ManageEnumerateLaboratory({ id: row?.id })
 
-  console.log(procedure)
+//   console.log(row)
 
 
   const {
@@ -37,18 +37,54 @@ export default function ProcedureForm ({ setRequest, row }) {
 
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(row)
+  const [getUpdatedProcedures, setGetUpdatedProcedures] = useState([])
 
   const attachLOA = watch("attachLOA");
 
-  const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
+  const { updateRequestApproval, viewBy } = useAdmin({ name: '', status: '' })
 
   const submitForm = data => {
+
+    if(getUpdatedProcedures.length == 0 && data.status == "3"){
+        Swal.fire({
+            title: "Set status",
+            text: "Set Status of Procedures",
+            icon: "warning"
+        })
+        return
+    }
+
+    const isHavePending = getUpdatedProcedures.some((val) => val.status == "PENDING")
+    if(isHavePending && data.status == "3"){
+        Swal.fire({
+            title: "Set status",
+            text: "Set Status of Procedures",
+            icon: "warning"
+        })
+        return
+    }
+
+    const isAllProcedureDeniedAndApproveStatus = getUpdatedProcedures.filter((val) => val.status === "DENIED")
+
+    if(data.status === "3" && (isAllProcedureDeniedAndApproveStatus.length === getUpdatedProcedures.length)){
+        Swal.fire({
+            title: "Status",
+            text: "The status must be deny approval code",
+            icon: "warning"
+        })
+        return
+    }
+
     const dataMerge = {
       ...data,
+      updatedProcedures: getUpdatedProcedures,
       hospital_email1: row?.email1,
       hospital_email2: row?.email2,
-      email_format_type: 'consultation',
+      email_format_type: 'approval',
     }
+
+
+
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this",
@@ -60,7 +96,7 @@ export default function ProcedureForm ({ setRequest, row }) {
     }).then(result => {
       if (result.isConfirmed) {
         setLoading(true)
-        updateRequest({ setRequest, setClient, setLoading, ...dataMerge })
+        updateRequestApproval({ setRequest, setClient, setLoading, ...dataMerge })
       }
     })
   }
@@ -297,7 +333,7 @@ export default function ProcedureForm ({ setRequest, row }) {
                     className="w-4 h-4"
                   />{' '}
                   <Label htmlFor="approve" className="text-md text-green-800">
-                    APPROVE REQUEST FOR LOA
+                    ISSUE APPROVAL CODE
                   </Label>
                 </div>
                 <div className="basis-1/2 flex gap-2 items-center">
@@ -311,7 +347,7 @@ export default function ProcedureForm ({ setRequest, row }) {
                     className="w-4 h-4"
                   />{' '}
                   <Label htmlFor="disapprove" className="text-md text-red-500">
-                    DISAPPROVE REQUEST FOR LOA
+                    DENY APPROVAL CODE
                   </Label>
                 </div>
               </div>
@@ -402,7 +438,7 @@ export default function ProcedureForm ({ setRequest, row }) {
             </div>
 
             {/* APPROVE BOX */}
-            <div
+            {/* <div
               className={`relative p-2 ${watch('status') !== '3' && 'hidden'}`}>
               <div className="">
                 <Label htmlFor="attachLOA" className="text-bold text-md">
@@ -432,39 +468,16 @@ export default function ProcedureForm ({ setRequest, row }) {
                   placeholder="LOA Number"
                   errors={errors?.loaNumber}
                 />
-              </div>
-
-              {/*
-                                <div className="mb-3 border-b-2 border-dotted pb-1">
-                                    <Label className="text-bold text-md">
-                                        APPROVAL CODE:
-                                    </Label>
-                                    <Input
-                                        id="approvalCode"
-                                        register={{
-                                            ...register('approvalCode', {
-                                                required:
-                                                    watch('status') === '3' &&
-                                                    'Approval is required',
-                                            }),
-                                        }}
-                                        disabled={
-                                            watch('status') === '3' ? false : true
-                                        }
-                                        placeholder="Approval Code"
-                                        errors={errors?.approvalCode}
-                                    />
-                                </div>
-                            */}
+              </div> */}
 
               {/* Backdrop form */}
-              <div
+              {/* <div
                 className={`absolute inset-0 flex justify-center items-center z-10 bg-black/30 backdrop-blur-sm rounded-md ${
                   watch('status') === '3' && 'hidden'
                 }`}>
                 <span className="text-white font-semibold"></span>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
 
             {/* DISAPPROVE BOX */}
             <div
@@ -634,6 +647,28 @@ export default function ProcedureForm ({ setRequest, row }) {
                 </span>
               </Label>
             </div>
+            <div
+              className={`mb-3 border-b-2 border-dotted ${
+                !client?.isDependent && '#hidden'
+              }`}>
+              <Label className="text-bold text-md">
+                TYPE OF APPROVAL CODE:{' '}
+                <span className={`text-blue-500`}>
+                  {client?.type_approval_code.toUpperCase()} APPROVAL CODE
+                </span>
+              </Label>
+            </div>
+            <div
+              className={`mb-3 border-b-2 border-dotted ${
+                !client?.isDependent && '#hidden'
+              } ${client?.type_approval_code == 'ercase' && 'hidden'} `}>
+              <Label className="text-bold text-md">
+                LOA NUMBER:{' '}
+                <span className={`text-blue-500`}>
+                  {client?.approval_code_loanumber?.toUpperCase()}
+                </span>
+              </Label>
+            </div>
           </div>
 
           {/* CONSULTATION: Assessment Form */}
@@ -704,39 +739,42 @@ export default function ProcedureForm ({ setRequest, row }) {
                 )}
               </div> */}
 
-                <div className="w-full overflow-x-auto rounded-lg shadow">
-                    <table className="min-w-full border-collapse">
-                        <thead>
-                        <tr className="bg-[#1E3161] text-white">
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Procedure Name</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Cost</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {procedure?.procedures.map((row, i) => (
-                            <tr
-                            key={i}
-                            className="border-b hover:bg-blue-50 transition-colors"
-                            >
-                            <td className="px-4 py-3 text-sm font-medium text-gray-700 break-words">
-                                {row.procedure_name}
-                            </td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-700 break-words">
-                                {row.cost}
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                        <tfoot>
-                        <tr className="bg-gray-100 font-semibold">
-                            <td className="px-4 py-3 text-sm text-gray-800">Total</td>
-                            <td className="px-4 py-3 text-sm text-gray-800">
-                            {procedure?.procedures.reduce((sum, row) => sum + Number(row.cost || 0), 0)}
-                            </td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
+            <div className="w-full overflow-x-auto rounded-lg shadow mt-3">
+                <table className="min-w-full border-collapse">
+                    <thead>
+                    <tr className="bg-[#1E3161] text-white">
+                        <th className="px-4 py-3 text-left text-sm font-semibold">Procedure Name</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">Cost</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                        <th className={`px-4 py-3 text-left text-sm font-semibold ${(client?.status === 3 || client?.status === 4) && "hidden"}  `}>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {procedure?.procedures.map((item, i) => (
+                        <EditableProcedureRow
+                        key={i}
+                        index={i}
+                        item={item}
+                        procedure={procedure}
+                        mutate={mutate}
+                        setGetUpdatedProcedures={setGetUpdatedProcedures}
+
+                        />
+                    ))}
+                    </tbody>
+                    <tfoot>
+                    <tr className="bg-gray-100 font-semibold">
+                        <td className="px-4 py-3 text-sm text-gray-800">Total</td>
+                        <td className="px-4 py-3 text-sm text-gray-800">
+                        {procedure?.procedures.reduce((sum, row) => sum + Number(row.cost || 0), 0)}
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
 
             </div>
           </div>

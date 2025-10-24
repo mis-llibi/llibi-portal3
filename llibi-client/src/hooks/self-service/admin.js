@@ -136,6 +136,44 @@ export const useAdmin = ({ name, status }) => {
     }
   }
 
+  const updateRequestApproval = async({
+    setRequest,
+    setClient,
+    setLoading,
+    ...props
+  }) => {
+
+    let runfinally = true
+
+    await csrf()
+
+    try {
+        const response = await axios.post(`/self-service/admin-update-request-approval`, props)
+        mutate()
+        console.log(response)
+        const result = response.data
+        Swal.fire({
+            title: 'Updated',
+            text: `Your have successfully updated the request for LOA`,
+            icon: 'success',
+          })
+          setRequest(result?.all)
+          setClient(result?.client[0])
+          setLoading(false)
+    } catch (error) {
+        // const nerror = error?.response?.data?.message
+        console.log(error)
+        // swaerror('Update Failed', error)
+        Swal.fire({
+            title: 'Update Failed',
+            text: `${error}`,
+            icon: 'error',
+          })
+        runfinally = false
+        setLoading(false)
+    }
+  }
+
   const exporting = async (from, to) => {
     await csrf()
 
@@ -324,6 +362,7 @@ export const useAdmin = ({ name, status }) => {
     clients,
     searchRequest,
     updateRequest,
+    updateRequestApproval,
     exporting,
     viewBy,
     settings,

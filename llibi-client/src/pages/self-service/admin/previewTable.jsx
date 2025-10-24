@@ -21,6 +21,12 @@ export default function PreviewTable({ previewData }) {
               APPROVED BY
             </th>
             <th className="border border-gray-300 p-2 text-left">
+              EMAIL
+            </th>
+            <th className="border border-gray-300 p-2 text-left">
+              CONTACT #
+            </th>
+            <th className="border border-gray-300 p-2 text-left">
               APPROVED DATE
             </th>
             <th className="border border-gray-300 p-2 text-left">
@@ -56,6 +62,12 @@ export default function PreviewTable({ previewData }) {
                 <td className="border border-gray-300 p-2">{row.createdAt}</td>
                 <td className="border border-gray-300 p-2">
                   {row.approved_by_last_name}, {row.approved_by_first_name}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {row.email} {"\n"} {row.altEmail}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {row.contact}
                 </td>
                 <td className="border border-gray-300 p-2">
                   {row.approved_date}
