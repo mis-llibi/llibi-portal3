@@ -24,7 +24,7 @@ export default function ProcedureForm ({ setRequest, row }) {
   const { procedure } = ManageEnumerateLaboratory({ id: row?.id })
 
   console.log(procedure)
-
+  console.log(row)
 
   const {
     handleSubmit,
@@ -655,7 +655,7 @@ export default function ProcedureForm ({ setRequest, row }) {
 
           {/* LABORATORY: Assessment Form */}
           <div
-            className={`mb-5 ${client?.loaType !== 'laboratory' || client?.loaType !== 'approval' && 'hidden'}`}>
+            className={`mb-5`}>
             <h2 className="text-xl mb-2 w-full text-center">
               HEALTH ASSESSMENT (LABORATORY)
             </h2>
