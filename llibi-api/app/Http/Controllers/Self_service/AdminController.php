@@ -912,7 +912,13 @@ public function UpdateRequestApproval(Request $request){
     }
 
     if(isset($provider_portal->notification_sms) || $provider_portal->notification_sms != 'undefined'){
-        $smsProvider = 'Hi ' . $hospital->name . '\n\n' . 'Approval Code Request for ' . ($dependent == null ? $name : $dependent) . ' is approved. You may now print LOA and issue to the patient. \n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.'   ;
+
+        if($data['status'] === 3){
+            $smsProvider = 'Hi ' . $hospital->name . '\n\n' . 'Approval Code Request for ' . ($dependent == null ? $name : $dependent) . ' is approved. You may now print LOA and issue to the patient. \n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.';
+        }else{
+            $smsProvider = 'Hi ' . $hospital->name . '\n\n' . 'Approval Code Request for ' . ($dependent == null ? $name : $dependent) . ' is disapproved with remarks: '.$remarks.'. \n\nFor further inquiry and assistance, feel free to contact us through our 24/7 Client Care Hotline.';
+        }
+
         $smsProvider = (new NotificationController)->SmsNotification($provider_portal->notification_sms, $smsProvider);
     }
   }
