@@ -521,6 +521,12 @@ const Admin = () => {
                         target="_blank">
                         Search to masterlist
                       </a>
+                      <a
+                        className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs"
+                        href="/manage-complaint"
+                        target="_blank">
+                        Complaints Management
+                      </a>
                     </>
                   )}
                   <a
@@ -592,6 +598,9 @@ const Admin = () => {
                       Status
                     </th>
                     <th className="border border-gray-300 p-2 text-left">
+                      Remaining
+                    </th>
+                    <th className="border border-gray-300 p-2 text-left">
                       D/T Created
                     </th>
                     <th className="border border-gray-300 p-2 text-center">
@@ -644,6 +653,19 @@ const Admin = () => {
                                 {row.status === 7 && 'Approved Callback'}
                                 {row.status === 9 && 'Pending Callback'}
                                 {row.status === 10 && 'Failed Callback'}
+                                {"\n"}
+                                <span>
+
+                                    {row?.remaining >= 1 && row?.is_complaint_has_approved == 1 && row.is_excluded == 1 ? "(Possible Exclusion)":
+                                    row?.remaining >= 1 && row?.is_complaint_has_approved == 1 && row?.is_excluded == 0 ? "(System Approved)"  :
+                                    row?.is_complaint_has_approved == 1 && row.is_excluded == 1 ? "(System Disapproved)" :
+                                    row?.is_complaint_has_approved == 1 ? "(System Disapproved)" :
+                                    ""
+                                    }
+                                </span>
+                              </td>
+                              <td className='border border-gray-300 p-2'>
+                                {row.remaining}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {row.createdAt}

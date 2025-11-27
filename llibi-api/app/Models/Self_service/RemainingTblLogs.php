@@ -5,14 +5,13 @@ namespace App\Models\Self_service;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Complaints extends Model
+class RemainingTblLogs extends Model
 {
     use HasFactory;
 
-    protected $table = 'app_portal_complaints';
+    protected $table = 'remaining_tbl_logs';
 
     protected $fillable = [
-        'title',
-        'is_status'
+        'member_id',
     ];
 }

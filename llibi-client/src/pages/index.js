@@ -6,10 +6,10 @@ import { useRouter } from 'next/router'
 
 const client = () => {
 
-    // const router = useRouter()
-    // useEffect(() => {
-    //     router.push("https://clientcare-client.vercel.app/")
-    // }, [])
+    const router = useRouter()
+    useEffect(() => {
+        router.push("https://clientcare-client.vercel.app/")
+    }, [])
 
 
     return <Client />

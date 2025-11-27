@@ -216,5 +216,11 @@ Route::get('show-all-loa-client', [TryApiController::class, 'showLoaClient']);
 Route::post('show-loa-client', [TryApiController::class, 'showNoLoaClient']);
 Route::get('show-all-hospitals', [TryApiController::class, 'hospitals']);
 
+
+Route::get('/self-service/get-complaints/{status}', [ComplaintController::class, 'getComplaint']);
+Route::put('/self-service/approve-complaint', [ComplaintController::class, 'approveComplaint']);
+Route::delete('/self-service/delete-complaint', [ComplaintController::class, 'deleteComplaint']);
+Route::put('/self-service/edit-complaint', [ComplaintController::class, 'editComplaint']);
+
 require __DIR__ . '/test-route.php';
 require __DIR__ . '/byron.php';

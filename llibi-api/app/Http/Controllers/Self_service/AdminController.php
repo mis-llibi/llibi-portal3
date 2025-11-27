@@ -31,6 +31,8 @@ use Illuminate\Support\Str;
 
 use App\Models\ProviderPortal;
 use App\Models\Self_service\EnumerateProcedure;
+use App\Models\Self_service\RemainingTbl;
+use App\Models\Self_service\RemainingTblLogs;
 
 class AdminController extends Controller
 {
@@ -77,6 +79,8 @@ class AdminController extends Controller
             't1.callback_remarks as callback_remarks',
             't1.landline as landline',
             't1.opt_contact as opt_contact',
+            't1.remaining as remaining',
+            't1.is_complaint_has_approved as is_complaint_has_approved',
             't2.loa_type as loaType',
             't2.loa_number as loaNumber',
             't2.approval_code as approvalCode',
@@ -93,6 +97,7 @@ class AdminController extends Controller
             't2.doctor_name as doctorName',
             't2.diagnosis as diagnosis',
             't2.provider_procedure_type as procedure_type',
+            't2.is_excluded as is_excluded',
             't1.approved_date',
             DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
             DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
@@ -374,6 +379,27 @@ public function UpdateRequest(Request $request)
     $updateRequest = ClientRequest::where('client_id', $request->id)
       ->update($update);
 
+    // Check the complaints if existing in database and make it approve if status is pending
+    $getComplaints = ClientRequest::where('client_id', $request->id)->first();
+    $splitComplaints = explode(', ', $getComplaints->complaint);
+
+
+    $this->ComplaintChecker($splitComplaints);
+    $remaining = RemainingTbl::where('uniquecode', $getComplaints->member_id)->first();
+    if (!$remaining) {
+        // Check if member exists in logs, if not add it
+        RemainingTblLogs::firstOrCreate([
+            'member_id' => $getComplaints->member_id
+        ]);
+    } else {
+        // Decrement only if allow is greater than 0
+        if ($remaining->allow > 0) {
+            RemainingTbl::where('uniquecode', $getComplaints->member_id)
+                ->where('allow', '>', 0)
+                ->decrement('allow');
+        }
+    }
+
     if ($client[0]->isDependent == 1) {
       $password = date('Ymd', strtotime($client[0]->depDob));
     } else {
@@ -434,6 +460,25 @@ public function UpdateRequest(Request $request)
     }
 
   return array('client' => $client, 'all' => $allClient);
+}
+
+public function ComplaintChecker($complaints){
+
+    if(isset($complaints)){
+        foreach($complaints as $complaint){
+
+            $getComplaint = Complaints::where('title', 'like', $complaint)->first();
+
+            if($getComplaint->is_status == 0){
+                $getComplaint->update([
+                    'is_status' => 1
+                ]);
+            }
+
+
+        }
+    }
+
 }
 
 public function UpdateRequestApproval(Request $request){

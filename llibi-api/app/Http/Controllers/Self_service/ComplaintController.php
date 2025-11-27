@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 use App\Models\Self_service\Complaint;
+use App\Models\Self_service\Complaints;
 
 class ComplaintController extends Controller
 {
@@ -91,4 +92,69 @@ class ComplaintController extends Controller
   {
     //
   }
+
+
+
+//   New Complaint Controller
+  public function getComplaint(Request $request){
+
+    $status = $request->status;
+    $page = $request->page ?? 1;
+    $search = $request->search;
+
+    $query = Complaints::query();
+
+    if ($status == 1) {
+        $query->where('is_status', 0);
+    } elseif ($status == 2) {
+        $query->where('is_status', 1);
+    } elseif ($status != 3) {
+        return response()->json([]);
+    }
+
+    if ($search) {
+        $query->where('title', 'like', "%$search%");
+    }
+
+    return $query->orderBy('id', 'desc')->paginate(20);
+
+  }
+
+  public function approveComplaint(Request $request){
+    $id = $request->id;
+
+    Complaints::where('id', $id)->update([
+        'is_status' => 1
+    ]);
+
+    return response(status:200);
+
+  }
+
+  public function deleteComplaint(Request $request){
+    $id = $request->id;
+
+    Complaints::where('id', $id)->delete();
+
+    return response(status:200);
+
+
+  }
+
+  public function editComplaint(Request $request){
+
+    $id = $request->id;
+    $editedComplaint = $request->editedComplaint;
+
+    $findComplaint = Complaints::where('id', $id)
+                                ->update([
+                                    'title' => $editedComplaint
+                                ]);
+
+    return response(status:200);
+
+  }
+
+
+
 }
