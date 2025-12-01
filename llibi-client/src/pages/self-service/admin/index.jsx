@@ -42,6 +42,7 @@ import { CustomPusher } from '@/lib/pusher'
 
 import { FaXmark } from "react-icons/fa6";
 import ApprovalForm from './approvalForm'
+import ShowLoa from './showloa'
 
 const Admin = () => {
   const router = useRouter()
@@ -429,6 +430,18 @@ const Admin = () => {
     }
   }
 
+  const showLoas = (row) => {
+    setBody({
+        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        content: <ShowLoa row={row} />,
+        modalOuterContainer: 'w-full h-full',
+        //modalContainer: '',
+        modalContainer: 'h-full',
+        modalBody: 'h-full overflow-y-scroll',
+      })
+      toggle()
+  }
+
 
   return (
     <ProviderLayout>
@@ -656,8 +669,8 @@ const Admin = () => {
                                 {"\n"}
                                 <span>
 
-                                    {row?.remaining >= 1 && row?.is_complaint_has_approved == 1 && row.is_excluded == 1 ? "(Possible Exclusion)":
-                                    row?.remaining >= 1 && row?.is_complaint_has_approved == 1 && row?.is_excluded == 0 ? "(System Approved)"  :
+                                    {row?.total_remaining >= 1 && row?.is_complaint_has_approved == 1 && row.is_excluded == 1 ? "(Possible Exclusion)":
+                                    row?.total_remaining >= 1 && row?.is_complaint_has_approved == 1 && row?.is_excluded == 0 ? "(System Approved)"  :
                                     row?.is_complaint_has_approved == 1 && row.is_excluded == 1 ? "(System Disapproved)" :
                                     row?.is_complaint_has_approved == 1 ? "(System Disapproved)" :
                                     ""
@@ -665,7 +678,7 @@ const Admin = () => {
                                 </span>
                               </td>
                               <td className='border border-gray-300 p-2'>
-                                {row.remaining}
+                                {row.total_remaining <= 0 ? 0 : row.total_remaining}
                               </td>
                               <td className="border border-gray-300 p-2">
                                 {row.createdAt}
@@ -677,20 +690,10 @@ const Admin = () => {
                                 : "-"
                                 }
                               </td>
-                              <td className="border border-gray-300 p-2 text-center">
+                              <td className="border border-gray-300 p-2 text-center flex flex-col gap-2">
                                 <a
                                   className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                                   onClick={() => {
-                                    // view(row)
-
-                                    // row.loaType == "consultation" || row.loaType == "laboratory"
-                                    // ? view(row)
-                                    // : row.isDependent === null && row.memberID === null
-                                    // ? showCallbackModalProvider(row, i)
-                                    // : row.loaType === "laboratory" && row.procedure_type === "Enumerate"
-                                    // ? console.log(row)
-                                    // : showCallbackModal(row, i)
-
                                     row.loaType === "laboratory" && row.procedure_type === "Enumerate"
                                     ? viewProviderLaboratory(row)
                                     : row.loaType === "consultation" || row.loaType === "laboratory"
@@ -702,6 +705,12 @@ const Admin = () => {
                                     : showCallbackModal(row, i)
                                   }}>
                                   VIEW
+                                </a>
+                                <a
+                                    className='text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-800 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900'
+                                    onClick={() => showLoas(row)}
+                                    >
+                                    LOAs
                                 </a>
                               </td>
                             </tr>

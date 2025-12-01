@@ -222,5 +222,8 @@ Route::put('/self-service/approve-complaint', [ComplaintController::class, 'appr
 Route::delete('/self-service/delete-complaint', [ComplaintController::class, 'deleteComplaint']);
 Route::put('/self-service/edit-complaint', [ComplaintController::class, 'editComplaint']);
 
+use App\Http\Controllers\Self_service\FindPatientLoaController;
+Route::get('/self-service/findPatientAllLoa', [FindPatientLoaController::class, 'findPatientAllLoa']);
+
 require __DIR__ . '/test-route.php';
 require __DIR__ . '/byron.php';

@@ -83,6 +83,26 @@ return [
       ]) : [],
     ],
 
+    'ebd_current' => [
+      'driver' => 'mysql',
+      'url' => env('DATABASE_URL'),
+      'host' => env('DB_HOST_EBDCURRENT', '127.0.0.1'),
+      'port' => env('DB_PORT_EBDCURRENT', '3306'),
+      'database' => env('DB_DATABASE_EBDCURRENT', 'forge'),
+      'username' => env('DB_USERNAME_EBDCURRENT', 'forge'),
+      'password' => env('DB_PASSWORD_EBDCURRENT', ''),
+      'unix_socket' => env('DB_SOCKET', ''),
+      'charset' => 'utf8mb4',
+      'collation' => 'utf8mb4_unicode_ci',
+      'prefix' => '',
+      'prefix_indexes' => true,
+      'strict' => true,
+      'engine' => null,
+      'options' => extension_loaded('pdo_mysql') ? array_filter([
+        PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+      ]) : [],
+    ],
+
     'portal_request_db' => [
       'driver' => 'mysql',
       'url' => env('DATABASE_URL'),

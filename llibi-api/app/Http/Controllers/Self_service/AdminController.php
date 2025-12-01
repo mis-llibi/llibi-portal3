@@ -33,6 +33,9 @@ use App\Models\ProviderPortal;
 use App\Models\Self_service\EnumerateProcedure;
 use App\Models\Self_service\RemainingTbl;
 use App\Models\Self_service\RemainingTblLogs;
+use App\Models\Self_service\LoaFilesInTransit;
+use App\Models\Self_service\AppLoaMonitor;
+use App\Models\Self_service\Companies;
 
 class AdminController extends Controller
 {
@@ -112,6 +115,7 @@ class AdminController extends Controller
             't3.third_attempt_date',
             't3.created_at as callback_created_at',
             't3.updated_at as callback_updated_at',
+            'mlist.empcode as inscode',
             't2.type_approval_code',
             't2.approval_code_loanumber',
         )
@@ -139,6 +143,54 @@ class AdminController extends Controller
         ->orderBy('t1.id', 'DESC')
         ->limit(20)
         ->get();
+
+    $request->transform(function($patient){
+
+        $fullname = $patient->isDependent
+            ? "{$patient->depLastName}, {$patient->depFirstName}"
+            : "{$patient->lastName}, {$patient->firstName}";
+        $insCode = (int) $patient->inscode;
+        $compcode = $patient->company_code;
+        $status = [1, 4];
+        $types = ['outpatient', 'laboratory', 'consultation'];
+
+        $loafiles = LoaFilesInTransit::where('patient_name', 'like', "%$fullname%")
+                                    ->whereIn('status', $status)
+                                    ->where(function ($q) use ($types) {
+                                        foreach ($types as $type) {
+                                            $q->orWhere('type', 'like', "%$type%");
+                                        }
+                                    })
+                                    ->where('date', '>=', '2024-11-1')
+                                    ->orderBy('id', 'desc')
+                                    ->get();
+
+        $claims = AppLoaMonitor::where('compcode', $compcode)
+                            ->where('inscode', $insCode)
+                            ->get();
+
+        if(count($claims) > count($loafiles)){
+            $patient->total_remaining = 0;
+        }else{
+
+            $totalLoaTransitClaims = count($loafiles) - count($claims);
+            $patient->total_remaining = $patient->remaining - $totalLoaTransitClaims;
+        }
+
+        $benefit_type = Companies::where('corporate_compcode', $compcode)->first();
+
+        if ($benefit_type) {
+            $patient->benefit_type = $benefit_type->benefit_type;
+        } else {
+            // Handle not found
+            $patient->benefit_type = null; // or some default value
+            // Log::warning("Company not found for compcode: $compcode");
+        }
+
+        return $patient;
+
+
+    });
 
     return $request;
 }
@@ -464,18 +516,16 @@ public function UpdateRequest(Request $request)
 
 public function ComplaintChecker($complaints){
 
-    if(isset($complaints)){
-        foreach($complaints as $complaint){
+    if ($complaints) {
+        foreach ($complaints as $complaint) {
 
-            $getComplaint = Complaints::where('title', 'like', $complaint)->first();
+            $getComplaint = Complaints::where('title', $complaint)->first();
 
-            if($getComplaint->is_status == 0){
+            if ($getComplaint && $getComplaint->is_status == 0) {
                 $getComplaint->update([
                     'is_status' => 1
                 ]);
             }
-
-
         }
     }
 
