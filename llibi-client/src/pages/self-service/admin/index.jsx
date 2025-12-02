@@ -432,7 +432,7 @@ const Admin = () => {
 
   const showLoas = (row) => {
     setBody({
-        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        title: row.isDependent ? row.depMemberID + ' - ' + row.depLastName + ', ' + row.depFirstName : row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
         content: <ShowLoa row={row} />,
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',

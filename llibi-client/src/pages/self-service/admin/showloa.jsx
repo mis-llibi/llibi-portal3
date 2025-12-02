@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FindShowLoa } from "@/hooks/self-service/findShowLoa";
 import { MoonLoader } from "react-spinners";
+import dayjs from "dayjs";
 
 export default function ShowLoa({ row }) {
     const { FindPatientAllLoa } = FindShowLoa();
@@ -46,6 +47,7 @@ export default function ShowLoa({ row }) {
                                     <th className="border px-3 py-2">LOA Number</th>
                                     <th className="border px-3 py-2">LOA Type</th>
                                     <th className="border px-3 py-2">Patient Name</th>
+                                    <th className="border px-3 py-2">Date & Time</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,6 +63,7 @@ export default function ShowLoa({ row }) {
                                             <td className="border px-3 py-2">{item.document_number}</td>
                                             <td className="border px-3 py-2">{item.type}</td>
                                             <td className="border px-3 py-2">{item.patient_name}</td>
+                                            <td className="border px-3 py-2">{dayjs(item?.date).format('MMMM DD, YYYY')} {dayjs(`2025-01-01 ${item?.time}`).format('hh:mm:ss A')}</td>
                                         </tr>
                                     ))
                                 )}
