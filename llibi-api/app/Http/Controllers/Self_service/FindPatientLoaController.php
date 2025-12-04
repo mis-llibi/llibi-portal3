@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Self_service\LoaFilesInTransit;
 use App\Models\Self_service\AppLoaMonitor;
+use App\Models\Self_service\Companies;
+use App\Models\Self_service\SyncCompaniesV2;
+
 
 class FindPatientLoaController extends Controller
 {
@@ -19,6 +22,11 @@ class FindPatientLoaController extends Controller
 
         $status = [1, 4];
         $types = ['outpatient', 'laboratory', 'consultation'];
+
+        $company = SyncCompaniesV2::where('corporate_compcode', $compcode)->first();
+        $policy = $company->policy ?? "2024-11-1";
+
+
         // Find existing loa in Loa Files in Transit
         $loafiles = LoaFilesInTransit::where('patient_name', 'like', "%$fullname%")
                                     ->whereIn('status', $status)
@@ -27,7 +35,7 @@ class FindPatientLoaController extends Controller
                                             $q->orWhere('type', 'like', "%$type%");
                                         }
                                     })
-                                    ->where('date', '>=', '2024-11-1')
+                                    ->where('date', '>=', $policy)
                                     ->orderBy('id', 'desc')
                                     ->get();
 

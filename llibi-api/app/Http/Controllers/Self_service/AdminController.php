@@ -36,6 +36,7 @@ use App\Models\Self_service\RemainingTblLogs;
 use App\Models\Self_service\LoaFilesInTransit;
 use App\Models\Self_service\AppLoaMonitor;
 use App\Models\Self_service\Companies;
+use App\Models\Self_service\SyncCompaniesV2;
 
 class AdminController extends Controller
 {
@@ -141,7 +142,7 @@ class AdminController extends Controller
         })
         ->whereDate('t1.created_at', now()->format('Y-m-d'))
         ->orderBy('t1.id', 'DESC')
-        ->limit(20)
+        // ->limit(20)
         ->get();
 
     $request->transform(function($patient){
@@ -154,6 +155,9 @@ class AdminController extends Controller
         $status = [1, 4];
         $types = ['outpatient', 'laboratory', 'consultation'];
 
+        $company = SyncCompaniesV2::where('corporate_compcode', $compcode)->first();
+        $policy = $company->policy ?? "2024-11-1";
+
         $loafiles = LoaFilesInTransit::where('patient_name', 'like', "%$fullname%")
                                     ->whereIn('status', $status)
                                     ->where(function ($q) use ($types) {
@@ -161,7 +165,8 @@ class AdminController extends Controller
                                             $q->orWhere('type', 'like', "%$type%");
                                         }
                                     })
-                                    ->where('date', '>=', '2024-11-1')
+                                    // This is supposed to be benefit_type->policy
+                                    ->where('date', '>=', $policy)
                                     ->orderBy('id', 'desc')
                                     ->get();
 
@@ -177,10 +182,10 @@ class AdminController extends Controller
             $patient->total_remaining = $patient->remaining - $totalLoaTransitClaims;
         }
 
-        $benefit_type = Companies::where('corporate_compcode', $compcode)->first();
 
-        if ($benefit_type) {
-            $patient->benefit_type = $benefit_type->benefit_type;
+
+        if ($company) {
+            $patient->benefit_type = $company->benefit_type;
         } else {
             // Handle not found
             $patient->benefit_type = null; // or some default value
