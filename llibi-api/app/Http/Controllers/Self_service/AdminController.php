@@ -45,6 +45,9 @@ class AdminController extends Controller
     // Define default statuses
     $defaultStatuses = [2, 6, 9];
 
+    $yesterday = Carbon::yesterday()->format('Y-m-d');
+    Log::info($yesterday);
+
     $request = DB::table('app_portal_clients as t1')
         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
         // ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
@@ -140,7 +143,10 @@ class AdminController extends Controller
                 $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
             }
         })
-        ->whereDate('t1.created_at', now()->format('Y-m-d'))
+        ->where(function ($q) use ($yesterday){
+            $q->whereDate('t1.created_at', now()->format('Y-m-d'))
+            ->orWhereDate('t1.created_at', $yesterday);
+        })
         ->orderBy('t1.id', 'DESC')
         // ->limit(20)
         ->get();
