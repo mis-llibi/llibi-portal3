@@ -8,7 +8,7 @@ const client = () => {
 
     const router = useRouter()
     useEffect(() => {
-        router.push("https://clientcare-client.vercel.app/")
+        router.push("https://portal.llibi.app")
     }, [])
 
 
