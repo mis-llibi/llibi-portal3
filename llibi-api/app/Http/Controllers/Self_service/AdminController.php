@@ -45,8 +45,8 @@ class AdminController extends Controller
     // Define default statuses
     $defaultStatuses = [2, 6, 9];
 
-    $yesterday = Carbon::yesterday()->format('Y-m-d');
-    Log::info($yesterday);
+    $start = Carbon::yesterday()->startOfDay();
+    $end   = now()->endOfDay();
 
     $request = DB::table('app_portal_clients as t1')
         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
@@ -143,12 +143,9 @@ class AdminController extends Controller
                 $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
             }
         })
-        ->where(function ($q) use ($yesterday){
-            $q->whereDate('t1.created_at', now()->format('Y-m-d'))
-            ->orWhereDate('t1.created_at', $yesterday);
-        })
+        ->whereBetween('t1.created_at', [$start, $end])
         ->orderBy('t1.id', 'DESC')
-        // ->limit(20)
+        ->limit(10)
         ->get();
 
     $request->transform(function($patient){
@@ -755,7 +752,7 @@ public function UpdateRequestApproval(Request $request){
 
       //$numbers = $data['status'] === 3 ? "LOA #: <b>$loanumber</b> <br /> Approval Code: <b>$approvalcode</b>" : ''; <br /><br /> Password to LOA is requestor birth date: <b style="color:red;">YYYYMMDD i.e., 19500312</b>
 
-      $homepage = env('FRONTEND_URL');
+      $homepage = "https://admin.portal.llibi.app";
       $feedbackLink = '
         <div>
           We value your feedback: <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
@@ -764,10 +761,12 @@ public function UpdateRequestApproval(Request $request){
         </div>
         <div>
           <a href="' . $homepage . '/feedback/?q=' . Str::random(64) . '&rid=' . $request_id . '&compcode=' . $company_code . '&memid=' . $member_id . '&reqstat=' . $data['status'] . '">
-          <img src="' . env('APP_URL', 'https://portal.llibi.app') . '/storage/ccportal_1.jpg" alt="Feedback Icon" width="300">
+          <img src="https://llibi-storage.sgp1.cdn.digitaloceanspaces.com/Self-service/Images/ccportal_1.jpg" alt="Feedback Icon" width="300">
           </a>
         </div>
       <br /><br />';
+
+
 
       if ($data['status'] === 3) {
         // $statusRemarks = 'Your LOA request is <b>approved</b>. Please print a copy LOA and present to the accredited provider upon availment.';

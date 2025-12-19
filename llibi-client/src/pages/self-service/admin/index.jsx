@@ -152,7 +152,8 @@ const Admin = () => {
     { value: 6, label: 'Not Viewed' },
     { value: 7, label: 'Approved Callback' },
     { value: 9, label: 'Pending Callback' },
-    { value: 10, label: 'Failed Callback' }
+    { value: 10, label: 'Failed Callback' },
+    { value: 11, label: "Issued LOA"}
   ]
 
   const handleShowModalSetDate = () => setBody(modalExporting)
