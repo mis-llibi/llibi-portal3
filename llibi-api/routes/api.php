@@ -36,6 +36,7 @@ use App\Http\Controllers\PreApprove\LaboratoryController;
 use App\Http\Controllers\Api_third_party\MobileApiAccessController;
 use App\Http\Controllers\Feedback\FeedbackCorporateController;
 use App\Http\Controllers\SearchMasterlist\MasterlistController;
+use App\Http\Controllers\SearchMasterlist\ClientErrorLogsController;
 use App\Http\Controllers\Self_service\ComplaintController;
 
 use App\Http\Controllers\Api_third_party\BenadEncryptor;
@@ -89,6 +90,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 // Search Masterlist for Birthdate by Name
 Route::post('/search-birthdate-by-name', [MasterlistController::class, 'SearchBirthdateByName']);
+Route::post('/search-client-error-logs', [ClientErrorLogsController::class, 'search']);
 
 Route::get('/self-enrollment/testing', [SelfEnrollmentController::class, 'testing']);
 
