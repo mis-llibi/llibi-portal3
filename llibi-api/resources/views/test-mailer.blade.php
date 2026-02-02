@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <p>Hello {{ $data, }}</p>
+  <p>Hello {{ $data }}</p>
 </body>
 
 </html>
