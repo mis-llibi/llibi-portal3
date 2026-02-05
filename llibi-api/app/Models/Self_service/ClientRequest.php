@@ -33,6 +33,7 @@ class ClientRequest extends Model
         'approval_code',
 
         'status',
-        'updated_at'
+        'updated_at',
+        'elapsed_time'
     ];
 }

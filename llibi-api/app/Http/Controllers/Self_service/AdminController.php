@@ -40,168 +40,337 @@ use App\Models\Self_service\SyncCompaniesV2;
 
 class AdminController extends Controller
 {
+//     public function SearchRequest($search, $id)
+// {
+//     // Define default statuses
+//     $defaultStatuses = [2, 6, 9];
+
+//     $start = Carbon::yesterday()->startOfDay();
+//     $end   = now()->endOfDay();
+
+//     $request = DB::table('app_portal_clients as t1')
+//         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+//         // ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+//         // ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
+//         //     $join->on('mlist.member_id', '=', 't1.member_id')
+//         //         ->orOn('mlist.member_id', '=', 't1.dependent_member_id');
+//         // })
+//         ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
+//             $join->on('mlist.member_id', '=', DB::raw("
+//                 CASE
+//                     WHEN t1.is_dependent = 1 THEN t1.dependent_member_id
+//                     ELSE t1.member_id
+//                 END
+//             "));
+//         })
+//         ->rightJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
+//         ->select(
+//             't1.id',
+//             't1.reference_number as refno',
+//             't1.email as email',
+//             't1.alt_email as altEmail',
+//             't1.contact as contact',
+//             't1.member_id as memberID',
+//             't1.first_name as firstName',
+//             't1.last_name as lastName',
+//             't1.dob as dob',
+//             't1.is_dependent as isDependent',
+//             't1.dependent_member_id as depMemberID',
+//             't1.dependent_first_name as depFirstName',
+//             't1.dependent_last_name as depLastName',
+//             't1.dependent_dob as depDob',
+//             't1.remarks as remarks',
+//             't1.provider_remarks as provider_remarks',
+//             't1.status as status',
+//             't1.opt_landline as opt_landline',
+//             't1.callback_remarks as callback_remarks',
+//             't1.landline as landline',
+//             't1.opt_contact as opt_contact',
+//             't1.remaining as remaining',
+//             't1.is_complaint_has_approved as is_complaint_has_approved',
+//             't2.loa_type as loaType',
+//             't2.loa_number as loaNumber',
+//             't2.approval_code as approvalCode',
+//             't2.loa_attachment as loaAttachment',
+//             't2.complaint as complaint',
+//             't2.lab_attachment as labAttachment',
+//             't2.assessment_q1 as ass1',
+//             't2.assessment_q2 as ass2',
+//             't2.assessment_q3 as ass3',
+//             't1.created_at as createdAt',
+//             't2.provider_id as providerID',
+//             't2.provider as providerName',
+//             't2.doctor_id as doctorID',
+//             't2.doctor_name as doctorName',
+//             't2.diagnosis as diagnosis',
+//             't2.provider_procedure_type as procedure_type',
+//             't2.is_excluded as is_excluded',
+//             't1.approved_date',
+//             DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+//             DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+//             'mlist.company_name',
+//             'mlist.company_code',
+//             't1.provider_email2',
+//             't1.is_send_to_provider',
+//             't1.platform',
+//             't3.failed_count',
+//             't3.first_attempt_date',
+//             't3.second_attempt_date',
+//             't3.third_attempt_date',
+//             't3.created_at as callback_created_at',
+//             't3.updated_at as callback_updated_at',
+//             'mlist.empcode as inscode',
+//             't2.type_approval_code',
+//             't2.approval_code_loanumber',
+//         )
+//         ->where(function ($query) use ($id, $defaultStatuses) {
+//             if ($id == 8) {
+//                 $query->whereIn('t1.status', $defaultStatuses); // Default statuses
+//             } elseif(is_array($id)){
+//                 $query->where('t1.id', $id['val']);
+//             }else {
+//                 $query->where('t1.status', $id);
+//             }
+//         })
+//         ->where(function ($query) use ($search) {
+//             if ($search != 0) {
+//                 $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+//                 $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+//                 $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+
+//                 $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+//                 $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+//                 $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
+//             }
+//         })
+//         ->whereBetween('t1.created_at', [$start, $end])
+//         ->orderBy('t1.id', 'DESC')
+//         ->limit(10)
+//         ->get();
+
+//     $request->transform(function($patient){
+
+//         $fullname = $patient->isDependent
+//             ? "{$patient->depLastName}, {$patient->depFirstName}"
+//             : "{$patient->lastName}, {$patient->firstName}";
+//         $insCode = (int) $patient->inscode;
+//         $compcode = $patient->company_code;
+//         $status = [1, 4];
+//         $types = ['outpatient', 'laboratory', 'consultation'];
+
+//         $company = SyncCompaniesV2::where('corporate_compcode', $compcode)->first();
+//         $policy = $company->policy ?? "2024-11-1";
+
+//         $loafiles = LoaFilesInTransit::where('patient_name', 'like', "%$fullname%")
+//                                     ->whereIn('status', $status)
+//                                     ->where(function ($q) use ($types) {
+//                                         foreach ($types as $type) {
+//                                             $q->orWhere('type', 'like', "%$type%");
+//                                         }
+//                                     })
+//                                     // This is supposed to be benefit_type->policy
+//                                     ->where('date', '>=', $policy)
+//                                     ->orderBy('id', 'desc')
+//                                     ->get();
+
+//         $claims = AppLoaMonitor::where('compcode', $compcode)
+//                             ->where('inscode', $insCode)
+//                             ->get();
+
+//         if(count($claims) > count($loafiles)){
+//             $patient->total_remaining = 0;
+//         }else{
+
+//             $totalLoaTransitClaims = count($loafiles) - count($claims);
+//             $patient->total_remaining = $patient->remaining - $totalLoaTransitClaims;
+//         }
+
+
+
+//         if ($company) {
+//             $patient->benefit_type = $company->benefit_type;
+//         } else {
+//             // Handle not found
+//             $patient->benefit_type = null; // or some default value
+//             // Log::warning("Company not found for compcode: $compcode");
+//         }
+
+//         return $patient;
+
+
+//     });
+
+//     return $request;
+// }
+
     public function SearchRequest($search, $id)
-{
-    // Define default statuses
-    $defaultStatuses = [2, 6, 9];
+    {
+        $defaultStatuses = [2, 6, 9];
+        $start = Carbon::yesterday()->startOfDay();
+        $end   = now()->endOfDay();
 
-    $start = Carbon::yesterday()->startOfDay();
-    $end   = now()->endOfDay();
+        $q = DB::table('app_portal_clients as t1')
+            ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+            ->join('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
+            ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
+                $join->on('mlist.member_id', '=', DB::raw("
+                    CASE
+                        WHEN t1.is_dependent = 1 THEN t1.dependent_member_id
+                        ELSE t1.member_id
+                    END
+                "));
+            })
+            ->select(
+                't1.id',
+                't1.reference_number as refno',
+                't1.email as email',
+                't1.alt_email as altEmail',
+                't1.contact as contact',
+                't1.member_id as memberID',
+                't1.first_name as firstName',
+                't1.last_name as lastName',
+                't1.dob as dob',
+                't1.is_dependent as isDependent',
+                't1.dependent_member_id as depMemberID',
+                't1.dependent_first_name as depFirstName',
+                't1.dependent_last_name as depLastName',
+                't1.dependent_dob as depDob',
+                't1.remarks as remarks',
+                't1.provider_remarks as provider_remarks',
+                't1.status as status',
+                't1.opt_landline as opt_landline',
+                't1.callback_remarks as callback_remarks',
+                't1.landline as landline',
+                't1.opt_contact as opt_contact',
+                't1.remaining as remaining',
+                't1.is_complaint_has_approved as is_complaint_has_approved',
+                't2.loa_type as loaType',
+                't2.loa_number as loaNumber',
+                't2.approval_code as approvalCode',
+                't2.loa_attachment as loaAttachment',
+                't2.complaint as complaint',
+                't2.lab_attachment as labAttachment',
+                't2.assessment_q1 as ass1',
+                't2.assessment_q2 as ass2',
+                't2.assessment_q3 as ass3',
+                't1.created_at as createdAt',
+                't2.provider_id as providerID',
+                't2.provider as providerName',
+                't2.doctor_id as doctorID',
+                't2.doctor_name as doctorName',
+                't2.diagnosis as diagnosis',
+                't2.provider_procedure_type as procedure_type',
+                't2.is_excluded as is_excluded',
+                't1.approved_date',
+                DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+                DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+                'mlist.company_name',
+                'mlist.company_code',
+                'mlist.empcode as inscode',
+                't1.provider_email2',
+                't1.is_send_to_provider',
+                't1.platform',
+                't3.failed_count',
+                't3.first_attempt_date',
+                't3.second_attempt_date',
+                't3.third_attempt_date',
+                't3.created_at as callback_created_at',
+                't3.updated_at as callback_updated_at',
+                't2.type_approval_code',
+                't2.approval_code_loanumber',
+            )
+            ->whereBetween('t1.created_at', [$start, $end]);
 
-    $request = DB::table('app_portal_clients as t1')
-        ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-        // ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
-        // ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
-        //     $join->on('mlist.member_id', '=', 't1.member_id')
-        //         ->orOn('mlist.member_id', '=', 't1.dependent_member_id');
-        // })
-        ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
-            $join->on('mlist.member_id', '=', DB::raw("
-                CASE
-                    WHEN t1.is_dependent = 1 THEN t1.dependent_member_id
-                    ELSE t1.member_id
-                END
-            "));
-        })
-        ->rightJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
-        ->select(
-            't1.id',
-            't1.reference_number as refno',
-            't1.email as email',
-            't1.alt_email as altEmail',
-            't1.contact as contact',
-            't1.member_id as memberID',
-            't1.first_name as firstName',
-            't1.last_name as lastName',
-            't1.dob as dob',
-            't1.is_dependent as isDependent',
-            't1.dependent_member_id as depMemberID',
-            't1.dependent_first_name as depFirstName',
-            't1.dependent_last_name as depLastName',
-            't1.dependent_dob as depDob',
-            't1.remarks as remarks',
-            't1.provider_remarks as provider_remarks',
-            't1.status as status',
-            't1.opt_landline as opt_landline',
-            't1.callback_remarks as callback_remarks',
-            't1.landline as landline',
-            't1.opt_contact as opt_contact',
-            't1.remaining as remaining',
-            't1.is_complaint_has_approved as is_complaint_has_approved',
-            't2.loa_type as loaType',
-            't2.loa_number as loaNumber',
-            't2.approval_code as approvalCode',
-            't2.loa_attachment as loaAttachment',
-            't2.complaint as complaint',
-            't2.lab_attachment as labAttachment',
-            't2.assessment_q1 as ass1',
-            't2.assessment_q2 as ass2',
-            't2.assessment_q3 as ass3',
-            't1.created_at as createdAt',
-            't2.provider_id as providerID',
-            't2.provider as providerName',
-            't2.doctor_id as doctorID',
-            't2.doctor_name as doctorName',
-            't2.diagnosis as diagnosis',
-            't2.provider_procedure_type as procedure_type',
-            't2.is_excluded as is_excluded',
-            't1.approved_date',
-            DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
-            DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
-            'mlist.company_name',
-            'mlist.company_code',
-            't1.provider_email2',
-            't1.is_send_to_provider',
-            't1.platform',
-            't3.failed_count',
-            't3.first_attempt_date',
-            't3.second_attempt_date',
-            't3.third_attempt_date',
-            't3.created_at as callback_created_at',
-            't3.updated_at as callback_updated_at',
-            'mlist.empcode as inscode',
-            't2.type_approval_code',
-            't2.approval_code_loanumber',
-        )
-        ->where(function ($query) use ($id, $defaultStatuses) {
+        // status filter
+        $q->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
-                $query->whereIn('t1.status', $defaultStatuses); // Default statuses
-            } elseif(is_array($id)){
+                $query->whereIn('t1.status', $defaultStatuses);
+            } elseif (is_array($id)) {
                 $query->where('t1.id', $id['val']);
-            }else {
+            } else {
                 $query->where('t1.status', $id);
             }
-        })
-        ->where(function ($query) use ($search) {
-            if ($search != 0) {
-                $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
-                $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
-                $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+        });
 
-                $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
-                $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
-                $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
-            }
-        })
-        ->whereBetween('t1.created_at', [$start, $end])
-        ->orderBy('t1.id', 'DESC')
-        ->limit(10)
-        ->get();
+        // search filter (only if provided)
+        if ($search != 0 && $search !== null && $search !== '') {
+            $term = trim($search);
 
-    $request->transform(function($patient){
+            // NOTE: if your columns are already case-insensitive collation, strtoupper() is wasted work.
+            $q->where(function ($query) use ($term) {
+                $like = "%{$term}%";
+                $query->where('t1.member_id', 'like', $like)
+                    ->orWhere('t1.first_name', 'like', $like)
+                    ->orWhere('t1.last_name', 'like', $like)
+                    ->orWhere('t1.dependent_member_id', 'like', $like)
+                    ->orWhere('t1.dependent_first_name', 'like', $like)
+                    ->orWhere('t1.dependent_last_name', 'like', $like);
+            });
+        }
 
-        $fullname = $patient->isDependent
-            ? "{$patient->depLastName}, {$patient->depFirstName}"
-            : "{$patient->lastName}, {$patient->firstName}";
-        $insCode = (int) $patient->inscode;
-        $compcode = $patient->company_code;
+        $patients = $q->orderByDesc('t1.id')->limit(10)->get();
+
+        if ($patients->isEmpty()) return $patients;
+
+        // -------- Batch enrichment (no N+1) --------
+        $compcodes = $patients->pluck('company_code')->filter()->unique()->values();
+        $inscodes  = $patients->pluck('inscode')->filter()->map(fn($v) => (int)$v)->unique()->values();
+
+        $companies = SyncCompaniesV2::whereIn('corporate_compcode', $compcodes)
+            ->get()
+            ->keyBy('corporate_compcode');
+
+        // claims count grouped
+        $claimsCount = AppLoaMonitor::selectRaw('compcode, inscode, COUNT(*) as cnt')
+            ->whereIn('compcode', $compcodes)
+            ->whereIn('inscode', $inscodes)
+            ->groupBy('compcode', 'inscode')
+            ->get()
+            ->mapWithKeys(fn($r) => ["{$r->compcode}|{$r->inscode}" => (int)$r->cnt]);
+
+        // LOA in-transit count: still tricky because of patient_name LIKE.
+        // At minimum: count only (no get), and keep filters tight.
+        // We'll compute per patient, but using COUNT only (still 10 queries max).
+        // If you can replace patient_name LIKE with a real key (client_id/refno), you can batch this too.
         $status = [1, 4];
-        $types = ['outpatient', 'laboratory', 'consultation'];
+        $types  = ['outpatient', 'laboratory', 'consultation'];
 
-        $company = SyncCompaniesV2::where('corporate_compcode', $compcode)->first();
-        $policy = $company->policy ?? "2024-11-1";
+        $patients->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
+            $fullname = $p->isDependent
+                ? "{$p->depLastName}, {$p->depFirstName}"
+                : "{$p->lastName}, {$p->firstName}";
 
-        $loafiles = LoaFilesInTransit::where('patient_name', 'like', "%$fullname%")
-                                    ->whereIn('status', $status)
-                                    ->where(function ($q) use ($types) {
-                                        foreach ($types as $type) {
-                                            $q->orWhere('type', 'like', "%$type%");
-                                        }
-                                    })
-                                    // This is supposed to be benefit_type->policy
-                                    ->where('date', '>=', $policy)
-                                    ->orderBy('id', 'desc')
-                                    ->get();
+            $compcode = $p->company_code;
+            $inscode  = (int)$p->inscode;
 
-        $claims = AppLoaMonitor::where('compcode', $compcode)
-                            ->where('inscode', $insCode)
-                            ->get();
+            $company = $companies->get($compcode);
+            $policy  = $company->policy ?? "2024-11-1";
 
-        if(count($claims) > count($loafiles)){
-            $patient->total_remaining = 0;
-        }else{
+            // LOA transit count (COUNT only)
+            $loaTransitCount = LoaFilesInTransit::where('patient_name', 'like', "%{$fullname}%")
+                ->whereIn('status', $status)
+                ->where(function ($q) use ($types) {
+                    foreach ($types as $type) $q->orWhere('type', 'like', "%{$type}%");
+                })
+                ->where('date', '>=', $policy)
+                ->count();
 
-            $totalLoaTransitClaims = count($loafiles) - count($claims);
-            $patient->total_remaining = $patient->remaining - $totalLoaTransitClaims;
-        }
+            $claims = $claimsCount->get("{$compcode}|{$inscode}", 0);
 
+            if ($claims > $loaTransitCount) {
+                $p->total_remaining = 0;
+            } else {
+                $totalLoaTransitClaims = $loaTransitCount - $claims;
+                $p->total_remaining = $p->remaining - $totalLoaTransitClaims;
+            }
 
+            $p->benefit_type = $company->benefit_type ?? null;
+            return $p;
+        });
 
-        if ($company) {
-            $patient->benefit_type = $company->benefit_type;
-        } else {
-            // Handle not found
-            $patient->benefit_type = null; // or some default value
-            // Log::warning("Company not found for compcode: $compcode");
-        }
+        return $patients;
+    }
 
-        return $patient;
-
-
-    });
-
-    return $request;
-}
 
 
 
@@ -386,6 +555,7 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
+    set_time_limit(600);
 
   $user_id = request()->user()->id;
   $client = $this->SearchRequest(0, ['val' => $request->id]);
@@ -438,6 +608,16 @@ public function UpdateRequest(Request $request)
 
     $updateRequest = ClientRequest::where('client_id', $request->id)
       ->update($update);
+
+    if($updateRequest){
+        // Update elapsed_time
+        $getClient = ClientRequest::where('client_id', $request->id)
+                                    ->first();
+
+        $getClient->update([
+            'elapsed_time' => $getClient->created_at->diffInMinutes($getClient->updated_at)
+        ]);
+    }
 
     // Check the complaints if existing in database and make it approve if status is pending
     $getComplaints = ClientRequest::where('client_id', $request->id)->first();
