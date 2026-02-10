@@ -40,13 +40,13 @@ use App\Models\Self_service\SyncCompaniesV2;
 
 class AdminController extends Controller
 {
-    public function SearchRequest($search, $id)
-{
-    // Define default statuses
-    $defaultStatuses = [2, 6, 9];
+//     public function SearchRequest($search, $id)
+// {
+//     // Define default statuses
+//     $defaultStatuses = [2, 6, 9];
 
-    $start = Carbon::yesterday()->startOfDay();
-    $end   = now()->endOfDay();
+//     $start = Carbon::yesterday()->startOfDay();
+//     $end   = now()->endOfDay();
 
     $request = DB::table('app_portal_clients as t1')
         ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
@@ -126,10 +126,10 @@ class AdminController extends Controller
         )
         ->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
-                $query->whereIn('t1.status', $defaultStatuses); // Default statuses
-            } elseif(is_array($id)){
+                $query->whereIn('t1.status', $defaultStatuses);
+            } elseif (is_array($id)) {
                 $query->where('t1.id', $id['val']);
-            }else {
+            } else {
                 $query->where('t1.status', $id);
             }
         })
@@ -182,27 +182,85 @@ class AdminController extends Controller
             $patient->total_remaining = 0;
         }else{
 
-            $totalLoaTransitClaims = count($loafiles) - count($claims);
-            $patient->total_remaining = $patient->remaining - $totalLoaTransitClaims;
+        // search filter (only if provided)
+        if ($search != 0 && $search !== null && $search !== '') {
+            $term = trim($search);
+
+            // NOTE: if your columns are already case-insensitive collation, strtoupper() is wasted work.
+            $q->where(function ($query) use ($term) {
+                $like = "%{$term}%";
+                $query->where('t1.member_id', 'like', $like)
+                    ->orWhere('t1.first_name', 'like', $like)
+                    ->orWhere('t1.last_name', 'like', $like)
+                    ->orWhere('t1.dependent_member_id', 'like', $like)
+                    ->orWhere('t1.dependent_first_name', 'like', $like)
+                    ->orWhere('t1.dependent_last_name', 'like', $like);
+            });
         }
 
+        $patients = $q->orderByDesc('t1.id')->limit(10)->get();
 
+        if ($patients->isEmpty()) return $patients;
 
-        if ($company) {
-            $patient->benefit_type = $company->benefit_type;
-        } else {
-            // Handle not found
-            $patient->benefit_type = null; // or some default value
-            // Log::warning("Company not found for compcode: $compcode");
-        }
+        // -------- Batch enrichment (no N+1) --------
+        $compcodes = $patients->pluck('company_code')->filter()->unique()->values();
+        $inscodes  = $patients->pluck('inscode')->filter()->map(fn($v) => (int)$v)->unique()->values();
 
-        return $patient;
+        $companies = SyncCompaniesV2::whereIn('corporate_compcode', $compcodes)
+            ->get()
+            ->keyBy('corporate_compcode');
 
+        // claims count grouped
+        $claimsCount = AppLoaMonitor::selectRaw('compcode, inscode, COUNT(*) as cnt')
+            ->whereIn('compcode', $compcodes)
+            ->whereIn('inscode', $inscodes)
+            ->groupBy('compcode', 'inscode')
+            ->get()
+            ->mapWithKeys(fn($r) => ["{$r->compcode}|{$r->inscode}" => (int)$r->cnt]);
 
-    });
+        // LOA in-transit count: still tricky because of patient_name LIKE.
+        // At minimum: count only (no get), and keep filters tight.
+        // We'll compute per patient, but using COUNT only (still 10 queries max).
+        // If you can replace patient_name LIKE with a real key (client_id/refno), you can batch this too.
+        $status = [1, 4];
+        $types  = ['outpatient', 'laboratory', 'consultation'];
 
-    return $request;
-}
+        $patients->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
+            $fullname = $p->isDependent
+                ? "{$p->depLastName}, {$p->depFirstName}"
+                : "{$p->lastName}, {$p->firstName}";
+
+            $compcode = $p->company_code;
+            $inscode  = (int)$p->inscode;
+
+            $company = $companies->get($compcode);
+            $policy  = $company->policy ?? "2024-11-1";
+
+            // LOA transit count (COUNT only)
+            $loaTransitCount = LoaFilesInTransit::where('patient_name', 'like', "%{$fullname}%")
+                ->whereIn('status', $status)
+                ->where(function ($q) use ($types) {
+                    foreach ($types as $type) $q->orWhere('type', 'like', "%{$type}%");
+                })
+                ->where('date', '>=', $policy)
+                ->count();
+
+            $claims = $claimsCount->get("{$compcode}|{$inscode}", 0);
+
+            if ($claims > $loaTransitCount) {
+                $p->total_remaining = 0;
+            } else {
+                $totalLoaTransitClaims = $loaTransitCount - $claims;
+                $p->total_remaining = $p->remaining - $totalLoaTransitClaims;
+            }
+
+            $p->benefit_type = $company->benefit_type ?? null;
+            return $p;
+        });
+
+        return $patients;
+    }
+
 
 
 
@@ -387,6 +445,7 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
+    set_time_limit(600);
 
   $user_id = request()->user()->id;
   $client = $this->SearchRequest(0, ['val' => $request->id]);
@@ -439,6 +498,16 @@ public function UpdateRequest(Request $request)
 
     $updateRequest = ClientRequest::where('client_id', $request->id)
       ->update($update);
+
+    if($updateRequest){
+        // Update elapsed_time
+        $getClient = ClientRequest::where('client_id', $request->id)
+                                    ->first();
+
+        $getClient->update([
+            'elapsed_time' => $getClient->created_at->diffInMinutes($getClient->updated_at)
+        ]);
+    }
 
     // Check the complaints if existing in database and make it approve if status is pending
     $getComplaints = ClientRequest::where('client_id', $request->id)->first();
