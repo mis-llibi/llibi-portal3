@@ -88,6 +88,7 @@ class AdminController extends Controller
             't1.opt_contact as opt_contact',
             't1.remaining as remaining',
             't1.is_complaint_has_approved as is_complaint_has_approved',
+            't1.follow_up_request_quantity as follow_up_request_quantity',
             't2.loa_type as loaType',
             't2.loa_number as loaNumber',
             't2.approval_code as approvalCode',
@@ -144,7 +145,7 @@ class AdminController extends Controller
             }
         })
         ->whereBetween('t1.created_at', [$start, $end])
-        ->orderBy('t1.id', 'DESC')
+        // ->orderBy('t1.id', 'DESC')
         ->limit(10)
         ->get();
 
