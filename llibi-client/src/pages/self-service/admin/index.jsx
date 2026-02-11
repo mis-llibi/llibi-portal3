@@ -631,11 +631,11 @@ const Admin = () => {
                             (row.status === 10 && 'bg-yellow-50')
                           } ${
                             (row.follow_up_request_quantity === 1 &&
-                              'outline outline-4 outline-red-500/30 relative z-10') ||
+                              'outline outline-4 outline-red-500/30') ||
                             (row.follow_up_request_quantity === 2 &&
-                              'outline outline-4 outline-red-500/60 relative z-10') ||
+                              'outline outline-4 outline-red-500/60') ||
                             (row.follow_up_request_quantity >= 3 &&
-                              'outline outline-4 outline-red-500 relative z-10') ||
+                              'outline outline-4 outline-red-500') ||
                             ''
                           }`}>
                           <td className="border border-gray-300 p-2 text-center">
