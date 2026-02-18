@@ -586,31 +586,37 @@ const Admin = () => {
               <table className="table-auto w-full">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
                       Member ID
                     </th>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
                       COMPANY/PROVIDER
                     </th>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
                       Patient's Name
                     </th>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
                       LOA Type
                     </th>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
+                      Reference Number
+                    </th>
+                    <th className="border border-gray-300 p-2 text-center">
                       Status
                     </th>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
                       Remaining
                     </th>
-                    <th className="border border-gray-300 p-2 text-left">
+                    <th className="border border-gray-300 p-2 text-center">
                       D/T Created
+                    </th>
+                    <th className="border border-gray-300 p-2 text-center">
+                      Follow Up Request/s
                     </th>
                     <th className="border border-gray-300 p-2 text-center">
                       PLATFORM
                     </th>
-                    <th className="border border-gray-300 p-2 text-left w-10"></th>
+                    <th className="border border-gray-300 p-2 text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -631,11 +637,11 @@ const Admin = () => {
                             (row.status === 10 && 'bg-yellow-50')
                           } ${
                             (row.follow_up_request_quantity === 1 &&
-                              'outline outline-4 outline-red-500/30') ||
+                              'outline outline-4 outline-red-500/30 relative') ||
                             (row.follow_up_request_quantity === 2 &&
-                              'outline outline-4 outline-red-500/60') ||
+                              'outline outline-4 outline-red-500/60 relative') ||
                             (row.follow_up_request_quantity >= 3 &&
-                              'outline outline-4 outline-red-500') ||
+                              'outline outline-4 outline-red-500 relative') ||
                             ''
                           }`}>
                           <td className="border border-gray-300 p-2 text-center">
@@ -672,7 +678,10 @@ const Admin = () => {
                               ? `${row.loaType} - Member`.toUpperCase()
                               : row.loaType.toUpperCase() || 'N/A'}
                           </td>
-                          <td className="border border-gray-300 p-2">
+                          <td className="border border-gray-300 p-2 text-center">
+                            {row.refno || '-'}
+                          </td>
+                          <td className="border border-gray-300 p-2 text-center">
                             {row.status === 2 && 'Pending'}
                             {row.status === 3 && 'Approved LOA'}
                             {row.status === 4 && 'Disapproved'}
@@ -699,11 +708,16 @@ const Admin = () => {
                                 : ''}
                             </span>
                           </td>
-                          <td className="border border-gray-300 p-2">
+                          <td className="border border-gray-300 p-2 text-center">
                             {row.total_remaining <= 0 ? 0 : row.total_remaining}
                           </td>
                           <td className="border border-gray-300 p-2">
                             {row.createdAt}
+                          </td>
+                          <td className="border border-gray-300 p-2 text-center">
+                            {row.follow_up_request_quantity
+                              ? row.follow_up_request_quantity
+                              : '-'}
                           </td>
                           <td className="border border-gray-300 p-2 text-center">
                             {row.platform === 'viber'
@@ -714,7 +728,7 @@ const Admin = () => {
                               ? 'PROVIDER'
                               : '-'}
                           </td>
-                          <td className="border border-gray-300 p-2 text-center flex flex-col gap-2">
+                          <td className="border border-gray-300 px-2 py-4 text-center flex flex-col gap-2">
                             <a
                               className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                               onClick={() => {
@@ -747,7 +761,7 @@ const Admin = () => {
                     <tr>
                       <td
                         className="text-center border bg-red-50 p-2 font-semibold"
-                        colSpan={6}>
+                        colSpan={10}>
                         No patient found
                       </td>
                     </tr>

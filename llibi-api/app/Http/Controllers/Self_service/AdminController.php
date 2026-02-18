@@ -309,7 +309,7 @@ class AdminController extends Controller
             });
         }
 
-        $patients = $q->limit(10)->get();
+        $patients = $q->limit(5)->get();
 
         if ($patients->isEmpty()) return $patients;
 
