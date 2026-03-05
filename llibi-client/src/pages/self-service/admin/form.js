@@ -19,7 +19,6 @@ import { ManageUploadedFiles } from '@/hooks/self-service/ManageUploadedFiles'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
-
 const Form = ({ setRequest, row }) => {
   const { files } = ManageUploadedFiles({ id: row?.id })
 
@@ -39,7 +38,7 @@ const Form = ({ setRequest, row }) => {
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(row)
 
-  const attachLOA = watch("attachLOA");
+  const attachLOA = watch('attachLOA')
   const isProd = process.env.NODE_ENV === 'production'
 
   const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
@@ -70,16 +69,19 @@ const Form = ({ setRequest, row }) => {
   useEffect(() => {
     if (attachLOA && attachLOA.length > 0) {
       // Get the file name without the extension
-      const fileNameWithoutExtension = attachLOA[0].name.replace(/\.[^/.]+$/, "");
+      const fileNameWithoutExtension = attachLOA[0].name.replace(
+        /\.[^/.]+$/,
+        '',
+      )
 
-      console.log("File Name Without Extension:", fileNameWithoutExtension);
+      console.log('File Name Without Extension:', fileNameWithoutExtension)
 
       // Set the value without the extension in the form
-      setValue("loaNumber", fileNameWithoutExtension);
+      setValue('loaNumber', fileNameWithoutExtension)
     } else {
-      console.log("No file selected");
+      console.log('No file selected')
     }
-  }, [attachLOA, setValue]);
+  }, [attachLOA, setValue])
 
   useEffect(() => {
     resetField('attachLOA')
@@ -254,18 +256,20 @@ const Form = ({ setRequest, row }) => {
     if (!Link.match(/^(http|https):/)) {
       console.log(`${basePath}/${Link}`)
       return `${basePath}/${Link}`
-    }else{
+    } else {
       return Link
     }
   }
 
-  const linkCheckers = (link) => {
-    if(!link.match(/^(http|https):/)){
-        // return `http://localhost:8000/storage/${link}`
-        // return `https://portal.llibi.app/storage/${link}`
-        return isProd ? `https://portal.llibi.app/storage/${link}` : `http://localhost:8000/storage/${link}`
-    }else{
-        return link
+  const linkCheckers = link => {
+    if (!link.match(/^(http|https):/)) {
+      // return `http://localhost:8000/storage/${link}`
+      // return `https://portal.llibi.app/storage/${link}`
+      return isProd
+        ? `https://portal.llibi.app/storage/${link}`
+        : `http://localhost:8000/storage/${link}`
+    } else {
+      return link
     }
   }
 
@@ -274,9 +278,7 @@ const Form = ({ setRequest, row }) => {
       <div className="flex">
         <div className="basis-3/5">
           <div className="flex flex-col h-screen">
-            {
-
-            client?.loaAttachment && client?.status !== 4 ? (
+            {client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
                 data={linkChecker(client?.loaAttachment)}
@@ -682,7 +684,7 @@ const Form = ({ setRequest, row }) => {
                         key={i}
                         className="bg-blue-50 p-2 rounded-md shadow-sm">
                         <a
-                        //   href={`${basePath}/storage/${item?.file_link}`}
+                          //   href={`${basePath}/storage/${item?.file_link}`}
                           href={linkCheckers(item?.file_link)}
                           target="_blank"
                           key={i}
@@ -749,6 +751,16 @@ const Form = ({ setRequest, row }) => {
                 SPECIALIZATION:{' '}
                 <span className={`text-blue-500 uppercase`}>
                   {doctor && doctor[1]}
+                </span>
+              </Label>
+            </div>
+
+            {/* NOTE */}
+            <div className={`mb-3 border-b-2 border-dotted`}>
+              <Label className="text-bold text-md">
+                NOTE:{' '}
+                <span className={`text-blue-500 uppercase`}>
+                  {client?.provider_remarks || 'N/A'}
                 </span>
               </Label>
             </div>
