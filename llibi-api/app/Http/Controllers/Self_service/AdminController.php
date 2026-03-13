@@ -309,7 +309,7 @@ class AdminController extends Controller
             });
         }
 
-        $patients = $q->limit(5)->get();
+        $patients = $q->orderBy('t1.id', 'asc')->get();
 
         if ($patients->isEmpty()) return $patients;
 
