@@ -51,6 +51,7 @@ class Client extends Model
     'landline',
     'opt_contact',
     'follow_up_request_quantity',
+    'provider_remarks',
   ];
 
   /**

@@ -36,6 +36,7 @@ import Swal from 'sweetalert2'
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
 import MUIButton from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
 import Link from 'next/link'
 
 import { CustomPusher } from '@/lib/pusher'
@@ -124,7 +125,7 @@ const Admin = () => {
   const view = async row => {
     try {
       const reponse = await viewBy(row, 'view')
-      // console.log(reponse);
+      // console.log(reponse)
       // return;
 
       if (!reponse.status) return
@@ -730,7 +731,7 @@ const Admin = () => {
                           </td>
                           <td className="border border-gray-300 px-2 py-4 text-center flex flex-col gap-2">
                             <a
-                              className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
+                              className="relative text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
                               onClick={() => {
                                 row.loaType === 'laboratory' &&
                                 row.procedure_type === 'Enumerate'
@@ -747,6 +748,13 @@ const Admin = () => {
                                   : showCallbackModal(row, i)
                               }}>
                               VIEW
+                              {row.provider_remarks && (
+                                <Tooltip title={'Note'} arrow>
+                                  <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white z-10">
+                                    !
+                                  </span>
+                                </Tooltip>
+                              )}
                             </a>
                             <a
                               className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-800 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900"
@@ -761,7 +769,7 @@ const Admin = () => {
                     <tr>
                       <td
                         className="text-center border bg-red-50 p-2 font-semibold"
-                        colSpan={10}>
+                        colSpan={11}>
                         No patient found
                       </td>
                     </tr>
