@@ -1425,61 +1425,68 @@ public function UpdateRequestApproval(Request $request){
 
   public function exportRecords($search = 0, $status = 2, $from = null, $to = null)
   {
-    $request = DB::table('app_portal_clients as t1')
-      ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-      ->leftJoin('users as user', 'user.id', '=', 't1.user_id')
-      ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
-      ->select(
-        't1.id',
-        't1.reference_number as refno',
-        't1.email as email',
-        't1.alt_email as altEmail',
-        't1.contact as contact',
-        't1.member_id as memberID',
-        't1.first_name as firstName',
-        't1.last_name as lastName',
-        't1.remarks as remarks',
-        't1.status as status',
-        't2.loa_type as loaType',
-        't2.loa_number as loaNumber',
-        't2.approval_code as approvalCode',
-        't2.complaint as complaint',
-        't1.created_at as createdAt',
-        't1.approved_date',
-        't1.handling_time as elapse_minutes',
-        // DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
-        // DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
-        'user.first_name as approved_by_first_name',
-        'user.last_name as approved_by_last_name',
-        'user.user_level',
-        'mlist.company_name',
-        't1.platform'
-      )
-      ->whereIn('t1.status', [2, 3, 4, 5])
-      ->where(function ($query) use ($search, $status) {
-        if ($search != 0) {
-          $query->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
+    $buildQuery = function($clientTable, $requestTable) use ($search, $status, $from, $to) {
+      $query = DB::table("{$clientTable} as t1")
+        ->join("{$requestTable} as t2", 't2.client_id', '=', 't1.id')
+        ->leftJoin('users as user', 'user.id', '=', 't1.user_id')
+        ->leftJoin('llibiapp_sync.masterlist as mlist', 'mlist.member_id', '=', 't1.member_id')
+        ->select(
+          't1.id',
+          't1.reference_number as refno',
+          't1.email as email',
+          't1.alt_email as altEmail',
+          't1.contact as contact',
+          't1.member_id as memberID',
+          't1.first_name as firstName',
+          't1.last_name as lastName',
+          't1.remarks as remarks',
+          't1.status as status',
+          't2.loa_type as loaType',
+          't2.loa_number as loaNumber',
+          't2.approval_code as approvalCode',
+          't2.complaint as complaint',
+          't1.created_at as createdAt',
+          't1.approved_date',
+          't1.handling_time as elapse_minutes',
+          // DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+          // DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+          'user.first_name as approved_by_first_name',
+          'user.last_name as approved_by_last_name',
+          'user.user_level',
+          'mlist.company_name',
+          't1.platform'
+        )
+        ->whereIn('t1.status', [2, 3, 4, 5])
+        ->where(function ($q) use ($search, $status) {
+          if ($search != 0) {
+            $q->orWhere('t1.member_id', 'like', '%' . strtoupper($search) . '%');
+            $q->orWhere('t1.first_name', 'like', '%' . strtoupper($search) . '%');
+            $q->orWhere('t1.last_name', 'like', '%' . strtoupper($search) . '%');
 
-          $query->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
-          $query->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
-        }
-        if (is_array($status)) {
-          $query->where('t1.id', $status['val']);
-        } else {
-          if ($status != 0) {
-            $query->where('t1.status', $status);
+            $q->orWhere('t1.dependent_member_id', 'like', '%' . strtoupper($search) . '%');
+            $q->orWhere('t1.dependent_first_name', 'like', '%' . strtoupper($search) . '%');
+            $q->orWhere('t1.dependent_last_name', 'like', '%' . strtoupper($search) . '%');
           }
-        }
-      });
+          if (is_array($status)) {
+            $q->where('t1.id', $status['val']);
+          } else {
+            if ($status != 0) {
+              $q->where('t1.status', $status);
+            }
+          }
+        });
 
-    if ($from && $to) {
-      $request = $request->whereDate('t1.created_at', '>=', $from)->whereDate('t1.created_at', '<=', $to);
-    }
+      if ($from && $to) {
+        $query->whereDate('t1.created_at', '>=', $from)->whereDate('t1.created_at', '<=', $to);
+      }
 
-    $request = $request->orderBy('t1.id', 'DESC')->get();
+      return $query;
+    };
+
+    $request = $buildQuery('app_portal_clients', 'app_portal_requests');
+    $archive = $buildQuery('app_portal_clients_archive', 'app_portal_requests_archive');
+
+    return $request->unionAll($archive)->orderBy('id', 'DESC')->get();
 
     // foreach ($request as $key => $row) {
     //   $tat = 0;
