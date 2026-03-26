@@ -281,6 +281,31 @@ export const useAdmin = ({ name, status }) => {
     }
   }
 
+  const updateRequestHrCall = async({...props}) => {
+    await csrf()
+
+
+    axios.post('/self-service/update-request-hr-call', props)
+        .then((res) => {
+            if(res.status == 200){
+                Swal.fire({
+                    title: "Updated",
+                    text: `Your have successfully updated the request for LOA`,
+                    icon: "success",
+                });
+            }
+        })
+        .catch((err) => {
+            Swal.fire({
+                title: "Update Failed",
+                text: `${err}`,
+                icon: "error",
+            });
+        })
+
+
+  }
+
   /*
         const searchRequest = async ({ setRequest, setLoading, name, status }) => {
             await csrf()
@@ -368,5 +393,6 @@ export const useAdmin = ({ name, status }) => {
     settings,
     updateSettings,
     previewExport,
+    updateRequestHrCall,
   }
 }

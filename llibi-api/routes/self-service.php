@@ -18,8 +18,10 @@ Route::get('/self-service/provider-search-request/{search}/{id}', [ProviderContr
 Route::post('/self-service/provider-update-request', [ProviderController::class, 'UpdateRequest']);
 
 use App\Http\Controllers\Self_service\AdminController;
+use App\Http\Controllers\Self_service\HrController;
 
 Route::get('/self-service/admin-search-request/{search}/{id}', [AdminController::class, 'SearchRequest']);
 Route::post('/self-service/admin-update-request', [AdminController::class, 'UpdateRequest']);
 Route::post('/self-service/admin-update-request-approval', [AdminController::class, 'UpdateRequestApproval']);
+Route::post('/self-service/update-request-hr-call', [HrController::class, 'UpdateRequestHrCall']);
 Route::get('/self-service/get-companies', [AdminController::class, 'GetCompanies']);
