@@ -22,6 +22,13 @@ class HrController extends Controller
         Client::where('id', $request->id)
                 ->update($updateClient);
 
+        $updateClientRequest = [
+            'loa_status' => $callStatus ? "Approved" : "Denied"
+        ];
+
+        ClientRequest::where('client_id', $request->id)
+                    ->update($updateClientRequest);
+
         return response()->json([
             'success' => true
         ], 200);

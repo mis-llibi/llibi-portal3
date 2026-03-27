@@ -263,7 +263,6 @@ class AdminController extends Controller
                 't2.provider_procedure_type as procedure_type',
                 't2.is_excluded as is_excluded',
                 't1.approved_date',
-                't1.elapse_approved_time',
                 DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
                 DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
                 'mlist.company_name',
@@ -626,7 +625,7 @@ public function UpdateRequest(Request $request)
         $getClient->update([
             'elapse_approved_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
         ]);
-        
+
         $getClientRequest->update([
             'elapsed_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
         ]);
