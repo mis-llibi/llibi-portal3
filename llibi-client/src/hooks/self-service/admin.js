@@ -5,29 +5,32 @@ import Swal from 'sweetalert2'
 
 import { env } from '@/../next.config'
 
-export const useAdmin = ({ name, status }) => {
-    const { data: clients, mutate } = useSWR(
-        `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || 8}`,
-        () =>
-          axios
-            .get(
-              `${env.apiPath}/self-service/admin-search-request/${name || 0}/${status || 8}`,
-            )
-            .then(res => res.data)
-            .catch(error => {
-              if (error.response?.status !== 409) throw error;
-              alert('error');
-            }),
-        {
-          revalidateOnFocus: false,
-          revalidateOnMount: true,
-          revalidateOnReconnect: false,
-          refreshWhenOffline: false,
-          refreshWhenHidden: true,
-          refreshInterval: 10000,
-        },
-      );
-
+export const useAdmin = ({ name, status, page = 1 }) => {
+  const { data: clients, mutate } = useSWR(
+    `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
+      status || 8
+    }?page=${page}`,
+    () =>
+      axios
+        .get(
+          `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
+            status || 8
+          }?page=${page}`,
+        )
+        .then(res => res.data)
+        .catch(error => {
+          if (error.response?.status !== 409) throw error
+          alert('error')
+        }),
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: true,
+      revalidateOnReconnect: false,
+      refreshWhenOffline: false,
+      refreshWhenHidden: true,
+      refreshInterval: 10000,
+    },
+  )
 
   const csrf = () => axios.get(`sanctum/csrf-cookie`)
 
@@ -64,7 +67,7 @@ export const useAdmin = ({ name, status }) => {
       .get(
         `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
           status || 2
-        }`,
+        }?page=${page}`,
         { signal: signal },
       )
       .then(() => mutate())
@@ -87,9 +90,6 @@ export const useAdmin = ({ name, status }) => {
     setLoading,
     ...props
   }) => {
-
-
-
     const formData = new FormData()
 
     formData.append('id', props.id)
@@ -110,67 +110,72 @@ export const useAdmin = ({ name, status }) => {
     await csrf()
 
     try {
-        const response = await axios.post(`/self-service/admin-update-request`, formData)
-        mutate()
-        console.log(response)
-        const result = response.data
-        Swal.fire({
-            title: 'Updated',
-            text: `Your have successfully updated the request for LOA`,
-            icon: 'success',
-          })
-          setRequest(result?.all)
-          setClient(result?.client[0])
-          setLoading(false)
+      const response = await axios.post(
+        `/self-service/admin-update-request`,
+        formData,
+      )
+      mutate()
+      console.log(response)
+      const result = response.data
+      Swal.fire({
+        title: 'Updated',
+        text: `Your have successfully updated the request for LOA`,
+        icon: 'success',
+      })
+      setRequest(result?.all)
+      setClient(result?.client[0])
+      setLoading(false)
     } catch (error) {
-        // const nerror = error?.response?.data?.message
-        console.log(error)
-        // swaerror('Update Failed', error)
-        Swal.fire({
-            title: 'Update Failed',
-            text: `${error}`,
-            icon: 'error',
-          })
-        runfinally = false
-        setLoading(false)
+      // const nerror = error?.response?.data?.message
+      console.log(error)
+      // swaerror('Update Failed', error)
+      Swal.fire({
+        title: 'Update Failed',
+        text: `${error}`,
+        icon: 'error',
+      })
+      runfinally = false
+      setLoading(false)
     }
   }
 
-  const updateRequestApproval = async({
+  const updateRequestApproval = async ({
     setRequest,
     setClient,
     setLoading,
     ...props
   }) => {
-
     let runfinally = true
 
     await csrf()
 
     try {
-        const response = await axios.post(`/self-service/admin-update-request-approval`, props)
-        mutate()
-        console.log(response)
-        const result = response.data
-        Swal.fire({
-            title: 'Updated',
-            text: `Your have successfully updated the request for LOA`,
-            icon: 'success',
-          })
-          setRequest(result?.all)
-          setClient(result?.client[0])
-          setLoading(false)
+      const response = await axios.post(
+        `/self-service/admin-update-request-approval`,
+        props,
+      )
+      mutate()
+      console.log(response)
+      const result = response.data
+      Swal.fire({
+        title: 'Updated',
+        text: `Your have successfully updated the request for LOA`,
+        icon: 'success',
+      })
+      setRequest(result?.all)
+      setClient(result?.client[0])
+      setLoading(false)
     } catch (error) {
-        // const nerror = error?.response?.data?.message
-        console.log(error)
-        // swaerror('Update Failed', error)
-        Swal.fire({
-            title: 'Update Failed',
-            text: `${error}`,
-            icon: 'error',
-          })
-        runfinally = false
-        setLoading(false)
+      // const nerror = error?.response?.data?.message
+      console.log(error)
+      // swaerror('Update Failed', error)
+      Swal.fire({
+        title: 'Update Failed',
+        text: `${error}`,
+        icon: 'error',
+      })
+      runfinally = false
+      setLoading(false)
     }
   }
 
@@ -281,29 +286,27 @@ export const useAdmin = ({ name, status }) => {
     }
   }
 
-  const updateRequestHrCall = async({...props}) => {
+  const updateRequestHrCall = async ({ ...props }) => {
     await csrf()
 
-
-    axios.post('/self-service/update-request-hr-call', props)
-        .then((res) => {
-            if(res.status == 200){
-                Swal.fire({
-                    title: "Updated",
-                    text: `Your have successfully updated the request for LOA`,
-                    icon: "success",
-                });
-            }
+    axios
+      .post('/self-service/update-request-hr-call', props)
+      .then(res => {
+        if (res.status == 200) {
+          Swal.fire({
+            title: 'Updated',
+            text: `Your have successfully updated the request for LOA`,
+            icon: 'success',
+          })
+        }
+      })
+      .catch(err => {
+        Swal.fire({
+          title: 'Update Failed',
+          text: `${err}`,
+          icon: 'error',
         })
-        .catch((err) => {
-            Swal.fire({
-                title: "Update Failed",
-                text: `${err}`,
-                icon: "error",
-            });
-        })
-
-
+      })
   }
 
   /*
@@ -384,7 +387,8 @@ export const useAdmin = ({ name, status }) => {
     */
 
   return {
-    clients,
+    clients: clients?.data || clients, // failback to `clients` if not paginated initially or handles `undefined` nicely
+    pagination: clients,
     searchRequest,
     updateRequest,
     updateRequestApproval,

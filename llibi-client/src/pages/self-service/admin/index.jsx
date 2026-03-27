@@ -32,6 +32,7 @@ import axios from '@/lib/axios'
 
 import useSound from 'use-sound'
 import Swal from 'sweetalert2'
+import { intervalToDuration } from 'date-fns'
 
 import Backdrop from '@mui/material/Backdrop'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -80,22 +81,27 @@ const Admin = () => {
 
   const [loadingUnresponsive, setLoadingUnresponsive] = useState(false)
 
+  const [page, setPage] = useState(1)
+
   const {
     clients,
+    pagination,
     searchRequest,
     exporting,
     viewBy,
     settings,
     updateSettings,
     previewExport,
-    updateRequestHrCall
+    updateRequestHrCall,
   } = useAdmin({
     name: name,
     status: searchStatus,
+    page: page,
   })
 
   const checkRequestStatus = data => {
     setSearchStatus(data?.value)
+    setPage(1)
   }
 
   const searchForm = data => {
@@ -107,6 +113,7 @@ const Admin = () => {
     setTimer(
       setTimeout(() => {
         setName(data?.name)
+        setPage(1)
       }, 1000),
     )
     setLoading(false)
@@ -156,6 +163,9 @@ const Admin = () => {
     { value: 9, label: 'Pending Callback' },
     { value: 10, label: 'Failed Callback' },
     { value: 11, label: 'Issued LOA' },
+    { value: 'qr', label: 'QR' },
+    { value: 'viber', label: 'Viber' },
+    { value: 'provider', label: 'Provider' },
   ]
 
   const handleShowModalSetDate = () => setBody(modalExporting)
@@ -436,68 +446,90 @@ const Admin = () => {
     toggle()
   }
 
-  const handleHrCallApprove = (data) => {
+  const formatMinutes = minutes => {
+    const duration = intervalToDuration({ start: 0, end: minutes * 60 * 1000 })
 
-    const mergeData = {
-        ...data,
-        callStatus: true
+    let result = []
+
+    if (duration.days > 0) {
+      result.push(`${duration.days} ${duration.days === 1 ? 'day' : 'days'}`)
     }
 
-    Swal.fire({
-      title: "Approve this request?",
-      text: "This will process the LOA based on the company's configuration.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#16a34a",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Approve",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // setLoading(true);
-        Swal.fire({
-          title: "Processing...",
-          text: "Please wait while we process your request.",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          didOpen: () => Swal.showLoading(),
-        });
-        updateRequestHrCall({
-            ...mergeData
-        })
-      }
-    });
+    if (duration.hours > 0) {
+      result.push(
+        `${duration.hours} ${duration.hours === 1 ? 'hour' : 'hours'}`,
+      )
+    }
+
+    if (duration.minutes > 0 || result.length === 0) {
+      result.push(
+        `${duration.minutes} ${duration.minutes === 1 ? 'minute' : 'minutes'}`,
+      )
+    }
+
+    return result.join(' ')
   }
 
-
-  const handleHrCallDisapprove = (data) => {
+  const handleHrCallApprove = data => {
     const mergeData = {
-        ...data,
-        callStatus: false
+      ...data,
+      callStatus: true,
     }
 
     Swal.fire({
-      title: "Disapprove this request?",
-      text: "This will mark the request as disapproved and notify the patient.",
-      icon: "warning",
+      title: 'Approve this request?',
+      text: "This will process the LOA based on the company's configuration.",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#dc2626",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Disapprove",
-    }).then((result) => {
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Approve',
+    }).then(result => {
       if (result.isConfirmed) {
         // setLoading(true);
         Swal.fire({
-          title: "Processing...",
-          text: "Please wait while we process your request.",
+          title: 'Processing...',
+          text: 'Please wait while we process your request.',
           allowOutsideClick: false,
           allowEscapeKey: false,
           didOpen: () => Swal.showLoading(),
-        });
+        })
         updateRequestHrCall({
-            ...mergeData
+          ...mergeData,
         })
       }
-    });
+    })
+  }
+
+  const handleHrCallDisapprove = data => {
+    const mergeData = {
+      ...data,
+      callStatus: false,
+    }
+
+    Swal.fire({
+      title: 'Disapprove this request?',
+      text: 'This will mark the request as disapproved and notify the patient.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Disapprove',
+    }).then(result => {
+      if (result.isConfirmed) {
+        // setLoading(true);
+        Swal.fire({
+          title: 'Processing...',
+          text: 'Please wait while we process your request.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => Swal.showLoading(),
+        })
+        updateRequestHrCall({
+          ...mergeData,
+        })
+      }
+    })
   }
 
   return (
@@ -508,8 +540,8 @@ const Admin = () => {
       {/* <video ref={videoRef} controls autoPlay muted className="hidden">
         <source src="/thepurge.mp3" type="audio/mpeg" />
       </video> */}
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div className="py-10">
+        <div className="max-w-8xl mx-auto sm:px-6 lg:px-8">
           {/* Main form white background */}
           <div className="p-6 bg-white border-b border-gray-300 shadow-sm sm:rounded-lg">
             {/* Main Header, title and logo */}
@@ -563,8 +595,8 @@ const Admin = () => {
 
             {/* Action Form */}
             <form onChange={handleSubmit(searchForm)} className="w-full">
-              <div className="flex mb-5 gap-1 items-center justify-between">
-                <div className="flex gap-1">
+              <div className="flex flex-col md:flex-row mb-5 gap-3 items-start md:items-center justify-between">
+                <div className="flex flex-wrap gap-2">
                   {[2, 3].includes(user?.user_level) && (
                     <>
                       <Button
@@ -592,7 +624,7 @@ const Admin = () => {
                         Search to masterlist
                       </a>
                       <a
-                        className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs"
+                        className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs whitespace-nowrap"
                         href="/manage-complaint"
                         target="_blank">
                         Complaints Management
@@ -600,7 +632,7 @@ const Admin = () => {
                     </>
                   )}
                   <a
-                    className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
+                    className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs whitespace-nowrap"
                     href="/complaint/error-logs"
                     target="_blank">
                     client portal error logs
@@ -608,7 +640,7 @@ const Admin = () => {
                 </div>
                 <Button
                   type="button"
-                  className="text-[.55em]"
+                  className="text-[.55em] mt-2 md:mt-0"
                   onClick={handleShowModalViewPolicy}>
                   View/Upload Policy
                 </Button>
@@ -648,241 +680,292 @@ const Admin = () => {
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
                 </div>
 
-                <div className='flex basis-1/4 items-center justify-end'>
-                    <a
-                        className='text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs'
-                        href="#"
-                    >
-                        HR Manual
-                    </a>
+                <div className="flex basis-1/4 items-center justify-end">
+                  <a
+                    className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
+                    href="#">
+                    HR Manual
+                  </a>
                 </div>
-
-
               </div>
 
-              <table className="table-auto w-full">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="border border-gray-300 p-2 text-center">
-                      Member ID
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      COMPANY/PROVIDER
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      Patient's Name
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      LOA Type
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      Reference Number
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      Status
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      Remaining
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      D/T Created
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      Follow Up Request/s
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center">
-                      PLATFORM
-                    </th>
-                    <th className="border border-gray-300 p-2 text-center"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clients?.length > 0 ? (
-                    clients?.map((row, i) => {
-                    //   console.log(row)
-                      return (
-                        <tr
-                          key={i}
-                          className={`${
-                            (row.status === 2 && 'bg-orange-50') ||
-                            (row.status === 3 && 'bg-green-50') ||
-                            (row.status === 4 && 'bg-red-100') ||
-                            (row.status === 5 && 'bg-purple-100') ||
-                            (row.status === 6 && 'bg-yellow-100') ||
-                            (row.status === 7 && 'bg-blue-100') ||
-                            (row.status === 9 && 'bg-deep-orange-50') ||
-                            (row.status === 10 && 'bg-yellow-50')
-                          } ${
-                            (row.follow_up_request_quantity === 1 &&
-                              'outline outline-4 outline-red-500/30 relative') ||
-                            (row.follow_up_request_quantity === 2 &&
-                              'outline outline-4 outline-red-500/60 relative') ||
-                            (row.follow_up_request_quantity >= 3 &&
-                              'outline outline-4 outline-red-500 relative') ||
-                            ''
-                          }`}>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.isDependent ? row.depMemberID : row.memberID}
-                            {row.isDependent === null && row.memberID === null
-                              ? row.providerID
-                              : null}
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            {/* {row.company_name} */}
-                            {
-                                row.loaType === 'callback'
-                              ? row.providerName
-                              : row.company_name}
-                            {
-                                row.loaType === 'callback' &&
-                                row.providerName === null
-                              ? row.company_name
-                              : null
-                            }
-
-                          </td>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.isDependent
-                              ? `${row.depLastName}, ${row.depFirstName}`
-                              : row.isDependent === null &&
-                                (row.lastName === null) &
-                                  (row.firstName === null)
-                              ? '-'
-                              : `${row.lastName}, ${row.firstName}`}
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            {/* {row.loaType.toUpperCase() || 'N/A'} */}
-                            {row?.loaType === 'callback' && row?.providerName
-                              ? `${row?.loaType} - Provider`.toUpperCase()
-                              : row?.loaType === 'callback' &&
-                                row?.providerName === null
-                              ? `${row?.loaType} - Member`.toUpperCase()
-                              : row?.loaType?.toUpperCase() || 'N/A'}
-                          </td>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.refno || '-'}
-                          </td>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.status === 2 && 'Pending'}
-                            {row.status === 3 && 'Approved LOA'}
-                            {row.status === 4 && 'Disapproved'}
-                            {row.status === 5 && 'Downloaded'}
-                            {row.status === 6 && 'Not Viewed'}
-                            {row.status === 7 && 'Approved Callback'}
-                            {row.status === 9 && 'Pending Callback'}
-                            {row.status === 10 && 'Failed Callback'}
-                            {'\n'}
-                            <span>
-                              {row?.total_remaining >= 1 &&
-                              row?.is_complaint_has_approved == 1 &&
-                              row.is_excluded == 1
-                                ? '(Possible Exclusion)'
-                                : row?.total_remaining >= 1 &&
-                                  row?.is_complaint_has_approved == 1 &&
-                                  row?.is_excluded == 0
-                                ? '(System Approved)'
-                                : row?.is_complaint_has_approved == 1 &&
-                                  row.is_excluded == 1
-                                ? '(System Disapproved)'
-                                : row?.is_complaint_has_approved == 1
-                                ? '(System Disapproved)'
-                                : ''}
-                            </span>
-                          </td>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.total_remaining <= 0 ? 0 : row.total_remaining}
-                          </td>
-                          <td className="border border-gray-300 p-2">
-                            {row.createdAt}
-                          </td>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.follow_up_request_quantity
-                              ? row.follow_up_request_quantity
-                              : '-'}
-                          </td>
-                          <td className="border border-gray-300 p-2 text-center">
-                            {row.platform === 'viber'
-                              ? 'VIBER'
-                              : row.platform === 'qr'
-                              ? 'QR'
-                              : row.platform === 'provider'
-                              ? 'PROVIDER'
-                              : row.platform === 'hr'
-                              ? 'HR'
-                              : '-'
-                            }
-                          </td>
-                          <td className="border border-gray-300 px-2 py-4 text-center flex flex-col gap-2">
-                            {row?.loaType == null && row?.status == 13 ? (
-                                <>
-                                <div className='flex flex-col gap-3'>
-                                    <button
+              <div className="overflow-x-auto w-full">
+                <table className="table-auto w-full min-w-[800px]">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Member ID
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        COMPANY/PROVIDER
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Patient's Name
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        LOA Type
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Reference Number
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Status
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Remaining
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        D/T Created
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        D/T Approved
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Elapsed Approved Time
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        Follow Up Request/s
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center">
+                        PLATFORM
+                      </th>
+                      <th className="border border-gray-300 p-2 text-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clients?.length > 0 ? (
+                      clients?.map((row, i) => {
+                        // console.log(row)
+                        return (
+                          <tr
+                            key={i}
+                            className={`${
+                              (row.status === 2 && 'bg-orange-50') ||
+                              (row.status === 3 && 'bg-green-50') ||
+                              (row.status === 4 && 'bg-red-100') ||
+                              (row.status === 5 && 'bg-purple-100') ||
+                              (row.status === 6 && 'bg-yellow-100') ||
+                              (row.status === 7 && 'bg-blue-100') ||
+                              (row.status === 9 && 'bg-deep-orange-50') ||
+                              (row.status === 10 && 'bg-yellow-50')
+                            } ${
+                              (row.follow_up_request_quantity === 1 &&
+                                'ring-2 ring-inset ring-red-500/30 relative') ||
+                              (row.follow_up_request_quantity === 2 &&
+                                'ring-2 ring-inset ring-red-500/60 relative') ||
+                              (row.follow_up_request_quantity >= 3 &&
+                                'ring-2 ring-inset ring-red-500 relative') ||
+                              ''
+                            }`}>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.isDependent ? row.depMemberID : row.memberID}
+                              {row.isDependent === null && row.memberID === null
+                                ? row.providerID
+                                : null}
+                            </td>
+                            <td className="border border-gray-300 p-2">
+                              {/* {row.company_name} */}
+                              {row.loaType === 'callback'
+                                ? row.providerName
+                                : row.company_name}
+                              {row.loaType === 'callback' &&
+                              row.providerName === null
+                                ? row.company_name
+                                : null}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.isDependent
+                                ? `${row.depLastName}, ${row.depFirstName}`
+                                : row.isDependent === null &&
+                                  (row.lastName === null) &
+                                    (row.firstName === null)
+                                ? '-'
+                                : `${row.lastName}, ${row.firstName}`}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {/* {row.loaType.toUpperCase() || 'N/A'} */}
+                              {row?.loaType === 'callback' && row?.providerName
+                                ? `${row?.loaType} - Provider`.toUpperCase()
+                                : row?.loaType === 'callback' &&
+                                  row?.providerName === null
+                                ? `${row?.loaType} - Member`.toUpperCase()
+                                : row?.loaType?.toUpperCase() || 'N/A'}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.refno || '-'}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.status === 2 && 'Pending'}
+                              {row.status === 3 && 'Approved LOA'}
+                              {row.status === 4 && 'Disapproved'}
+                              {row.status === 5 && 'Downloaded'}
+                              {row.status === 6 && 'Not Viewed'}
+                              {row.status === 7 && 'Approved Callback'}
+                              {row.status === 9 && 'Pending Callback'}
+                              {row.status === 10 && 'Failed Callback'}
+                              {'\n'}
+                              <span>
+                                {row?.total_remaining >= 1 &&
+                                row?.is_complaint_has_approved == 1 &&
+                                row.is_excluded == 1
+                                  ? '(Possible Exclusion)'
+                                  : row?.total_remaining >= 1 &&
+                                    row?.is_complaint_has_approved == 1 &&
+                                    row?.is_excluded == 0
+                                  ? '(System Approved)'
+                                  : row?.is_complaint_has_approved == 1 &&
+                                    row.is_excluded == 1
+                                  ? '(System Disapproved)'
+                                  : row?.is_complaint_has_approved == 1
+                                  ? '(System Disapproved)'
+                                  : ''}
+                              </span>
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.total_remaining <= 0
+                                ? 0
+                                : row.total_remaining}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.createdAt}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.approved_date ? row.approved_date : '-'}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.elapse_approved_time
+                                ? formatMinutes(row.elapse_approved_time)
+                                : '-'}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.follow_up_request_quantity
+                                ? row.follow_up_request_quantity
+                                : '-'}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              {row.platform === 'viber'
+                                ? 'VIBER'
+                                : row.platform === 'qr'
+                                ? 'QR'
+                                : row.platform === 'provider'
+                                ? 'PROVIDER'
+                                : row.platform === 'hr'
+                                ? 'HR'
+                                : '-'}
+                            </td>
+                            <td className="border border-gray-300 p-2 text-center">
+                              <div className="flex flex-col gap-2 h-full justify-center">
+                                {row?.loaType == null && row?.status == 13 ? (
+                                  <>
+                                    <div className="flex flex-col gap-3">
+                                      <button
                                         className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-600 hover:bg-green-500 active:bg-green-700 focus:outline-none"
                                         onClick={() => handleHrCallApprove(row)}
-                                        type='button'
-                                    >
-                                    Approve
-                                    </button>
-                                    <button
+                                        type="button">
+                                        Approve
+                                      </button>
+                                      <button
                                         className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-red-600 hover:bg-red-500 active:bg-red-700 focus:outline-none"
-                                        onClick={() => handleHrCallDisapprove(row)}
-                                        type='button'
-                                    >
-                                    Disapprove
-                                    </button>
-                                </div>
-                                </>
-                            ): (
-                                <>
-                                <a
-                                className="relative text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
-                                onClick={() => {
-                                    row.loaType === 'laboratory' &&
-                                    row.procedure_type === 'Enumerate'
-                                    ? viewProviderLaboratory(row)
-                                    : row.loaType === 'consultation' ||
-                                        row.loaType === 'laboratory'
-                                    ? view(row)
-                                    : row.isDependent === null &&
-                                        row.memberID === null
-                                    ? showCallbackModalProvider(row, i)
-                                    : row.loaType === 'approval' &&
-                                        row.platform == 'provider'
-                                    ? viewProviderApproval(row)
-                                    : showCallbackModal(row, i)
+                                        onClick={() =>
+                                          handleHrCallDisapprove(row)
+                                        }
+                                        type="button">
+                                        Disapprove
+                                      </button>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <a
+                                      className="relative text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
+                                      onClick={() => {
+                                        row.loaType === 'laboratory' &&
+                                        row.procedure_type === 'Enumerate'
+                                          ? viewProviderLaboratory(row)
+                                          : row.loaType === 'consultation' ||
+                                            row.loaType === 'laboratory'
+                                          ? view(row)
+                                          : row.isDependent === null &&
+                                            row.memberID === null
+                                          ? showCallbackModalProvider(row, i)
+                                          : row.loaType === 'approval' &&
+                                            row.platform == 'provider'
+                                          ? viewProviderApproval(row)
+                                          : showCallbackModal(row, i)
+                                      }}>
+                                      VIEW
+                                      {row.provider_remarks && (
+                                        <Tooltip title={'Note'} arrow>
+                                          <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white z-10">
+                                            !
+                                          </span>
+                                        </Tooltip>
+                                      )}
+                                    </a>
+                                    <a
+                                      className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-800 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900"
+                                      onClick={() => showLoas(row)}>
+                                      LOAs
+                                    </a>
+                                  </>
+                                )}{' '}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })
+                    ) : (
+                      <tr>
+                        <td
+                          className="text-center border bg-red-50 p-2 font-semibold"
+                          colSpan={14}>
+                          No patient found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-                                }}>
-                                VIEW
-                                {row.provider_remarks && (
-                                    <Tooltip title={'Note'} arrow>
-                                    <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white z-10">
-                                        !
-                                    </span>
-                                    </Tooltip>
-                                )}
-                                </a>
-                                <a
-                                className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-800 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900"
-                                onClick={() => showLoas(row)}>
-                                LOAs
-                                </a>
-                                </>
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    })
-                  ) : (
-                    <tr>
-                      <td
-                        className="text-center border bg-red-50 p-2 font-semibold"
-                        colSpan={11}>
-                        No patient found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+              {/* Pagination UI */}
+              {pagination && pagination.last_page > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <div className="text-sm text-gray-500">
+                    Showing{' '}
+                    <span className="font-medium">{pagination.from}</span> to{' '}
+                    <span className="font-medium">{pagination.to}</span> of{' '}
+                    <span className="font-medium">{pagination.total}</span>{' '}
+                    results
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={page === 1}
+                      onClick={() => setPage(page - 1)}
+                      className={`px-3 py-1 border rounded-md text-sm ${
+                        page === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white hover:bg-gray-50 text-gray-700'
+                      }`}>
+                      Previous
+                    </button>
+                    <span className="self-center px-2 text-gray-600 text-sm">
+                      Page {page} of {pagination.last_page}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={page === pagination.last_page}
+                      onClick={() => setPage(page + 1)}
+                      className={`px-3 py-1 border rounded-md text-sm ${
+                        page === pagination.last_page
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white hover:bg-gray-50 text-gray-700'
+                      }`}>
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </form>
             {/* End Table */}
           </div>

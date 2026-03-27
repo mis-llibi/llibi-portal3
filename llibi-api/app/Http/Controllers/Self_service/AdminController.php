@@ -263,6 +263,7 @@ class AdminController extends Controller
                 't2.provider_procedure_type as procedure_type',
                 't2.is_excluded as is_excluded',
                 't1.approved_date',
+                't1.elapse_approved_time',
                 DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
                 DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
                 'mlist.company_name',
@@ -279,13 +280,19 @@ class AdminController extends Controller
                 't3.updated_at as callback_updated_at',
                 't2.type_approval_code',
                 't2.approval_code_loanumber',
-            )
-            ->whereBetween('t1.created_at', [$start, $end]);
+            );
+
+        if ($id == 8 || in_array($id, [2, 6, 9])) {
+            $q->whereBetween('t1.created_at', [$start, $end]);
+        }
 
         // status filter
         $q->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
                 $query->whereIn('t1.status', $defaultStatuses);
+            } elseif (in_array($id, ['qr', 'viber', 'provider'])) {
+                $query->where('t1.platform', $id)
+                      ->where('t1.status', '!=', 1);
             } elseif (is_array($id)) {
                 $query->where('t1.id', $id['val']);
             } else {
@@ -309,7 +316,8 @@ class AdminController extends Controller
             });
         }
 
-        $patients = $q->orderBy('t1.id', 'asc')->get();
+        $sortDirection = ($id == 8 || in_array($id, [2, 6, 9])) ? 'asc' : 'desc';
+        $patients = $q->orderBy('t1.id', $sortDirection)->paginate(10);
 
         if ($patients->isEmpty()) return $patients;
 
@@ -336,7 +344,7 @@ class AdminController extends Controller
         $status = [1, 4];
         $types  = ['outpatient', 'laboratory', 'consultation'];
 
-        $patients->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
+        $patients->getCollection()->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
             $fullname = $p->isDependent
                 ? "{$p->depLastName}, {$p->depFirstName}"
                 : "{$p->lastName}, {$p->firstName}";
@@ -612,11 +620,15 @@ public function UpdateRequest(Request $request)
 
     if($updateRequest){
         // Update elapsed_time
-        $getClient = ClientRequest::where('client_id', $request->id)
-                                    ->first();
+        $getClientRequest = ClientRequest::where('client_id', $request->id)->first();
+        $getClient = Client::where('id', $request->id)->first();
 
         $getClient->update([
-            'elapsed_time' => $getClient->created_at->diffInMinutes($getClient->updated_at)
+            'elapse_approved_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
+        ]);
+        
+        $getClientRequest->update([
+            'elapsed_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
         ]);
     }
 
