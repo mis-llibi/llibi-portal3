@@ -88,6 +88,7 @@ const Admin = () => {
     settings,
     updateSettings,
     previewExport,
+    updateRequestHrCall
   } = useAdmin({
     name: name,
     status: searchStatus,
@@ -435,6 +436,70 @@ const Admin = () => {
     toggle()
   }
 
+  const handleHrCallApprove = (data) => {
+
+    const mergeData = {
+        ...data,
+        callStatus: true
+    }
+
+    Swal.fire({
+      title: "Approve this request?",
+      text: "This will process the LOA based on the company's configuration.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#16a34a",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Approve",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // setLoading(true);
+        Swal.fire({
+          title: "Processing...",
+          text: "Please wait while we process your request.",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => Swal.showLoading(),
+        });
+        updateRequestHrCall({
+            ...mergeData
+        })
+      }
+    });
+  }
+
+
+  const handleHrCallDisapprove = (data) => {
+    const mergeData = {
+        ...data,
+        callStatus: false
+    }
+
+    Swal.fire({
+      title: "Disapprove this request?",
+      text: "This will mark the request as disapproved and notify the patient.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Disapprove",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // setLoading(true);
+        Swal.fire({
+          title: "Processing...",
+          text: "Please wait while we process your request.",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => Swal.showLoading(),
+        });
+        updateRequestHrCall({
+            ...mergeData
+        })
+      }
+    });
+  }
+
   return (
     <ProviderLayout>
       <Head>
@@ -582,6 +647,17 @@ const Admin = () => {
                 <div className="basis-1/3 flex place-items-center pl-5">
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
                 </div>
+
+                <div className='flex basis-1/4 items-center justify-end'>
+                    <a
+                        className='text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs'
+                        href="#"
+                    >
+                        HR Manual
+                    </a>
+                </div>
+
+
               </div>
 
               <table className="table-auto w-full">
@@ -623,7 +699,7 @@ const Admin = () => {
                 <tbody>
                   {clients?.length > 0 ? (
                     clients?.map((row, i) => {
-                      console.log(row)
+                    //   console.log(row)
                       return (
                         <tr
                           key={i}
@@ -653,13 +729,17 @@ const Admin = () => {
                           </td>
                           <td className="border border-gray-300 p-2">
                             {/* {row.company_name} */}
-                            {row.loaType === 'callback'
+                            {
+                                row.loaType === 'callback'
                               ? row.providerName
                               : row.company_name}
-                            {row.loaType === 'callback' &&
-                            row.providerName === null
+                            {
+                                row.loaType === 'callback' &&
+                                row.providerName === null
                               ? row.company_name
-                              : null}
+                              : null
+                            }
+
                           </td>
                           <td className="border border-gray-300 p-2 text-center">
                             {row.isDependent
@@ -672,12 +752,12 @@ const Admin = () => {
                           </td>
                           <td className="border border-gray-300 p-2">
                             {/* {row.loaType.toUpperCase() || 'N/A'} */}
-                            {row.loaType === 'callback' && row.providerName
-                              ? `${row.loaType} - Provider`.toUpperCase()
-                              : row.loaType === 'callback' &&
-                                row.providerName === null
-                              ? `${row.loaType} - Member`.toUpperCase()
-                              : row.loaType.toUpperCase() || 'N/A'}
+                            {row?.loaType === 'callback' && row?.providerName
+                              ? `${row?.loaType} - Provider`.toUpperCase()
+                              : row?.loaType === 'callback' &&
+                                row?.providerName === null
+                              ? `${row?.loaType} - Member`.toUpperCase()
+                              : row?.loaType?.toUpperCase() || 'N/A'}
                           </td>
                           <td className="border border-gray-300 p-2 text-center">
                             {row.refno || '-'}
@@ -727,40 +807,67 @@ const Admin = () => {
                               ? 'QR'
                               : row.platform === 'provider'
                               ? 'PROVIDER'
-                              : '-'}
+                              : row.platform === 'hr'
+                              ? 'HR'
+                              : '-'
+                            }
                           </td>
                           <td className="border border-gray-300 px-2 py-4 text-center flex flex-col gap-2">
-                            <a
-                              className="relative text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
-                              onClick={() => {
-                                row.loaType === 'laboratory' &&
-                                row.procedure_type === 'Enumerate'
-                                  ? viewProviderLaboratory(row)
-                                  : row.loaType === 'consultation' ||
-                                    row.loaType === 'laboratory'
-                                  ? view(row)
-                                  : row.isDependent === null &&
-                                    row.memberID === null
-                                  ? showCallbackModalProvider(row, i)
-                                  : row.loaType === 'approval' &&
-                                    row.platform == 'provider'
-                                  ? viewProviderApproval(row)
-                                  : showCallbackModal(row, i)
-                              }}>
-                              VIEW
-                              {row.provider_remarks && (
-                                <Tooltip title={'Note'} arrow>
-                                  <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white z-10">
-                                    !
-                                  </span>
-                                </Tooltip>
-                              )}
-                            </a>
-                            <a
-                              className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-800 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900"
-                              onClick={() => showLoas(row)}>
-                              LOAs
-                            </a>
+                            {row?.loaType == null && row?.status == 13 ? (
+                                <>
+                                <div className='flex flex-col gap-3'>
+                                    <button
+                                        className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-600 hover:bg-green-500 active:bg-green-700 focus:outline-none"
+                                        onClick={() => handleHrCallApprove(row)}
+                                        type='button'
+                                    >
+                                    Approve
+                                    </button>
+                                    <button
+                                        className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-red-600 hover:bg-red-500 active:bg-red-700 focus:outline-none"
+                                        onClick={() => handleHrCallDisapprove(row)}
+                                        type='button'
+                                    >
+                                    Disapprove
+                                    </button>
+                                </div>
+                                </>
+                            ): (
+                                <>
+                                <a
+                                className="relative text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-blue-800 hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900"
+                                onClick={() => {
+                                    row.loaType === 'laboratory' &&
+                                    row.procedure_type === 'Enumerate'
+                                    ? viewProviderLaboratory(row)
+                                    : row.loaType === 'consultation' ||
+                                        row.loaType === 'laboratory'
+                                    ? view(row)
+                                    : row.isDependent === null &&
+                                        row.memberID === null
+                                    ? showCallbackModalProvider(row, i)
+                                    : row.loaType === 'approval' &&
+                                        row.platform == 'provider'
+                                    ? viewProviderApproval(row)
+                                    : showCallbackModal(row, i)
+
+                                }}>
+                                VIEW
+                                {row.provider_remarks && (
+                                    <Tooltip title={'Note'} arrow>
+                                    <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white z-10">
+                                        !
+                                    </span>
+                                    </Tooltip>
+                                )}
+                                </a>
+                                <a
+                                className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-800 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900"
+                                onClick={() => showLoas(row)}>
+                                LOAs
+                                </a>
+                                </>
+                            )}
                           </td>
                         </tr>
                       )

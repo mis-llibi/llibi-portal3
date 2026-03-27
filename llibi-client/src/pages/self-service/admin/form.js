@@ -294,7 +294,7 @@ const Form = ({ setRequest, row }) => {
         {/* Patients personal & Membership information */}
         <div className="basis-2/5 m-4 p-2 rounded-md">
           {/* Memberhip Details FORM */}
-          <div className={`mb-5 ${client?.status !== 2 && 'hidden'}`}>
+          <div className={`mb-5 ${client?.status !== 2 || client?.status !== 13 && 'hidden'}`}>
             <input type="hidden" {...register('id')} value={client?.id} />
             <h2 className="text-xl mb-2 w-full text-center">MANAGE LOA</h2>
             <div className="mb-3 border-b-2 border-dotted pb-1">

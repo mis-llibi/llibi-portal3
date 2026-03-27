@@ -205,13 +205,13 @@ class AdminController extends Controller
 
     public function SearchRequest($search, $id)
     {
-        $defaultStatuses = [2, 6, 9];
+        $defaultStatuses = [2, 6, 9, 13];
         $start = Carbon::yesterday()->startOfDay();
         $end   = now()->endOfDay();
 
         $q = DB::table('app_portal_clients as t1')
-            ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-            ->join('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
+            ->leftJoin('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+            ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
             ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
                 $join->on('mlist.member_id', '=', DB::raw("
                     CASE
