@@ -19,8 +19,7 @@ import { ManageEnumerateLaboratory } from '@/hooks/self-service/ManageEnumerateL
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
-
-export default function ProcedureForm ({ setRequest, row }) {
+export default function ProcedureForm({ setRequest, row, toggle }) {
   const { procedure } = ManageEnumerateLaboratory({ id: row?.id })
 
   console.log(procedure)
@@ -38,7 +37,7 @@ export default function ProcedureForm ({ setRequest, row }) {
   const [loading, setLoading] = useState(false)
   const [client, setClient] = useState(row)
 
-  const attachLOA = watch("attachLOA");
+  const attachLOA = watch('attachLOA')
 
   const { updateRequest, viewBy } = useAdmin({ name: '', status: '' })
 
@@ -60,7 +59,13 @@ export default function ProcedureForm ({ setRequest, row }) {
     }).then(result => {
       if (result.isConfirmed) {
         setLoading(true)
-        updateRequest({ setRequest, setClient, setLoading, ...dataMerge })
+        updateRequest({
+          setRequest,
+          setClient,
+          setLoading,
+          onSuccess: toggle,
+          ...dataMerge,
+        })
       }
     })
   }
@@ -68,14 +73,17 @@ export default function ProcedureForm ({ setRequest, row }) {
   useEffect(() => {
     if (attachLOA && attachLOA.length > 0) {
       // Get the file name without the extension
-      const fileNameWithoutExtension = attachLOA[0].name.replace(/\.[^/.]+$/, "");
+      const fileNameWithoutExtension = attachLOA[0].name.replace(
+        /\.[^/.]+$/,
+        '',
+      )
 
-    //   console.log("File Name Without Extension:", fileNameWithoutExtension);
+      //   console.log("File Name Without Extension:", fileNameWithoutExtension);
 
       // Set the value without the extension in the form
-      setValue("loaNumber", fileNameWithoutExtension);
+      setValue('loaNumber', fileNameWithoutExtension)
     }
-  }, [attachLOA, setValue]);
+  }, [attachLOA, setValue])
 
   useEffect(() => {
     resetField('attachLOA')
@@ -249,21 +257,17 @@ export default function ProcedureForm ({ setRequest, row }) {
     // Check if the link starts with http or https
     if (!Link.match(/^(http|https):/)) {
       return `${basePath}/${Link}`
-    }else{
+    } else {
       return Link
     }
   }
-
-
 
   return (
     <form onSubmit={handleSubmit(submitForm)}>
       <div className="flex">
         <div className="basis-3/5">
           <div className="flex flex-col h-screen">
-            {
-
-            client?.loaAttachment && client?.status !== 4 ? (
+            {client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
                 data={linkChecker(client?.loaAttachment)}
@@ -629,9 +633,7 @@ export default function ProcedureForm ({ setRequest, row }) {
               }`}>
               <Label className="text-bold text-md">
                 DIAGNOSIS:{' '}
-                <span className={`text-blue-500`}>
-                  {client?.diagnosis}
-                </span>
+                <span className={`text-blue-500`}>{client?.diagnosis}</span>
               </Label>
             </div>
           </div>
@@ -654,8 +656,7 @@ export default function ProcedureForm ({ setRequest, row }) {
           </div>
 
           {/* LABORATORY: Assessment Form */}
-          <div
-            className={`mb-5`}>
+          <div className={`mb-5`}>
             <h2 className="text-xl mb-2 w-full text-center">
               HEALTH ASSESSMENT (LABORATORY)
             </h2>
@@ -704,40 +705,45 @@ export default function ProcedureForm ({ setRequest, row }) {
                 )}
               </div> */}
 
-                <div className="w-full overflow-x-auto rounded-lg shadow">
-                    <table className="min-w-full border-collapse">
-                        <thead>
-                        <tr className="bg-[#1E3161] text-white">
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Procedure Name</th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold">Cost</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {procedure?.procedures.map((row, i) => (
-                            <tr
-                            key={i}
-                            className="border-b hover:bg-blue-50 transition-colors"
-                            >
-                            <td className="px-4 py-3 text-sm font-medium text-gray-700 break-words">
-                                {row.procedure_name}
-                            </td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-700 break-words">
-                                {row.cost}
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                        <tfoot>
-                        <tr className="bg-gray-100 font-semibold">
-                            <td className="px-4 py-3 text-sm text-gray-800">Total</td>
-                            <td className="px-4 py-3 text-sm text-gray-800">
-                            {procedure?.procedures.reduce((sum, row) => sum + Number(row.cost || 0), 0)}
-                            </td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
+              <div className="w-full overflow-x-auto rounded-lg shadow">
+                <table className="min-w-full border-collapse">
+                  <thead>
+                    <tr className="bg-[#1E3161] text-white">
+                      <th className="px-4 py-3 text-left text-sm font-semibold">
+                        Procedure Name
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">
+                        Cost
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {procedure?.procedures.map((row, i) => (
+                      <tr
+                        key={i}
+                        className="border-b hover:bg-blue-50 transition-colors">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-700 break-words">
+                          {row.procedure_name}
+                        </td>
+                        <td className="px-4 py-3 text-sm font-medium text-gray-700 break-words">
+                          {row.cost}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-gray-100 font-semibold">
+                      <td className="px-4 py-3 text-sm text-gray-800">Total</td>
+                      <td className="px-4 py-3 text-sm text-gray-800">
+                        {procedure?.procedures.reduce(
+                          (sum, row) => sum + Number(row.cost || 0),
+                          0,
+                        )}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -850,5 +856,3 @@ export default function ProcedureForm ({ setRequest, row }) {
     </form>
   )
 }
-
-

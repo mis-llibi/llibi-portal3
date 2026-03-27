@@ -140,7 +140,7 @@ const Admin = () => {
 
       setBody({
         title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-        content: <Form setRequest={setRequest} row={row} />,
+        content: <Form setRequest={setRequest} row={row} toggle={toggle} />,
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',
@@ -396,7 +396,9 @@ const Admin = () => {
 
       setBody({
         title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-        content: <ProcedureForm setRequest={setRequest} row={row} />,
+        content: (
+          <ProcedureForm setRequest={setRequest} row={row} toggle={toggle} />
+        ),
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',
@@ -419,7 +421,9 @@ const Admin = () => {
 
       setBody({
         title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-        content: <ApprovalForm setRequest={setRequest} row={row} />,
+        content: (
+          <ApprovalForm setRequest={setRequest} row={row} toggle={toggle} />
+        ),
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',
@@ -803,6 +807,7 @@ const Admin = () => {
                               {row.status === 7 && 'Approved Callback'}
                               {row.status === 9 && 'Pending Callback'}
                               {row.status === 10 && 'Failed Callback'}
+                              {row.status === 13 && 'Pending'}
                               {'\n'}
                               <span>
                                 {row?.total_remaining >= 1 &&
@@ -833,8 +838,8 @@ const Admin = () => {
                               {row.approved_date ? row.approved_date : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
-                              {row.elapse_approved_time
-                                ? formatMinutes(row.elapse_approved_time)
+                              {row.elapsed_time
+                                ? formatMinutes(row.elapsed_time)
                                 : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">

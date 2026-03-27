@@ -88,6 +88,7 @@ export const useAdmin = ({ name, status, page = 1 }) => {
     setRequest,
     setClient,
     setLoading,
+    onSuccess,
     ...props
   }) => {
     const formData = new FormData()
@@ -121,6 +122,8 @@ export const useAdmin = ({ name, status, page = 1 }) => {
         title: 'Updated',
         text: `Your have successfully updated the request for LOA`,
         icon: 'success',
+      }).then(() => {
+        if (onSuccess) onSuccess()
       })
       setRequest(result?.all)
       setClient(result?.client[0])
@@ -143,6 +146,7 @@ export const useAdmin = ({ name, status, page = 1 }) => {
     setRequest,
     setClient,
     setLoading,
+    onSuccess,
     ...props
   }) => {
     let runfinally = true
@@ -161,6 +165,8 @@ export const useAdmin = ({ name, status, page = 1 }) => {
         title: 'Updated',
         text: `Your have successfully updated the request for LOA`,
         icon: 'success',
+      }).then(() => {
+        if (onSuccess) onSuccess()
       })
       setRequest(result?.all)
       setClient(result?.client[0])

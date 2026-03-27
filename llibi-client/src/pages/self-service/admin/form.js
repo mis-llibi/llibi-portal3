@@ -19,7 +19,7 @@ import { ManageUploadedFiles } from '@/hooks/self-service/ManageUploadedFiles'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
-const Form = ({ setRequest, row }) => {
+const Form = ({ setRequest, row, toggle }) => {
   const { files } = ManageUploadedFiles({ id: row?.id })
 
   const onImageError = ev => {
@@ -61,7 +61,13 @@ const Form = ({ setRequest, row }) => {
     }).then(result => {
       if (result.isConfirmed) {
         setLoading(true)
-        updateRequest({ setRequest, setClient, setLoading, ...dataMerge })
+        updateRequest({
+          setRequest,
+          setClient,
+          setLoading,
+          onSuccess: toggle,
+          ...dataMerge,
+        })
       }
     })
   }
@@ -296,7 +302,10 @@ const Form = ({ setRequest, row }) => {
         {/* Patients personal & Membership information */}
         <div className="basis-2/5 m-4 p-2 rounded-md">
           {/* Memberhip Details FORM */}
-          <div className={`mb-5 ${!setStatus.includes(client?.status) && 'hidden'}`}>
+          <div
+            className={`mb-5 ${
+              !setStatus.includes(client?.status) && 'hidden'
+            }`}>
             <input type="hidden" {...register('id')} value={client?.id} />
             <h2 className="text-xl mb-2 w-full text-center">MANAGE LOA</h2>
             <div className="mb-3 border-b-2 border-dotted pb-1">
