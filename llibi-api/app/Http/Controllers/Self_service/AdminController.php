@@ -205,13 +205,13 @@ class AdminController extends Controller
 
     public function SearchRequest($search, $id)
     {
-        $defaultStatuses = [2, 6, 9];
+        $defaultStatuses = [2, 6, 9, 13];
         $start = Carbon::yesterday()->startOfDay();
         $end   = now()->endOfDay();
 
         $q = DB::table('app_portal_clients as t1')
-            ->join('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-            ->join('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
+            ->leftJoin('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
+            ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
             ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
                 $join->on('mlist.member_id', '=', DB::raw("
                     CASE
@@ -265,6 +265,7 @@ class AdminController extends Controller
                 't1.approved_date',
                 DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
                 DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+                't2.elapsed_time as elapsed_time',
                 'mlist.company_name',
                 'mlist.company_code',
                 'mlist.empcode as inscode',
@@ -279,13 +280,19 @@ class AdminController extends Controller
                 't3.updated_at as callback_updated_at',
                 't2.type_approval_code',
                 't2.approval_code_loanumber',
-            )
-            ->whereBetween('t1.created_at', [$start, $end]);
+            );
+
+        if ($id == 8 || in_array($id, [2, 6, 9])) {
+            $q->whereBetween('t1.created_at', [$start, $end]);
+        }
 
         // status filter
         $q->where(function ($query) use ($id, $defaultStatuses) {
             if ($id == 8) {
                 $query->whereIn('t1.status', $defaultStatuses);
+            } elseif (in_array($id, ['qr', 'viber', 'provider'])) {
+                $query->where('t1.platform', $id)
+                      ->where('t1.status', '!=', 1);
             } elseif (is_array($id)) {
                 $query->where('t1.id', $id['val']);
             } else {
@@ -309,7 +316,8 @@ class AdminController extends Controller
             });
         }
 
-        $patients = $q->orderBy('t1.id', 'asc')->get();
+        $sortDirection = ($id == 8 || in_array($id, [2, 6, 9])) ? 'asc' : 'desc';
+        $patients = $q->orderBy('t1.id', $sortDirection)->paginate(10);
 
         if ($patients->isEmpty()) return $patients;
 
@@ -336,7 +344,7 @@ class AdminController extends Controller
         $status = [1, 4];
         $types  = ['outpatient', 'laboratory', 'consultation'];
 
-        $patients->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
+        $patients->getCollection()->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
             $fullname = $p->isDependent
                 ? "{$p->depLastName}, {$p->depFirstName}"
                 : "{$p->lastName}, {$p->firstName}";
@@ -612,11 +620,15 @@ public function UpdateRequest(Request $request)
 
     if($updateRequest){
         // Update elapsed_time
-        $getClient = ClientRequest::where('client_id', $request->id)
-                                    ->first();
+        $getClientRequest = ClientRequest::where('client_id', $request->id)->first();
+        $getClient = Client::where('id', $request->id)->first();
 
         $getClient->update([
-            'elapsed_time' => $getClient->created_at->diffInMinutes($getClient->updated_at)
+            'elapse_approved_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
+        ]);
+
+        $getClientRequest->update([
+            'elapsed_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
         ]);
     }
 

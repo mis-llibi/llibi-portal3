@@ -19,12 +19,10 @@ import EditableProcedureRow from './editableProcedureRow'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
-
-export default function ApprovalForm ({ setRequest, row }){
+export default function ApprovalForm({ setRequest, row, toggle }) {
   const { procedure, mutate } = ManageEnumerateLaboratory({ id: row?.id })
 
-//   console.log(row)
-
+  //   console.log(row)
 
   const {
     handleSubmit,
@@ -39,40 +37,47 @@ export default function ApprovalForm ({ setRequest, row }){
   const [client, setClient] = useState(row)
   const [getUpdatedProcedures, setGetUpdatedProcedures] = useState([])
 
-  const attachLOA = watch("attachLOA");
+  const attachLOA = watch('attachLOA')
 
   const { updateRequestApproval, viewBy } = useAdmin({ name: '', status: '' })
 
   const submitForm = data => {
-
-    if(getUpdatedProcedures.length == 0 && data.status == "3"){
-        Swal.fire({
-            title: "Set status",
-            text: "Set Status of Procedures",
-            icon: "warning"
-        })
-        return
+    if (getUpdatedProcedures.length == 0 && data.status == '3') {
+      Swal.fire({
+        title: 'Set status',
+        text: 'Set Status of Procedures',
+        icon: 'warning',
+      })
+      return
     }
 
-    const isHavePending = getUpdatedProcedures.some((val) => val.status == "PENDING")
-    if(isHavePending && data.status == "3"){
-        Swal.fire({
-            title: "Set status",
-            text: "Set Status of Procedures",
-            icon: "warning"
-        })
-        return
+    const isHavePending = getUpdatedProcedures.some(
+      val => val.status == 'PENDING',
+    )
+    if (isHavePending && data.status == '3') {
+      Swal.fire({
+        title: 'Set status',
+        text: 'Set Status of Procedures',
+        icon: 'warning',
+      })
+      return
     }
 
-    const isAllProcedureDeniedAndApproveStatus = getUpdatedProcedures.filter((val) => val.status === "DENIED")
+    const isAllProcedureDeniedAndApproveStatus = getUpdatedProcedures.filter(
+      val => val.status === 'DENIED',
+    )
 
-    if(data.status === "3" && (isAllProcedureDeniedAndApproveStatus.length === getUpdatedProcedures.length)){
-        Swal.fire({
-            title: "Status",
-            text: "The status must be deny approval code",
-            icon: "warning"
-        })
-        return
+    if (
+      data.status === '3' &&
+      isAllProcedureDeniedAndApproveStatus.length ===
+        getUpdatedProcedures.length
+    ) {
+      Swal.fire({
+        title: 'Status',
+        text: 'The status must be deny approval code',
+        icon: 'warning',
+      })
+      return
     }
 
     const dataMerge = {
@@ -82,8 +87,6 @@ export default function ApprovalForm ({ setRequest, row }){
       hospital_email2: row?.email2,
       email_format_type: 'approval',
     }
-
-
 
     Swal.fire({
       title: 'Are you sure?',
@@ -96,7 +99,13 @@ export default function ApprovalForm ({ setRequest, row }){
     }).then(result => {
       if (result.isConfirmed) {
         setLoading(true)
-        updateRequestApproval({ setRequest, setClient, setLoading, ...dataMerge })
+        updateRequestApproval({
+          setRequest,
+          setClient,
+          setLoading,
+          onSuccess: toggle,
+          ...dataMerge,
+        })
       }
     })
   }
@@ -104,14 +113,17 @@ export default function ApprovalForm ({ setRequest, row }){
   useEffect(() => {
     if (attachLOA && attachLOA.length > 0) {
       // Get the file name without the extension
-      const fileNameWithoutExtension = attachLOA[0].name.replace(/\.[^/.]+$/, "");
+      const fileNameWithoutExtension = attachLOA[0].name.replace(
+        /\.[^/.]+$/,
+        '',
+      )
 
-    //   console.log("File Name Without Extension:", fileNameWithoutExtension);
+      //   console.log("File Name Without Extension:", fileNameWithoutExtension);
 
       // Set the value without the extension in the form
-      setValue("loaNumber", fileNameWithoutExtension);
+      setValue('loaNumber', fileNameWithoutExtension)
     }
-  }, [attachLOA, setValue]);
+  }, [attachLOA, setValue])
 
   useEffect(() => {
     resetField('attachLOA')
@@ -285,21 +297,17 @@ export default function ApprovalForm ({ setRequest, row }){
     // Check if the link starts with http or https
     if (!Link.match(/^(http|https):/)) {
       return `${basePath}/${Link}`
-    }else{
+    } else {
       return Link
     }
   }
-
-
 
   return (
     <form onSubmit={handleSubmit(submitForm)}>
       <div className="flex">
         <div className="basis-3/5">
           <div className="flex flex-col h-screen">
-            {
-
-            client?.loaAttachment && client?.status !== 4 ? (
+            {client?.loaAttachment && client?.status !== 4 ? (
               <object
                 className="w-full h-full"
                 data={linkChecker(client?.loaAttachment)}
@@ -470,8 +478,8 @@ export default function ApprovalForm ({ setRequest, row }){
                 />
               </div> */}
 
-              {/* Backdrop form */}
-              {/* <div
+            {/* Backdrop form */}
+            {/* <div
                 className={`absolute inset-0 flex justify-center items-center z-10 bg-black/30 backdrop-blur-sm rounded-md ${
                   watch('status') === '3' && 'hidden'
                 }`}>
@@ -642,9 +650,7 @@ export default function ApprovalForm ({ setRequest, row }){
               }`}>
               <Label className="text-bold text-md">
                 DIAGNOSIS:{' '}
-                <span className={`text-blue-500`}>
-                  {client?.diagnosis}
-                </span>
+                <span className={`text-blue-500`}>{client?.diagnosis}</span>
               </Label>
             </div>
             <div
@@ -690,7 +696,10 @@ export default function ApprovalForm ({ setRequest, row }){
 
           {/* LABORATORY: Assessment Form */}
           <div
-            className={`mb-5 ${client?.loaType !== 'laboratory' || client?.loaType !== 'approval' && 'hidden'}`}>
+            className={`mb-5 ${
+              client?.loaType !== 'laboratory' ||
+              (client?.loaType !== 'approval' && 'hidden')
+            }`}>
             <h2 className="text-xl mb-2 w-full text-center">
               HEALTH ASSESSMENT (LABORATORY)
             </h2>
@@ -739,43 +748,55 @@ export default function ApprovalForm ({ setRequest, row }){
                 )}
               </div> */}
 
-            <div className="w-full overflow-x-auto rounded-lg shadow mt-3">
+              <div className="w-full overflow-x-auto rounded-lg shadow mt-3">
                 <table className="min-w-full border-collapse">
-                    <thead>
+                  <thead>
                     <tr className="bg-[#1E3161] text-white">
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Procedure Name</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Cost</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className={`px-4 py-3 text-left text-sm font-semibold ${(client?.status === 3 || client?.status === 4) && "hidden"}  `}>Action</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">
+                        Procedure Name
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">
+                        Cost
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold">
+                        Status
+                      </th>
+                      <th
+                        className={`px-4 py-3 text-left text-sm font-semibold ${
+                          (client?.status === 3 || client?.status === 4) &&
+                          'hidden'
+                        }  `}>
+                        Action
+                      </th>
                     </tr>
-                    </thead>
-                    <tbody>
+                  </thead>
+                  <tbody>
                     {procedure?.procedures.map((item, i) => (
-                        <EditableProcedureRow
+                      <EditableProcedureRow
                         key={i}
                         index={i}
                         item={item}
                         procedure={procedure}
                         mutate={mutate}
                         setGetUpdatedProcedures={setGetUpdatedProcedures}
-
-                        />
+                      />
                     ))}
-                    </tbody>
-                    <tfoot>
+                  </tbody>
+                  <tfoot>
                     <tr className="bg-gray-100 font-semibold">
-                        <td className="px-4 py-3 text-sm text-gray-800">Total</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">
-                        {procedure?.procedures.reduce((sum, row) => sum + Number(row.cost || 0), 0)}
-                        </td>
-                        <td></td>
-                        <td></td>
+                      <td className="px-4 py-3 text-sm text-gray-800">Total</td>
+                      <td className="px-4 py-3 text-sm text-gray-800">
+                        {procedure?.procedures.reduce(
+                          (sum, row) => sum + Number(row.cost || 0),
+                          0,
+                        )}
+                      </td>
+                      <td></td>
+                      <td></td>
                     </tr>
-                    </tfoot>
+                  </tfoot>
                 </table>
-            </div>
-
-
+              </div>
             </div>
           </div>
 
@@ -888,5 +909,3 @@ export default function ApprovalForm ({ setRequest, row }){
     </form>
   )
 }
-
-

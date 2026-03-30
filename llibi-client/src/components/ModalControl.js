@@ -5,7 +5,7 @@ const ModalControl = () => {
   const [body, setBody] = useState()
 
   function toggle() {
-    setShow(!show)
+    setShow(prev => !prev)
   }
 
   return {
