@@ -37,6 +37,7 @@ use App\Models\Self_service\LoaFilesInTransit;
 use App\Models\Self_service\AppLoaMonitor;
 use App\Models\Self_service\Companies;
 use App\Models\Self_service\SyncCompaniesV2;
+use App\Models\User;
 
 class AdminController extends Controller
 {
@@ -245,6 +246,7 @@ class AdminController extends Controller
                 't1.remaining as remaining',
                 't1.is_complaint_has_approved as is_complaint_has_approved',
                 't1.follow_up_request_quantity as follow_up_request_quantity',
+                't1.user_id as user_id',
                 't2.loa_type as loaType',
                 't2.loa_number as loaNumber',
                 't2.approval_code as approvalCode',
@@ -373,6 +375,9 @@ class AdminController extends Controller
             }
 
             $p->benefit_type = $company->benefit_type ?? null;
+
+            // Find CCE using user_id
+            $p->cceName = User::where('id', $p->user_id)->select('first_name', 'last_name')->first();
             return $p;
         });
 
