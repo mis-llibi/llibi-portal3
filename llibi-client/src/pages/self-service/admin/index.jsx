@@ -814,8 +814,9 @@ const Admin = () => {
                               {row.status === 7 && 'Approved Callback'}
                               {row.status === 9 && 'Pending Callback'}
                               {row.status === 10 && 'Failed Callback'}
-                              {row.status === 13 &&
-                                `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
+                              {row.status === 13 && row.platform === "hr-call" && `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
+                              {row.status === 13 && row.platform === "hr" && 'Pending'}
+
                               {'\n'}
                               <span>
                                 {row?.total_remaining >= 1 &&
