@@ -142,7 +142,7 @@ const Admin = () => {
 
       setBody({
         title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-        content: <Form setRequest={setRequest} row={row} />,
+        content: <Form setRequest={setRequest} row={row} toggle={toggle} />,
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',
@@ -398,7 +398,9 @@ const Admin = () => {
 
       setBody({
         title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-        content: <ProcedureForm setRequest={setRequest} row={row} />,
+        content: (
+          <ProcedureForm setRequest={setRequest} row={row} toggle={toggle} />
+        ),
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',
@@ -421,7 +423,9 @@ const Admin = () => {
 
       setBody({
         title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
-        content: <ApprovalForm setRequest={setRequest} row={row} />,
+        content: (
+          <ApprovalForm setRequest={setRequest} row={row} toggle={toggle} />
+        ),
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
         //modalContainer: '',
@@ -685,9 +689,12 @@ const Admin = () => {
                 <div className="flex basis-1/4 items-center justify-end">
                   <a
                     className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
-                    href={`${isProd ? `${process.env.NEXT_PUBLIC_DEPLOYED_PORTAL_FRONTEND}/hr/form?user_id=${user?.id}` : `${process.env.NEXT_PUBLIC_PORTAL_FRONTEND}/hr/form?user_id=${user?.id}`}`}
-                    target='_blank'
-                    >
+                    href={`${
+                      isProd
+                        ? `${process.env.NEXT_PUBLIC_DEPLOYED_PORTAL_FRONTEND}/hr/form?user_id=${user?.id}`
+                        : `${process.env.NEXT_PUBLIC_PORTAL_FRONTEND}/hr/form?user_id=${user?.id}`
+                    }`}
+                    target="_blank">
                     HR Manual
                   </a>
                 </div>
@@ -807,7 +814,8 @@ const Admin = () => {
                               {row.status === 7 && 'Approved Callback'}
                               {row.status === 9 && 'Pending Callback'}
                               {row.status === 10 && 'Failed Callback'}
-                              {row.status === 13 && `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
+                              {row.status === 13 &&
+                                `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
                               {'\n'}
                               <span>
                                 {row?.total_remaining >= 1 &&
@@ -838,8 +846,8 @@ const Admin = () => {
                               {row.approved_date ? row.approved_date : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
-                              {row.elapse_approved_time
-                                ? formatMinutes(row.elapse_approved_time)
+                              {row.elapsed_time
+                                ? formatMinutes(row.elapsed_time)
                                 : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
@@ -860,7 +868,8 @@ const Admin = () => {
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
                               <div className="flex flex-col gap-2 h-full justify-center">
-                                {row?.platform == "hr-call" && row?.status == 13 ? (
+                                {row?.platform == 'hr-call' &&
+                                row?.status == 13 ? (
                                   <>
                                     <div className="flex flex-col gap-3">
                                       <button
