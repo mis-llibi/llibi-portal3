@@ -46,6 +46,8 @@ import { FaXmark } from 'react-icons/fa6'
 import ApprovalForm from './approvalForm'
 import ShowLoa from './showloa'
 
+const isProd = process.env.NODE_ENV === 'production'
+
 const Admin = () => {
   const router = useRouter()
   // const [play] = useSound('/thepurge.mp3')
@@ -687,7 +689,12 @@ const Admin = () => {
                 <div className="flex basis-1/4 items-center justify-end">
                   <a
                     className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
-                    href="#">
+                    href={`${
+                      isProd
+                        ? `${process.env.NEXT_PUBLIC_DEPLOYED_PORTAL_FRONTEND}/hr/form?user_id=${user?.id}`
+                        : `${process.env.NEXT_PUBLIC_PORTAL_FRONTEND}/hr/form?user_id=${user?.id}`
+                    }`}
+                    target="_blank">
                     HR Manual
                   </a>
                 </div>
@@ -776,6 +783,9 @@ const Admin = () => {
                               row.providerName === null
                                 ? row.company_name
                                 : null}
+                                {
+                                    row.platform === 'hr-call' && 'KOOLER INDUSTRIES, INC.'
+                                }
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
                               {row.isDependent
@@ -807,7 +817,9 @@ const Admin = () => {
                               {row.status === 7 && 'Approved Callback'}
                               {row.status === 9 && 'Pending Callback'}
                               {row.status === 10 && 'Failed Callback'}
-                              {row.status === 13 && 'Pending'}
+                              {row.status === 13 && row.platform === "hr-call" && `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
+                              {row.status === 13 && row.platform === "hr" && 'Pending'}
+
                               {'\n'}
                               <span>
                                 {row?.total_remaining >= 1 &&
@@ -854,29 +866,30 @@ const Admin = () => {
                                 ? 'QR'
                                 : row.platform === 'provider'
                                 ? 'PROVIDER'
-                                : row.platform === 'hr'
+                                : row.platform === 'hr' || 'hr-call'
                                 ? 'HR'
                                 : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
                               <div className="flex flex-col gap-2 h-full justify-center">
-                                {row?.loaType == null && row?.status == 13 ? (
+                                {row?.platform == 'hr-call' &&
+                                row?.status == 13 ? (
                                   <>
                                     <div className="flex flex-col gap-3">
                                       <button
                                         className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-green-600 hover:bg-green-500 active:bg-green-700 focus:outline-none"
                                         onClick={() => handleHrCallApprove(row)}
                                         type="button">
-                                        Approve
+                                        Issued LOA
                                       </button>
-                                      <button
+                                      {/* <button
                                         className="text-xs text-white px-2 py-1 rounded-sm cursor-pointer bg-red-600 hover:bg-red-500 active:bg-red-700 focus:outline-none"
                                         onClick={() =>
                                           handleHrCallDisapprove(row)
                                         }
                                         type="button">
                                         Disapprove
-                                      </button>
+                                      </button> */}
                                     </div>
                                   </>
                                 ) : (
