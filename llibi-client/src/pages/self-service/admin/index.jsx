@@ -783,6 +783,9 @@ const Admin = () => {
                               row.providerName === null
                                 ? row.company_name
                                 : null}
+                                {
+                                    row.platform === 'hr-call' && 'KOOLER INDUSTRIES, INC.'
+                                }
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
                               {row.isDependent
