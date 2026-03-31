@@ -46,7 +46,7 @@ import { FaXmark } from 'react-icons/fa6'
 import ApprovalForm from './approvalForm'
 import ShowLoa from './showloa'
 
-import { isProd } from '../../../../next.config'
+const isProd = process.env.NODE_ENV === 'production'
 
 const Admin = () => {
   const router = useRouter()
