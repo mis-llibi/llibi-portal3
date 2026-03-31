@@ -866,7 +866,9 @@ const Admin = () => {
                                 ? 'QR'
                                 : row.platform === 'provider'
                                 ? 'PROVIDER'
-                                : row.platform === 'hr' || 'hr-call'
+                                : row.platform === 'hr'
+                                ? 'HR'
+                                : row.platform === 'hr-call'
                                 ? 'HR'
                                 : '-'}
                             </td>
