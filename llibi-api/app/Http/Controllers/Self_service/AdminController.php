@@ -39,6 +39,8 @@ use App\Models\Self_service\Companies;
 use App\Models\Self_service\SyncCompaniesV2;
 use App\Models\User;
 
+use App\Models\Self_service\HrUsers;
+
 class AdminController extends Controller
 {
 //     public function SearchRequest($search, $id)
@@ -569,6 +571,7 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
+  
     set_time_limit(600);
 
   $user_id = request()->user()->id;
@@ -688,8 +691,6 @@ public function UpdateRequest(Request $request)
     'email_format_type' => $request->email_format_type
   ];
 
-
-
     if($client[0]->platform == 'qr' && $status === 3){
 
         // Send Email Provider
@@ -705,6 +706,25 @@ public function UpdateRequest(Request $request)
         );
 
     }else{
+
+        $platformHr = ['hr', 'hr-call'];
+        //Send email hr
+        if (in_array($client[0]->platform, $platformHr)) {
+            $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();
+
+            foreach($hrEmail as $hr){
+              $this->sendNotification(
+                array_merge($dataSend, $update, $loa),
+                $client[0]->firstName . ' ' . $client[0]->lastName,
+                $hr->email,
+                null,
+                null,
+                $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+                $client[0]->providerID
+              );
+            }
+        }
+        //Send email patient
         $this->sendNotification(
             array_merge($dataSend, $update, $loa),
             $client[0]->firstName . ' ' . $client[0]->lastName,
