@@ -40,6 +40,9 @@ use App\Models\Self_service\SyncCompaniesV2;
 use App\Models\User;
 
 class AdminController extends Controller
+use App\Models\Self_service\HrUsers;
+
+class AdminController extends Controller
 {
 //     public function SearchRequest($search, $id)
 // {
@@ -569,6 +572,7 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
+
     set_time_limit(600);
 
   $user_id = request()->user()->id;
@@ -688,8 +692,6 @@ public function UpdateRequest(Request $request)
     'email_format_type' => $request->email_format_type
   ];
 
-
-
     if($client[0]->platform == 'qr' && $status === 3){
 
         // Send Email Provider
@@ -705,27 +707,26 @@ public function UpdateRequest(Request $request)
         );
 
     }else{
-        $this->sendNotification(
-            array_merge($dataSend, $update, $loa),
-            $client[0]->firstName . ' ' . $client[0]->lastName,
-            $client[0]->email,
-            $client[0]->altEmail,
-            $client[0]->contact,
-            $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
-            $client[0]->providerID
 
-            );
-    }
+        $platformHr = ['hr', 'hr-call'];
+        //Send email hr
+        if (in_array($client[0]->platform, $platformHr)) {
+            $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();
 
-  return array('client' => $client, 'all' => $allClient);
-}
-
-public function ComplaintChecker($complaints){
-
-    if ($complaints) {
-        foreach ($complaints as $complaint) {
-
-            $getComplaint = Complaints::where('title', $complaint)->first();
+            foreach($hrEmail as $hr){
+              $this->sendNotification(
+                array_merge($dataSend, $update, $loa),
+                $client[0]->firstName . ' ' . $client[0]->lastName,
+                $hr->email,
+                null,
+                null,
+                $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+                $client[0]->providerID
+              );
+            }
+        }
+        //Send email patient
+;
 
             if ($getComplaint && $getComplaint->is_status == 0) {
                 $getComplaint->update([
