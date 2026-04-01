@@ -39,7 +39,6 @@ use App\Models\Self_service\Companies;
 use App\Models\Self_service\SyncCompaniesV2;
 use App\Models\User;
 
-class AdminController extends Controller
 use App\Models\Self_service\HrUsers;
 
 class AdminController extends Controller
@@ -572,7 +571,7 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
-
+  
     set_time_limit(600);
 
   $user_id = request()->user()->id;
@@ -726,7 +725,27 @@ public function UpdateRequest(Request $request)
             }
         }
         //Send email patient
-;
+        $this->sendNotification(
+            array_merge($dataSend, $update, $loa),
+            $client[0]->firstName . ' ' . $client[0]->lastName,
+            $client[0]->email,
+            $client[0]->altEmail,
+            $client[0]->contact,
+            $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+            $client[0]->providerID
+
+            );
+    }
+
+  return array('client' => $client, 'all' => $allClient);
+}
+
+public function ComplaintChecker($complaints){
+
+    if ($complaints) {
+        foreach ($complaints as $complaint) {
+
+            $getComplaint = Complaints::where('title', $complaint)->first();
 
             if ($getComplaint && $getComplaint->is_status == 0) {
                 $getComplaint->update([
