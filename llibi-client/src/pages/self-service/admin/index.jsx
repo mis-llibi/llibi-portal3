@@ -46,7 +46,7 @@ import { FaXmark } from 'react-icons/fa6'
 import ApprovalForm from './approvalForm'
 import ShowLoa from './showloa'
 
-import { isProd } from '../../../../next.config'
+const isProd = process.env.NODE_ENV === 'production'
 
 const Admin = () => {
   const router = useRouter()
@@ -783,6 +783,9 @@ const Admin = () => {
                               row.providerName === null
                                 ? row.company_name
                                 : null}
+                                {
+                                    row.platform === 'hr-call' && 'KOOLER INDUSTRIES, INC.'
+                                }
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
                               {row.isDependent
@@ -863,7 +866,9 @@ const Admin = () => {
                                 ? 'QR'
                                 : row.platform === 'provider'
                                 ? 'PROVIDER'
-                                : row.platform === 'hr' || 'hr-call'
+                                : row.platform === 'hr'
+                                ? 'HR'
+                                : row.platform === 'hr-call'
                                 ? 'HR'
                                 : '-'}
                             </td>
