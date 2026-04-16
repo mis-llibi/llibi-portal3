@@ -643,6 +643,12 @@ const Admin = () => {
                     target="_blank">
                     client portal error logs
                   </a>
+                  <a
+                    className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs whitespace-nowrap"
+                    href="/company-policies"
+                    target="_blank">
+                    View Policy
+                  </a>
                 </div>
                 <Button
                   type="button"
@@ -783,9 +789,8 @@ const Admin = () => {
                               row.providerName === null
                                 ? row.company_name
                                 : null}
-                                {
-                                    row.platform === 'hr-call' && 'KOOLER INDUSTRIES, INC.'
-                                }
+                              {row.platform === 'hr-call' &&
+                                'KOOLER INDUSTRIES, INC.'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
                               {row.isDependent
@@ -817,8 +822,12 @@ const Admin = () => {
                               {row.status === 7 && 'Approved Callback'}
                               {row.status === 9 && 'Pending Callback'}
                               {row.status === 10 && 'Failed Callback'}
-                              {row.status === 13 && row.platform === "hr-call" && `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
-                              {row.status === 13 && row.platform === "hr" && 'Pending'}
+                              {row.status === 13 &&
+                                row.platform === 'hr-call' &&
+                                `Pending - ${row?.cceName?.first_name.toUpperCase()} ${row?.cceName?.last_name.toUpperCase()}`}
+                              {row.status === 13 &&
+                                row.platform === 'hr' &&
+                                'Pending'}
 
                               {'\n'}
                               <span>

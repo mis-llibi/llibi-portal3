@@ -38,6 +38,7 @@ use App\Http\Controllers\Feedback\FeedbackCorporateController;
 use App\Http\Controllers\SearchMasterlist\MasterlistController;
 use App\Http\Controllers\SearchMasterlist\ClientErrorLogsController;
 use App\Http\Controllers\Self_service\ComplaintController;
+use App\Http\Controllers\Company_policies\PoliciesController;
 
 use App\Http\Controllers\Api_third_party\BenadEncryptor;
 use App\Http\Controllers\ClientPortalErrorLogsController;
@@ -134,6 +135,14 @@ Route::post('/submitCallback', [CallbackRequest::class, 'submitCallback']);
 Route::post('/changeCallbackStatus', [CallbackRequest::class, 'changeCallbackStatus']);
 Route::post('/doneStatusCallback', [CallbackRequest::class, 'doneStatusCallback']);
 Route::put('/unresponsiveCallback', [CallbackRequest::class, 'unresponsiveCallback']);
+
+//COMPANY
+Route::get('/company-policies/search-companies', [PoliciesController::class, 'searchCompanies']);
+Route::get('/company-policies/get-all-companies', [PoliciesController::class, 'getAllCompanies']);
+
+//POLICY
+Route::get('/company-policies/get-policies', [PoliciesController::class, 'getPolicies']);
+Route::get('/company-policies/get-policy/{company_name}', [PoliciesController::class, 'getPolicy']);
 
 
 //COMPANIES SYNC API
