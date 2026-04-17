@@ -707,7 +707,7 @@ public function UpdateRequest(Request $request)
 
     }else{
 
-        $platformHr = ['hr', 'hr-call'];
+        $platformHr = ['hr', 'hr-call', 'qr-hr', 'provider-hr'];
         //Send email hr
         if (in_array($client[0]->platform, $platformHr)) {
             $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();

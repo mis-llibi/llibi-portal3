@@ -879,6 +879,10 @@ const Admin = () => {
                                 ? 'HR'
                                 : row.platform === 'hr-call'
                                 ? 'HR'
+                                : row.platform === 'qr-hr'
+                                ? 'QR-HR'
+                                : row.platform === 'provider-hr'
+                                ? 'PROVIDER-HR'
                                 : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">
