@@ -691,23 +691,38 @@ public function UpdateRequest(Request $request)
     'email_format_type' => $request->email_format_type
   ];
 
-    if($client[0]->platform == 'qr' && $status === 3){
+    if($client[0]->platform == 'qr' && $status === 3 || $client[0]->platform == 'qr-hr' && $status === 3){
 
-        // Send Email Provider
+      $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();
 
-        $this->sendNotificationProvider(
-            array_merge($dataSend, $update, $loa),
-            $client[0]->firstName . ' ' . $client[0]->lastName,
-            $client[0]->email,
-            $client[0]->altEmail,
-            $client[0]->contact,
-            $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
-            $client[0]->providerID
+      // Send Email Provider
+
+      $this->sendNotificationProvider(
+          array_merge($dataSend, $update, $loa),
+          $client[0]->firstName . ' ' . $client[0]->lastName,
+          $client[0]->email,
+          $client[0]->altEmail,
+          $client[0]->contact,
+          $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+          $client[0]->providerID
+      );
+      
+      // Send Email HR
+      foreach($hrEmail as $hr){
+        $this->sendNotification(
+          array_merge($dataSend, $update, $loa),
+          $client[0]->firstName . ' ' . $client[0]->lastName,
+          $hr->email,
+          null,
+          null,
+          $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+          $client[0]->providerID
         );
+      }
 
     }else{
 
-        $platformHr = ['hr', 'hr-call', 'qr-hr', 'provider-hr'];
+        $platformHr = ['hr', 'hr-call', 'provider-hr'];
         //Send email hr
         if (in_array($client[0]->platform, $platformHr)) {
             $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();
