@@ -571,7 +571,7 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
-  
+
     set_time_limit(600);
 
   $user_id = request()->user()->id;
@@ -706,7 +706,19 @@ public function UpdateRequest(Request $request)
           $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
           $client[0]->providerID
       );
-      
+
+    if($client[0]->company_code == "KOOLR"){
+         $this->sendNotification(
+             array_merge($dataSend, $update, $loa),
+             $client[0]->firstName . ' ' . $client[0]->lastName,
+             "hrd@koolerindustries.com",
+             null,
+             null,
+             $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+             $client[0]->providerID
+         );
+     }
+
       // Send Email HR
       foreach($hrEmail as $hr){
         $this->sendNotification(
@@ -750,6 +762,18 @@ public function UpdateRequest(Request $request)
             $client[0]->providerID
 
             );
+
+        if($client[0]->company_code == "KOOLR"){
+            $this->sendNotification(
+                array_merge($dataSend, $update, $loa),
+                $client[0]->firstName . ' ' . $client[0]->lastName,
+                "hrd@koolerindustries.com",
+                null,
+                null,
+                $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+                $client[0]->providerID
+            );
+        }
     }
 
   return array('client' => $client, 'all' => $allClient);
