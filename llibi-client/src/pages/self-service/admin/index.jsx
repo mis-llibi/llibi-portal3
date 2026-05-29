@@ -164,7 +164,7 @@ const Admin = () => {
     { value: 7, label: 'Approved Callback' },
     { value: 9, label: 'Pending Callback' },
     { value: 10, label: 'Failed Callback' },
-    { value: 11, label: 'Issued LOA' },
+    { value: 11, label: 'Auto Issued LOA' },
     { value: 'qr', label: 'QR' },
     { value: 'viber', label: 'Viber' },
     { value: 'provider', label: 'Provider' },
@@ -643,12 +643,12 @@ const Admin = () => {
                     target="_blank">
                     client portal error logs
                   </a>
-                  <a
+                  {/* <a
                     className="text-blue-700 font-bold self-center capitalize border border-gray-300 px-3 py-2 rounded-md text-xs whitespace-nowrap"
                     href="/company-policies"
                     target="_blank">
                     View Policy
-                  </a>
+                  </a> */}
                 </div>
                 <Button
                   type="button"
@@ -692,7 +692,7 @@ const Admin = () => {
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
                 </div>
 
-                <div className="flex basis-1/4 items-center justify-end">
+                <div className="flex basis-1/4 items-center justify-end gap-2">
                   <a
                     className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
                     href={`${
@@ -702,6 +702,16 @@ const Admin = () => {
                     }`}
                     target="_blank">
                     HR Manual
+                  </a>
+                  <a
+                    className="text-blue-700 font-bold self-center capitalize  border border-gray-300 px-3 py-2 rounded-md text-xs"
+                    href={`${
+                      isProd
+                        ? `${process.env.NEXT_PUBLIC_DEPLOYED_PORTAL_FRONTEND}/request-loa?cce_id=${user?.hashed_id}`
+                        : `${process.env.NEXT_PUBLIC_PORTAL_FRONTEND}/request-loa?cce_id=${user?.hashed_id}`
+                    }`}
+                    target="_blank">
+                    Portal Request for CCE
                   </a>
                 </div>
               </div>
@@ -883,6 +893,8 @@ const Admin = () => {
                                 ? 'QR-HR'
                                 : row.platform === 'provider-hr'
                                 ? 'PROVIDER-HR'
+                                : row.platform === 'cce-request'
+                                ? "CCE"
                                 : '-'}
                             </td>
                             <td className="border border-gray-300 p-2 text-center">

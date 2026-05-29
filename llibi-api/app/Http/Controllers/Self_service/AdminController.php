@@ -40,6 +40,7 @@ use App\Models\Self_service\SyncCompaniesV2;
 use App\Models\User;
 
 use App\Models\Self_service\HrUsers;
+use App\Http\Controllers\Self_service\GenerateLoaController;
 
 class AdminController extends Controller
 {
@@ -284,6 +285,8 @@ class AdminController extends Controller
                 't3.updated_at as callback_updated_at',
                 't2.type_approval_code',
                 't2.approval_code_loanumber',
+                't2.isUpload as isUpload',
+                't2.is2in1 as is2in1'
             );
 
         if ($id == 8 || in_array($id, [2, 6, 9])) {
@@ -571,7 +574,6 @@ class AdminController extends Controller
 public function UpdateRequest(Request $request)
 {
 
-
     set_time_limit(600);
 
   $user_id = request()->user()->id;
@@ -601,51 +603,12 @@ public function UpdateRequest(Request $request)
   }
 
   if ((int)$request->status == 3) {
-    $title = strtoupper($request->loaNumber);
-    $this->validate($request, [
-      'attachLOA' => 'required|mimes:pdf',
-    ]);
-
-    $directory = 'Self-service/LOA/' . $client[0]->memberID;
-
-    // if(!Storage::disk('llibiapp')->exists($directory)){
-    //   Storage::disk('llibiapp')->makeDirectory($directory);
-    // }
-
-    $path = $request->attachLOA->storeAs($directory, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
-
-    request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'public');
-
-    $update = [
-      'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
-      'loa_number' => strtoupper(explode('_', $request->loaNumber)[0]) . '*',
-      'approval_code' => strtoupper($request->approvalCode),
-      'loa_status' => $status === 3 ? "Approved" : ""
-    ];
-
-    $updateRequest = ClientRequest::where('client_id', $request->id)
-      ->update($update);
-
-    if($updateRequest){
-        // Update elapsed_time
-        $getClientRequest = ClientRequest::where('client_id', $request->id)->first();
-        $getClient = Client::where('id', $request->id)->first();
-
-        $getClient->update([
-            'elapse_approved_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
-        ]);
-
-        $getClientRequest->update([
-            'elapsed_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
-        ]);
-    }
 
     // Check the complaints if existing in database and make it approve if status is pending
     $getComplaints = ClientRequest::where('client_id', $request->id)->first();
     $splitComplaints = explode(', ', $getComplaints->complaint);
-
-
     $this->ComplaintChecker($splitComplaints);
+
     $remaining = RemainingTbl::where('uniquecode', $getComplaints->member_id)->first();
     if (!$remaining) {
         // Check if member exists in logs, if not add it
@@ -661,15 +624,99 @@ public function UpdateRequest(Request $request)
         }
     }
 
-    if ($client[0]->isDependent == 1) {
-      $password = date('Ymd', strtotime($client[0]->depDob));
-    } else {
-      $password = date('Ymd', strtotime($client[0]->dob));
+    if($request->isUpload == "1"){
+        $title = strtoupper($request->loaNumber);
+            $this->validate($request, [
+            'attachLOA' => 'required|mimes:pdf',
+            ]);
+
+            $directory = 'Self-service/LOA/' . $client[0]->memberID;
+
+            // if(!Storage::disk('llibiapp')->exists($directory)){
+            //   Storage::disk('llibiapp')->makeDirectory($directory);
+            // }
+
+            $path = $request->attachLOA->storeAs($directory, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
+
+            request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'public');
+
+            $update = [
+            'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
+            'loa_number' => strtoupper(explode('_', $request->loaNumber)[0]) . '*',
+            'approval_code' => strtoupper($request->approvalCode),
+            'loa_status' => $status === 3 ? "Approved" : ""
+            ];
+
+            $updateRequest = ClientRequest::where('client_id', $request->id)
+            ->update($update);
+
+            if($updateRequest){
+                // Update elapsed_time
+                $getClientRequest = ClientRequest::where('client_id', $request->id)->first();
+                $getClient = Client::where('id', $request->id)->first();
+
+                $getClient->update([
+                    'elapse_approved_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
+                ]);
+
+                $getClientRequest->update([
+                    'elapsed_time' => $getClientRequest->created_at->diffInMinutes($getClientRequest->updated_at)
+                ]);
+            }
+
+            if ($client[0]->isDependent == 1) {
+            $password = date('Ymd', strtotime($client[0]->depDob));
+            } else {
+            $password = date('Ymd', strtotime($client[0]->dob));
+            }
+
+            $encryptedPdfPath = $this->encryptPdf($path, $password);
+
+            $loa = ['encryptedLOA' => $encryptedPdfPath];
+
+
+
+    }else{
+        $getClientRequest = ClientRequest::where('client_id', $request->id)->first();
+
+        $hospital = explode('++', $getClientRequest->provider);
+        $providerName = $hospital[0];
+
+        $doctor = explode('++', $getClientRequest->doctor_name);
+        $doctName = $doctor[0] == ", " ? "" : $doctor[0];
+
+        $clientRequest = Client::where('id', $request->id)->first();
+
+        $company = SyncCompaniesV2::where('corporate_compcode', $clientRequest->company_code)->first();
+
+        $generateLoa = new GenerateLoaController();
+        $result = $generateLoa->LOAGenerate(
+                                                $clientRequest->company_code,
+                                                $company->company_id_from_corporate,
+                                                $clientRequest->last_name . ", " . $clientRequest->first_name,
+                                                $clientRequest->is_dependent ? $clientRequest->dependent_last_name . ", " . $clientRequest->dependent_first_name : $clientRequest->last_name . ", " . $clientRequest->first_name,
+                                                $clientRequest->is_dependent ? "dependent" : "employee",
+                                                $company->name,
+                                                $providerName,
+                                                $doctName,
+                                                $client[0]->complaint,
+                                                $request->consultation_loa_template
+                                            );
+
+        $loa_number = $result['document_number'];
+        $attachment = $result['attachment'];
+
+        $loa = ['encryptedLOA' => $result['filepath']];
+
+        $update = [
+        'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . '/loa/generated/' . $loa_number,
+        'loa_number' => $loa_number,
+        'loa_status' => $status === 3 ? "Approved" : ""
+        ];
+        $updateRequest = ClientRequest::where('client_id', $request->id)
+        ->update($update);
+
     }
-
-    $encryptedPdfPath = $this->encryptPdf($path, $password);
-
-    $loa = ['encryptedLOA' => $encryptedPdfPath];
   }
 
   $client = $this->SearchRequest(0, ['val' => $request->id]);
@@ -688,7 +735,8 @@ public function UpdateRequest(Request $request)
     'company_code' => $client[0]->company_code,
     'member_id' => $client[0]->memberID,
     'request_id' => $client[0]->id,
-    'email_format_type' => $request->email_format_type
+    'email_format_type' => $request->email_format_type,
+    'isUpload' => $request->isUpload,
   ];
 
     if($client[0]->platform == 'qr' && $status === 3 || $client[0]->platform == 'qr-hr' && $status === 3){
@@ -711,7 +759,7 @@ public function UpdateRequest(Request $request)
          $this->sendNotification(
              array_merge($dataSend, $update, $loa),
              $client[0]->firstName . ' ' . $client[0]->lastName,
-             "hrd@koolerindustries.com",
+             "jeremiahquintano17@gmail.com",
              null,
              null,
              $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
@@ -719,7 +767,8 @@ public function UpdateRequest(Request $request)
          );
      }
 
-      // Send Email HR
+      // Send Email HR but not KOOLR
+    if($client[0]->company_code != "KOOLR"){
       foreach($hrEmail as $hr){
         $this->sendNotification(
           array_merge($dataSend, $update, $loa),
@@ -731,24 +780,27 @@ public function UpdateRequest(Request $request)
           $client[0]->providerID
         );
       }
+    }
 
     }else{
 
         $platformHr = ['hr', 'hr-call', 'provider-hr'];
-        //Send email hr
-        if (in_array($client[0]->platform, $platformHr)) {
-            $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();
+        // Send email hr but not KOOLR
+        if($client[0]->company_code != "KOOLR"){
+            if (in_array($client[0]->platform, $platformHr)) {
+                $hrEmail = HrUsers::where('comp_code', $client[0]->company_code)->select('email')->get();
 
-            foreach($hrEmail as $hr){
-              $this->sendNotification(
-                array_merge($dataSend, $update, $loa),
-                $client[0]->firstName . ' ' . $client[0]->lastName,
-                $hr->email,
-                null,
-                null,
-                $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
-                $client[0]->providerID
-              );
+                foreach($hrEmail as $hr){
+                $this->sendNotification(
+                    array_merge($dataSend, $update, $loa),
+                    $client[0]->firstName . ' ' . $client[0]->lastName,
+                    $hr->email,
+                    null,
+                    null,
+                    $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
+                    $client[0]->providerID
+                );
+                }
             }
         }
         //Send email patient
@@ -767,7 +819,7 @@ public function UpdateRequest(Request $request)
             $this->sendNotification(
                 array_merge($dataSend, $update, $loa),
                 $client[0]->firstName . ' ' . $client[0]->lastName,
-                "hrd@koolerindustries.com",
+                "jeremiahquintano17@gmail.com",
                 null,
                 null,
                 $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
@@ -929,7 +981,7 @@ public function UpdateRequestApproval(Request $request){
         });
     }
 
-  private function encryptPdf($path, $password)
+  private function encryptPdf($path)
   {
     $filePath = Storage::path('public/' . $path);
 
@@ -1003,8 +1055,13 @@ public function UpdateRequestApproval(Request $request){
 
       $attachment = [];
       if ($data['status'] == 3) {
-        $attach = $data['encryptedLOA'];
-        $attachment = [$attach];
+
+        if($data['isUpload'] == 1){
+            $attach = $data['encryptedLOA'];
+            $attachment = [$attach];
+        }else{
+            $attachment = [$data['attachment']];
+        }
       }
 
       //$numbers = $data['status'] === 3 ? "LOA #: <b>$loanumber</b> <br /> Approval Code: <b>$approvalcode</b>" : ''; <br /><br /> Password to LOA is requestor birth date: <b style="color:red;">YYYYMMDD i.e., 19500312</b>

@@ -67,6 +67,7 @@ return [
     'movider_key' => env('MOVIDER_API_KEY', null),
     'movider_secret' => env('MOVIDER_API_SECRET', null),
     'storage_cdn' => env('DO_LLIBI_CDN_ENDPOINT', null),
+    'HASHID_SECRET' => env('HASHIDS_SALT'),
 
     /*
     |--------------------------------------------------------------------------

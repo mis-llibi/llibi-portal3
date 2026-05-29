@@ -95,16 +95,19 @@ export const useAdmin = ({ name, status, page = 1 }) => {
 
     formData.append('id', props.id)
     formData.append('status', props.status)
-    if (props.status === '3') {
+    if (props.status === '3' && props.isUpload == 1) {
       formData.append('attachLOA', ...props?.attachLOA)
       formData.append('loaNumber', props?.loaNumber)
       formData.append('approvalCode', props?.approvalCode)
     } else {
       formData.append('disapproveRemarks', props?.disapproveRemarks)
     }
+    formData.append('isUpload', props?.isUpload)
+    formData.append('loaType', props?.loaType)
     formData.append('hospital_email1', props.hospital_email1)
     formData.append('hospital_email2', props.hospital_email2)
     formData.append('email_format_type', props.email_format_type)
+    formData.append('consultation_loa_template', props.consultation_loa_template)
 
     let runfinally = true
 

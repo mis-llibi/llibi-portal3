@@ -22,6 +22,9 @@ import { ManageUploadedFiles } from '@/hooks/self-service/ManageUploadedFiles'
 const Form = ({ setRequest, row, toggle }) => {
   const { files } = ManageUploadedFiles({ id: row?.id })
 
+//   console.log(row)
+
+
   const onImageError = ev => {
     ev.target.src = `${basePath}/pdf.png`
   }
@@ -48,8 +51,11 @@ const Form = ({ setRequest, row, toggle }) => {
       ...data,
       hospital_email1: row?.email1,
       hospital_email2: row?.email2,
+      loaType: row?.loaType,
+      isUpload: row?.isUpload,
       email_format_type: 'consultation',
     }
+
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this",
@@ -60,14 +66,71 @@ const Form = ({ setRequest, row, toggle }) => {
       confirmButtonText: 'Yes, confirm',
     }).then(result => {
       if (result.isConfirmed) {
-        setLoading(true)
-        updateRequest({
-          setRequest,
-          setClient,
-          setLoading,
-          onSuccess: toggle,
-          ...dataMerge,
-        })
+        if(row?.is2in1 == 1){
+            Swal.fire({
+                title: "System will generate standard consultation LOA",
+                text: "Select 2 of LOA Template",
+                html: `
+                    <div style="text-align: left; display:flex; gap:20px; justify-content: center; align-items: center;">
+                        <label>
+                            <input type="radio" name="loa_template" value="standard" checked>
+                            Standard LOA
+                        </label><br>
+
+                        <label>
+                            <input type="radio" name="loa_template" value="2in1">
+                            2in1 LOA
+                        </label>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: "Generate",
+                preConfirm: () => {
+                    const selected = document.querySelector('input[name="loa_template"]:checked');
+
+                    if (!selected) {
+                        Swal.showValidationMessage("Please select an LOA template");
+                        return false;
+                    }
+
+                    return selected.value;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const selectedTemplate = result.value;
+
+                    // console.log("Selected LOA Template:", selectedTemplate);
+
+                    const finalDataMerge = {
+                        ...dataMerge,
+                        consultation_loa_template: selectedTemplate,
+                    };
+
+                    setLoading(true)
+                    updateRequest({
+                        setRequest,
+                        setClient,
+                        setLoading,
+                        onSuccess: toggle,
+                        ...finalDataMerge,
+                    })
+                }
+            });
+        }else{
+
+            const finalDataMerge = {
+                ...dataMerge,
+                consultation_loa_template: "standard",
+            };
+            setLoading(true)
+            updateRequest({
+            setRequest,
+            setClient,
+            setLoading,
+            onSuccess: toggle,
+            ...finalDataMerge,
+            })
+        }
       }
     })
   }
@@ -430,35 +493,49 @@ const Form = ({ setRequest, row, toggle }) => {
             {/* APPROVE BOX */}
             <div
               className={`relative p-2 ${watch('status') !== '3' && 'hidden'}`}>
-              <div className="">
-                <Label htmlFor="attachLOA" className="text-bold text-md">
-                  ATTACH LOA:
-                </Label>
-                <InputFile
-                  id="attachLOA"
-                  register={{
-                    ...register('attachLOA'),
-                  }}
-                  disabled={watch('status') === '3' ? false : true}
-                  type="file"
-                  accept=".pdf"
-                  className="w-full"
-                  placeholder="LOA Number"
-                  errors={errors?.attachLOA}
-                />
-              </div>
-              <div className="mb-3 border-b-2 border-dotted pb-1">
-                <Label htmlFor="loaNumber" className="text-bold text-md">
-                  LOA NUMBER:
-                </Label>
-                <Input
-                  id="loaNumber"
-                  register={register('loaNumber')}
-                  disabled
-                  placeholder="LOA Number"
-                  errors={errors?.loaNumber}
-                />
-              </div>
+                {row?.loaType == "consultation" && row?.isUpload == 0 ? (
+                    <>
+                    <div>
+                        <Label className="text-bold text-lg">
+                        System will generate LOA
+                        </Label>
+                    </div>
+                    </>
+                ) : (
+                    <>
+                    <div>
+                        <div className="">
+                            <Label htmlFor="attachLOA" className="text-bold text-md">
+                            ATTACH LOA:
+                            </Label>
+                            <InputFile
+                            id="attachLOA"
+                            register={{
+                                ...register('attachLOA'),
+                            }}
+                            disabled={watch('status') === '3' ? false : true}
+                            type="file"
+                            accept=".pdf"
+                            className="w-full"
+                            placeholder="LOA Number"
+                            errors={errors?.attachLOA}
+                            />
+                        </div>
+                        <div className="mb-3 border-b-2 border-dotted pb-1">
+                            <Label htmlFor="loaNumber" className="text-bold text-md">
+                            LOA NUMBER:
+                            </Label>
+                            <Input
+                            id="loaNumber"
+                            register={register('loaNumber')}
+                            disabled
+                            placeholder="LOA Number"
+                            errors={errors?.loaNumber}
+                            />
+                        </div>
+                    </div>
+                    </>
+                )}
 
               {/*
                                 <div className="mb-3 border-b-2 border-dotted pb-1">
@@ -542,7 +619,7 @@ const Form = ({ setRequest, row, toggle }) => {
               <Button
                 loading={loading}
                 className="bg-green-600 hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900">
-                <ButtonText text="Update Request" loading={loading} />
+                <ButtonText text={`${row?.isUpload == 0 ? "Proceed" : "Update Request"}`} loading={loading} />
               </Button>
             </div>
           </div>

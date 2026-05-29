@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -44,4 +46,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $appends = [
+        'hashed_id',
+    ];
+
+    protected function hashedId(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => Hashids::encode($this->id)
+        );
+    }
 }
