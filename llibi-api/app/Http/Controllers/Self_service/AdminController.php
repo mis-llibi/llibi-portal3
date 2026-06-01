@@ -759,7 +759,7 @@ public function UpdateRequest(Request $request)
          $this->sendNotification(
              array_merge($dataSend, $update, $loa),
              $client[0]->firstName . ' ' . $client[0]->lastName,
-             "jeremiahquintano17@gmail.com",
+             "hrd@koolerindustries.com",
              null,
              null,
              $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
@@ -819,7 +819,7 @@ public function UpdateRequest(Request $request)
             $this->sendNotification(
                 array_merge($dataSend, $update, $loa),
                 $client[0]->firstName . ' ' . $client[0]->lastName,
-                "jeremiahquintano17@gmail.com",
+                "hrd@koolerindustries.com",
                 null,
                 null,
                 $client[0]->depFirstName === null && $client[0]->depLastName === null ? null : $client[0]->depFirstName . ' ' . $client[0]->depLastName,
