@@ -27,7 +27,7 @@ const nextConfig = {
   env: {
     backEndUrl: isProd
     //   ? 'https://test.backend.llibi.app'
-      ? "https://portal.backend.llibi.app"
+      ? "https://admin-backend.portal.llibi.app"
       : 'http://localhost:8000',
     apiPath: '/api',
     llibiDigitalOceanSpaces: process.env.NEXT_PUBLIC_LLIBI_DIGITALOCEAN_SPACES,
