@@ -28,7 +28,7 @@ const nextConfig = {
     backEndUrl: isProd
     //   ? 'https://test.backend.llibi.app'
       ? "https://admin-backend.portal.llibi.app"
-      : 'http://localhost:80000',
+      : 'http://localhost:8000',
     apiPath: '/api',
     llibiDigitalOceanSpaces: process.env.NEXT_PUBLIC_LLIBI_DIGITALOCEAN_SPACES,
     LLIBIXADMU_KEY: process.env.NEXT_PUBLIC_LLIBIXADMU_KEY,
