@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 
 import { CustomPusher } from '@/lib/pusher'
@@ -7,7 +8,7 @@ export default function RealtimeNotificationPage() {
   const channel = CustomPusher.subscribe('channel-realtime')
 
   useEffect(() => {
-    
+
     channel.bind('realtime-notification-event', data => {
       const { message, date_created } = data.data
 
