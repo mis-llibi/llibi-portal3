@@ -46,6 +46,8 @@ export default function ProcedureForm({ setRequest, row, toggle }) {
       ...data,
       hospital_email1: row?.email1,
       hospital_email2: row?.email2,
+      loaType: row?.loaType,
+      isUpload: row?.isUpload,
       email_format_type: 'consultation',
     }
     Swal.fire({
