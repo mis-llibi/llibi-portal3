@@ -22,7 +22,7 @@ class ArchivedOldClientsData extends Command
      *
      * @var string
      */
-    protected $description = 'Move rows older than 6 months to the llibiapp_portal.app_portal_clients_archive table and remove them from the llibiapp_portal.app_portal_clients table';
+    protected $description = 'Move rows older than 3 months to the llibiapp_portal.app_portal_clients_archive table and remove them from the llibiapp_portal.app_portal_clients table';
 
     /**
      * Execute the console command.
@@ -31,8 +31,8 @@ class ArchivedOldClientsData extends Command
      */
     public function handle()
     {
-        // Define the cutoff date (6 months ago)
-        $dateThreshold = Carbon::now()->subMonths(6);
+        // Define the cutoff date (3 months ago)
+        $dateThreshold = Carbon::now()->subMonths(3);
         $mainTable = 'llibiapp_portal.app_portal_clients';
         $archiveTable = 'llibiapp_portal.app_portal_clients_archive';
 
@@ -41,7 +41,7 @@ class ArchivedOldClientsData extends Command
         DB::beginTransaction();
 
         try {
-            // Step 1: Copy rows older than 6 months to the archive table
+            // Step 1: Copy rows older than 3 months to the archive table
             // Using a raw query relies on both tables having identical schemas
             $inserted = DB::statement(
                 "INSERT INTO {$archiveTable} SELECT * FROM {$mainTable} WHERE created_at < ?",
