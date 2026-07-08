@@ -66,7 +66,7 @@ const Form = ({ setRequest, row, toggle }) => {
       confirmButtonText: 'Yes, confirm',
     }).then(result => {
       if (result.isConfirmed) {
-        if(row?.is2in1 == 1){
+        if(row?.is2in1 == 1 && data.status == 3){
             Swal.fire({
                 title: "System will generate standard consultation LOA",
                 text: "Select 2 of LOA Template",
