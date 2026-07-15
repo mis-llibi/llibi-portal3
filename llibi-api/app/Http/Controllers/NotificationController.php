@@ -14,7 +14,7 @@ class NotificationController extends Controller
   // -- All Notification goes here via SMS and EMAIL
   public function SmsNotification($mobile, $message)
   {
-    $ch = curl_init('http://192.159.66.221/goip/sendsms/');
+    $ch = curl_init('http://46.250.238.187/goip/sendsms/');
 
     $parameters = array(
       'auth' => array('username' => "root", 'password' => "LACSONSMS"), //Your API KEY
