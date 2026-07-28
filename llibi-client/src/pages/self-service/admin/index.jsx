@@ -141,7 +141,9 @@ const Admin = () => {
       if (!reponse.status) return
 
       setBody({
-        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        title: row.isDependent
+            ? row.depMemberID + ' - ' + row.depLastName + ', ' + row.depFirstName
+            : row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
         content: <Form setRequest={setRequest} row={row} toggle={toggle} />,
         //modalOuterContainer: 'w-full md:w-10/12 max-h-screen',
         modalOuterContainer: 'w-full h-full',
@@ -397,7 +399,9 @@ const Admin = () => {
       if (!reponse.status) return
 
       setBody({
-        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        title: row.isDependent
+            ? row.depMemberID + ' - ' + row.depLastName + ', ' + row.depFirstName
+            : row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
         content: (
           <ProcedureForm setRequest={setRequest} row={row} toggle={toggle} />
         ),
@@ -422,7 +426,9 @@ const Admin = () => {
       if (!reponse.status) return
 
       setBody({
-        title: row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
+        title: row.isDependent
+            ? row.depMemberID + ' - ' + row.depLastName + ', ' + row.depFirstName
+            : row.memberID + ' - ' + row.lastName + ', ' + row.firstName,
         content: (
           <ApprovalForm setRequest={setRequest} row={row} toggle={toggle} />
         ),

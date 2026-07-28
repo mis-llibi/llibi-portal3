@@ -625,12 +625,17 @@ public function UpdateRequest(Request $request)
     }
 
     if($request->isUpload == "1"){
+
+
         $title = strtoupper($request->loaNumber);
             $this->validate($request, [
             'attachLOA' => 'required|mimes:pdf',
             ]);
 
-            $directory = 'Self-service/LOA/' . $client[0]->memberID;
+            $memberID = $client[0]->isDependent ? $client[0]->depMemberID : $client[0]->memberID;
+
+            $directory = 'Self-service/LOA/' . $memberID;
+
 
             // if(!Storage::disk('llibiapp')->exists($directory)){
             //   Storage::disk('llibiapp')->makeDirectory($directory);
@@ -638,7 +643,8 @@ public function UpdateRequest(Request $request)
 
             $path = $request->attachLOA->storeAs($directory, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'llibiapp');
 
-            request('attachLOA')->storeAs('Self-service/LOA/' . $client[0]->memberID, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'public');
+
+            request('attachLOA')->storeAs('Self-service/LOA/' . $memberID, str_replace('_', '', $request->attachLOA->getClientOriginalName()), 'public');
 
             $update = [
             'loa_attachment' => env('DO_LLIBI_CDN_ENDPOINT') . "/" . $path,
