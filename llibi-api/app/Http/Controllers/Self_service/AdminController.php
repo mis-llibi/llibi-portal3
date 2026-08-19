@@ -693,7 +693,9 @@ public function UpdateRequest(Request $request)
 
         $clientRequest = Client::where('id', $request->id)->first();
 
-        $company = SyncCompaniesV2::where('corporate_compcode', $clientRequest->company_code)->first();
+        $company = SyncCompaniesV2::where('corporate_compcode', $clientRequest->company_code)
+                                ->orWhere('prefix_compcode', $clientRequest->company_code)
+                                ->first();
 
         $generateLoa = new GenerateLoaController();
         $result = $generateLoa->LOAGenerate(
