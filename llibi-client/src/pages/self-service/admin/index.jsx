@@ -95,6 +95,7 @@ const Admin = () => {
     updateSettings,
     previewExport,
     updateRequestHrCall,
+    isLoading
   } = useAdmin({
     name: name,
     status: searchStatus,
@@ -766,6 +767,16 @@ const Admin = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {isLoading ? (
+                        <>
+                        <tr>
+                            <td colSpan={13} className="py-4 text-center">
+                                Loading...
+                            </td>
+                        </tr>
+                        </>
+                    ) : (
+                        <>
                     {clients?.length > 0 ? (
                       clients?.map((row, i) => {
                         // console.log(row)
@@ -973,6 +984,8 @@ const Admin = () => {
                           No patient found
                         </td>
                       </tr>
+                    )}
+                        </>
                     )}
                   </tbody>
                 </table>

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 import { env } from '@/../next.config'
 
 export const useAdmin = ({ name, status, page = 1 }) => {
-  const { data: clients, mutate } = useSWR(
+  const { data: clients, mutate, isValidating, error } = useSWR(
     `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
       status || 8
     }?page=${page}`,
@@ -31,6 +31,8 @@ export const useAdmin = ({ name, status, page = 1 }) => {
       refreshInterval: 10000,
     },
   )
+
+  const isLoading = !clients && !error && isValidating
 
   const csrf = () => axios.get(`sanctum/csrf-cookie`)
 
@@ -407,5 +409,6 @@ export const useAdmin = ({ name, status, page = 1 }) => {
     updateSettings,
     previewExport,
     updateRequestHrCall,
+    isLoading
   }
 }
