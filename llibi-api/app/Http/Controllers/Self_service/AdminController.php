@@ -213,6 +213,8 @@ class AdminController extends Controller
         $start = Carbon::yesterday()->startOfDay();
         $end   = now()->endOfDay();
 
+        $prevMonth = Carbon::now()->subMonthNoOverflow()->startOfMonth();
+
         $q = DB::table('app_portal_clients as t1')
             ->leftJoin('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
             ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
@@ -291,6 +293,8 @@ class AdminController extends Controller
 
         if ($id == 8 || in_array($id, [2, 6, 9])) {
             $q->whereBetween('t1.created_at', [$start, $end]);
+        } elseif (in_array($id, [3, 4, 11])) {
+            $q->where('t1.created_at', '>=', $prevMonth);
         }
 
         // status filter
