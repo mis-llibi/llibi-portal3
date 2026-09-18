@@ -209,15 +209,9 @@ class AdminController extends Controller
 
     public function SearchRequest($search, $id)
     {
-        $defaultStatuses = [2, 6, 9, 13];
-        $start = Carbon::yesterday()->startOfDay();
-        $end   = now()->endOfDay();
-
-        $prevMonth = Carbon::now()->subMonthNoOverflow()->startOfMonth();
-
         $q = DB::table('app_portal_clients as t1')
             ->leftJoin('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
-            ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id') // avoid RIGHT JOIN
+            ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
             ->leftJoin('llibiapp_sync.masterlist as mlist', function ($join) {
                 $join->on('mlist.member_id', '=', DB::raw("
                     CASE
@@ -226,172 +220,199 @@ class AdminController extends Controller
                     END
                 "));
             })
-            ->select(
-                't1.id',
-                't1.reference_number as refno',
-                't1.email as email',
-                't1.alt_email as altEmail',
-                't1.contact as contact',
-                't1.member_id as memberID',
-                't1.first_name as firstName',
-                't1.last_name as lastName',
-                't1.dob as dob',
-                't1.is_dependent as isDependent',
-                't1.dependent_member_id as depMemberID',
-                't1.dependent_first_name as depFirstName',
-                't1.dependent_last_name as depLastName',
-                't1.dependent_dob as depDob',
-                't1.remarks as remarks',
-                't1.provider_remarks as provider_remarks',
-                't1.status as status',
-                't1.opt_landline as opt_landline',
-                't1.callback_remarks as callback_remarks',
-                't1.landline as landline',
-                't1.opt_contact as opt_contact',
-                't1.remaining as remaining',
-                't1.is_complaint_has_approved as is_complaint_has_approved',
-                't1.follow_up_request_quantity as follow_up_request_quantity',
-                't1.user_id as user_id',
-                't2.loa_type as loaType',
-                't2.loa_number as loaNumber',
-                't2.approval_code as approvalCode',
-                't2.loa_attachment as loaAttachment',
-                't2.complaint as complaint',
-                't2.lab_attachment as labAttachment',
-                't2.assessment_q1 as ass1',
-                't2.assessment_q2 as ass2',
-                't2.assessment_q3 as ass3',
-                't1.created_at as createdAt',
-                't2.provider_id as providerID',
-                't2.provider as providerName',
-                't2.doctor_id as doctorID',
-                't2.doctor_name as doctorName',
-                't2.diagnosis as diagnosis',
-                't2.provider_procedure_type as procedure_type',
-                't2.is_excluded as is_excluded',
-                't1.approved_date',
-                DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
-                DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
-                't2.elapsed_time as elapsed_time',
-                'mlist.company_name',
-                'mlist.company_code',
-                'mlist.empcode as inscode',
-                't1.provider_email2',
-                't1.is_send_to_provider',
-                't1.platform',
-                't3.failed_count',
-                't3.first_attempt_date',
-                't3.second_attempt_date',
-                't3.third_attempt_date',
-                't3.created_at as callback_created_at',
-                't3.updated_at as callback_updated_at',
-                't2.type_approval_code',
-                't2.approval_code_loanumber',
-                't2.isUpload as isUpload',
-                't2.is2in1 as is2in1'
-            );
+            ->select($this->searchRequestColumns());
 
-        if ($id == 8 || in_array($id, [2, 6, 9])) {
-            $q->whereBetween('t1.created_at', [$start, $end]);
-        } elseif (in_array($id, [3, 4, 11])) {
-            $q->where('t1.created_at', '>=', $prevMonth);
-        }
-
-        // status filter
-        $q->where(function ($query) use ($id, $defaultStatuses) {
-            if ($id == 8) {
-                $query->whereIn('t1.status', $defaultStatuses);
-            } elseif (in_array($id, ['qr', 'viber', 'provider'])) {
-                $query->where('t1.platform', $id)
-                      ->where('t1.status', '!=', 1);
-            } elseif (is_array($id)) {
-                $query->where('t1.id', $id['val']);
-            } else {
-                $query->where('t1.status', $id);
-            }
-        });
-
-        // search filter (only if provided)
-        if ($search != 0 && $search !== null && $search !== '') {
-            $term = trim($search);
-
-            // NOTE: if your columns are already case-insensitive collation, strtoupper() is wasted work.
-            $q->where(function ($query) use ($term) {
-                $like = "%{$term}%";
-                $query->where('t1.member_id', 'like', $like)
-                    ->orWhere('t1.first_name', 'like', $like)
-                    ->orWhere('t1.last_name', 'like', $like)
-                    ->orWhere('t1.dependent_member_id', 'like', $like)
-                    ->orWhere('t1.dependent_first_name', 'like', $like)
-                    ->orWhere('t1.dependent_last_name', 'like', $like);
-            });
-        }
+        $this->applySearchRequestDateFilter($q, $id);
+        $this->applySearchRequestStatusFilter($q, $id);
+        $this->applySearchRequestTermFilter($q, $search);
 
         $sortDirection = ($id == 8 || in_array($id, [2, 6, 9])) ? 'asc' : 'desc';
         $patients = $q->orderBy('t1.id', $sortDirection)->paginate(10);
 
-        if ($patients->isEmpty()) return $patients;
+        if (!$patients->isEmpty()) {
+            $this->enrichSearchRequestPatients($patients->getCollection());
+        }
 
-        // -------- Batch enrichment (no N+1) --------
+        return $patients;
+    }
+
+    private function searchRequestColumns()
+    {
+        return [
+            't1.id',
+            't1.reference_number as refno',
+            't1.email as email',
+            't1.alt_email as altEmail',
+            't1.contact as contact',
+            't1.member_id as memberID',
+            't1.first_name as firstName',
+            't1.last_name as lastName',
+            't1.dob as dob',
+            't1.is_dependent as isDependent',
+            't1.dependent_member_id as depMemberID',
+            't1.dependent_first_name as depFirstName',
+            't1.dependent_last_name as depLastName',
+            't1.dependent_dob as depDob',
+            't1.remarks as remarks',
+            't1.provider_remarks as provider_remarks',
+            't1.status as status',
+            't1.opt_landline as opt_landline',
+            't1.callback_remarks as callback_remarks',
+            't1.landline as landline',
+            't1.opt_contact as opt_contact',
+            't1.remaining as remaining',
+            't1.is_complaint_has_approved as is_complaint_has_approved',
+            't1.follow_up_request_quantity as follow_up_request_quantity',
+            't1.user_id as user_id',
+            't2.loa_type as loaType',
+            't2.loa_number as loaNumber',
+            't2.approval_code as approvalCode',
+            't2.loa_attachment as loaAttachment',
+            't2.complaint as complaint',
+            't2.lab_attachment as labAttachment',
+            't2.assessment_q1 as ass1',
+            't2.assessment_q2 as ass2',
+            't2.assessment_q3 as ass3',
+            't1.created_at as createdAt',
+            't2.provider_id as providerID',
+            't2.provider as providerName',
+            't2.doctor_id as doctorID',
+            't2.doctor_name as doctorName',
+            't2.diagnosis as diagnosis',
+            't2.provider_procedure_type as procedure_type',
+            't2.is_excluded as is_excluded',
+            't1.approved_date',
+            DB::raw('TIMESTAMPDIFF(MINUTE, t1.created_at, t1.approved_date) as elapse_minutes'),
+            DB::raw('TIMESTAMPDIFF(HOUR, t1.created_at, t1.approved_date) as elapse_hours'),
+            't2.elapsed_time as elapsed_time',
+            'mlist.company_name',
+            'mlist.company_code',
+            'mlist.empcode as inscode',
+            't1.provider_email2',
+            't1.is_send_to_provider',
+            't1.platform',
+            't3.failed_count',
+            't3.first_attempt_date',
+            't3.second_attempt_date',
+            't3.third_attempt_date',
+            't3.created_at as callback_created_at',
+            't3.updated_at as callback_updated_at',
+            't2.type_approval_code',
+            't2.approval_code_loanumber',
+            't2.isUpload as isUpload',
+            't2.is2in1 as is2in1',
+        ];
+    }
+
+    private function applySearchRequestDateFilter($query, $id)
+    {
+        if ($id == 8 || in_array($id, [2, 6, 9])) {
+            $query->whereBetween('t1.created_at', [
+                Carbon::yesterday()->startOfDay(),
+                now()->endOfDay(),
+            ]);
+
+            return;
+        }
+
+        if (in_array($id, [3, 4, 11])) {
+            $query->where('t1.created_at', '>=', Carbon::now()->subMonthNoOverflow()->startOfMonth());
+        }
+    }
+
+    private function applySearchRequestStatusFilter($query, $id)
+    {
+        if ($id == 8) {
+            $query->whereIn('t1.status', [2, 6, 9, 13]);
+        } elseif (in_array($id, ['qr', 'viber', 'provider'])) {
+            $query->where('t1.platform', $id)
+                ->where('t1.status', '!=', 1);
+        } elseif (is_array($id)) {
+            $query->where('t1.id', $id['val']);
+        } else {
+            $query->where('t1.status', $id);
+        }
+    }
+
+    private function applySearchRequestTermFilter($query, $search)
+    {
+        if ($search == 0 || $search === null || $search === '') {
+            return;
+        }
+
+        $like = '%' . trim($search) . '%';
+
+        $query->where(function ($query) use ($like) {
+            $query->where('t1.member_id', 'like', $like)
+                ->orWhere('t1.first_name', 'like', $like)
+                ->orWhere('t1.last_name', 'like', $like)
+                ->orWhere('t1.dependent_member_id', 'like', $like)
+                ->orWhere('t1.dependent_first_name', 'like', $like)
+                ->orWhere('t1.dependent_last_name', 'like', $like);
+        });
+    }
+
+    private function enrichSearchRequestPatients($patients)
+    {
         $compcodes = $patients->pluck('company_code')->filter()->unique()->values();
-        $inscodes  = $patients->pluck('inscode')->filter()->map(fn($v) => (int)$v)->unique()->values();
+        $inscodes = $patients->pluck('inscode')->filter()->map(function ($value) {
+            return (int) $value;
+        })->unique()->values();
+        $userIds = $patients->pluck('user_id')->filter()->unique()->values();
 
         $companies = SyncCompaniesV2::whereIn('corporate_compcode', $compcodes)
             ->get()
             ->keyBy('corporate_compcode');
 
-        // claims count grouped
         $claimsCount = AppLoaMonitor::selectRaw('compcode, inscode, COUNT(*) as cnt')
             ->whereIn('compcode', $compcodes)
             ->whereIn('inscode', $inscodes)
             ->groupBy('compcode', 'inscode')
             ->get()
-            ->mapWithKeys(fn($r) => ["{$r->compcode}|{$r->inscode}" => (int)$r->cnt]);
+            ->mapWithKeys(function ($claim) {
+                return ["{$claim->compcode}|{$claim->inscode}" => (int) $claim->cnt];
+            });
 
-        // LOA in-transit count: still tricky because of patient_name LIKE.
-        // At minimum: count only (no get), and keep filters tight.
-        // We'll compute per patient, but using COUNT only (still 10 queries max).
-        // If you can replace patient_name LIKE with a real key (client_id/refno), you can batch this too.
-        $status = [1, 4];
-        $types  = ['outpatient', 'laboratory', 'consultation'];
+        $users = User::select('id', 'first_name', 'last_name')
+            ->whereIn('id', $userIds)
+            ->get()
+            ->keyBy('id');
 
-        $patients->getCollection()->transform(function ($p) use ($companies, $claimsCount, $status, $types) {
-            $fullname = $p->isDependent
-                ? "{$p->depLastName}, {$p->depFirstName}"
-                : "{$p->lastName}, {$p->firstName}";
+        $patients->transform(function ($patient) use ($companies, $claimsCount, $users) {
+            $fullname = $patient->isDependent
+                ? "{$patient->depLastName}, {$patient->depFirstName}"
+                : "{$patient->lastName}, {$patient->firstName}";
 
-            $compcode = $p->company_code;
-            $inscode  = (int)$p->inscode;
+            $company = $companies->get($patient->company_code);
+            $policy = $company->policy ?? '2024-11-1';
+            $inscode = (int) $patient->inscode;
 
-            $company = $companies->get($compcode);
-            $policy  = $company->policy ?? "2024-11-1";
+            $loaTransitCount = $this->searchRequestLoaTransitCount($fullname, $policy);
+            $claims = $claimsCount->get("{$patient->company_code}|{$inscode}", 0);
 
-            // LOA transit count (COUNT only)
-            $loaTransitCount = LoaFilesInTransit::where('patient_name', 'like', "%{$fullname}%")
-                ->whereIn('status', $status)
-                ->where(function ($q) use ($types) {
-                    foreach ($types as $type) $q->orWhere('type', 'like', "%{$type}%");
-                })
-                ->where('date', '>=', $policy)
-                ->count();
+            $patient->total_remaining = $claims > $loaTransitCount
+                ? 0
+                : $patient->remaining - ($loaTransitCount - $claims);
+            $patient->benefit_type = $company->benefit_type ?? null;
+            $patient->cceName = $users->get($patient->user_id);
 
-            $claims = $claimsCount->get("{$compcode}|{$inscode}", 0);
-
-            if ($claims > $loaTransitCount) {
-                $p->total_remaining = 0;
-            } else {
-                $totalLoaTransitClaims = $loaTransitCount - $claims;
-                $p->total_remaining = $p->remaining - $totalLoaTransitClaims;
-            }
-
-            $p->benefit_type = $company->benefit_type ?? null;
-
-            // Find CCE using user_id
-            $p->cceName = User::where('id', $p->user_id)->select('first_name', 'last_name')->first();
-            return $p;
+            return $patient;
         });
+    }
 
-        return $patients;
+    private function searchRequestLoaTransitCount($fullname, $policy)
+    {
+        $types = ['outpatient', 'laboratory', 'consultation'];
+
+        return LoaFilesInTransit::where('patient_name', 'like', "%{$fullname}%")
+            ->whereIn('status', [1, 4])
+            ->where(function ($query) use ($types) {
+                foreach ($types as $type) {
+                    $query->orWhere('type', 'like', "%{$type}%");
+                }
+            })
+            ->where('date', '>=', $policy)
+            ->count();
     }
 
 
