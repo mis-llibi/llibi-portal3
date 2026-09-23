@@ -28,7 +28,7 @@ export const useAdmin = ({ name, status, page = 1 }) => {
       revalidateOnReconnect: false,
       refreshWhenOffline: false,
       refreshWhenHidden: true,
-      refreshInterval: 300000,
+      refreshInterval: 60000,
     },
   )
 
