@@ -57,7 +57,7 @@ export default function ApprovalForm({ setRequest, row, toggle }) {
     if (isHavePending && data.status == '3') {
       Swal.fire({
         title: 'Set status',
-        text: 'Set Status of Procedures',
+        text: 'Please Approve / Disapprove Laboratory Procedures',
         icon: 'warning',
       })
       return
