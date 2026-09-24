@@ -654,13 +654,22 @@ export default function ApprovalForm({ setRequest, row, toggle }) {
               </Label>
             </div>
             <div
-              className={`mb-3 border-b-2 border-dotted ${
-                !client?.isDependent && '#hidden'
-              }`}>
+              className={`mb-3 border-b-2 border-dotted`}>
               <Label className="text-bold text-md">
                 TYPE OF APPROVAL CODE:{' '}
                 <span className={`text-blue-500`}>
                   {client?.type_approval_code.toUpperCase()} APPROVAL CODE
+                </span>
+              </Label>
+            </div>
+            <div
+              className={`mb-3 border-b-2 border-dotted ${
+                client?.status != 3 && 'hidden'
+              }`}>
+              <Label className="text-bold text-md">
+                APPROVAL CODE:{' '}
+                <span className={`text-blue-500`}>
+                  {procedure?.client_request?.client_request?.approval_code.toUpperCase()}
                 </span>
               </Label>
             </div>

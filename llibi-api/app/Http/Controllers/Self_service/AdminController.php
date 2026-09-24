@@ -1557,7 +1557,7 @@ public function UpdateRequestApproval(Request $request){
                 ->select('*')
                 ->get();
 
-    $client_request = Client::query()->with('clientRequest:id,client_id,loa_type')->where('id', $id)->first();
+    $client_request = Client::query()->with('clientRequest:id,client_id,loa_type,approval_code')->where('id', $id)->first();
 
     return response()->json([
         'procedures' => $procedures,
