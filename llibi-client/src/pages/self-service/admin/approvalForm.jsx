@@ -16,7 +16,6 @@ import { basePath } from '@/../next.config'
 
 import { ManageEnumerateLaboratory } from '@/hooks/self-service/ManageEnumerateLaboratory'
 import EditableProcedureRow from './editableProcedureRow'
-import InputFile from '@/components/InputFile'
 
 //import { RiDeleteBin2Line } from 'react-icons/ri'
 
@@ -447,60 +446,46 @@ export default function ApprovalForm({ setRequest, row, toggle }) {
             </div>
 
             {/* APPROVE BOX */}
-            <div
+            {/* <div
               className={`relative p-2 ${watch('status') !== '3' && 'hidden'}`}>
-                {row?.loaType == "consultation" && row?.isUpload == 0 ? (
-                    <>
-                    <div>
-                        <Label className="text-bold text-lg">
-                        System will generate LOA
-                        </Label>
-                    </div>
-                    </>
-                ) : (
-                    <>
-                    <div>
-                        <div className="">
-                            <Label htmlFor="attachLOA" className="text-bold text-md">
-                            ATTACH LOA:
-                            </Label>
-                            <InputFile
-                            id="attachLOA"
-                            register={{
-                                ...register('attachLOA'),
-                            }}
-                            disabled={watch('status') === '3' ? false : true}
-                            type="file"
-                            accept=".pdf"
-                            className="w-full"
-                            placeholder="LOA Number"
-                            errors={errors?.attachLOA}
-                            />
-                        </div>
-                        <div className="mb-3 border-b-2 border-dotted pb-1">
-                            <Label htmlFor="loaNumber" className="text-bold text-md">
-                            LOA NUMBER:
-                            </Label>
-                            <Input
-                            id="loaNumber"
-                            register={register('loaNumber')}
-                            disabled
-                            placeholder="LOA Number"
-                            errors={errors?.loaNumber}
-                            />
-                        </div>
-                    </div>
-                    </>
-                )}
+              <div className="">
+                <Label htmlFor="attachLOA" className="text-bold text-md">
+                  ATTACH LOA:
+                </Label>
+                <InputFile
+                  id="attachLOA"
+                  register={{
+                    ...register('attachLOA'),
+                  }}
+                  disabled={watch('status') === '3' ? false : true}
+                  type="file"
+                  accept=".pdf"
+                  className="w-full"
+                  placeholder="LOA Number"
+                  errors={errors?.attachLOA}
+                />
+              </div>
+              <div className="mb-3 border-b-2 border-dotted pb-1">
+                <Label htmlFor="loaNumber" className="text-bold text-md">
+                  LOA NUMBER:
+                </Label>
+                <Input
+                  id="loaNumber"
+                  register={register('loaNumber')}
+                  disabled
+                  placeholder="LOA Number"
+                  errors={errors?.loaNumber}
+                />
+              </div> */}
 
-              {/* Backdrop form */}
-              <div
+            {/* Backdrop form */}
+            {/* <div
                 className={`absolute inset-0 flex justify-center items-center z-10 bg-black/30 backdrop-blur-sm rounded-md ${
                   watch('status') === '3' && 'hidden'
                 }`}>
                 <span className="text-white font-semibold"></span>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
 
             {/* DISAPPROVE BOX */}
             <div
