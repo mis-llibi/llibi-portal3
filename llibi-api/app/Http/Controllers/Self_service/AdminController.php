@@ -207,9 +207,9 @@ class AdminController extends Controller
 //     return $request;
 // }
 
-    public function SearchRequest(Request $request, $search, $id)
+    public function SearchRequest($search, $id, ?Request $request = null)
     {
-        $quickmode = $request->input('quickmode');
+        $quickmode = $request?->input('quickmode');
         $q = DB::table('app_portal_clients as t1')
             ->leftJoin('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
             ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
