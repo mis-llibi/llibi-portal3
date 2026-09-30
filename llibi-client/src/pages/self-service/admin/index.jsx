@@ -45,7 +45,7 @@ import Link from 'next/link'
 import { FaXmark } from 'react-icons/fa6'
 import ApprovalForm from './approvalForm'
 import ShowLoa from './showloa'
-import { ExportReportDateRange } from './exportReportDateRange'
+import ExportReportDateRange from './exportReportDateRange'
 
 const isProd = process.env.NODE_ENV === 'production'
 
