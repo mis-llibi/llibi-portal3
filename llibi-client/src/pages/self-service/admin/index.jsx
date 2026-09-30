@@ -45,8 +45,11 @@ import Link from 'next/link'
 import { FaXmark } from 'react-icons/fa6'
 import ApprovalForm from './approvalForm'
 import ShowLoa from './showloa'
+import { ExportReportDateRange } from './exportReportDateRange'
 
 const isProd = process.env.NODE_ENV === 'production'
+
+
 
 const Admin = () => {
   const router = useRouter()
@@ -61,9 +64,12 @@ const Admin = () => {
     register,
     control,
     formState: { errors },
+    watch
   } = useForm()
 
+
   const [loading, setLoading] = useState(false)
+  const [isQuickMode, setIsQuickMode] = useState(true)
 
   const { show, setShow, body, setBody, toggle } = ModalControl()
 
@@ -95,11 +101,13 @@ const Admin = () => {
     updateSettings,
     previewExport,
     updateRequestHrCall,
-    isLoading
+    isLoading,
+    exportReport
   } = useAdmin({
     name: name,
     status: searchStatus,
     page: page,
+    quickMode: isQuickMode
   })
 
   const checkRequestStatus = data => {
@@ -545,6 +553,23 @@ const Admin = () => {
     })
   }
 
+  const SHOW_EXPORT_REPORT_STATUSES = [3, 4, 11]
+  const SHOW_EXPORT_REPORT_CCE_ADMIN = [59, 99]
+
+    const handleShowExportReport = () => {
+        setBody({
+            title: <span className="font-bold text-lg">Export Report</span>,
+            content: <ExportReportDateRange exportReport={exportReport} status={searchStatus} />,
+            modalOuterContainer: 'w-1/3',
+            modalContainer: 'h-full',
+            modalBody: 'h-full',
+        })
+
+    toggle()
+    }
+
+
+
   return (
     <ProviderLayout>
       <Head>
@@ -695,6 +720,40 @@ const Admin = () => {
                     option={status}
                   />
                 </div>
+                {/* Toggle Switch */}
+                <div className="basis-1/6 mb-2 flex items-center pt-6">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={isQuickMode}
+                    onClick={() => setIsQuickMode(current => !current)}
+                    className="inline-flex select-none items-center gap-3 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2">
+                    <span
+                      aria-hidden="true"
+                      className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${
+                        isQuickMode ? 'bg-blue-600' : 'bg-gray-300'
+                      }`}>
+                      <span
+                        className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                          isQuickMode ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </span>
+                    <span className="text-sm font-medium text-gray-700">Quick Mode</span>
+                  </button>
+                </div>
+                {SHOW_EXPORT_REPORT_STATUSES.includes(searchStatus) &&
+                SHOW_EXPORT_REPORT_CCE_ADMIN.includes(user?.id) && (
+                    <div className="basis-1/3 mb-2 flex items-center pt-6">
+                    <Button
+                        type="button"
+                        className="text-[.55em]"
+                        onClick={handleShowExportReport}
+                    >
+                        Export Report
+                    </Button>
+                    </div>
+                )}
                 <div className="basis-1/3 flex place-items-center pl-5">
                   {loading && <SyncLoader size={10} color="#0EB0FB" />}
                 </div>

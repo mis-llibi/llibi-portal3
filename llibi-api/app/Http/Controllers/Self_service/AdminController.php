@@ -207,8 +207,9 @@ class AdminController extends Controller
 //     return $request;
 // }
 
-    public function SearchRequest($search, $id)
+    public function SearchRequest(Request $request, $search, $id)
     {
+        $quickmode = $request->input('quickmode');
         $q = DB::table('app_portal_clients as t1')
             ->leftJoin('app_portal_requests as t2', 't2.client_id', '=', 't1.id')
             ->leftJoin('app_portal_callback as t3', 't3.client_id', '=', 't1.id')
@@ -222,7 +223,7 @@ class AdminController extends Controller
             })
             ->select($this->searchRequestColumns());
 
-        $this->applySearchRequestDateFilter($q, $id);
+        $this->applySearchRequestDateFilter($q, $id, $quickmode);
         $this->applySearchRequestStatusFilter($q, $id);
         $this->applySearchRequestTermFilter($q, $search);
 
@@ -304,7 +305,7 @@ class AdminController extends Controller
         ];
     }
 
-    private function applySearchRequestDateFilter($query, $id)
+    private function applySearchRequestDateFilter($query, $id, $quickmode)
     {
         if ($id == 8 || in_array($id, [2, 6, 9])) {
             $query->whereBetween('t1.created_at', [
@@ -315,9 +316,30 @@ class AdminController extends Controller
             return;
         }
 
+        // if(in_array($id, [3,4,11])){
+        //     $query->where(
+        //         't1.created_at',
+        //         '>=',
+        //         Carbon::now()->subMonthNoOverflow()->startOfMonth()
+        //     );
+        // }
+
+
         if (in_array($id, [3, 4, 11])) {
-            $query->where('t1.created_at', '>=', Carbon::now()->subMonthNoOverflow()->startOfMonth());
+            if ($quickmode == "true") {
+                $query->whereBetween('t1.created_at', [
+                    Carbon::yesterday()->startOfDay(),
+                    Carbon::now()->endOfDay(),
+                ]);
+            } else {
+                $query->where(
+                    't1.created_at',
+                    '>=',
+                    Carbon::now()->subMonthNoOverflow()->startOfMonth()
+                );
+            }
         }
+
     }
 
     private function applySearchRequestStatusFilter($query, $id)
@@ -1859,5 +1881,136 @@ public function UpdateRequestApproval(Request $request){
 
     return $company;
   }
+
+    public function exportReport(Request $request){
+        try {
+            $request->validate([
+                'status' => ['required', 'in:3,4,11'],
+                'startDate' => ['required', 'date'],
+                'endDate' => ['required', 'date', 'after_or_equal:startDate'],
+            ]);
+
+            $status = $request->input('status');
+            $startDate = $request->input('startDate');
+            $endDate = $request->input('endDate');
+
+            $statusMap = [
+                3 => 'Approved',
+                4 => 'Disapproved',
+                11 => 'Auto LOA',
+            ];
+
+            $statusName = $statusMap[$status] ?? 'Report';
+
+            $query = DB::table('app_portal_clients as t1')
+                ->leftJoin(
+                    'app_portal_requests as t2',
+                    't2.client_id',
+                    '=',
+                    't1.id'
+                )
+                ->where('t1.status', $status)
+                ->whereBetween('t1.created_at', [
+                    Carbon::parse($startDate)->startOfDay(),
+                    Carbon::parse($endDate)->endOfDay(),
+                ])
+                ->select([
+                    DB::raw("
+                        CASE
+                            WHEN t1.is_dependent = 1
+                                THEN t1.dependent_member_id
+                            ELSE t1.member_id
+                        END AS member_id
+                    "),
+
+                    DB::raw("
+                        CASE
+                            WHEN t1.is_dependent = 1
+                                THEN CONCAT_WS(
+                                    ' ',
+                                    t1.dependent_first_name,
+                                    t1.dependent_last_name
+                                )
+                            ELSE CONCAT_WS(
+                                ' ',
+                                t1.first_name,
+                                t1.last_name
+                            )
+                        END AS full_name
+                    "),
+
+                    't2.report_provider_name as provider',
+                    't2.loa_type as loa_type',
+                    't1.created_at as created_at',
+                    't1.approved_date as date_approved',
+                    't1.platform as platform',
+                    't2.loa_number as loa_number',
+                ])
+                ->get();
+
+            if ($query->isEmpty()) {
+                return response()->json([
+                    'message' => 'No records found for the selected date range.',
+                ], 404);
+            }
+
+            $fileName = sprintf(
+                '%s_%s_to_%s.csv',
+                str_replace(' ', '_', $statusName),
+                $startDate,
+                $endDate
+            );
+
+            return response()->streamDownload(function () use ($query) {
+                $handle = fopen('php://output', 'w');
+
+                fwrite($handle, "\xEF\xBB\xBF");
+
+                fputcsv($handle, [
+                    'Member ID',
+                    'Full Name',
+                    'Provider',
+                    'LOA Type',
+                    'Created At',
+                    'Date Approved',
+                    'Platform',
+                    'LOA Number',
+                ]);
+
+                foreach ($query as $row) {
+                    fputcsv($handle, [
+                        $row->member_id,
+                        $row->full_name,
+                        $row->provider,
+                        $row->loa_type,
+                        $row->created_at,
+                        $row->date_approved,
+                        $row->platform,
+                        $row->loa_number,
+                    ]);
+                }
+
+                fclose($handle);
+            }, $fileName, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Invalid export parameters.',
+                'errors' => $e->errors(),
+            ], 422);
+
+        } catch (\Throwable $e) {
+            Log::error('Export report failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to export report. Please try again.',
+            ], 500);
+        }
+    }
 
 }

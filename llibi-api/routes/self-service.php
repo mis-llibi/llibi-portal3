@@ -25,3 +25,4 @@ Route::post('/self-service/admin-update-request', [AdminController::class, 'Upda
 Route::post('/self-service/admin-update-request-approval', [AdminController::class, 'UpdateRequestApproval']);
 Route::post('/self-service/update-request-hr-call', [HrController::class, 'UpdateRequestHrCall']);
 Route::get('/self-service/get-companies', [AdminController::class, 'GetCompanies']);
+Route::get('/self-service/export-report', [AdminController::class, 'exportReport']);

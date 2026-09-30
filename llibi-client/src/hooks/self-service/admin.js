@@ -5,32 +5,39 @@ import Swal from 'sweetalert2'
 
 import { env } from '@/../next.config'
 
-export const useAdmin = ({ name, status, page = 1 }) => {
-  const { data: clients, mutate, isValidating, error } = useSWR(
-    `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
-      status || 8
-    }?page=${page}`,
-    () =>
-      axios
-        .get(
-          `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
-            status || 8
-          }?page=${page}`,
-        )
+export const useAdmin = ({ name, status, page = 1, quickMode }) => {
+    const url = `${env.apiPath}/self-service/admin-search-request/${name || 0}/${
+    status || 8
+    }?page=${page}&quickmode=${quickMode}`
+
+    const {
+    data: clients,
+    mutate,
+    isValidating,
+    error,
+    } = useSWR(
+    url,
+    url =>
+        axios
+        .get(url)
         .then(res => res.data)
         .catch(error => {
-          if (error.response?.status !== 409) throw error
-          alert('error')
+            if (error.response?.status !== 409) {
+            throw error
+            }
+
+            alert('error')
+            return null
         }),
     {
-      revalidateOnFocus: false,
-      revalidateOnMount: true,
-      revalidateOnReconnect: false,
-      refreshWhenOffline: false,
-      refreshWhenHidden: true,
-      refreshInterval: 60000,
+        revalidateOnFocus: false,
+        revalidateOnMount: true,
+        revalidateOnReconnect: false,
+        refreshWhenOffline: false,
+        refreshWhenHidden: true,
+        refreshInterval: 60000,
     },
-  )
+    )
 
   const isLoading = !clients && !error && isValidating
 
@@ -320,82 +327,84 @@ export const useAdmin = ({ name, status, page = 1 }) => {
       })
   }
 
-  /*
-        const searchRequest = async ({ setRequest, setLoading, name, status }) => {
-            await csrf()
+    const exportReport = async ({ setLoading, ...props }) => {
+        await csrf()
 
-            axios
-                .get(
-                    `${env.apiPath}/self-service/admin-search-request/${
-                        name || 0
-                    }/${status || 2}`,
-                )
-                .then(res => {
-                    const result = res.data
-                    if (result?.length === 0) {
-                        Swal.fire({
-                            title: 'Search not found',
-                            text:
-                                'System cannot find the parameters you want to search',
-                            icon: 'error',
-                        })
-                    }
-                    setRequest(result)
-                })
-                .catch(error => {
-                    if (error?.response?.status !== 422) throw error
-                    alert(error?.response?.data?.message)
-                })
-                .finally(() => {
-                    setLoading(false)
-                })
-        }
-    */
+        try {
+            const res = await axios.get('/self-service/export-report', {
+            params: {
+                ...props,
+            },
+            responseType: 'blob',
+            })
 
-  /*
-        const updateRequest = async ({
-            setRequest,
-            setClient,
-            setLoading,
-            ...props
-        }) => {
-            await csrf()
+            const blob = new Blob([res.data], {
+            type: 'text/csv;charset=utf-8;',
+            })
 
-            const formData = new FormData()
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
 
-            formData.append('id', props.id)
-            formData.append('status', props.status)
-            if (props.status === '3') {
-                formData.append('attachLOA', ...props?.attachLOA)
-                formData.append('loaNumber', props?.loaNumber)
-                formData.append('approvalCode', props?.approvalCode)
-            } else {
-                formData.append('disapproveRemarks', props?.disapproveRemarks)
+            link.href = url
+
+            const disposition = res.headers['content-disposition']
+
+            let fileName = 'export-report.csv'
+
+            if (disposition) {
+            const match = disposition.match(/filename="?([^"]+)"?/)
+
+            if (match?.[1]) {
+                fileName = match[1]
+            }
             }
 
-            axios
-                .post(`/self-service/admin-update-request`, formData)
-                .then(res => {
-                    const result = res.data
-                    //console.log(result.data)
-                    Swal.fire({
-                        title: 'Updated',
-                        text: `Your have successfully updated the request for LOA`,
-                        icon: 'success',
-                    })
-                    setRequest(result?.all)
-                    setClient(result?.client[0])
-                    //console.log(result)
-                })
-                .catch(error => {
-                    if (error?.response?.status !== 422) throw error
-                    alert(error?.response?.data?.message)
-                })
-                .finally(() => {
-                    setLoading(false)
-                })
+            link.setAttribute('download', fileName)
+
+            document.body.appendChild(link)
+            link.click()
+
+            link.remove()
+            window.URL.revokeObjectURL(url)
+        } catch (err) {
+            console.error(err)
+
+            let errorMessage = 'Something went wrong while exporting the report.'
+
+            try {
+            // Because responseType is blob, errors may also come back as Blob
+            if (err.response?.data instanceof Blob) {
+                const text = await err.response.data.text()
+
+                try {
+                const data = JSON.parse(text)
+
+                errorMessage =
+                    data.message ||
+                    Object.values(data.errors || {}).flat().join('\n') ||
+                    errorMessage
+                } catch {
+                errorMessage = text || errorMessage
+                }
+            } else {
+                errorMessage =
+                err.response?.data?.message ||
+                err.message ||
+                errorMessage
+            }
+            } catch (parseError) {
+            console.error('Failed to parse export error:', parseError)
+            }
+
+            Swal.fire({
+            title: 'Export Failed',
+            text: errorMessage,
+            icon: 'error',
+            })
+        }finally{
+            setLoading(false)
         }
-    */
+    }
 
   return {
     clients: clients?.data || clients, // failback to `clients` if not paginated initially or handles `undefined` nicely
@@ -409,6 +418,7 @@ export const useAdmin = ({ name, status, page = 1 }) => {
     updateSettings,
     previewExport,
     updateRequestHrCall,
-    isLoading
+    isLoading,
+    exportReport
   }
 }
