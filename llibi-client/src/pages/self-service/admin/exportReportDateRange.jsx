@@ -1,9 +1,10 @@
+'use client'
 import React, { useState } from "react"
 import Label from '@/components/Label'
 import Button from '@/components/Button'
 
 
-export const ExportReportDateRange = ({exportReport, status}) => {
+export default function ExportReportDateRange({exportReport, status}){
 
 
 
