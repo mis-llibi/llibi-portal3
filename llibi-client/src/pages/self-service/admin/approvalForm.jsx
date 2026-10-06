@@ -658,7 +658,7 @@ export default function ApprovalForm({ setRequest, row, toggle }) {
               <Label className="text-bold text-md">
                 TYPE OF APPROVAL CODE:{' '}
                 <span className={`text-blue-500`}>
-                  {client?.type_approval_code.toUpperCase()} APPROVAL CODE
+                  {client?.type_approval_code?.toUpperCase()} APPROVAL CODE
                 </span>
               </Label>
             </div>
@@ -669,7 +669,7 @@ export default function ApprovalForm({ setRequest, row, toggle }) {
               <Label className="text-bold text-md">
                 APPROVAL CODE:{' '}
                 <span className={`text-blue-500`}>
-                  {procedure?.client_request?.client_request?.approval_code.toUpperCase()}
+                  {procedure?.client_request?.client_request?.approval_code?.toUpperCase()}
                 </span>
               </Label>
             </div>
