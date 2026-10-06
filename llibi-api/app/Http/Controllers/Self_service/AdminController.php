@@ -949,9 +949,10 @@ public function UpdateRequestApproval(Request $request){
 
     if((int) $request->status == 3){
 
-        $findProviderIdClientRequest = ClientRequest::where('client_id', $request->id)->first();
-        $findProvider = Hospitals::find($findProviderIdClientRequest->provider_id);
-        $generatedApprovalCode = $this->generate($findProvider->hosp_code);
+
+        $findCompanyCode = ClientRequest::where('client_id', $request->id)->first();
+        $masterlist = Sync::where('member_id', $findCompanyCode->member_id)->first();
+        $generatedApprovalCode = $this->generate($masterlist->company_code);
         $update = [
             // 'loa_attachment' => "APPROVAL CODE",
             'approval_code' => $generatedApprovalCode,
@@ -1013,14 +1014,14 @@ public function UpdateRequestApproval(Request $request){
 
 }
 
-    public function generate(string $hospitalCode): string
+    public function generate(string $companycode): string
     {
         $date = now()->format('mdy'); // mmddyy format
-        return DB::transaction(function () use ($hospitalCode, $date) {
+        return DB::transaction(function () use ($companycode, $date) {
             // Get or create record for today + hospital
             $record = ApprovalCodeGenerator::firstOrCreate(
                 [
-                    'hospital_code' => $hospitalCode,
+                    'hospital_code' => $companycode,
                     'date' => $date,
                 ],
                 ['count' => 0]
@@ -1030,9 +1031,9 @@ public function UpdateRequestApproval(Request $request){
             // Pad count (example: 01, 02, 03...)
             $sequence = str_pad($record->count, 2, '0', STR_PAD_LEFT);
             // Log for debugging
-            Log::info("Generated Approval Code: LLIBI{$hospitalCode}{$date}{$sequence}");
+            // Log::info("Generated Approval Code: LLIBI{$companycode}{$date}{$sequence}");
             // Return code
-            return "LLIBI{$hospitalCode}{$date}{$sequence}";
+            return "{$companycode}{$date}{$sequence}P";
         });
     }
 
