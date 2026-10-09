@@ -1577,6 +1577,7 @@ public function UpdateRequestApproval(Request $request){
 
   public function getProcedure($id){
     $procedures = Procedure::where('request_id', $id)
+                ->where('isCorporate', null)
                 ->select('*')
                 ->get();
 
