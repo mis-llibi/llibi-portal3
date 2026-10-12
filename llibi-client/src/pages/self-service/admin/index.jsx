@@ -179,6 +179,8 @@ const Admin = () => {
     { value: 'qr', label: 'QR' },
     { value: 'viber', label: 'Viber' },
     { value: 'provider', label: 'Provider' },
+    { value: "approval-approve", label: "Approval Code - Approved"},
+    { value: "approval-denied", label: "Approval Code - Disapproved"},
   ]
 
   const handleShowModalSetDate = () => setBody(modalExporting)

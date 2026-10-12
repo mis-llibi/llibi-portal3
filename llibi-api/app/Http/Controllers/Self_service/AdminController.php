@@ -351,7 +351,15 @@ class AdminController extends Controller
                 ->where('t1.status', '!=', 1);
         } elseif (is_array($id)) {
             $query->where('t1.id', $id['val']);
-        } else {
+        } elseif ($id == "approval-approve" || $id == "approval-denied"){
+
+            $approvalCodeStatuses = [
+                'approval-approve' => 3,
+                'approval-denied' => 4
+            ];
+            $query->where('t2.loa_type', "approval")
+                ->where('t1.status', $approvalCodeStatuses[$id]);
+        }else {
             $query->where('t1.status', $id);
         }
     }
