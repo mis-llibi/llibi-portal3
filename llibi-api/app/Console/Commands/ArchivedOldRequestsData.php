@@ -41,10 +41,54 @@ class ArchivedOldRequestsData extends Command
         DB::beginTransaction();
 
         try {
+            $schemaColumns = DB::select(
+                'SELECT TABLE_NAME, COLUMN_NAME, GENERATION_EXPRESSION
+                 FROM information_schema.COLUMNS
+                 WHERE TABLE_SCHEMA = ? AND TABLE_NAME IN (?, ?)
+                 ORDER BY ORDINAL_POSITION',
+                ['llibiapp_portal', 'app_portal_requests', 'app_portal_requests_archive']
+            );
+            $sourceColumns = [];
+            $archiveColumns = [];
+
+            foreach ($schemaColumns as $column) {
+                if ($column->TABLE_NAME === 'app_portal_requests') {
+                    $sourceColumns[$column->COLUMN_NAME] = $column->GENERATION_EXPRESSION;
+                } else {
+                    $archiveColumns[$column->COLUMN_NAME] = $column->GENERATION_EXPRESSION;
+                }
+            }
+
+            if (!$sourceColumns || !$archiveColumns) {
+                throw new Exception('Unable to read the requests or archive table columns.');
+            }
+
+            $missingColumns = array_diff(array_keys($sourceColumns), array_keys($archiveColumns));
+            if ($missingColumns) {
+                throw new Exception('Archive table is missing columns: ' . implode(', ', $missingColumns));
+            }
+
+            $insertColumns = [];
+            foreach ($sourceColumns as $name => $expression) {
+                // Generated archive columns calculate their values from the copied base columns.
+                if (!empty($archiveColumns[$name])) {
+                    if (empty($expression)) {
+                        throw new Exception("Cannot copy ordinary source column {$name} into a generated archive column.");
+                    }
+                    continue;
+                }
+
+                $insertColumns[] = '`' . str_replace('`', '``', $name) . '`';
+            }
+
+            if (!$insertColumns) {
+                throw new Exception('No writable archive columns were found.');
+            }
+            $columnList = implode(', ', $insertColumns);
+
             // Step 1: Copy rows older than 6 months to the archive table
-            // Using a raw query relies on both tables having identical schemas
-            $inserted = DB::statement(
-                "INSERT INTO {$archiveTable} SELECT * FROM {$mainTable} WHERE created_at < ?",
+            DB::statement(
+                "INSERT INTO {$archiveTable} ({$columnList}) SELECT {$columnList} FROM {$mainTable} WHERE created_at < ?",
                 [$dateThreshold]
             );
 
