@@ -752,6 +752,10 @@ public function UpdateRequest(Request $request)
                                 ->orWhere('prefix_compcode', $clientRequest->company_code)
                                 ->first();
 
+        $patient_member_id = $clientRequest->isDependent ? $clientRequest->dependent_member_id : $clientRequest->member_id;
+
+        $masterlist = Sync::where('member_id', $patient_member_id)->first();
+
         $generateLoa = new GenerateLoaController();
         $result = $generateLoa->LOAGenerate(
                                                 $clientRequest->company_code,
@@ -759,7 +763,7 @@ public function UpdateRequest(Request $request)
                                                 $clientRequest->last_name . ", " . $clientRequest->first_name,
                                                 $clientRequest->is_dependent ? $clientRequest->dependent_last_name . ", " . $clientRequest->dependent_first_name : $clientRequest->last_name . ", " . $clientRequest->first_name,
                                                 $clientRequest->is_dependent ? "dependent" : "employee",
-                                                $company->name,
+                                                $masterlist->company_name,
                                                 $providerName,
                                                 $doctName,
                                                 $client[0]->complaint,
