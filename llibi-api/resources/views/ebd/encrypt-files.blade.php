@@ -9,21 +9,21 @@
 </head>
 
 <body>
-  <p>Dear Client,</p>
+  <p style="font-size: 14px;">Dear Client,</p>
 
-  <p>Below is your password for all encrypted files sent by Lacson &amp; Lacson Insurance Brokers, Inc. (LLIBI).</p>
+  <p style="font-size: 14px;">Below is your password for all encrypted files sent by Lacson &amp; Lacson Insurance Brokers, Inc. (LLIBI).</p>
 
-  <p>Please use this password for all succeeding emails containing encrypted files. We will provide a new password, when necessary, in accordance with LLIBI&rsquo;s Password Management Policy.</p>
+  <p style="font-size: 14px;">Please use this password for all succeeding emails containing encrypted files. We will provide a new password, when necessary, in accordance with LLIBI&rsquo;s Password Management Policy.</p>
 
-  <p><strong>Password:</strong> {{ $password }}</p>
+  <p style="font-size: 14px;"><strong>Password:</strong> {{ $password }}</p>
 
-  <p>For security purposes, please do not share this password with anyone. LLIBI shall not be responsible for any unauthorized access to or disclosure of encrypted files resulting from your sharing or unauthorized disclosure of this password. If another authorized individual needs this password, please contact your LLIBI Point of Contact (POC) for assistance.</p>
+  <p style="font-size: 14px;">For security purposes, please do not share this password with anyone. LLIBI shall not be responsible for any unauthorized access to or disclosure of encrypted files resulting from your sharing or unauthorized disclosure of this password. If another authorized individual needs this password, please contact your LLIBI Point of Contact (POC) for assistance.</p>
 
   <p>Kindly confirm receipt of this password to your LLIBI POC. If you have any concerns regarding its use or wish to request a password change, please contact your POC.</p>
 
   <p>Thank you.</p>
 
-  <p><em>This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</em></p>
+  <p style="font-size: 8px;"><em>This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</em></p>
 
   <br /><br />
 
