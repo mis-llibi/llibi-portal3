@@ -19,9 +19,11 @@
 
   <p style="font-size: 14px;">For security purposes, please do not share this password with anyone. LLIBI shall not be responsible for any unauthorized access to or disclosure of encrypted files resulting from your sharing or unauthorized disclosure of this password. If another authorized individual needs this password, please contact your LLIBI Point of Contact (POC) for assistance.</p>
 
-  <p>Kindly confirm receipt of this password to your LLIBI POC. If you have any concerns regarding its use or wish to request a password change, please contact your POC.</p>
+  <p style="font-size: 14px;">Kindly confirm receipt of this password to your LLIBI POC. If you have any concerns regarding its use or wish to request a password change, please contact your POC.</p>
 
-  <p>Thank you.</p>
+  <p style="font-size: 14px;">Thank you.</p>
+
+  <p style="font-size: 8px; font-style: italic;"><em>This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</em></p>
 
   <br /><br />
 
@@ -37,8 +39,6 @@
     <div>
       <small style="font-weight: bold; text-transform: uppercase;">This is an auto-generated Email. Does not support
         replies.</small>
-
-      <small style="font-weight: bold; text-transform: uppercase;">This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</small>
     </div>
   </footer>
 
