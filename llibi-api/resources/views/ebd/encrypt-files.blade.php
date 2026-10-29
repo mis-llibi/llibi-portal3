@@ -23,8 +23,6 @@
 
   <p>Thank you.</p>
 
-  <p style="font-size: 8px;"><em>This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</em></p>
-
   <br /><br />
 
   <hr>
@@ -39,6 +37,8 @@
     <div>
       <small style="font-weight: bold; text-transform: uppercase;">This is an auto-generated Email. Does not support
         replies.</small>
+
+      <small style="font-weight: bold; text-transform: uppercase;">This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</small>
     </div>
   </footer>
 
