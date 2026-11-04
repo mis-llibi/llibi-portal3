@@ -41,7 +41,10 @@ class BenadEncryptor extends Controller
       }
     }
 
-    $body = view('ebd.encrypt-files', compact('password'));
+    $template = $request->is('api/ebdencrypt/send-email-password-internal')
+      ? 'ebd.encrypt-files-internal'
+      : 'ebd.encrypt-files';
+    $body = view($template, compact('password'));
 
     $sending = new SendingEmail($email, $body, 'LLIBI PASSWORD', cc: $array_cc);
     $sending->sendLlibiBenAd();
