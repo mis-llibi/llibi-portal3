@@ -30,9 +30,19 @@ class BenadEncryptor extends Controller
 
   public function sendEmailPassword(Request $request)
   {
+    return $this->sendPasswordEmail($request, 'ebd.encrypt-files');
+  }
+
+  public function sendEmailPasswordInternal(Request $request)
+  {
+    return $this->sendPasswordEmail($request, 'ebd.encrypt-files-internal');
+  }
+
+  private function sendPasswordEmail(Request $request, string $template)
+  {
     $email = $request->email;
     $password = $request->password;
-    $company = $request->filled('company') ? $request->input('company') : 'Client';
+    $company = $request->filled('company') ? $request->input('company') : null;
     $cc = $request->filled('cc') ? explode(',', $request->cc) : null;
 
     $array_cc = [];
@@ -42,9 +52,6 @@ class BenadEncryptor extends Controller
       }
     }
 
-    $template = $request->is('api/ebdencrypt/send-email-password-internal')
-      ? 'ebd.encrypt-files-internal'
-      : 'ebd.encrypt-files';
     $body = view($template, compact('password', 'company'));
 
     $sending = new SendingEmail($email, $body, 'LLIBI PASSWORD', cc: $array_cc);

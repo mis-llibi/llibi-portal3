@@ -9,7 +9,7 @@
 </head>
 
 <body>
-  <p style="font-size: 14px;">Dear Department Head,</p>
+  <p style="font-size: 14px;">Dear {{ $company ?? 'Department Head' }},</p>
 
   <p style="font-size: 14px;">Below is the password for all encrypted files sent internally within Lacson &amp; Lacson Insurance Brokers, Inc. (LLIBI).</p>
 
