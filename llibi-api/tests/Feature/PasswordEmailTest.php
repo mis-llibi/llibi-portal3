@@ -42,10 +42,7 @@ class PasswordEmailTest extends TestCase
 
             $sent = end(PasswordEmailMailerStub::$sent);
             $html = $sent->body->render();
-            $greeting = $endpoint === 'send-email-password'
-                ? 'Dear &lt;Company&gt; &amp; Partners,'
-                : 'Dear Department Head,';
-            $this->assertStringContainsString($greeting, $html);
+            $this->assertStringContainsString('Dear &lt;Company&gt; &amp; Partners,', $html);
             $this->assertStringNotContainsString('<Company>', $html);
         }
 
@@ -56,6 +53,14 @@ class PasswordEmailTest extends TestCase
         ])->assertNoContent();
         $sent = end(PasswordEmailMailerStub::$sent);
         $this->assertStringContainsString('Dear Client,', $sent->body->render());
+
+        $this->postJson('/api/ebdencrypt/send-email-password-internal', [
+            'email' => 'test@example.com',
+            'password' => 'samplepass',
+            'company' => '',
+        ])->assertNoContent();
+        $sent = end(PasswordEmailMailerStub::$sent);
+        $this->assertStringContainsString('Dear Department Head,', $sent->body->render());
     }
 }
 
