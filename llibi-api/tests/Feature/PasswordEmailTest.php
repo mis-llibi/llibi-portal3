@@ -32,6 +32,30 @@ class PasswordEmailTest extends TestCase
             $this->assertStringNotContainsString($password, $html);
         }
         $this->assertCount(2, PasswordEmailMailerStub::$sent);
+
+        foreach (['send-email-password', 'send-email-password-internal'] as $endpoint) {
+            $this->postJson('/api/ebdencrypt/' . $endpoint, [
+                'email' => 'test@example.com',
+                'password' => 'samplepass',
+                'company' => '<Company> & Partners',
+            ])->assertNoContent();
+
+            $sent = end(PasswordEmailMailerStub::$sent);
+            $html = $sent->body->render();
+            $greeting = $endpoint === 'send-email-password'
+                ? 'Dear &lt;Company&gt; &amp; Partners,'
+                : 'Dear Department Head,';
+            $this->assertStringContainsString($greeting, $html);
+            $this->assertStringNotContainsString('<Company>', $html);
+        }
+
+        $this->postJson('/api/ebdencrypt/send-email-password', [
+            'email' => 'test@example.com',
+            'password' => 'samplepass',
+            'company' => '',
+        ])->assertNoContent();
+        $sent = end(PasswordEmailMailerStub::$sent);
+        $this->assertStringContainsString('Dear Client,', $sent->body->render());
     }
 }
 
