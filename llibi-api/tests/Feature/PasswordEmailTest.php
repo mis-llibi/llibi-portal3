@@ -42,7 +42,10 @@ class PasswordEmailTest extends TestCase
 
             $sent = end(PasswordEmailMailerStub::$sent);
             $html = $sent->body->render();
-            $this->assertStringContainsString('Dear &lt;Company&gt; &amp; Partners,', $html);
+            $greeting = $endpoint === 'send-email-password-internal'
+                ? 'Dear &lt;Company&gt; &amp; Partners Head,'
+                : 'Dear &lt;Company&gt; &amp; Partners,';
+            $this->assertStringContainsString($greeting, $html);
             $this->assertStringNotContainsString('<Company>', $html);
         }
 
