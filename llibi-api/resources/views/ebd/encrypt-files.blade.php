@@ -11,13 +11,13 @@
 <body>
   <p style="font-size: 14px;">Dear {{ $company ?? 'Client' }},</p>
 
-  <p style="font-size: 14px;">Below is your password for all encrypted files sent by Lacson &amp; Lacson Insurance Brokers, Inc. (LLIBI).</p>
+  <p style="font-size: 14px;">Below is your password for encrypted files sent by Lacson &amp; Lacson Insurance Brokers, Inc. (LLIBI).</p>
 
-  <p style="font-size: 14px;">Please use this password for all succeeding emails containing encrypted files. We will provide a new password, when necessary, in accordance with LLIBI&rsquo;s Password Management Policy.</p>
+  <p style="font-size: 14px;">Please use this password for succeeding emails containing encrypted files. We will provide a new password, when necessary, in accordance with LLIBI&rsquo;s Password Management Policy.</p>
 
   <p style="font-size: 14px;"><strong>Password:</strong> {{ $password }}</p>
 
-  <p style="font-size: 14px;">For security purposes, please do not share this password with anyone. LLIBI shall not be responsible for any unauthorized access to or disclosure of encrypted files resulting from your sharing or unauthorized disclosure of this password. If another authorized individual needs this password, please contact your LLIBI Point of Contact (POC) for assistance.</p>
+  <p style="font-size: 14px;">For security and confidentiality purposes, please keep this password strictly private and do not share, disclose, or forward it to anyone, including colleagues or other authorized individuals. LLIBI shall not be responsible for any unauthorized access to or disclosure of encrypted files resulting from your sharing or unauthorized disclosure of this password. If another authorized individual requires access to encrypted files, kindly inform your respective LLIBI Point of Contact (POC).</p>
 
   <p style="font-size: 14px;">Kindly confirm receipt of this password to your LLIBI POC. If you have any concerns regarding its use or wish to request a password change, please contact your POC.</p>
 
