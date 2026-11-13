@@ -147,6 +147,7 @@ Route::get('/company-policies/get-policy/{company_name}', [PoliciesController::c
 
 //COMPANIES SYNC API
 require __DIR__ . '/ebd.php';
+require __DIR__ . '/fund-management.php';
 
 
 Route::get('/create-client-portal-account', [AuthenticatedSessionController::class, 'createUser']);
