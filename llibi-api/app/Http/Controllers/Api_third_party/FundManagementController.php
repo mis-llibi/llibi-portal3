@@ -13,8 +13,14 @@ class FundManagementController extends Controller
   public function sendEmail(Request $request)
   {
     $validated = $request->validate([
-      'email' => ['required', 'email'],
-      'cc' => ['nullable', 'string'],
+      'email'          => ['required', 'email'],
+      'cc'             => ['nullable', 'string'],
+      'name'           => ['required', 'string'],
+      'user'           => ['required', 'string'],
+      'adjustment'     => ['required', 'string'],
+      'transmittal_doc'=> ['required', 'string'],
+      'code'           => ['required', 'string'],
+      'tracking'       => ['required', 'string'],
     ]);
 
     $ccRecipients = [];
@@ -32,11 +38,18 @@ class FundManagementController extends Controller
       }
     }
 
-    $body = view('fund-management.sample-email');
+    $body = view('fund-management.sample-email', [
+      'name'            => $validated['name'],
+      'user'            => $validated['user'],
+      'adjustment'      => $validated['adjustment'],
+      'transmittal_doc' => $validated['transmittal_doc'],
+      'code'            => $validated['code'],
+      'tracking'        => $validated['tracking'],
+    ]);
     $sending = new SendingEmail(
       $validated['email'],
       $body,
-      'LLIBI FUND MANAGEMENT - SAMPLE EMAIL',
+      'Transmittal Adjustment(s) Mailer',
       cc: $ccRecipients
     );
 

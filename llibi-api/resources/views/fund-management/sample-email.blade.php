@@ -8,13 +8,37 @@
 </head>
 
 <body>
-  <p style="font-size: 14px;">Dear Client,</p>
+  <p style="font-size: 14px;">Hello <strong>{{ $name }}</strong>, there's a new update regarding the transmittal document, please see adjustment(s) made below.</p>
 
-  <p style="font-size: 14px;">This is a sample email from Lacson &amp; Lacson Insurance Brokers, Inc. (LLIBI) for Fund Management.</p>
+  <table style="border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14px;">
+    <thead>
+      <tr>
+        <th style="border: 1px solid #ccc; padding: 8px 12px; text-align: left; background: #f4f4f4;">User</th>
+        <th style="border: 1px solid #ccc; padding: 8px 12px; text-align: left; background: #f4f4f4;">Adjustment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 8px 12px;">{{ $user }}</td>
+        <td style="border: 1px solid #ccc; padding: 8px 12px;">{{ $adjustment }}</td>
+      </tr>
+    </tbody>
+  </table>
 
-  <p style="font-size: 14px;">The final email content will be provided once available.</p>
-
-  <p style="font-size: 14px;">Thank you.</p>
+  <table style="font-size: 14px; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 2px 12px 2px 0;"><strong>Transmittal Doc:</strong></td>
+      <td style="padding: 2px 12px;">{{ $transmittal_doc }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 2px 12px 2px 0;"><strong>Code:</strong></td>
+      <td style="padding: 2px 12px;">{{ $code }}</td>
+    </tr>
+    <tr>
+      <td style="padding: 2px 12px 2px 0;"><strong>Tracking:</strong></td>
+      <td style="padding: 2px 12px;">{{ $tracking }}</td>
+    </tr>
+  </table>
 
   <p style="font-size: 12px; font-style: italic;"><em>This communication, including attachments, is for the exclusive use of the addressee and may contain proprietary, confidential or privileged information. If you are not the intended recipient, any use, copying, disclosure, dissemination or distribution is strictly prohibited. If you are not the intended recipient, please notify the sender immediately by return mail and delete this communication and destroy all copies.</em></p>
 
